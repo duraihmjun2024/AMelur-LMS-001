@@ -18,9 +18,6 @@ font-family: Arial, Helvetica, sans-serif;
 background: linear-gradient(#87CEEB, #BEE7FF);
 }
 
-/* --------------------------
-Compact Single-Line Header Styling
--------------------------- */
 header {
 display: flex;
 align-items: center;
@@ -102,9 +99,6 @@ header button:hover {
 filter: brightness(0.95);
 }
 
-/* --------------------------
-C_Score and Time
--------------------------- */
 header .score-time {
 display: flex;
 align-items: center;
@@ -123,9 +117,6 @@ font-weight: bold;
 color: #000;
 }
 
-/* --------------------------
-Answers Table + Game Layout
--------------------------- */
 #answersTable {
 position: fixed;
 top: calc(var(--header-h) + 8px);
@@ -159,9 +150,6 @@ overflow: hidden;
 }
 canvas { display: block; width: 100%; height: 100%; background: transparent; touch-action: none; }
 
-/* --------------------------
-Score Message Overlay
--------------------------- */
 #scoreMessage {
 position: fixed;
 top: 0; left: 0;
@@ -469,26 +457,32 @@ function processClick(x, y) {
 
             playPopSound();
             clicksCount++;
+            balloons.splice(i, 1);
 
-            if (clicksCount >= 21) {
+            // Advance seqIndex so the next spawned balloons carry the next multi-digit answers
+            const upcomingCell = findNextVisibleEmptyCell(firstVisibleCellIndex);
+            if (upcomingCell !== -1) {
+                seqIndex = upcomingCell - 1;
+                // Ensure at least one balloon on screen reflects the new target right away
+                spawnBalloon();
+            } else {
                 stopGame();
                 showFinalMessage();
                 playClapSound();
             }
 
             document.getElementById("score").textContent = score;
-            balloons.splice(i, 1);
             break;
         }
     }
 }
 
 function showFinalMessage(){
-    const totalQuestions = 21; 
+    const totalQuestions = ansRow.cells.length - firstVisibleCellIndex; 
     const percent = Math.round((score / totalQuestions) * 100);
     document.getElementById('scoreText').innerHTML = (percent >= 80) ? 
-        `🎉 Great Job!<br>Score: ${score}/21 (${percent}%)` : 
-        `Score: ${score}/21 (${percent}%)<br>Keep practicing!`;
+        `🎉 Great Job!<br>Score: ${score}/${totalQuestions} (${percent}%)` : 
+        `Score: ${score}/${totalQuestions} (${percent}%)<br>Keep practicing!`;
     document.getElementById('scoreMessage').style.display = 'flex';
     document.getElementById('submitBtn').disabled = false;
 }
@@ -601,8 +595,9 @@ function formatSecondsToHHMMSS(totalSecs) {
 
 function submitData() {
     stopGame();
-    const percentage = Math.round((score / 21) * 100);
-    const scoreStr = `${score}/21-${percentage}%`;
+    const totalQuestions = ansRow.cells.length - firstVisibleCellIndex;
+    const percentage = Math.round((score / totalQuestions) * 100);
+    const scoreStr = `${score}/${totalQuestions}-${percentage}%`;
     const timeStr = formatSecondsToHHMMSS(elapsedSeconds);
 
     document.getElementById('submitBtn').disabled = true;
@@ -614,7 +609,7 @@ function submitData() {
     params.append("studentID", currentStudentId);
     params.append("studentId", currentStudentId);
     params.append("name", currentUserName);
-    params.append("level1Score", `${score}/21-${percentage}%`);
+    params.append("level1Score", `${score}/${totalQuestions}-${percentage}%`);
     params.append("level1Time", timeStr);
     params.append("level2Score", `0/0-0%`);
     params.append("level2Time", "00:00:00");

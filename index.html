@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panchayat Union Primary School LMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .grid-border th, .grid-border td {
+            border: 1px solid #475569;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.75rem;
+            padding: 3px 1px;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .bg-boy-blue { background-color: #bae6fd; color: #0369a1; }
+        .bg-girl-pink { background-color: #fbcfe8; color: #be185d; }
+        .cell-hover:hover {
+            filter: brightness(0.92);
+            cursor: pointer;
+            transform: scale(1.03);
+            transition: transform 0.1s ease-in-out;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Ritz Waffle Styles from index3.html / index2.html for Game Table & Game Dashboard */
+        .ritz .waffle a { color: inherit; }
+        .ritz .waffle th, .ritz .waffle td {
+            user-select: none;
+            font-family: Arial, sans-serif;
+            font-size: 8pt;
+            padding: 2px 3px;
+        }
+        .ritz .waffle .s7{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffffff;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:normal;overflow:hidden;word-wrap:break-word;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s36{border-left:none;border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s10{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-size:9pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s12{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#a4c2f4;text-align:center;color:#000000;font-size:10pt;font-weight:bold;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s38{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffe599;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s50{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s17{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s52{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#ffffff;text-align:left;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 4px 2px 4px;}
+        .ritz .waffle .s42{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s35{border-left:none;border-right:1px SOLID #000000;border-bottom:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s24{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ead1dc;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s18{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s2{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#ffffff;text-align:left;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 4px 2px 4px;}
+        .ritz .waffle .s54{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#d9d9d9;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s40{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffe599;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s39{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s29{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#ead1dc;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s44{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#ffe599;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s34{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s37{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffe599;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s15{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ead1dc;text-align:center;font-weight:bold;color:#000000;font-size:10pt;vertical-align:middle;white-space:normal;overflow:hidden;word-wrap:break-word;padding:4px;}
+        .ritz .waffle .s55{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;vertical-align:middle;white-space:normal;overflow:hidden;word-wrap:break-word;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s8{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffffff;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s22{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ead1dc;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s13{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#a4c2f4;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s23{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s25{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ead1dc;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s30{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s1{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s41{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s21{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ead1dc;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s27{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s45{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s43{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s46{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s49{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffffff;text-align:left;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 4px 2px 4px;}
+        .ritz .waffle .s14{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#a4c2f4;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s47{border-right:1px SOLID #000000;border-bottom:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s9{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#f9cb9c;text-align:center;font-weight:bold;color:#000000;font-size:8pt;vertical-align:middle;white-space:normal;overflow:hidden;word-wrap:break-word;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s51{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#d9d9d9;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s19{border-left:none;border-right:1px SOLID #000000;border-bottom:1px SOLID #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s33{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffe599;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s11{border-bottom:1px SOLID #000000;border-right:3px DOUBLE #000000;background-color:#ffffff;text-align:center;color:#000000;font-size:9pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s28{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#ead1dc;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s53{border-bottom:3px DOUBLE #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s16{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;font-weight:bold;color:#000000;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s20{border-left:none;border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s31{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .s32{border-bottom:3px DOUBLE #000000;border-right:3px DOUBLE #000000;background-color:#ffd966;text-align:center;font-weight:bold;color:#000000;font-size:10pt;vertical-align:middle;white-space:normal;overflow:hidden;word-wrap:break-word;padding:4px;}
+        .ritz .waffle .s26{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ead1dc;text-align:center;color:#000000;font-size:8pt;vertical-align:middle;white-space:nowrap;padding:2px 3px 2px 3px;}
+        .ritz .waffle .game-code-cell {
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+        .ritz .waffle .game-code-cell:hover {
+            background-color: #fde047 !important;
+            color: #1e1b4b !important;
+        }
+        .ritz .waffle .active-game-cell {
+            background-color: #6ee7b7 !important;
+            color: #064e3b !important;
+            outline: 2px solid #059669;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between select-none">
+
+    <div class="w-full max-w-[1440px] mx-auto p-3 flex-grow flex flex-col gap-4">
+
+        <!-- 1. TITLE BAR -->
+        <header class="bg-slate-900 text-white flex items-center justify-between px-4 py-3 rounded-xl border border-slate-800 shadow-md">
+            <div class="flex items-center gap-3 w-full overflow-hidden">
+                <i class="fa-solid fa-graduation-cap text-indigo-400 text-xl"></i>
+                <div class="w-full overflow-hidden flex items-center bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <i class="fa-solid fa-bullhorn text-yellow-400 mr-3 animate-pulse text-sm"></i>
+                    <marquee id="welcomeMarquee" class="text-sm font-bold tracking-wide text-yellow-400">
+                        Panchayat Union Primary School, Anjalam Melur, Trichy District, TamilNadu, India Welcomes You!
+                    </marquee>
+                </div>
+            </div>
+        </header>
+
+        <!-- 2. MENU BAR -->
+        <nav class="flex items-center overflow-x-auto no-scrollbar bg-white p-2 rounded-xl border border-slate-200 shadow-sm gap-2">
+            <button onclick="navAction('NoticeBoard')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">NoticeBoard</button>
+            <button onclick="navAction('Home')" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-sm">Home</button>
+            <button onclick="navAction('Goal')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Goal</button>
+            <button onclick="navAction('Gallery')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Gallery</button>
+            <button onclick="navAction('Staff')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Staff</button>
+            <button onclick="navAction('Games List')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Games List</button>
+            <button onclick="navAction('Downloads')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Downloads</button>
+            <button onclick="navAction('Events')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Events</button>
+            <button onclick="navAction('More')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">More</button>
+        </nav>
+
+        <main class="space-y-4">
+
+            <!-- 3. GAME TABLE (FROM index3.html) -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-extrabold text-slate-800 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-indigo-600 text-lg"></i> Game Table
+                    </h2>
+                    <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">Click any GameCode to launch registration &amp; game</span>
+                </div>
+                <div class="ritz grid-container overflow-x-auto" dir="ltr">
+                    <table class="waffle grid-minimized w-full border-collapse border border-black" cellspacing="0" cellpadding="0">
+                        <tbody id="gameTableBody">
+                            <!-- Dynamically populated with exact index3.html structure & live metrics -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. GAME DASHBOARD (FROM index3.html) -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                    <span class="text-xs font-bold text-slate-800">Enter any Game Code(shaded) found in the above Game Table to get the status of that game:</span>
+                    <input type="text" id="gameDashboardInput" value="E02" onchange="loadGameDashboard(this.value)" onkeyup="if(event.key==='Enter') loadGameDashboard(this.value)" class="border-2 border-indigo-400 rounded px-3 py-1 text-sm font-bold text-indigo-800 bg-amber-100 w-24 text-center uppercase">
+                </div>
+                
+                <div class="ritz grid-container overflow-x-auto" dir="ltr">
+                    <table class="waffle grid-minimized w-full border-collapse border border-black" cellspacing="0" cellpadding="0">
+                        <tbody id="gameDashboardBody">
+                            <!-- Dynamically populated with exact index3.html structure & live metrics -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5. STUDENT ENTRY POINT -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+                <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                    <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student Entry Point (15 Boys &amp; 15 Girls per Std)
+                    </h2>
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Click your Student Code to play!</span>
+                </div>
+                <div id="studentEntryGridsContainer" class="space-y-5"></div>
+            </section>
+
+            <!-- 6. STUDENT DASHBOARD -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                    <span class="text-xs font-bold text-slate-800">Type the Student Code of the Student Entry Point to get status:</span>
+                    <input type="text" id="studentDashboardInput" value="1B01" onchange="loadStudentDashboard(this.value)" class="border border-emerald-300 rounded px-3 py-1 text-sm font-bold text-emerald-700 bg-white w-32 text-center uppercase">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full grid-border border-collapse bg-white">
+                        <tbody id="studentDashboardTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 7. OVERALL LEADERBOARD -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-indigo-900 text-white p-2.5 rounded-lg gap-2">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-yellow-400 text-sm"></i> Overall Leaderboard
+                        </h2>
+                        <select id="overallGameSelect" onchange="filterLeaderboardsByGame()" class="bg-indigo-800 text-yellow-300 font-bold border border-indigo-600 rounded px-2 py-1 text-xs">
+                            <option value="E02">Game: E02</option>
+                            <option value="ALL">All Games</option>
+                        </select>
+                    </div>
+                    <button onclick="toggleOverallExpand()" id="overallToggleBtn" class="bg-indigo-700 hover:bg-indigo-600 text-xs font-bold px-3 py-1 rounded border border-indigo-500">Show All Entries</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-sm bg-white text-center" id="overallLeaderboardTable">
+                        <thead>
+                            <tr class="bg-slate-100 font-bold text-slate-800 text-xs">
+                                <th class="border p-2">Game ID</th>
+                                <th class="border p-2">Rank</th>
+                                <th class="border p-2">Student ID</th>
+                                <th class="border p-2 text-left">Name</th>
+                                <th class="border p-2">Std</th>
+                                <th class="border p-2">L1 Score</th>
+                                <th class="border p-2">L1 Time</th>
+                                <th class="border p-2">L2 Score</th>
+                                <th class="border p-2">L2 Time</th>
+                                <th class="border p-2">Total Score</th>
+                                <th class="border p-2">Tot Time</th>
+                                <th class="border p-2">Trial</th>
+                                <th class="border p-2">Submitted At</th>
+                            </tr>
+                            <tr class="bg-slate-50 text-[10px]">
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="rank" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="studentId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="std" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l1Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l2Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l2Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="totTime" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="trialId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="submittedAt" class="w-full border rounded px-1 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="overallLeaderboardBody">
+                            <tr><td colspan="13" class="p-3 text-slate-400 italic">Loading live data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 8. CLASSWISE LEADERBOARD -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-800 text-white p-2.5 rounded-lg gap-2">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-medal text-yellow-400 text-sm"></i> Classwise Leaderboard
+                        </h2>
+                        <select id="classGameSelect" onchange="filterLeaderboardsByGame()" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
+                            <option value="E02">Game: E02</option>
+                            <option value="ALL">All Games</option>
+                        </select>
+                        <select id="classSelectLeaderboard" onchange="loadClassLeaderboard(this.value)" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
+                            <option value="1">Standard 1</option>
+                            <option value="2">Standard 2</option>
+                            <option value="3">Standard 3</option>
+                            <option value="4">Standard 4</option>
+                            <option value="5">Standard 5</option>
+                        </select>
+                    </div>
+                    <button onclick="toggleClassExpand()" id="classToggleBtn" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-3 py-1 rounded border border-slate-600">Show All Entries</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-sm bg-white text-center" id="classLeaderboardTable">
+                        <thead>
+                            <tr class="bg-slate-100 font-bold text-slate-800 text-xs">
+                                <th class="border p-2">Game ID</th>
+                                <th class="border p-2">O_Rank</th>
+                                <th class="border p-2">C_Rank</th>
+                                <th class="border p-2">Student ID</th>
+                                <th class="border p-2 text-left">Name</th>
+                                <th class="border p-2">L1 Score</th>
+                                <th class="border p-2">L1 Time</th>
+                                <th class="border p-2">L2 Score</th>
+                                <th class="border p-2">L2 Time</th>
+                                <th class="border p-2">Total Score</th>
+                                <th class="border p-2">Tot Time</th>
+                                <th class="border p-2">Trial</th>
+                                <th class="border p-2">Submitted At</th>
+                            </tr>
+                            <tr class="bg-slate-50 text-[10px]">
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="oRank" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="cRank" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="studentId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l2Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l2Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="totTime" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="trialId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="submittedAt" class="w-full border rounded px-1 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="classLeaderboardBody">
+                            <tr><td colspan="13" class="p-3 text-slate-400 italic">Select a class to view rankings.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-transparent text-center space-y-2 py-3">
+            <p class="text-xs font-bold text-slate-700">For more details, kindly send WhatsApp message to: +91 7010459876</p>
+            <a href="https://wa.me/917010459876" target="_blank" class="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500 text-white font-bold rounded-full text-xs shadow hover:bg-emerald-600">
+                <i class="fa-brands fa-whatsapp text-sm"></i> +91 7010459876
+            </a>
+        </footer>
+    </div>
+
+    <!-- REGISTRATION MODAL -->
+    <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-5 shadow-2xl border border-slate-100 space-y-3">
+            <h3 id="modalTitle" class="text-sm font-bold text-indigo-700 border-b pb-2">📋 User Registration</h3>
+            <form id="userRegForm" class="space-y-3 text-xs" onsubmit="handleRegistrationSubmit(event)">
+                
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">User Type *</label>
+                    <div class="flex gap-4 p-2 bg-indigo-50 border rounded-lg font-bold text-indigo-700">
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="regUserType" value="Student" checked onchange="switchUserType('Student')"> Student</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="regUserType" value="Member" onchange="switchUserType('Member')"> Member</label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" id="regIdLabel">EMIS/Mem_ID(10 Digits) *</label>
+                    <input type="text" id="regStudentId" readonly class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-indigo-100 uppercase">
+                </div>
+
+                <div id="studentFieldsContainer" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Name/First Name *</label>
+                            <input type="text" id="regFirstName" oninput="updateStudentIdSuffix()" placeholder="First Name" class="w-full border rounded-lg p-2">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Father Name/Last Name *</label>
+                            <input type="text" id="regFatherName" oninput="updateStudentIdSuffix()" placeholder="Father Name" class="w-full border rounded-lg p-2">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Birth Date (DD) *</label>
+                            <input type="text" maxlength="2" id="regBirthDate" oninput="updateStudentIdSuffix()" placeholder="DD" class="w-full border rounded-lg p-2">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Birth Month (MM) *</label>
+                            <input type="text" maxlength="2" id="regBirthMonth" oninput="updateStudentIdSuffix()" placeholder="MM" class="w-full border rounded-lg p-2">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="memberFieldsContainer" class="hidden space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Name/First Name *</label>
+                            <input type="text" id="regMemberFirstName" placeholder="First Name" class="w-full border rounded-lg p-2">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Father Name/Last Name *</label>
+                            <input type="text" id="regMemberLastName" placeholder="Last Name" class="w-full border rounded-lg p-2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Cell</label>
+                        <input type="tel" id="regCell" placeholder="Cell No" class="w-full border rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Whatsapp with country code(no drop down) *</label>
+                        <input type="tel" id="regWhatsapp" oninput="updateWhatsappFields()" required placeholder="+91..." class="w-full border rounded-lg p-2">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1" id="locationLabel">Institution</label>
+                        <input type="text" id="regSchool" value="PUPS Anjalam Melur" class="w-full border rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Place *</label>
+                        <input type="text" id="regPlace" required placeholder="Place" class="w-full border rounded-lg p-2">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Country *</label>
+                        <input type="text" id="regCountry" required value="India" placeholder="Country" class="w-full border rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Selected Game Code</label>
+                        <input type="text" id="regGameCode" readonly class="w-full border rounded-lg p-2 font-bold text-emerald-700 bg-emerald-50 uppercase">
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg bg-slate-200 font-bold">Cancel</button>
+                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Submit & Launch Game</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+        let gameRecordsData = [];
+        let userRecordsData = [];
+        let isOverallExpanded = false;
+        let isClassExpanded = false;
+        let currentUserStudentId = "1B01";
+        let currentGameCode = "E02";
+        let activeBaseStudentCode = "1B01";
+
+        function navAction(section) {
+            if (section === 'Home') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (section === 'Games List') {
+                document.getElementById('gameTableBody').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert(`${section} section selected.`);
+            }
+        }
+
+        function parseScoreValue(scoreStr) {
+            if (!scoreStr) return 0;
+            const frac = String(scoreStr).match(/(\d+)\s*\/\s*(\d+)/);
+            if (frac) return (parseFloat(frac[1]) / parseFloat(frac[2])) * 100;
+            const pct = String(scoreStr).match(/(\d+(?:\.\d+)?)%/);
+            if (pct) return parseFloat(pct[1]);
+            const num = String(scoreStr).match(/(\d+(?:\.\d+)?)/);
+            return num ? parseFloat(num[1]) : 0;
+        }
+
+        function parseTimeToSeconds(timeStr) {
+            if (!timeStr || timeStr === '--' || timeStr === '---' || timeStr === '00:00:00') return 0;
+            const cleanStr = formatTimeDisplay(timeStr);
+            const parts = cleanStr.split(':');
+            
+            if (parts.length === 3) {
+                return (parseInt(parts[0], 10) * 3600) + (parseInt(parts[1], 10) * 60) + parseInt(parts[2], 10);
+            } else if (parts.length === 2) {
+                return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+            }
+
+            const numMatch = cleanStr.match(/(\d+)/);
+            return numMatch ? parseInt(numMatch[1], 10) : 0;
+        }
+
+        function formatSecondsToHHMMSS(totalSecs) {
+            if (isNaN(totalSecs) || totalSecs <= 0) return "00:00:00";
+            const hrs = String(Math.floor(totalSecs / 3600)).padStart(2, "0");
+            const mins = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, "0");
+            const secs = String(Math.floor(totalSecs % 60)).padStart(2, "0");
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        function formatTimeDisplay(timeStr) {
+            if (!timeStr || timeStr === '--' || timeStr === '---') return "00:00:00";
+            const str = String(timeStr).trim();
+            if (str.includes('T')) {
+                const timePart = str.split('T')[1];
+                if (timePart) {
+                    return timePart.split('.')[0];
+                }
+            }
+            return str;
+        }
+
+        function formatScoreDisplay(scoreStr) {
+            if (!scoreStr) return "0/10-0%";
+            return String(scoreStr);
+        }
+
+        function sortLeaderboardData(records) {
+            return records.sort((a, b) => {
+                const scoreA = parseScoreValue(a.score);
+                const scoreB = parseScoreValue(b.score);
+                if (scoreB !== scoreA) return scoreB - scoreA;
+                const timeA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
+                const timeB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
+                return timeA - timeB;
+            });
+        }
+
+        function fetchLiveSheetData() {
+            fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData`)
+                .then(res => res.json())
+                .then(data => {
+                    userRecordsData = data.userData || [];
+                    const rawGameData = data.gameData || [];
+                    
+                    const validGameData = rawGameData.filter(item => item.studentId && item.studentId !== "--" && item.score);
+                    gameRecordsData = sortLeaderboardData(validGameData);
+
+                    if (gameRecordsData.length > 0) {
+                        currentUserStudentId = data.latestStudentId || gameRecordsData[0].studentId;
+                        currentGameCode = data.latestGameCode || gameRecordsData[0].gameCode;
+                    } else if (data.latestStudentId) {
+                        currentUserStudentId = data.latestStudentId;
+                        currentGameCode = data.latestGameCode || "E02";
+                    }
+
+                    localStorage.setItem('lastStudentCode', currentUserStudentId);
+                    localStorage.setItem('lastGameCode', currentGameCode);
+
+                    document.getElementById('gameDashboardInput').value = currentGameCode;
+                    document.getElementById('studentDashboardInput').value = currentUserStudentId;
+
+                    const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
+                    document.getElementById('classSelectLeaderboard').value = studentStd;
+
+                    populateGameSelectors();
+                    updateAllHomepageTables();
+                })
+                .catch((err) => {
+                    console.error("Fetch error:", err);
+                    if (localStorage.getItem('lastStudentCode')) currentUserStudentId = localStorage.getItem('lastStudentCode');
+                    if (localStorage.getItem('lastGameCode')) currentGameCode = localStorage.getItem('lastGameCode');
+                    document.getElementById('gameDashboardInput').value = currentGameCode;
+                    document.getElementById('studentDashboardInput').value = currentUserStudentId;
+                    
+                    const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
+                    document.getElementById('classSelectLeaderboard').value = studentStd;
+
+                    updateAllHomepageTables();
+                });
+        }
+
+        function populateGameSelectors() {
+            const activeGames = [...new Set(gameRecordsData.map(r => r.gameCode).filter(Boolean))];
+            if (!activeGames.includes("E02")) activeGames.unshift("E02");
+
+            const overallSel = document.getElementById('overallGameSelect');
+            const classSel = document.getElementById('classGameSelect');
+            
+            let opts = `<option value="ALL">All Games</option>`;
+            activeGames.forEach(g => {
+                opts += `<option value="${g}" ${g === currentGameCode ? 'selected' : ''}>Game: ${g}</option>`;
+            });
+            overallSel.innerHTML = opts;
+            classSel.innerHTML = opts;
+            if (activeGames.includes(currentGameCode)) {
+                overallSel.value = currentGameCode;
+                classSel.value = currentGameCode;
+            }
+        }
+
+        function filterLeaderboardsByGame() {
+            currentGameCode = document.getElementById('overallGameSelect').value;
+            localStorage.setItem('lastGameCode', currentGameCode);
+            document.getElementById('classGameSelect').value = currentGameCode;
+            renderOverallLeaderboard();
+            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
+        }
+
+        function getActiveTrialIdForUser(studentId) {
+            const userSubmissions = gameRecordsData.filter(r => matchStudentId(r.studentId, studentId));
+            return String(userSubmissions.length + 1);
+        }
+
+        /* =========================================================================
+           GAME TABLE (EXACT STRUCTURE FROM index3.html WITH LIVE DATA INTEGRATION)
+           ========================================================================= */
+        function renderGameTable() {
+            const tbody = document.getElementById('gameTableBody');
+            if (!tbody) return;
+
+            function getGameTrialStats(gCode, trialNumStr) {
+                const matches = gameRecordsData.filter(r => 
+                    (r.gameCode || '').toUpperCase() === gCode.toUpperCase() && 
+                    String(r.trialId || '1') === trialNumStr
+                );
+                if (!matches.length) {
+                    return { students: '', topScore: '', leastTime: '', avgScore: '' };
+                }
+                const uniqueStudents = new Set(matches.map(m => m.studentId)).size;
+                const scores = matches.map(m => parseScoreValue(m.score));
+                const maxPct = Math.max(...scores);
+                const bestScoreRec = matches.find(m => parseScoreValue(m.score) === maxPct);
+                const topScoreStr = bestScoreRec ? `${Math.round(maxPct)}%` : '';
+
+                const times = matches.map(m => parseTimeToSeconds(m.level1Time) + parseTimeToSeconds(m.level2Time)).filter(t => t > 0);
+                let leastTimeStr = '';
+                if (times.length > 0) {
+                    const minT = Math.min(...times);
+                    const mins = Math.floor(minT / 60);
+                    const secs = minT % 60;
+                    leastTimeStr = mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
+                }
+
+                const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                return {
+                    students: uniqueStudents,
+                    topScore: topScoreStr,
+                    leastTime: leastTimeStr,
+                    avgScore: `${avgPct}%`
+                };
+            }
+
+            let html = '';
+
+            // Header Rows (From index3.html)
+            html += `<tr style="height: 20px">
+                <td class="s7" colspan="2">Game Table</td>
+                <td class="s8" colspan="12">Month1</td>
+                <td class="s8" colspan="12">Month2</td>
+                <td class="s8" colspan="12">Month3</td>
+                <td class="s8" colspan="12">Month4</td>
+            </tr>`;
+
+            html += `<tr style="height: 20px">
+                <td class="s9" colspan="2">Click a GameCode</td>
+                <td class="s10" colspan="3">Wk01</td><td class="s10" colspan="3">Wk02</td><td class="s10" colspan="3">Wk03</td><td class="s8" colspan="3">MR1</td>
+                <td class="s10" colspan="3">Wk01</td><td class="s10" colspan="3">Wk02</td><td class="s10" colspan="3">Wk03</td><td class="s11" colspan="3">MR2</td>
+                <td class="s10" colspan="3">Wk01</td><td class="s10" colspan="3">Wk02</td><td class="s10" colspan="3">Wk03</td><td class="s11" colspan="3">MR3</td>
+                <td class="s10" colspan="3">Wk01</td><td class="s10" colspan="3">Wk02</td><td class="s10" colspan="3">Wk03</td><td class="s11" colspan="3">Wk04</td>
+            </tr>`;
+
+            html += `<tr style="height: 20px">
+                <td class="s12" colspan="2">Submission:</td>`;
+            for (let m = 1; m <= 4; m++) {
+                for (let w = 1; w <= 4; w++) {
+                    html += `<td class="s13">1</td><td class="s13">2</td><td class="s14">3</td>`;
+                }
+            }
+            html += `</tr>`;
+
+            const sections = [
+                {
+                    label: "On Mondays,<br>Wednesdays,<br>Fridays:",
+                    labelClass: "s15",
+                    mrClass: "s17",
+                    mrEndClass: "s18",
+                    dataCellClass: "s24",
+                    dataEndCellClass: "s25",
+                    avgMrClass: "s28",
+                    avgMrEndClass: "s29",
+                    qrHeaderClass: "s21",
+                    trHeaderClass: "s22",
+                    qrDataClass: "s26",
+                    trDataClass: "s27",
+                    qrAvgClass: "s30",
+                    trAvgClass: "s31",
+                    groups: [
+                        ["T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09"],
+                        ["E01", "E03", "E05", "E07", "E09", "E11", "E13", "E15", "E17"],
+                        ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09"]
+                    ]
+                },
+                {
+                    label: "On Tuesdays,<br>Thursdays,<br>Saturdays:",
+                    labelClass: "s32",
+                    mrClass: "s33",
+                    mrEndClass: "s34",
+                    dataCellClass: "s39",
+                    dataEndCellClass: "s40",
+                    avgMrClass: "s43",
+                    avgMrEndClass: "s44",
+                    qrHeaderClass: "s37",
+                    trHeaderClass: "s38",
+                    qrDataClass: "s42",
+                    trDataClass: "s41",
+                    qrAvgClass: "s46",
+                    trAvgClass: "s45",
+                    groups: [
+                        ["S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09"],
+                        ["E02", "E04", "E06", "E08", "E10", "E12", "E14", "E16", "E18"],
+                        ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"]
+                    ]
+                }
+            ];
+
+            sections.forEach(sec => {
+                sec.groups.forEach((codes, gIdx) => {
+                    // Row 1: GameCode Row
+                    html += `<tr style="height: 20px">`;
+                    if (gIdx === 0) {
+                        html += `<td class="${sec.labelClass}" rowspan="15">${sec.label}</td>`;
+                    }
+                    html += `<td class="s8">GameCode</td>`;
+
+                    // Month 1 (0,1,2), Month 2 (3,4,5), Month 3 (6,7,8)
+                    for (let m = 0; m < 3; m++) {
+                        const c1 = codes[m * 3];
+                        const c2 = codes[m * 3 + 1];
+                        const c3 = codes[m * 3 + 2];
+
+                        [c1, c2, c3].forEach(c => {
+                            const activeCls = (c === currentGameCode.toUpperCase()) ? 'active-game-cell' : '';
+                            html += `<td class="s16 game-code-cell ${activeCls}" colspan="3" onclick="handleGameClick('${c}')" title="Click to play ${c}">${c}</td>`;
+                        });
+
+                        // MR summary columns (1 cell per game)
+                        html += `<td class="${sec.mrClass} game-code-cell" onclick="handleGameClick('${c1}')">${c1}</td>`;
+                        html += `<td class="${sec.mrClass} game-code-cell" onclick="handleGameClick('${c2}')">${c2}</td>`;
+                        html += `<td class="${sec.mrEndClass} game-code-cell" onclick="handleGameClick('${c3}')">${c3}</td>`;
+                    }
+
+                    // Month 4 (QR1, QR2, QR3, TR1)
+                    html += `<td class="${sec.qrHeaderClass}" colspan="3">QR1</td>`;
+                    html += `<td class="${sec.qrHeaderClass}" colspan="3">QR2</td>`;
+                    html += `<td class="${sec.qrHeaderClass}" colspan="3">QR3</td>`;
+                    html += `<td class="${sec.trHeaderClass}" colspan="3">TR1</td>`;
+                    html += `</tr>`;
+
+                    // Rows 2..5: Students, Top Score, Least Time, Avg Score
+                    const metricRows = [
+                        { label: "Students:", key: "students", isBottom: false },
+                        { label: "Top Score:", key: "topScore", isBottom: false },
+                        { label: "Least Time:", key: "leastTime", isBottom: false },
+                        { label: "Avg Score:", key: "avgScore", isBottom: true }
+                    ];
+
+                    metricRows.forEach(mRow => {
+                        html += `<tr style="height: 19px">`;
+                        html += `<td class="${mRow.isBottom ? 's2' : 's8'}">${mRow.label}</td>`;
+
+                        // Months 1 to 3
+                        for (let m = 0; m < 3; m++) {
+                            const mCodes = [codes[m * 3], codes[m * 3 + 1], codes[m * 3 + 2]];
+                            // 3 weeks * 3 submissions = 9 cells
+                            mCodes.forEach(gc => {
+                                ["1", "2", "3"].forEach(subNum => {
+                                    const statVal = getGameTrialStats(gc, subNum)[mRow.key];
+                                    const cellCls = mRow.isBottom ? 's1' : 's23';
+                                    html += `<td class="${cellCls}">${statVal}</td>`;
+                                });
+                            });
+                            // MR1/MR2/MR3 (3 cells)
+                            mCodes.forEach((gc, idx) => {
+                                const isLast = idx === 2;
+                                const cellCls = mRow.isBottom
+                                    ? (isLast ? sec.avgMrEndClass : sec.avgMrClass)
+                                    : (isLast ? sec.dataEndCellClass : sec.dataCellClass);
+                                html += `<td class="${cellCls}"></td>`;
+                            });
+                        }
+
+                        // Month 4 (12 cells: 9 QR + 3 TR)
+                        for (let q = 0; q < 11; q++) {
+                            const cellCls = mRow.isBottom ? sec.qrAvgClass : sec.qrDataClass;
+                            html += `<td class="${cellCls}"></td>`;
+                        }
+                        const trCls = mRow.isBottom ? sec.trAvgClass : sec.trDataClass;
+                        html += `<td class="${trCls}"></td>`;
+
+                        html += `</tr>`;
+                    });
+                });
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        /* =========================================================================
+           GAME DASHBOARD (EXACT STRUCTURE FROM index3.html WITH LIVE DATA INTEGRATION)
+           ========================================================================= */
+        function loadGameDashboard(gameCode) {
+            const code = (gameCode || document.getElementById('gameDashboardInput').value || currentGameCode).trim().toUpperCase();
+            currentGameCode = code;
+            localStorage.setItem('lastGameCode', currentGameCode);
+            document.getElementById('gameDashboardInput').value = code;
+            renderGameTable();
+
+            const filteredRecords = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === code);
+            const body = document.getElementById('gameDashboardBody');
+            if (!body) return;
+
+            const colGroups = ['Students', '5', '4', '3', '2', '1'];
+
+            function filterGroupTrial(stdKey, gender, trialStr, studentNumStr) {
+                return filteredRecords.filter(r => {
+                    if (!r.studentId) return false;
+                    const s = String(r.studentId).toUpperCase();
+                    if (s.startsWith('M')) return false;
+                    const matchesStd = (stdKey === 'Students') ? /^[1-5]/.test(s) : s.startsWith(stdKey);
+                    const matchesGender = s.includes(gender);
+                    const matchesTrial = !trialStr || String(r.trialId || '1') === trialStr;
+                    const matchesNum = !studentNumStr || s.slice(2, 4) === studentNumStr;
+                    return matchesStd && matchesGender && matchesTrial && matchesNum;
+                });
+            }
+
+            function filterMemberTrial(trialStr) {
+                return filteredRecords.filter(r => {
+                    if (!r.studentId) return false;
+                    const s = String(r.studentId).toUpperCase();
+                    if (!s.startsWith('M')) return false;
+                    return !trialStr || String(r.trialId || '1') === trialStr;
+                });
+            }
+
+            function formatCellMetric(recs, metricType) {
+                if (!recs.length) return '';
+                if (metricType === 'submissions') return recs.length;
+                if (metricType === 'users') return new Set(recs.map(r => r.studentId)).size;
+                if (metricType === 'topScore') {
+                    const max = Math.max(...recs.map(r => parseScoreValue(r.score)));
+                    return max > 0 ? `${Math.round(max)}%` : '';
+                }
+                if (metricType === 'leastTime') {
+                    const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+                    if (!times.length) return '';
+                    const minT = Math.min(...times);
+                    const mins = Math.floor(minT / 60);
+                    const secs = minT % 60;
+                    return mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
+                }
+                if (metricType === 'avgScore') {
+                    const sum = recs.reduce((a, r) => a + parseScoreValue(r.score), 0);
+                    const avg = Math.round(sum / recs.length);
+                    return avg > 0 ? `${avg}%` : '';
+                }
+                return '';
+            }
+
+            let html = '';
+
+            // Header Row 1 (From index3.html)
+            html += `<tr style="height: 22px">
+                <td class="s7" colspan="2" rowspan="2">Game Dashboard<br><span style="font-size:7pt;color:#4338ca;">(${code})</span></td>
+                <td class="s8" colspan="6">Students</td>
+                <td class="s8" colspan="6">Std5</td>
+                <td class="s8" colspan="6">Std4</td>
+                <td class="s8" colspan="6">Std3</td>
+                <td class="s8" colspan="6">Std2</td>
+                <td class="s8" colspan="6">Std1</td>
+                <td class="s8" colspan="12" rowspan="2">All Members &amp;<br>Top 15 Members</td>
+            </tr>`;
+
+            // Header Row 2: Boys / Girls (colspan 3 each for Trials 1, 2, 3)
+            html += `<tr style="height: 20px">`;
+            for (let i = 0; i < 6; i++) {
+                html += `<td class="s23 font-bold bg-sky-100" colspan="3">Boys</td><td class="s8 font-bold bg-pink-100" colspan="3">Girls</td>`;
+            }
+            html += `</tr>`;
+
+            // Summary Rows (Submissions, Users, Absentees, Top Score, Least Time, Avg. Score)
+            const summaryRows = [
+                { label: "Submissions:", key: "submissions", isBottom: false },
+                { label: "Users:", key: "users", isBottom: false },
+                { label: "Absentees:", key: "absentees", isBottom: false },
+                { label: "Top Score:", key: "topScore", isBottom: false },
+                { label: "Least Time:", key: "leastTime", isBottom: false },
+                { label: "Avg. Score:", key: "avgScore", isBottom: true }
+            ];
+
+            summaryRows.forEach(sRow => {
+                html += `<tr style="height: 18px">`;
+                html += `<td class="${sRow.isBottom ? 's52' : 's49'}" colspan="2">${sRow.label}</td>`;
+
+                colGroups.forEach(stdKey => {
+                    ['B', 'G'].forEach((gender, gIdx) => {
+                        const isLastGender = (gIdx === 1);
+                        ['1', '2', '3'].forEach((trialStr, tIdx) => {
+                            const isEndOfBlock = isLastGender && (tIdx === 2);
+                            let val = '';
+                            if (sRow.key === 'absentees') {
+                                if (stdKey !== 'Students' && trialStr === '1') {
+                                    const activeUsers = new Set(filterGroupTrial(stdKey, gender, null, null).map(r => r.studentId)).size;
+                                    val = activeUsers > 0 ? (15 - activeUsers) : '';
+                                }
+                            } else {
+                                const recs = filterGroupTrial(stdKey, gender, trialStr, null);
+                                val = formatCellMetric(recs, sRow.key);
+                            }
+
+                            let cls = sRow.isBottom ? (isEndOfBlock ? 's52' : 's53') : (isEndOfBlock ? 's49' : 's50');
+                            html += `<td class="${cls}">${val}</td>`;
+                        });
+                    });
+                });
+
+                // Greyed out 9-col span for Top 15 Members summary + 3 cols for All Members Trials 1, 2, 3
+                html += `<td class="${sRow.isBottom ? 's54' : 's51'}" colspan="9"></td>`;
+                ['1', '2', '3'].forEach((trialStr, tIdx) => {
+                    const isLast = (tIdx === 2);
+                    const mRecs = filterMemberTrial(trialStr);
+                    const val = sRow.key === 'absentees' ? '' : formatCellMetric(mRecs, sRow.key);
+                    const cls = sRow.isBottom ? (isLast ? 's2' : 's1') : (isLast ? 's8' : 's23');
+                    html += `<td class="${cls}">${val}</td>`;
+                });
+
+                html += `</tr>`;
+            });
+
+            // Top 15 Members sorted by score for the right-side Rank-1..Rank-15 blocks
+            const topMembersList = [...filteredRecords.filter(r => r.studentId && r.studentId.toUpperCase().startsWith('M'))]
+                .sort((a, b) => parseScoreValue(b.score) - parseScoreValue(a.score));
+
+            // Student-01 through Student-15 Rows (4 sub-rows each: Submission, Top Score, Least Time, Avg Score)
+            for (let idx = 0; idx < 15; idx++) {
+                const numStr = String(idx + 1).padStart(2, '0');
+                const rankNum = idx + 1;
+                const assignedMember = topMembersList[idx] || null;
+                const memberText = assignedMember
+                    ? `Rank-${rankNum}: Member ID:<br><span class="font-bold text-indigo-700">${assignedMember.studentId}</span><br><span class="text-[7pt] text-slate-600">${assignedMember.name || ''} (${assignedMember.score || ''})</span>`
+                    : `Rank-${rankNum}: Member ID:`;
+
+                const subRows = [
+                    { label: "Submission:", key: "submissions", isBottom: false },
+                    { label: "Top Score:", key: "topScore", isBottom: false },
+                    { label: "Least Time:", key: "leastTime", isBottom: false },
+                    { label: "Avg Score:", key: "avgScore", isBottom: true }
+                ];
+
+                subRows.forEach((sub, sIdx) => {
+                    html += `<tr style="height: 18px">`;
+                    if (sIdx === 0) {
+                        html += `<td class="s1 font-bold bg-slate-50" rowspan="4">Student-${numStr}</td>`;
+                    }
+                    html += `<td class="${sub.isBottom ? 's2' : 's8'}">${sub.label}</td>`;
+
+                    // 6 column groups * 2 genders * 3 trials = 36 cells
+                    colGroups.forEach(stdKey => {
+                        ['B', 'G'].forEach((gender, gIdx) => {
+                            const isLastGender = (gIdx === 1);
+                            ['1', '2', '3'].forEach((trialStr, tIdx) => {
+                                const isEndOfBlock = isLastGender && (tIdx === 2);
+                                const recs = filterGroupTrial(stdKey, gender, trialStr, numStr);
+                                const val = formatCellMetric(recs, sub.key);
+                                const cls = sub.isBottom ? (isEndOfBlock ? 's2' : 's1') : (isEndOfBlock ? 's8' : 's23');
+                                html += `<td class="${cls}">${val}</td>`;
+                            });
+                        });
+                    });
+
+                    // Rank-X Member ID cell (colspan 9, rowspan 4 on first sub-row)
+                    if (sIdx === 0) {
+                        html += `<td class="s55" colspan="9" rowspan="4">${memberText}</td>`;
+                    }
+
+                    // 3 Member columns on far right
+                    ['1', '2', '3'].forEach((trialStr, tIdx) => {
+                        const isLast = (tIdx === 2);
+                        const memberMatch = (assignedMember && String(assignedMember.trialId || '1') === trialStr) ? [assignedMember] : [];
+                        const val = formatCellMetric(memberMatch, sub.key);
+                        const cls = sub.isBottom ? (isLast ? 's2' : 's1') : (isLast ? 's8' : 's23');
+                        html += `<td class="${cls}">${val}</td>`;
+                    });
+
+                    html += `</tr>`;
+                });
+            }
+
+            body.innerHTML = html;
+        }
+
+        function renderOverallLeaderboard() {
+            applyLeaderboardFilters();
+        }
+
+        function applyLeaderboardFilters() {
+            const body = document.getElementById('overallLeaderboardBody');
+            const selectedGame = document.getElementById('overallGameSelect').value;
+            
+            let filtered = gameRecordsData;
+            if (selectedGame !== 'ALL') {
+                filtered = gameRecordsData.filter(r => (r.gameCode || 'E02') === selectedGame);
+            }
+
+            const inputs = document.querySelectorAll('#overallLeaderboardTable thead input');
+            const filters = {};
+            inputs.forEach(input => {
+                filters[input.dataset.col] = input.value.trim().toLowerCase();
+            });
+
+            let displayedData = filtered.map((row, idx) => {
+                const std = row.studentId && !row.studentId.startsWith('M') ? `Std ${row.studentId.charAt(0)}` : 'Member';
+                const l1Secs = parseTimeToSeconds(row.level1Time);
+                const l2Secs = parseTimeToSeconds(row.level2Time);
+                const totSecs = l1Secs + l2Secs;
+                return {
+                    ...row,
+                    rank: idx + 1,
+                    std: std,
+                    l1Score: formatScoreDisplay(row.level1Score),
+                    l1Time: formatTimeDisplay(row.level1Time),
+                    l2Score: formatScoreDisplay(row.level2Score),
+                    l2Time: formatTimeDisplay(row.level2Time),
+                    score: formatScoreDisplay(row.score),
+                    totTime: formatSecondsToHHMMSS(totSecs),
+                    trialId: row.trialId || '1'
+                };
+            }).filter(row => {
+                for (let key in filters) {
+                    if (filters[key]) {
+                        const val = String(row[key] || '').toLowerCase();
+                        if (!val.includes(filters[key])) return false;
+                    }
+                }
+                return true;
+            });
+
+            if (!isOverallExpanded && !Object.values(filters).some(v => v)) {
+                const top10 = displayedData.slice(0, 10);
+                const currentUserRow = displayedData.find(r => matchStudentId(r.studentId, currentUserStudentId));
+                if (currentUserRow && !top10.some(r => matchStudentId(r.studentId, currentUserStudentId))) {
+                    displayedData = [...top10, currentUserRow];
+                } else {
+                    displayedData = top10;
+                }
+            }
+
+            if (!displayedData.length) {
+                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            displayedData.forEach((row) => {
+                const isCurrentUser = matchStudentId(row.studentId, currentUserStudentId);
+                const highlightClass = isCurrentUser ? 'bg-amber-100 font-bold border-2 border-amber-400' : (row.rank === 1 ? 'bg-amber-50' : '');
+
+                html += `<tr class="${highlightClass}">
+                    <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
+                    <td class="border p-2 font-bold ${row.rank===1?'text-amber-600':''}">${row.rank}</td>
+                    <td class="border p-2 font-bold text-indigo-700">${row.studentId || '---'}</td>
+                    <td class="border p-2 text-left font-semibold">${row.name || 'User'}</td>
+                    <td class="border p-2">${row.std}</td>
+                    <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
+                    <td class="border p-2 font-semibold text-purple-600">${row.l2Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l2Time}</td>
+                    <td class="border p-2 font-bold text-emerald-600">${row.score}</td>
+                    <td class="border p-2 text-slate-700 font-mono">${row.totTime}</td>
+                    <td class="border p-2 font-bold text-amber-700">${row.trialId}</td>
+                    <td class="border p-2 text-xs text-slate-500">${row.submittedAt || '---'}</td>
+                </tr>`;
+            });
+            body.innerHTML = html;
+            document.getElementById('overallToggleBtn').innerText = isOverallExpanded ? "Show Top 10 Only" : "Show All Entries";
+        }
+
+        function toggleOverallExpand() {
+            isOverallExpanded = !isOverallExpanded;
+            renderOverallLeaderboard();
+        }
+
+        function loadClassLeaderboard(standard) {
+            applyClassLeaderboardFilters();
+        }
+
+        function applyClassLeaderboardFilters() {
+            const standard = document.getElementById('classSelectLeaderboard').value;
+            const body = document.getElementById('classLeaderboardBody');
+            const selectedGame = document.getElementById('classGameSelect').value;
+            
+            let filtered = gameRecordsData.filter(r => r.studentId && r.studentId.startsWith(String(standard)));
+            if (selectedGame !== 'ALL') {
+                filtered = filtered.filter(r => (r.gameCode || 'E02') === selectedGame);
+            }
+
+            const inputs = document.querySelectorAll('#classLeaderboardTable thead input');
+            const filters = {};
+            inputs.forEach(input => {
+                filters[input.dataset.col] = input.value.trim().toLowerCase();
+            });
+
+            let displayedClassData = filtered.map((row, idx) => {
+                const overallRank = gameRecordsData.findIndex(r => matchStudentId(r.studentId, row.studentId) && (r.gameCode||'E02')===(row.gameCode||'E02')) + 1;
+                const l1Secs = parseTimeToSeconds(row.level1Time);
+                const l2Secs = parseTimeToSeconds(row.level2Time);
+                const totSecs = l1Secs + l2Secs;
+                return {
+                    ...row,
+                    oRank: overallRank,
+                    cRank: idx + 1,
+                    l1Score: formatScoreDisplay(row.level1Score),
+                    l1Time: formatTimeDisplay(row.level1Time),
+                    l2Score: formatScoreDisplay(row.level2Score),
+                    l2Time: formatTimeDisplay(row.level2Time),
+                    score: formatScoreDisplay(row.score),
+                    totTime: formatSecondsToHHMMSS(totSecs),
+                    trialId: row.trialId || '1'
+                };
+            }).filter(row => {
+                for (let key in filters) {
+                    if (filters[key]) {
+                        const val = String(row[key] || '').toLowerCase();
+                        if (!val.includes(filters[key])) return false;
+                    }
+                }
+                return true;
+            });
+
+            if (!isClassExpanded && !Object.values(filters).some(v => v)) {
+                const top10 = displayedClassData.slice(0, 10);
+                const currentUserRow = displayedClassData.find(r => matchStudentId(r.studentId, currentUserStudentId));
+                if (currentUserRow && !top10.some(r => matchStudentId(r.studentId, currentUserStudentId))) {
+                    displayedClassData = [...top10, currentUserRow];
+                } else {
+                    displayedClassData = top10;
+                }
+            }
+
+            if (!displayedClassData.length) {
+                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found for Standard ${standard}.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            displayedClassData.forEach((row) => {
+                const isCurrentUser = matchStudentId(row.studentId, currentUserStudentId);
+                const highlightClass = isCurrentUser ? 'bg-amber-100 font-bold border-2 border-amber-400' : '';
+
+                html += `<tr class="${highlightClass}">
+                    <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
+                    <td class="border p-2 font-bold text-amber-700">#${row.oRank}</td>
+                    <td class="border p-2 font-bold text-emerald-700">${row.cRank}</td>
+                    <td class="border p-2 font-bold">${row.studentId}</td>
+                    <td class="border p-2 text-left font-semibold">${row.name}</td>
+                    <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
+                    <td class="border p-2 font-semibold text-purple-600">${row.l2Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l2Time}</td>
+                    <td class="border p-2 font-bold text-indigo-700">${row.score}</td>
+                    <td class="border p-2 text-slate-700 font-mono">${row.totTime}</td>
+                    <td class="border p-2 font-bold text-amber-700">${row.trialId}</td>
+                    <td class="border p-2 text-xs text-slate-500">${row.submittedAt || '---'}</td>
+                </tr>`;
+            });
+            body.innerHTML = html;
+            document.getElementById('classToggleBtn').innerText = isClassExpanded ? "Show Top 10 Only" : "Show All Entries";
+        }
+
+        function toggleClassExpand() {
+            isClassExpanded = !isClassExpanded;
+            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
+        }
+
+        function handleGameClick(gameCode) {
+            currentGameCode = gameCode;
+            loadGameDashboard(gameCode);
+            activeBaseStudentCode = "1B01";
+            openRegistrationModal("Student", activeBaseStudentCode, gameCode);
+        }
+
+        function openStudentRegistration(studentId, gameCode) {
+            const targetGame = gameCode || currentGameCode;
+            activeBaseStudentCode = studentId;
+            currentUserStudentId = studentId;
+            currentGameCode = targetGame;
+            openRegistrationModal("Student", studentId, targetGame);
+        }
+
+        function openRegistrationModal(userType, baseCode, gCode) {
+            document.querySelector(`input[name="regUserType"][value="${userType}"]`).checked = true;
+            document.getElementById('regGameCode').value = gCode;
+            switchUserType(userType);
+            if (userType === 'Student') {
+                document.getElementById('regStudentId').value = baseCode;
+            }
+            document.getElementById('modalTitle').innerText = "📋 User Registration - Game " + gCode;
+            document.getElementById('studentModal').classList.remove('hidden');
+        }
+
+        function switchUserType(type) {
+            const studentFields = document.getElementById('studentFieldsContainer');
+            const memberFields = document.getElementById('memberFieldsContainer');
+            const idLabel = document.getElementById('regIdLabel');
+            const schoolLabel = document.getElementById('locationLabel');
+
+            if (type === 'Member') {
+                studentFields.classList.add('hidden');
+                memberFields.classList.remove('hidden');
+                idLabel.innerText = "EMIS/Mem_ID(10 Digits) (M+WhatsApp)";
+                schoolLabel.innerText = "Institution";
+                document.getElementById('regSchool').value = "India";
+                updateWhatsappFields();
+            } else {
+                studentFields.classList.remove('hidden');
+                memberFields.classList.add('hidden');
+                idLabel.innerText = "EMIS/Mem_ID(10 Digits) (4-Char Base + 6-Char Suffix)";
+                schoolLabel.innerText = "Institution";
+                document.getElementById('regSchool').value = "PUPS Anjalam Melur";
+                updateStudentIdSuffix();
+            }
+        }
+
+        function updateStudentIdSuffix() {
+            const fName = document.getElementById('regFirstName').value.trim();
+            const faName = document.getElementById('regFatherName').value.trim();
+            const bDate = document.getElementById('regBirthDate').value.trim();
+            const bMon = document.getElementById('regBirthMonth').value.trim();
+
+            const l1 = fName ? fName.charAt(0).toUpperCase() : 'X';
+            const l2 = faName ? faName.charAt(0).toUpperCase() : 'X';
+            const dStr = bDate ? String(bDate).padStart(2, '0') : '01';
+            const mStr = bMon ? String(bMon).padStart(2, '0') : '01';
+
+            const suffix = l1 + l2 + dStr + mStr;
+            document.getElementById('regStudentId').value = activeBaseStudentCode + suffix;
+        }
+
+        function updateWhatsappFields() {
+            const type = document.querySelector('input[name="regUserType"]:checked').value;
+            const wa = document.getElementById('regWhatsapp').value.trim();
+            if (type === 'Member') {
+                document.getElementById('regStudentId').value = "M" + wa;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('studentModal').classList.add('hidden');
+        }
+
+        function getStudentMetricsForGame(studentId, gCode) {
+            const recs = gameRecordsData.filter(r => matchStudentId(r.studentId, studentId) && (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
+            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+            
+            const subs = recs.length;
+            const scores = recs.map(r => parseScoreValue(r.score));
+            const maxScore = Math.max(...scores);
+            const topScoreStr = maxScore > 0 ? `${Math.round(maxScore)}%` : '';
+            
+            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            let leastTimeStr = '';
+            if (times.length > 0) {
+                const minT = Math.min(...times);
+                const mins = Math.floor(minT / 60);
+                const secs = minT % 60;
+                leastTimeStr = mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
+            }
+            
+            const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const avgScoreStr = avgScore > 0 ? `${avgScore}%` : '';
+            
+            return { subs: subs, topScore: topScoreStr, leastTime: leastTimeStr, avgScore: avgScoreStr };
+        }
+
+        function getAllAvailableGames() {
+            const masterGames = [
+                "T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09",
+                "E01", "E03", "E05", "E07", "E09", "E11", "E13", "E15", "E17",
+                "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09",
+                "S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09",
+                "E02", "E04", "E06", "E08", "E10", "E12", "E14", "E16", "E18",
+                "G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"
+            ];
+            const sheetGames = [...new Set(gameRecordsData.map(r => (r.gameCode || '').trim().toUpperCase()).filter(Boolean))];
+            const extraGames = sheetGames.filter(g => !masterGames.includes(g));
+            return [...masterGames, ...extraGames];
+        }
+
+        function renderStudentEntryGrid() {
+            const container = document.getElementById('studentEntryGridsContainer');
+            if (!container) return;
+
+            const availableGames = getAllAvailableGames();
+            const standards = [1, 2, 3, 4, 5];
+            const subRowLabels = [
+                { label: "Submissions", key: "subs", cls: "bg-slate-50 text-indigo-700 font-bold" },
+                { label: "Top Score", key: "topScore", cls: "bg-slate-50 text-emerald-700 font-bold" },
+                { label: "Least Time", key: "leastTime", cls: "bg-slate-50 text-slate-700 font-mono" },
+                { label: "Avg Score", key: "avgScore", cls: "bg-slate-50 text-purple-700 font-bold" }
+            ];
+
+            const activeGamesList = [];
+            const noSubmissionGamesList = [];
+
+            availableGames.forEach(gCode => {
+                const count = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === gCode).length;
+                if (count > 0) {
+                    activeGamesList.push({ code: gCode, count });
+                } else {
+                    noSubmissionGamesList.push(gCode);
+                }
+            });
+
+            function buildSingleGameGridHtml(gCode) {
+                const isCurrentGame = (gCode === currentGameCode.toUpperCase());
+                let rowsHtml = '';
+                standards.forEach(std => {
+                    rowsHtml += `<tr><td class="w-24 font-bold bg-slate-200 text-xs">Std ${std}</td>`;
+                    for(let c=1; c<=15; c++) {
+                        const code = `${std}B${c < 10 ? '0'+c : c}`;
+                        const isLast = isCurrentGame && matchStudentId(code, currentUserStudentId);
+                        const highlight = isLast ? 'border-2 border-amber-500 bg-amber-200 font-extrabold' : 'bg-boy-blue';
+                        rowsHtml += `<td class="cell-hover ${highlight} font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to register &amp; play ${gCode}">${code}</td>`;
+                    }
+                    for(let c=1; c<=15; c++) {
+                        const code = `${std}G${c < 10 ? '0'+c : c}`;
+                        const isLast = isCurrentGame && matchStudentId(code, currentUserStudentId);
+                        const highlight = isLast ? 'border-2 border-amber-500 bg-amber-200 font-extrabold' : 'bg-girl-pink';
+                        rowsHtml += `<td class="cell-hover ${highlight} font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to register &amp; play ${gCode}">${code}</td>`;
+                    }
+                    rowsHtml += `</tr>`;
+
+                    subRowLabels.forEach(sRow => {
+                        rowsHtml += `<tr><td class="w-24 font-bold bg-slate-100 text-[10px] text-slate-700">${sRow.label}</td>`;
+                        for(let c=1; c<=15; c++) {
+                            const code = `${std}B${c < 10 ? '0'+c : c}`;
+                            const metrics = getStudentMetricsForGame(code, gCode);
+                            const val = metrics[sRow.key] !== undefined ? metrics[sRow.key] : '';
+                            rowsHtml += `<td class="${sRow.cls} text-[10px]">${val}</td>`;
+                        }
+                        for(let c=1; c<=15; c++) {
+                            const code = `${std}G${c < 10 ? '0'+c : c}`;
+                            const metrics = getStudentMetricsForGame(code, gCode);
+                            const val = metrics[sRow.key] !== undefined ? metrics[sRow.key] : '';
+                            rowsHtml += `<td class="${sRow.cls} text-[10px]">${val}</td>`;
+                        }
+                        rowsHtml += `</tr>`;
+                    });
+                });
+                return `<div class="overflow-x-auto"><table class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div>`;
+            }
+
+            let html = '';
+
+            // TABLE 1: EXPANDED (Games with Submissions)
+            html += `<div class="border border-emerald-300 rounded-lg overflow-hidden">
+                <div class="bg-emerald-700 text-white px-3 py-2 flex justify-between items-center">
+                    <span class="text-xs font-extrabold uppercase tracking-wide"><i class="fa-solid fa-table-cells mr-1.5"></i>Expanded — Games With Submissions (${activeGamesList.length})</span>
+                    <span class="text-[11px] font-semibold text-emerald-100">Active game grids</span>
+                </div>`;
+
+            if (activeGamesList.length === 0) {
+                html += `<div class="p-3 text-xs text-slate-500 italic bg-white">No submissions recorded yet. Select a game from the Collapsed table below to start playing.</div>`;
+            } else {
+                html += `<div class="p-3 space-y-4 bg-white">`;
+                activeGamesList.forEach(item => {
+                    const isCurrent = item.code === currentGameCode.toUpperCase();
+                    const hdrCls = isCurrent ? 'bg-amber-200 text-amber-950 border-amber-400' : 'bg-indigo-50 text-indigo-900 border-indigo-200';
+                    html += `<div class="space-y-1">
+                        <div class="flex items-center justify-between px-2.5 py-1 rounded border ${hdrCls}">
+                            <span class="text-xs font-extrabold uppercase">Game Code: ${item.code}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">${item.count} Submissions</span>
+                        </div>
+                        ${buildSingleGameGridHtml(item.code)}
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+
+            // TABLE 2: COLLAPSED (Games with No Submissions)
+            html += `<div class="border border-slate-300 rounded-lg overflow-hidden">
+                <div class="bg-slate-700 text-white px-3 py-2 flex justify-between items-center">
+                    <span class="text-xs font-extrabold uppercase tracking-wide"><i class="fa-solid fa-layer-group mr-1.5"></i>Collapsed — Games With No Submissions (${noSubmissionGamesList.length})</span>
+                    <span class="text-[11px] font-semibold text-slate-200">Click any Game Code below to expand &amp; play</span>
+                </div>
+                <div class="p-3 bg-slate-50 space-y-3">
+                    <div class="overflow-x-auto">
+                        <table class="w-full grid-border border-collapse bg-white">
+                            <tbody>`;
+
+            const chunkSize = 9;
+            for (let i = 0; i < noSubmissionGamesList.length; i += chunkSize) {
+                const rowCodes = noSubmissionGamesList.slice(i, i + chunkSize);
+                html += `<tr>`;
+                rowCodes.forEach(gc => {
+                    html += `<td id="collapsed-pill-${gc}" onclick="toggleCollapsedPreviewGame('${gc}')" class="cell-hover bg-slate-100 hover:bg-amber-100 font-bold text-xs text-slate-800 py-1.5 px-2 cursor-pointer" title="Click to open Student Entry grid for ${gc}">
+                        ${gc} <span class="text-[9px] font-normal text-slate-500">(0)</span>
+                    </td>`;
+                });
+                for (let empty = rowCodes.length; empty < chunkSize; empty++) {
+                    html += `<td class="bg-slate-50"></td>`;
+                }
+                html += `</tr>`;
+            }
+
+            html += `           </tbody>
+                        </table>
+                    </div>
+                    <div id="collapsedGamePreviewBox" class="hidden space-y-1.5 pt-1 border-t border-slate-300"></div>
+                </div>
+            </div>`;
+
+            container.innerHTML = html;
+        }
+
+        let activeCollapsedPreviewCode = null;
+        function toggleCollapsedPreviewGame(gCode) {
+            const previewBox = document.getElementById('collapsedGamePreviewBox');
+            if (!previewBox) return;
+
+            document.querySelectorAll('[id^="collapsed-pill-"]').forEach(el => {
+                el.classList.remove('bg-amber-300', 'text-amber-950', 'border-2', 'border-amber-500');
+                el.classList.add('bg-slate-100', 'text-slate-800');
+            });
+
+            if (activeCollapsedPreviewCode === gCode) {
+                activeCollapsedPreviewCode = null;
+                previewBox.classList.add('hidden');
+                previewBox.innerHTML = '';
+                return;
+            }
+
+            activeCollapsedPreviewCode = gCode;
+            const activePill = document.getElementById(`collapsed-pill-${gCode}`);
+            if (activePill) {
+                activePill.classList.remove('bg-slate-100', 'text-slate-800');
+                activePill.classList.add('bg-amber-300', 'text-amber-950', 'border-2', 'border-amber-500');
+            }
+
+            const standards = [1, 2, 3, 4, 5];
+            const subRowLabels = [
+                { label: "Submissions", key: "subs", cls: "bg-slate-50 text-indigo-700 font-bold" },
+                { label: "Top Score", key: "topScore", cls: "bg-slate-50 text-emerald-700 font-bold" },
+                { label: "Least Time", key: "leastTime", cls: "bg-slate-50 text-slate-700 font-mono" },
+                { label: "Avg Score", key: "avgScore", cls: "bg-slate-50 text-purple-700 font-bold" }
+            ];
+
+            let rowsHtml = '';
+            standards.forEach(std => {
+                rowsHtml += `<tr><td class="w-24 font-bold bg-slate-200 text-xs">Std ${std}</td>`;
+                for(let c=1; c<=15; c++) {
+                    const code = `${std}B${c < 10 ? '0'+c : c}`;
+                    rowsHtml += `<td class="cell-hover bg-boy-blue font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to register &amp; play ${gCode}">${code}</td>`;
+                }
+                for(let c=1; c<=15; c++) {
+                    const code = `${std}G${c < 10 ? '0'+c : c}`;
+                    rowsHtml += `<td class="cell-hover bg-girl-pink font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to register &amp; play ${gCode}">${code}</td>`;
+                }
+                rowsHtml += `</tr>`;
+
+                subRowLabels.forEach(sRow => {
+                    rowsHtml += `<tr><td class="w-24 font-bold bg-slate-100 text-[10px] text-slate-700">${sRow.label}</td>`;
+                    for(let c=1; c<=15; c++) {
+                        rowsHtml += `<td class="${sRow.cls} text-[10px]"></td>`;
+                    }
+                    for(let c=1; c<=15; c++) {
+                        rowsHtml += `<td class="${sRow.cls} text-[10px]"></td>`;
+                    }
+                    rowsHtml += `</tr>`;
+                });
+            });
+
+            previewBox.innerHTML = `<div class="flex items-center justify-between px-2.5 py-1 rounded border bg-amber-100 text-amber-950 border-amber-400">
+                    <span class="text-xs font-extrabold uppercase">Game Code: ${gCode} (No Submissions Yet)</span>
+                    <button type="button" onclick="toggleCollapsedPreviewGame('${gCode}')" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-amber-400 hover:bg-amber-200">Close</button>
+                </div>
+                <div class="overflow-x-auto"><table class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div>`;
+            previewBox.classList.remove('hidden');
+        }
+
+        function matchStudentId(sheetId, homeId) {
+            if (!sheetId || !homeId) return false;
+            const cleanSheet = String(sheetId).trim().toUpperCase();
+            const cleanHome = String(homeId).trim().toUpperCase();
+            return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome);
+        }
+
+        function loadStudentDashboard(studentId) {
+            const sid = (studentId || document.getElementById('studentDashboardInput').value || currentUserStudentId).trim().toUpperCase();
+            currentUserStudentId = sid;
+            localStorage.setItem('lastStudentCode', currentUserStudentId);
+            document.getElementById('studentDashboardInput').value = sid;
+
+            const studentRecords = gameRecordsData.filter(r => matchStudentId(r.studentId, sid));
+            
+            const gameBlocks = [
+                ["T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09"],
+                ["E01", "E03", "E05", "E07", "E09", "E11", "E13", "E15", "E17"],
+                ["E02", "E04", "E06", "E08", "E10", "E12", "E14", "E16", "E18"],
+                ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09"],
+                ["S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09"],
+                ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"]
+            ];
+
+            let dashboardHtml = '';
+
+            gameBlocks.forEach((block) => {
+                dashboardHtml += `<tr class="bg-slate-200 font-bold text-slate-800 text-xs">
+                    <th class="w-32 bg-amber-100">Student Dashboard</th>`;
+                block.forEach(code => {
+                    const isLastGame = (code === currentGameCode);
+                    dashboardHtml += `<th class="${isLastGame ? 'bg-amber-300 text-slate-900 underline' : ''}">${code}</th>`;
+                });
+                dashboardHtml += `<th class="w-16 bg-slate-300">All</th></tr>`;
+
+                let blockTrials = 0;
+                let blockScoreSum = 0;
+                let blockTimeSum = 0;
+
+                dashboardHtml += `<tr><td class="font-bold bg-slate-50 text-left px-2">Trials_Done:</td>`;
+                block.forEach(code => {
+                    const matches = studentRecords.filter(r => (r.gameCode || 'E02').toUpperCase() === code);
+                    const trials = matches.length > 0 ? String(matches.length) : "---";
+                    blockTrials += matches.length;
+                    dashboardHtml += `<td>${trials}</td>`;
+                });
+                dashboardHtml += `<td class="font-bold text-indigo-700">${blockTrials || '---'}</td></tr>`;
+
+                dashboardHtml += `<tr><td class="font-bold bg-slate-50 text-left px-2">Best_Score:</td>`;
+                block.forEach(code => {
+                    const matches = studentRecords.filter(r => (r.gameCode || 'E02').toUpperCase() === code);
+                    let bestMatch = matches.length > 0 ? [...matches].sort((a,b) => parseScoreValue(b.score) - parseScoreValue(a.score))[0] : null;
+                    const score = bestMatch ? formatScoreDisplay(bestMatch.score) : "---";
+                    if (bestMatch) blockScoreSum += parseScoreValue(bestMatch.score);
+                    dashboardHtml += `<td>${score}</td>`;
+                });
+                dashboardHtml += `<td class="font-bold text-emerald-600">${blockScoreSum ? formatScoreDisplay(`${Math.round((blockScoreSum/100)*20)}/20-${Math.round(blockScoreSum)}%`) : '---'}</td></tr>`;
+
+                dashboardHtml += `<tr><td class="font-bold bg-slate-50 text-left px-2">Best_Time:</td>`;
+                block.forEach(code => {
+                    const matches = studentRecords.filter(r => (r.gameCode || 'E02').toUpperCase() === code);
+                    let bestMatch = matches.length > 0 ? [...matches].sort((a,b) => parseScoreValue(b.score) - parseScoreValue(a.score))[0] : null;
+                    let formattedTime = "---";
+                    if (bestMatch) {
+                        const totalSecs = parseTimeToSeconds(bestMatch.level1Time) + parseTimeToSeconds(bestMatch.level2Time);
+                        formattedTime = formatSecondsToHHMMSS(totalSecs);
+                        blockTimeSum += totalSecs;
+                    }
+                    dashboardHtml += `<td>${formattedTime}</td>`;
+                });
+                dashboardHtml += `<td class="font-bold text-slate-700">${formatSecondsToHHMMSS(blockTimeSum)}</td></tr>`;
+            });
+
+            document.getElementById('studentDashboardTableBody').innerHTML = dashboardHtml;
+        }
+
+        function updateAllHomepageTables() {
+            renderGameTable();
+            loadGameDashboard(currentGameCode);
+            renderStudentEntryGrid();
+            renderOverallLeaderboard();
+            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
+            loadStudentDashboard(currentUserStudentId);
+        }
+
+function handleRegistrationSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.innerText = "Saving...";
+
+    const userType = document.querySelector('input[name="regUserType"]:checked').value;
+    currentUserStudentId = document.getElementById('regStudentId').value.trim().toUpperCase();
+    currentGameCode = document.getElementById('regGameCode').value;
+    const autoTrialId = getActiveTrialIdForUser(currentUserStudentId);
+
+    localStorage.setItem('lastStudentCode', currentUserStudentId);
+    localStorage.setItem('lastGameCode', currentGameCode);
+
+    let name = "";
+    let fatherOrLast = "";
+    if (userType === 'Student') {
+        name = document.getElementById('regFirstName').value.trim();
+        fatherOrLast = document.getElementById('regFatherName').value.trim();
+    } else {
+        name = document.getElementById('regMemberFirstName').value.trim();
+        fatherOrLast = document.getElementById('regMemberLastName').value.trim();
+    }
+
+    const payload = {
+        action: "saveUserData",
+        studentId: currentUserStudentId,
+        name: name,
+        fatherName: fatherOrLast,
+        cell: document.getElementById('regCell').value.trim(),
+        whatsapp: document.getElementById('regWhatsapp').value.trim(),
+        school: document.getElementById('regSchool').value.trim(),
+        place: document.getElementById('regPlace').value.trim(),
+        country: document.getElementById('regCountry').value.trim(),
+        trialId: autoTrialId
+    };
+
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST", mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(payload).toString()
+    }).then(() => {
+        closeModal();
+        btn.disabled = false; btn.innerText = "Submit & Launch Game";
+        if (currentGameCode === 'E02') {
+            window.location.href = `Days_2.html?gameCode=${currentGameCode}&studentId=${encodeURIComponent(currentUserStudentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", " + payload.country)}&whatsapp=${encodeURIComponent(payload.whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
+        } else if (currentGameCode === 'M03') {
+            window.location.href = `Skip Counter.html?gameCode=${currentGameCode}&studentId=${encodeURIComponent(currentUserStudentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", " + payload.country)}&whatsapp=${encodeURIComponent(payload.whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
+        } else {
+            alert("User registration saved successfully!");
+            fetchLiveSheetData();
+        }
+    });
+}
+
+
+
+        window.onload = function() {
+            updateAllHomepageTables();
+            fetchLiveSheetData();
+        };
+    </script>
+</body>
+</html>

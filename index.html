@@ -1053,7 +1053,7 @@
                 closeModal();
                 btn.disabled = false; btn.innerText = "Submit & Launch Game";
                 
-                const targetGameFile = currentGameCode === 'M03' ? 'Skip Counter_3.html' : 'Days_4.html';
+                const targetGameFile = currentGameCode === 'M03' ? 'SkipCounter.html' : 'Days_4.html';
                 const queryParams = `gameCode=${currentGameCode}&studentId=${encodeURIComponent(currentUserStudentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
                 
                 window.location.href = `${targetGameFile}?${queryParams}`;

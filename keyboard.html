@@ -669,42 +669,4 @@ draw(mCtx, false);
 </script>
 </body>
 </html>
-```[cite: 1, 2, 6]
 
----
-
-### 3. `sw.js`
-Bumps the cache name to `pwa-dashboard-v3` so offline caching picks up `Keyboard.html` and the updated `index.html`[cite: 5].
-
-```javascript
-const CACHE_NAME = 'pwa-dashboard-v3';
-
-self.addEventListener('install', (e) => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
-          return caches.delete(key);
-        }
-      }));
-    })
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (e) => {
-  if (e.request.mode === 'navigate') {
-    e.respondWith(
-      fetch(e.request).catch(() => caches.match('./index.html'))
-    );
-    return;
-  }
-
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
-  );
-});

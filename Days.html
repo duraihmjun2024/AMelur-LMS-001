@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panchayat Union Primary School, Anjalam Melur</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+    margin: 0;
+    padding: 0;
+}
+.top-toolbar {
+    background: #1e293b;
+    border-bottom: 2px solid #38bdf8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    gap: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.marquee-container {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    background: #0f172a;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+}
+.marquee-text {
+    display: inline-block;
+    color: #facc15;
+    font-weight: bold;
+    font-size: 1.1rem;
+    animation: marquee 18s linear infinite;
+}
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.toolbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toolbar-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+}
+.user-said-box {
+    background: #0f172a;
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.container {
+    max-width: 950px;
+    margin: 20px auto;
+    padding: 25px;
+    background: #1e293b;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+h2 {
+    color: #38bdf8;
+    border-bottom: 2px solid #334155;
+    padding-bottom: 8px;
+    margin-top: 25px;
+}
+.form-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+.form-field label {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 5px;
+}
+input[type="text"], input[type="number"], select {
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: white;
+    outline: none;
+}
+.session-tracker {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #38bdf8;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+.session-tracker div strong {
+    display: block;
+    color: #facc15;
+    font-size: 1rem;
+}
+.btn-blink {
+    background: #ec4899;
+    animation: blinker 1s linear infinite;
+    font-weight: bold;
+}
+.icon-blink {
+    animation: blinker 0.6s linear infinite;
+    background: #facc15 !important;
+    color: #0f172a !important;
+}
+@keyframes blinker {
+    50% { opacity: 0.3; }
+}
+.game-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0f172a;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.stats-display {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.timer-display {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #facc15;
+    font-family: monospace;
+}
+.score-display {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #22c55e;
+    display: none;
+}
+.btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+button {
+    font-size: 16px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    transition: opacity 0.2s;
+}
+button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
+.btn-green { background: #22c55e; }
+.btn-blue { background: #3b82f6; }
+.btn-orange { background: #f59e0b; }
+.btn-red { background: #ef4444; }
+.btn-slate { background: #475569; }
+
+.source-pool {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    min-height: 75px;
+    padding: 12px;
+    background: #0f172a;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+.icon-only-card {
+    background: #3b82f6;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: grab;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    flex-shrink: 0;
+}
+.icon-only-card:active { cursor: grabbing; transform: scale(0.95); }
+
+.drop-zones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+.drop-slot {
+    background: #0f172a;
+    border: 2px dashed #475569;
+    border-radius: 10px;
+    min-height: 75px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    position: relative;
+}
+.drop-slot.locked {
+    opacity: 0.4;
+    pointer-events: none;
+    border-style: solid;
+    border-color: #334155;
+}
+.drop-slot.drag-over {
+    border-color: #38bdf8;
+    background: #1e293b;
+}
+.slot-number {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: bold;
+}
+.stt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+}
+.stt-card {
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    text-align: center;
+    position: relative;
+}
+.stt-card.active-box {
+    border: 2px solid #facc15;
+    background: #1e293b;
+}
+.stt-serial { font-weight: bold; color: #38bdf8; font-size: 1.2rem; }
+.stt-user-speech { font-size: 0.85rem; color: #facc15; margin-top: 4px; font-weight: 500; min-height: 20px; }
+.stt-status { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
+.box-timer { font-size: 0.8rem; color: #ef4444; font-weight: bold; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="top-toolbar">
+    <div class="marquee-container">
+        <span class="marquee-text">Panchayat Union Primary School, Anjalam Melur, Trichy District, TamilNadu, India Welcomes You!</span>
+    </div>
+    <div class="toolbar-controls">
+        <button class="toolbar-btn btn-green" id="ttsToggleBtn" onclick="testToolbarTTS()">🔊 Check TTS!</button>
+        <button class="toolbar-btn btn-blue" id="micToggleBtn" onclick="testToolbarMic()">🎙️ Check Mic!</button>
+        <div class="user-said-box" id="userSaidDisplay">You said: ...</div>
+    </div>
+</div>
+
+<div class="container">
+    <h2>📋 User Session Details (Game E02 — 3 Trials Session)</h2>
+    <div class="form-group">
+        <div class="form-field">
+            <label for="studentId">User / Student ID:</label>
+            <input type="text" id="studentId" readonly placeholder="ID" style="background:#0f172a; font-weight:bold; color:#38bdf8;">
+        </div>
+        <div class="form-field">
+            <label for="userName">Name / First Name:</label>
+            <input type="text" id="userName" readonly placeholder="Name">
+        </div>
+        <div class="form-field">
+            <label for="userSchool">Institution:</label>
+            <input type="text" id="userSchool" readonly placeholder="Institution">
+        </div>
+        <div class="form-field">
+            <label for="userWhatsapp">WhatsApp:</label>
+            <input type="text" id="userWhatsapp" readonly placeholder="WhatsApp">
+        </div>
+        <div class="form-field">
+            <label for="trialDisplay">Active Trial:</label>
+            <input type="text" id="trialDisplay" readonly value="Trial 1 of 3" style="background:#0f172a; font-weight:bold; color:#22c55e;">
+        </div>
+    </div>
+
+    <div class="session-tracker">
+        <div>Trial 1<strong id="t1Summary">--</strong></div>
+        <div>Trial 2<strong id="t2Summary">--</strong></div>
+        <div>Trial 3<strong id="t3Summary">--</strong></div>
+        <div>Session Total<strong id="totalSessionSummary" style="color:#22c55e;">0/60 (0%)</strong></div>
+    </div>
+
+    <div class="game-bar">
+        <div class="stats-display">
+            <div class="timer-display" id="timer">00:00:00</div>
+            <div class="score-display" id="scoreDisplay">Score: 0/20-0%</div>
+        </div>
+        <div class="btn-group">
+            <button class="btn-blink btn-green" id="listenBtn" onclick="listen3RoundsSequence()">🎧 Listen (3 Rounds)</button>
+            <button class="btn-green" id="startBtn" onclick="startGame()" disabled>▶️ Start Trial</button>
+            <button class="btn-blue" id="submitBtn" onclick="submitData()" disabled>📤 Submit Trial</button>
+            <button class="btn-orange" id="resetBtn" onclick="resetSameUser()" disabled>🔄 Reset</button>
+            <button class="btn-slate" onclick="window.location.href='index.html'">🏠 Home</button>
+        </div>
+    </div>
+
+    <h2>Level 1: Listen &amp; Sort Days of the Week</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Drop icons into slots sequentially (Slot 1 must be filled before Slot 2 unlocks).</p>
+    
+    <div class="source-pool" id="sourcePool"></div>
+    <div class="drop-zones-grid" id="dropZonesGrid"></div>
+
+    <h2>Level 2: Speak All 10 Words</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Mics unlock sequentially. Previous mics lock automatically.</p>
+    <div class="stt-grid" id="sttGrid"></div>
+</div>
+
+<script>
+"use strict";
+
+const sheetAppScriptUrl = "https://script.google.com/macros/s/AKfycbydKddCA-uZwXlnt9yvRMS6HgFwSXgT3RiphSojuQ3PyERaURSBhjCh-bFdHX54Hf0x/exec";
+const targetWords = ["Days", "Seven", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Week"];
+
+let timerInterval = null;
+let secondsElapsed = 0;
+let level1Seconds = 0;
+let level2Seconds = 0;
+let gameActive = false;
+let ttsId = 0;
+let isToolbarSpeaking = false;
+let activeUtterance = null;
+
+let level1Score = 0;
+let level2Score = 0;
+let verifiedL2Words = new Set();
+let currentTrialNum = 1;
+const MAX_TRIALS = 3;
+let level1Completed = false;
+
+let sessionTrials = [];
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let draggedCard = null;
+let boxTimerInterval = null;
+
+function formatSecondsToHHMMSS(totalSecs) {
+    if (isNaN(totalSecs) || totalSecs <= 0) return "00:00:00";
+    const hrs = String(Math.floor(totalSecs / 3600)).padStart(2, "0");
+    const mins = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, "0");
+    const secs = String(Math.floor(totalSecs % 60)).padStart(2, "0");
+    return `${hrs}:${mins}:${secs}`;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("studentId")) document.getElementById("studentId").value = params.get("studentId");
+    if(params.get("name")) document.getElementById("userName").value = params.get("name");
+    if(params.get("school")) document.getElementById("userSchool").value = params.get("school");
+    if(params.get("whatsapp")) document.getElementById("userWhatsapp").value = params.get("whatsapp");
+
+    currentTrialNum = 1;
+    document.getElementById("trialDisplay").value = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
+    initGame();
+});
+
+function updateSessionTrackerUI() {
+    let cumScore = 0;
+    let cumMax = 0;
+    let cumSecs = 0;
+
+    for (let i = 1; i <= MAX_TRIALS; i++) {
+        const tData = sessionTrials[i - 1];
+        const el = document.getElementById(`t${i}Summary`);
+        if (tData) {
+            el.textContent = `${tData.scoreStr} | ${tData.timeStr}`;
+            cumScore += tData.score;
+            cumMax += tData.maxScore;
+            cumSecs += tData.secs;
+        } else {
+            el.textContent = "--";
+        }
+    }
+
+    const totalPossible = MAX_TRIALS * 20;
+    const totalPct = totalPossible > 0 ? Math.round((cumScore / totalPossible) * 100) : 0;
+    document.getElementById("totalSessionSummary").textContent = `${cumScore}/${totalPossible}-${totalPct}% | ${formatSecondsToHHMMSS(cumSecs)}`;
+}
+
+function testToolbarTTS() {
+    const ttsBtn = document.getElementById("ttsToggleBtn");
+    if (isToolbarSpeaking) {
+        stopSmartTTS();
+        isToolbarSpeaking = false;
+        ttsBtn.textContent = "🔊 Check TTS!";
+        ttsBtn.className = "toolbar-btn btn-green";
+        return;
+    }
+    isToolbarSpeaking = true;
+    ttsBtn.textContent = "🔇 Stop TTS!";
+    ttsBtn.className = "toolbar-btn btn-red";
+    speakText("Panchayat Union Primary School, Anjalam Melur, welcomes you!", () => {
+        isToolbarSpeaking = false;
+        ttsBtn.textContent = "🔊 Check TTS!";
+        ttsBtn.className = "toolbar-btn btn-green";
+    });
+}
+
+function testToolbarMic() {
+    const micBtn = document.getElementById("micToggleBtn");
+    if (!SpeechRecognition) {
+        alert("Speech Recognition not supported on this browser.");
+        return;
+    }
+    try {
+        if (recognition) recognition.abort();
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
+
+        micBtn.textContent = "🎙️ Listening...";
+        micBtn.className = "toolbar-btn btn-red";
+        document.getElementById("userSaidDisplay").textContent = "You said: Say something...";
+
+        recognition.onresult = (event) => {
+            const spoken = event.results[0][0].transcript.trim();
+            document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
+            resetMicButtonState();
+        };
+        recognition.onerror = () => { resetMicButtonState(); };
+        recognition.onend = () => { resetMicButtonState(); };
+        recognition.start();
+    } catch(err) {
+        resetMicButtonState();
+    }
+}
+
+function resetMicButtonState() {
+    const micBtn = document.getElementById("micToggleBtn");
+    micBtn.textContent = "🎙️ Check Mic!";
+    micBtn.className = "toolbar-btn btn-blue";
+}
+
+async function listen3RoundsSequence() {
+    const name = document.getElementById("userName").value.trim();
+    if (!name) {
+        alert("Please complete registration before listening!");
+        return;
+    }
+    const listenBtn = document.getElementById("listenBtn");
+    listenBtn.disabled = true;
+    listenBtn.classList.remove("btn-blink");
+
+    const cards = document.querySelectorAll(".icon-only-card");
+    for (let round = 1; round <= 3; round++) {
+        for (let i = 0; i < targetWords.length; i++) {
+            const word = targetWords[i];
+            const card = cards[i];
+            if (card) card.classList.add("icon-blink");
+            speakText(word);
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            if (card) card.classList.remove("icon-blink");
+        }
+    }
+    document.getElementById("startBtn").disabled = false;
+}
+
+function initGame() {
+    const sourcePool = document.getElementById("sourcePool");
+    const dropZonesGrid = document.getElementById("dropZonesGrid");
+    sourcePool.innerHTML = "";
+    dropZonesGrid.innerHTML = "";
+    verifiedL2Words.clear();
+    if (boxTimerInterval) clearInterval(boxTimerInterval);
+
+    for (let i = 1; i <= 10; i++) {
+        const slot = document.createElement("div");
+        slot.className = i === 1 ? "drop-slot" : "drop-slot locked";
+        slot.dataset.slotIndex = i;
+        slot.innerHTML = `<span class="slot-number">Slot ${i}</span>`;
+
+        slot.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            if (!slot.classList.contains("locked")) slot.classList.add("drag-over");
+        });
+        slot.addEventListener("dragleave", () => { slot.classList.remove("drag-over"); });
+        slot.addEventListener("drop", (e) => {
+            e.preventDefault();
+            slot.classList.remove("drag-over");
+            if (draggedCard && gameActive && !slot.classList.contains("locked")) {
+                const existingCard = slot.querySelector(".icon-only-card");
+                if (existingCard) sourcePool.appendChild(existingCard);
+                slot.appendChild(draggedCard);
+                evaluateLevel1();
+                unlockNextDropSlot(i);
+            }
+        });
+        dropZonesGrid.appendChild(slot);
+    }
+
+    targetWords.forEach((word) => {
+        const card = document.createElement("div");
+        card.className = "icon-only-card";
+        card.draggable = true;
+        card.dataset.word = word;
+        card.innerHTML = `🔊`;
+        card.addEventListener("click", () => speakText(word));
+        card.addEventListener("dragstart", () => { draggedCard = card; });
+        card.addEventListener("dragend", () => { draggedCard = null; });
+        sourcePool.appendChild(card);
+    });
+
+    const sttGrid = document.getElementById("sttGrid");
+    sttGrid.innerHTML = "";
+    targetWords.forEach((word, index) => {
+        const serialNum = index + 1;
+        const card = document.createElement("div");
+        card.className = "stt-card";
+        card.id = `stt-card-${serialNum}`;
+        card.innerHTML = `
+            <div class="stt-serial">Word #${serialNum}</div>
+            <button class="btn-green" id="speak-btn-${serialNum}" style="margin-top:6px; padding:6px 12px; font-size:12px;" onclick="testSpeechBox('${word}', ${serialNum})" disabled>🎙️ Speak</button>
+            <div class="stt-user-speech" id="stt-speech-${serialNum}">You said: --</div>
+            <div class="stt-status" id="stt-status-${serialNum}">Locked</div>
+            <div class="box-timer" id="box-timer-${serialNum}"></div>
+        `;
+        sttGrid.appendChild(card);
+    });
+
+    document.getElementById("scoreDisplay").style.display = "none";
+    updateScoreDisplay();
+}
+
+function unlockNextDropSlot(currentSlotIndex) {
+    if (currentSlotIndex < 10) {
+        const nextSlot = document.querySelector(`.drop-slot[data-slot-index="${currentSlotIndex + 1}"]`);
+        if (nextSlot) nextSlot.classList.remove("locked");
+    }
+}
+
+function shuffleSourcePool() {
+    const sourcePool = document.getElementById("sourcePool");
+    const cards = Array.from(sourcePool.children);
+    cards.sort(() => Math.random() - 0.5);
+    cards.forEach(card => sourcePool.appendChild(card));
+}
+
+function evaluateLevel1() {
+    level1Score = 0;
+    let filledCount = 0;
+    for (let i = 1; i <= 10; i++) {
+        const slot = document.querySelector(`.drop-slot[data-slot-index="${i}"]`);
+        const card = slot ? slot.querySelector(".icon-only-card") : null;
+        if (card) {
+            filledCount++;
+            if (card.dataset.word === targetWords[i - 1]) level1Score += 1;
+        }
+    }
+    if (filledCount === 10 && !level1Completed) {
+        level1Seconds = secondsElapsed;
+        level1Completed = true;
+        secondsElapsed = 0;
+        alert("Level 1 Completed! Level timer has reset. Starting Level 2...");
+        unlockLevel2();
+    }
+    updateScoreDisplay();
+}
+
+function unlockLevel2() {
+    const firstBtn = document.getElementById(`speak-btn-1`);
+    const firstStatus = document.getElementById(`stt-status-1`);
+    if (firstBtn) firstBtn.disabled = false;
+    if (firstStatus) {
+        firstStatus.textContent = "Pending";
+        firstStatus.style.color = "#94a3b8";
+    }
+}
+
+function updateScoreDisplay() {
+    const totalScore = level1Score + level2Score;
+    const percentage = Math.round((totalScore / 20) * 100);
+    document.getElementById("scoreDisplay").textContent = `Score: ${totalScore}/20-${percentage}%`;
+}
+
+function startGame() {
+    if (gameActive) return;
+    gameActive = true;
+    secondsElapsed = 0;
+    level1Seconds = 0;
+    level2Seconds = 0;
+    level1Score = 0;
+    level2Score = 0;
+    verifiedL2Words.clear();
+    level1Completed = false;
+
+    shuffleSourcePool();
+
+    document.getElementById("startBtn").disabled = true;
+    document.getElementById("submitBtn").disabled = false;
+    document.getElementById("resetBtn").disabled = false;
+
+    timerInterval = setInterval(() => {
+        secondsElapsed++;
+        document.getElementById("timer").textContent = formatSecondsToHHMMSS(secondsElapsed);
+    }, 1000);
+}
+
+function advanceToNextMic(currentSerial) {
+    const currentCard = document.getElementById(`stt-card-${currentSerial}`);
+    const currentBtn = document.getElementById(`speak-btn-${currentSerial}`);
+    const currentTimerDiv = document.getElementById(`box-timer-${currentSerial}`);
+    
+    currentCard.classList.remove("active-box");
+    if (currentBtn) currentBtn.disabled = true;
+    if (currentTimerDiv) currentTimerDiv.textContent = "";
+
+    const nextSerial = currentSerial + 1;
+    if (nextSerial <= 10) {
+        const nextBtn = document.getElementById(`speak-btn-${nextSerial}`);
+        const nextStatus = document.getElementById(`stt-status-${nextSerial}`);
+        if (nextBtn) nextBtn.disabled = false;
+        if (nextStatus) {
+            nextStatus.textContent = "Pending";
+            nextStatus.style.color = "#94a3b8";
+        }
+    } else {
+        level2Seconds = secondsElapsed;
+    }
+}
+
+function testSpeechBox(targetWord, serialNum) {
+    if (!gameActive || !level1Completed) {
+        alert("Please complete Level 1 first!");
+        return;
+    }
+    if (!SpeechRecognition) return;
+
+    if (boxTimerInterval) clearInterval(boxTimerInterval);
+
+    const card = document.getElementById(`stt-card-${serialNum}`);
+    const speechDiv = document.getElementById(`stt-speech-${serialNum}`);
+    const statusDiv = document.getElementById(`stt-status-${serialNum}`);
+    const timerDiv = document.getElementById(`box-timer-${serialNum}`);
+
+    card.classList.add("active-box");
+    statusDiv.textContent = "Listening...";
+    statusDiv.style.color = "#facc15";
+
+    let timeLeft = 5;
+    timerDiv.textContent = `⏱️ ${timeLeft}s`;
+    let evaluationDone = false;
+
+    const finalizeBox = () => {
+        if (evaluationDone) return;
+        evaluationDone = true;
+        clearInterval(boxTimerInterval);
+        if (recognition) try { recognition.abort(); } catch(e){}
+        advanceToNextMic(serialNum);
+    };
+
+    try {
+        if (recognition) recognition.abort();
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spoken = event.results[0][0].transcript.trim();
+            document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
+            speechDiv.textContent = `You said: "${spoken}"`;
+
+            if (spoken.toLowerCase().includes(targetWord.toLowerCase())) {
+                statusDiv.textContent = "✓ Correct (+1)";
+                statusDiv.style.color = "#22c55e";
+                if (!verifiedL2Words.has(serialNum)) {
+                    verifiedL2Words.add(serialNum);
+                    level2Score += 1;
+                    updateScoreDisplay();
+                }
+            } else {
+                statusDiv.textContent = `Heard: "${spoken}"`;
+                statusDiv.style.color = "#ef4444";
+            }
+            finalizeBox();
+        };
+        recognition.onerror = () => { finalizeBox(); };
+        recognition.onend = () => { finalizeBox(); };
+        recognition.start();
+    } catch(e) {
+        finalizeBox();
+    }
+
+    boxTimerInterval = setInterval(() => {
+        timeLeft--;
+        timerDiv.textContent = `⏱️ ${timeLeft}s`;
+        if (timeLeft <= 0) { finalizeBox(); }
+    }, 1000);
+}
+
+function submitData() {
+    const studentIdInput = document.getElementById("studentId").value.trim() || "1B01";
+    const nameInput = document.getElementById("userName").value.trim();
+    const finalScore = level1Score + level2Score;
+    const percentage = Math.round((finalScore / 20) * 100);
+
+    if (!nameInput) {
+        alert("Missing user details before submitting!");
+        return;
+    }
+
+    clearInterval(timerInterval);
+    if (boxTimerInterval) clearInterval(boxTimerInterval);
+    gameActive = false;
+
+    if (level2Seconds === 0) level2Seconds = secondsElapsed;
+
+    const totalTrialSecs = level1Seconds + level2Seconds;
+    const level1TimeStr = formatSecondsToHHMMSS(level1Seconds);
+    const level2TimeStr = formatSecondsToHHMMSS(level2Seconds);
+    const totalTrialTimeStr = formatSecondsToHHMMSS(totalTrialSecs);
+    const scoreStr = `${finalScore}/20-${percentage}%`;
+
+    sessionTrials[currentTrialNum - 1] = {
+        score: finalScore,
+        maxScore: 20,
+        scoreStr: scoreStr,
+        secs: totalTrialSecs,
+        timeStr: totalTrialTimeStr
+    };
+    updateSessionTrackerUI();
+
+    localStorage.setItem('lastStudentCode', studentIdInput);
+    localStorage.setItem('lastGameCode', 'E02');
+
+    document.getElementById("scoreDisplay").style.display = "block";
+    document.getElementById("submitBtn").disabled = true;
+
+    const params = new URLSearchParams();
+    params.append("action", "saveGameData");
+    params.append("gameCode", "E02");
+    params.append("studentID", studentIdInput);
+    params.append("studentId", studentIdInput);
+    params.append("name", nameInput);
+    params.append("level1Score", `${level1Score}/10-${Math.round((level1Score/10)*100)}%`);
+    params.append("level1Time", level1TimeStr);
+    params.append("level2Score", `${level2Score}/10-${Math.round((level2Score/10)*100)}%`);
+    params.append("level2Time", level2TimeStr);
+    params.append("score", scoreStr);
+    params.append("trialId", String(currentTrialNum));
+
+    fetch(sheetAppScriptUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
+    }).then(() => {
+        handlePostTrialFlow(studentIdInput, nameInput, scoreStr, totalTrialTimeStr);
+    }).catch(() => {
+        handlePostTrialFlow(studentIdInput, nameInput, scoreStr, totalTrialTimeStr);
+    });
+}
+
+function handlePostTrialFlow(studentIdInput, nameInput, scoreStr, totalTrialTimeStr) {
+    if (currentTrialNum < MAX_TRIALS) {
+        const remaining = MAX_TRIALS - currentTrialNum;
+        alert(`Trial ${currentTrialNum} of ${MAX_TRIALS} Saved!
+Score: ${scoreStr} | Time: ${totalTrialTimeStr}
+
+You have ${remaining} trial(s) remaining. Preparing Trial ${currentTrialNum + 1}...`);
+        currentTrialNum++;
+        document.getElementById("trialDisplay").value = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
+        resetSameUser();
+    } else {
+        const totalScore = sessionTrials.reduce((acc, t) => acc + (t ? t.score : 0), 0);
+        const totalSecs = sessionTrials.reduce((acc, t) => acc + (t ? t.secs : 0), 0);
+        const totalPct = Math.round((totalScore / 60) * 100);
+        const cumulativeScoreStr = `${totalScore}/60-${totalPct}%`;
+        const cumulativeTimeStr = formatSecondsToHHMMSS(totalSecs);
+
+        const summaryParams = new URLSearchParams();
+        summaryParams.append("action", "saveSessionSummary");
+        summaryParams.append("gameCode", "E02");
+        summaryParams.append("studentId", studentIdInput);
+        summaryParams.append("name", nameInput);
+        summaryParams.append("t1Score", sessionTrials[0] ? sessionTrials[0].scoreStr : "0/20-0%");
+        summaryParams.append("t1Time", sessionTrials[0] ? sessionTrials[0].timeStr : "00:00:00");
+        summaryParams.append("t2Score", sessionTrials[1] ? sessionTrials[1].scoreStr : "0/20-0%");
+        summaryParams.append("t2Time", sessionTrials[1] ? sessionTrials[1].timeStr : "00:00:00");
+        summaryParams.append("t3Score", sessionTrials[2] ? sessionTrials[2].scoreStr : "0/20-0%");
+        summaryParams.append("t3Time", sessionTrials[2] ? sessionTrials[2].timeStr : "00:00:00");
+        summaryParams.append("totalScore", cumulativeScoreStr);
+        summaryParams.append("totalTime", cumulativeTimeStr);
+
+        fetch(sheetAppScriptUrl, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: summaryParams.toString()
+        }).finally(() => {
+            alert(
+                `All 3 Trials Completed for ${nameInput} (${studentIdInput})!
+
+` +
+                `Trial 1: ${sessionTrials[0].scoreStr} (${sessionTrials[0].timeStr})
+` +
+                `Trial 2: ${sessionTrials[1].scoreStr} (${sessionTrials[1].timeStr})
+` +
+                `Trial 3: ${sessionTrials[2].scoreStr} (${sessionTrials[2].timeStr})
+` +
+                `Total Score: ${cumulativeScoreStr} | Total Time: ${cumulativeTimeStr}
+
+` +
+                `Returning to Homepage...`
+            );
+            window.location.href = "index.html";
+        });
+    }
+}
+
+function resetSameUser() {
+    clearInterval(timerInterval);
+    if (boxTimerInterval) clearInterval(boxTimerInterval);
+    if (recognition) try { recognition.abort(); } catch(e){}
+    
+    secondsElapsed = 0;
+    level1Seconds = 0;
+    level2Seconds = 0;
+    gameActive = false;
+    level1Score = 0;
+    level2Score = 0;
+    verifiedL2Words.clear();
+    level1Completed = false;
+
+    document.getElementById("timer").textContent = "00:00:00";
+    document.getElementById("scoreDisplay").textContent = "Score: 0/20-0%";
+    document.getElementById("scoreDisplay").style.display = "none";
+    document.getElementById("userSaidDisplay").textContent = "You said: ...";
+
+    document.getElementById("listenBtn").disabled = false;
+    document.getElementById("listenBtn").classList.add("btn-blink");
+    document.getElementById("startBtn").disabled = true;
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("resetBtn").disabled = true;
+
+    initGame();
+}
+
+function speakText(text, onComplete) {
+    stopSmartTTS();
+    const currentId = ++ttsId;
+    let finished = false;
+    const finish = () => {
+        if (finished || currentId !== ttsId) return;
+        finished = true;
+        if (typeof onComplete === "function") onComplete();
+    };
+    const watchdog = setTimeout(finish, 5000);
+    const safeFinish = () => { clearTimeout(watchdog); finish(); };
+
+    if (!("speechSynthesis" in window)) { safeFinish(); return; }
+
+    try {
+        const synth = window.speechSynthesis;
+        synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-IN";
+        utterance.rate = 0.9;
+        utterance.volume = 1.0;
+        activeUtterance = utterance;
+        utterance.onend = safeFinish;
+        utterance.onerror = safeFinish;
+        synth.speak(utterance);
+    } catch (e) { safeFinish(); }
+}
+
+function stopSmartTTS() {
+    ttsId++;
+    if ("speechSynthesis" in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    activeUtterance = null;
+}
+</script>
+</body>
+</html>
+
+Keyboard
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E03: Keyboard Practice - PUPS Anjalam Melur</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 6px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+#topBar {
+  background: #1e293b;
+  border-bottom: 2px solid #38bdf8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+#titleText {
+  font-size: 16px;
+  color: #38bdf8;
+}
+.session-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.pill {
+  background: #0f172a;
+  border: 1px solid #475569;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #f8fafc;
+}
+.pill strong { color: #facc15; }
+
+.trial-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: #1e293b;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 12px;
+}
+.trial-strip div strong {
+  display: block;
+  color: #facc15;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #1e293b;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.stats-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+}
+.timer-val { color: #facc15; font-family: monospace; font-size: 16px; }
+.score-val { color: #4ade80; font-family: monospace; font-size: 16px; }
+
+.kb-root {
+  max-width: 920px;
+  margin: 0 auto;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 10px;
+  padding: 8px;
+}
+.keyboard-wrap {
+  border-bottom: 1px solid #cbd5e1;
+  padding: 4px 0 8px 0;
+}
+canvas {
+  display: block;
+  margin: 0 auto;
+  border: 1px solid #000;
+  background: #ffffff;
+  max-width: 100%;
+  height: auto;
+}
+.controls {
+  max-width: 900px;
+  margin: 6px auto 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+button {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 6px 10px;
+  border: 1px solid #0f172a;
+  border-radius: 6px;
+  background: #e2e8f0;
+  color: #0f172a;
+  cursor: pointer;
+}
+button:disabled { opacity: 0.45; cursor: not-allowed; animation: none; }
+.btn-green { background: #22c55e; color: #ffffff; border-color: #15803d; }
+.btn-blue { background: #3b82f6; color: #ffffff; border-color: #1d4ed8; }
+.btn-orange { background: #f59e0b; color: #0f172a; border-color: #b45309; }
+
+@keyframes blink {
+  0% { background: #fde047; color: #000; }
+  50% { background: #4ade80; color: #000; }
+  100% { background: #fde047; color: #000; }
+}
+.blink { animation: blink 0.8s infinite; }
+
+.toggle {
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 6px;
+  border-radius: 5px;
+  background: #f1f5f9;
+  border: 1px solid #94a3b8;
+}
+.toggle.on { color: #15803d; background: #dcfce7; border-color: #22c55e; }
+
+.output-row input {
+  width: 360px;
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 4px 6px;
+  color: #000;
+  background: #fff;
+}
+.output-row input.ok { background: #7CFF7C; }
+
+.box {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #000;
+  display: inline-block;
+  background: #fff;
+  border-radius: 3px;
+}
+.box.ok { background: #7CFF7C; }
+
+#mode2 { display: none; }
+</style>
+</head>
+<body>
+
+<div id="topBar">
+  <span id="titleText">Game E03: Keyboard Practice</span>
+  <div class="session-meta">
+    <span class="pill">ID: <strong id="displayStudentId">---</strong></span>
+    <span class="pill">Name: <strong id="displayName">---</strong></span>
+    <span class="pill">Trial: <strong id="displayTrial">1 of 3</strong></span>
+  </div>
+</div>
+
+<div class="trial-strip">
+  <div>Trial 1<strong id="t1Summary">--</strong></div>
+  <div>Trial 2<strong id="t2Summary">--</strong></div>
+  <div>Trial 3<strong id="t3Summary">--</strong></div>
+  <div>Session Total<strong id="totalSessionSummary" style="color:#4ade80;">0/312 (0%)</strong></div>
+</div>
+
+<div class="action-bar">
+  <div class="stats-group">
+    <span>Time: <strong class="timer-val" id="timer">00:00:00</strong></span>
+    <span>Progress: <strong class="score-val" id="scoreDisplay">0/104-0%</strong></span>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button class="btn-green" id="startTrialBtn" onclick="startTrial()">▶️ Start Trial</button>
+    <button class="btn-blue" id="submitTrialBtn" onclick="submitData()" disabled>📤 Submit Trial</button>
+    <button class="btn-orange" id="resetTrialBtn" onclick="resetSameUser()" disabled>🔄 Reset</button>
+    <button onclick="window.location.href='index.html'">🏠 Home</button>
+  </div>
+</div>
+
+<div class="kb-root">
+  <div class="keyboard-wrap">
+    <canvas id="autoCanvas" width="900" height="260"></canvas>
+    <div class="controls output-row">
+      <button id="autoBtn" class="blink" disabled>Click Here-Pairing!</button>
+      <span id="autoDesc" class="toggle">☐Descending</span>
+      <span id="autoLower" class="toggle">☐LowerCase</span>
+      <input id="autoOutput" readonly>
+      <span class="box" id="m1_1"></span>
+      <span class="box" id="m1_2"></span>
+      <span class="box" id="m1_3"></span>
+      <span class="box" id="m1_4"></span>
+    </div>
+  </div>
+
+  <div id="mode2" class="keyboard-wrap" style="border-bottom:none; margin-top:8px;">
+    <canvas id="manualCanvas" width="900" height="260"></canvas>
+    <div class="controls output-row">
+      <button id="manBtn" disabled>Click Letters to Pair!</button>
+      <span id="manDesc" class="toggle">☐Descending</span>
+      <span id="manLower" class="toggle">☐LowerCase</span>
+      <input id="manualOutput" readonly>
+      <span class="box" id="m2_1"></span>
+      <span class="box" id="m2_2"></span>
+      <span class="box" id="m2_3"></span>
+      <span class="box" id="m2_4"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const sheetAppScriptUrl = "https://script.google.com/macros/s/AKfycbydKddCA-uZwXlnt9yvRMS6HgFwSXgT3RiphSojuQ3PyERaURSBhjCh-bFdHX54Hf0x/exec";
+const GAME_CODE = "E03";
+const MAX_TRIALS = 3;
+const MAX_SCORE_PER_TRIAL = 104; // 52 in Mode 1 + 52 in Mode 2
+
+let studentId = "1B01";
+let userName = "Student";
+let currentTrialNum = 1;
+let sessionTrials = [];
+
+let timerInterval = null;
+let secondsElapsed = 0;
+let level1Seconds = 0;
+let level2Seconds = 0;
+let trialActive = false;
+let level1Score = 0;
+let level2Score = 0;
+
+window.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("studentId")) studentId = params.get("studentId").trim().toUpperCase();
+  if (params.get("name")) userName = params.get("name").trim();
+
+  document.getElementById("displayStudentId").textContent = studentId;
+  document.getElementById("displayName").textContent = userName;
+  document.getElementById("titleText").textContent = `Game ${GAME_CODE}: Keyboard Practice – ${userName}`;
+  document.getElementById("displayTrial").textContent = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
+  updateSessionTrackerUI();
+});
+
+function formatSecondsToHHMMSS(totalSecs) {
+  if (isNaN(totalSecs) || totalSecs <= 0) return "00:00:00";
+  const hrs = String(Math.floor(totalSecs / 3600)).padStart(2, "0");
+  const mins = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, "0");
+  const secs = String(Math.floor(totalSecs % 60)).padStart(2, "0");
+  return `${hrs}:${mins}:${secs}`;
+}
+
+function updateScoreUI() {
+  const totalScore = level1Score + level2Score;
+  const pct = Math.round((totalScore / MAX_SCORE_PER_TRIAL) * 100);
+  document.getElementById("scoreDisplay").textContent = `${totalScore}/${MAX_SCORE_PER_TRIAL}-${pct}%`;
+}
+
+function updateSessionTrackerUI() {
+  let cumScore = 0;
+  let cumSecs = 0;
+
+  for (let i = 1; i <= MAX_TRIALS; i++) {
+    const tData = sessionTrials[i - 1];
+    const el = document.getElementById(`t${i}Summary`);
+    if (tData) {
+      el.textContent = `${tData.scoreStr} | ${tData.timeStr}`;
+      cumScore += tData.score;
+      cumSecs += tData.secs;
+    } else {
+      el.textContent = "--";
+    }
+  }
+
+  const totalPossible = MAX_TRIALS * MAX_SCORE_PER_TRIAL;
+  const totalPct = totalPossible > 0 ? Math.round((cumScore / totalPossible) * 100) : 0;
+  document.getElementById("totalSessionSummary").textContent = `${cumScore}/${totalPossible}-${totalPct}% | ${formatSecondsToHHMMSS(cumSecs)}`;
+}
+
+/* ================= SPEECH UNLOCK & TTS ================= */
+let speechUnlocked = false;
+function unlockSpeech() {
+  if (speechUnlocked) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0;
+    speechSynthesis.speak(u);
+    speechUnlocked = true;
+  } catch (e) {}
+}
+
+["click", "touchstart", "keydown"].forEach(evt => {
+  document.addEventListener(evt, unlockSpeech, { once: true });
+});
+
+function speakPair(a, b, lower) {
+  unlockSpeech();
+  if (!("speechSynthesis" in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(
+      lower ? `${a.toLowerCase()} ${b.toLowerCase()}` : `${a} ${b}`
+    );
+    u.lang = "en-IN";
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+/* ================= TOGGLES & DATA ================= */
+const autoDesc = document.getElementById("autoDesc");
+const autoLower = document.getElementById("autoLower");
+const manDesc = document.getElementById("manDesc");
+const manLower = document.getElementById("manLower");
+const autoOutput = document.getElementById("autoOutput");
+const manualOutput = document.getElementById("manualOutput");
+const autoBtn = document.getElementById("autoBtn");
+const manBtn = document.getElementById("manBtn");
+const mode2 = document.getElementById("mode2");
+
+function toggle(el) {
+  el.classList.toggle("on");
+  el.textContent = (el.classList.contains("on") ? "☑" : "☐") + el.textContent.slice(1);
+  resetTextCanvas();
+}
+autoDesc.onclick = () => toggle(autoDesc);
+autoLower.onclick = () => toggle(autoLower);
+manDesc.onclick = () => toggle(manDesc);
+manLower.onclick = () => toggle(manLower);
+
+const AD = () => autoDesc.classList.contains("on");
+const AL = () => autoLower.classList.contains("on");
+const MD = () => manDesc.classList.contains("on");
+const ML = () => manLower.classList.contains("on");
+
+const asc = [
+  ['A','B'],['C','D'],['E','F'],['G','H'],['I','J'],['K','L'],
+  ['M','N'],['O','P'],['Q','R'],['S','T'],['U','V'],['W','X'],['Y','Z']
+];
+const desc = () => [...asc].reverse().map(p => [p[1], p[0]]);
+const squareIdx = (d, l) => (!d && !l ? 1 : d && !l ? 2 : !d && l ? 3 : 4);
+
+const keyPos = {
+  A:[80,120], B:[440,200], C:[280,200], D:[240,120], E:[220,40], F:[320,120],
+  G:[400,120], H:[480,120], I:[620,40],  J:[560,120], K:[640,120], L:[720,120],
+  M:[600,200], N:[520,200], O:[700,40],  P:[780,40],  Q:[60,40],  R:[300,40],
+  S:[160,120], T:[380,40],  U:[540,40],  V:[360,200], W:[140,40], X:[200,200],
+  Y:[460,40],  Z:[120,200]
+};
+
+const aCtx = document.getElementById("autoCanvas").getContext("2d");
+const mCtx = document.getElementById("manualCanvas").getContext("2d");
+let ai = 0, mi = 0, stage = 0;
+
+function draw(ctx, lower) {
+  ctx.clearRect(0, 0, 900, 260);
+  ctx.font = "bold 22px Arial";
+  ctx.fillStyle = "#000";
+  for (const k in keyPos) {
+    const [x, y] = keyPos[k];
+    ctx.fillText(lower ? k.toLowerCase() : k, x - 8, y + 8);
+  }
+}
+
+function resetTextCanvas() {
+  autoOutput.value = manualOutput.value = "";
+  autoOutput.classList.remove("ok");
+  manualOutput.classList.remove("ok");
+  ai = mi = stage = 0;
+  draw(aCtx, AL());
+  draw(mCtx, ML());
+}
+
+function startTrial() {
+  if (trialActive) return;
+  trialActive = true;
+  secondsElapsed = 0;
+  level1Seconds = 0;
+  level2Seconds = 0;
+  level1Score = 0;
+  level2Score = 0;
+  updateScoreUI();
+
+  document.getElementById("startTrialBtn").disabled = true;
+  document.getElementById("submitTrialBtn").disabled = false;
+  document.getElementById("resetTrialBtn").disabled = false;
+
+  autoBtn.disabled = false;
+  autoBtn.classList.add("blink");
+  manBtn.disabled = true;
+  mode2.style.display = "none";
+
+  document.querySelectorAll(".box").forEach(b => b.classList.remove("ok"));
+  resetTextCanvas();
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    document.getElementById("timer").textContent = formatSecondsToHHMMSS(secondsElapsed);
+  }, 1000);
+}
+
+autoBtn.onclick = () => {
+  if (!trialActive) return;
+  const idx = squareIdx(AD(), AL());
+  if (document.getElementById(`m1_${idx}`).classList.contains("ok")) return;
+
+  const [A, B] = (AD() ? desc() : asc)[ai++];
+  animateLine(aCtx, A, B, AL(), 45);
+  autoOutput.value += (AL() ? A.toLowerCase() + B.toLowerCase() : A + B) + " ";
+  speakPair(A, B, AL());
+
+  if (level1Score < 52) {
+    level1Score++;
+    updateScoreUI();
+  }
+
+  if (ai === 13) {
+    autoOutput.classList.add("ok");
+    document.getElementById(`m1_${idx}`).classList.add("ok");
+    ai = 0;
+    if (document.querySelectorAll('#m1_1.ok,#m1_2.ok,#m1_3.ok,#m1_4.ok').length === 4) {
+      level1Seconds = secondsElapsed;
+      secondsElapsed = 0;
+      autoBtn.classList.remove("blink");
+      autoBtn.disabled = true;
+      mode2.style.display = "block";
+      manBtn.disabled = false;
+      manBtn.classList.add("blink");
+    }
+  }
+};
+
+function processCorrectKey(letter) {
+  if (!trialActive) return;
+  const idx = squareIdx(MD(), ML());
+  if (document.getElementById(`m2_${idx}`).classList.contains("ok")) return;
+
+  draw(mCtx, ML());
+  const [kx, ky] = keyPos[letter];
+  mCtx.strokeStyle = "green";
+  mCtx.lineWidth = 2;
+  mCtx.beginPath();
+  mCtx.arc(kx, ky, 16, 0, 2 * Math.PI);
+  mCtx.stroke();
+
+  stage++;
+  if (stage === 2) {
+    const [A, B] = (MD() ? desc() : asc)[mi];
+    animateLine(mCtx, A, B, ML(), 30);
+    manualOutput.value += (ML() ? A.toLowerCase() + B.toLowerCase() : A + B) + " ";
+    speakPair(A, B, ML());
+    mi++;
+    stage = 0;
+
+    if (level2Score < 52) {
+      level2Score++;
+      updateScoreUI();
+    }
+
+    if (mi === 13) {
+      manualOutput.classList.add("ok");
+      document.getElementById(`m2_${idx}`).classList.add("ok");
+      mi = 0;
+      if (document.querySelectorAll('#m2_1.ok,#m2_2.ok,#m2_3.ok,#m2_4.ok').length === 4) {
+        level2Seconds = secondsElapsed;
+        manBtn.classList.remove("blink");
+      }
+    }
+  }
+}
+
+document.getElementById("manualCanvas").onclick = e => {
+  if (!trialActive || manBtn.disabled) return;
+  const [A, B] = (MD() ? desc() : asc)[mi];
+  const r = e.target.getBoundingClientRect();
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  for (const k in keyPos) {
+    const [kx, ky] = keyPos[k];
+    if ((x - kx) ** 2 + (y - ky) ** 2 < 300) {
+      if (k === (stage === 0 ? A : B)) processCorrectKey(k);
+      else stage = 0;
+      break;
+    }
+  }
+};
+
+document.addEventListener("keydown", e => {
+  if (!trialActive || mode2.style.display !== "block") return;
+  if (!/^[A-Za-z]$/.test(e.key)) return;
+  const isLower = e.key === e.key.toLowerCase();
+  if (isLower !== ML()) return;
+  const letter = e.key.toUpperCase();
+  const [A, B] = (MD() ? desc() : asc)[mi];
+  if (letter !== (stage === 0 ? A : B)) return;
+  processCorrectKey(letter);
+});
+
+function animateLine(ctx, a, b, lower, steps) {
+  const [x1, y1] = keyPos[a];
+  const [x2, y2] = keyPos[b];
+  const dx = x2 - x1, dy = y2 - y1;
+  const dist = Math.hypot(dx, dy);
+  let px = -dy / dist, py = dx / dist;
+  if (py > 0) { px = -px; py = -py; }
+  const maxOffset = dist * 0.12;
+  const isQR = (a === "Q" && b === "R") || (a === "R" && b === "Q");
+  const pts = [[x1, y1]];
+  let t = 0;
+
+  function step() {
+    t++;
+    draw(ctx, lower);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    if (isQR) {
+      const p = t / steps;
+      const arc = maxOffset * Math.sin(Math.PI * p);
+      pts.push([x1 + dx * p + px * arc, y1 + dy * p + py * arc]);
+    } else {
+      const last = pts[pts.length - 1];
+      pts.push([last[0] + dx / steps, last[1] + dy / steps]);
+    }
+    pts.forEach(p => ctx.lineTo(p[0], p[1]));
+    ctx.stroke();
+    if (t < steps) requestAnimationFrame(step);
+  }
+  step();
+}
+
+function submitData() {
+  if (!studentId || !userName) {
+    alert("Missing user details before submitting!");
+    return;
+  }
+
+  clearInterval(timerInterval);
+  trialActive = false;
+
+  if (level1Seconds === 0 && level1Score > 0) level1Seconds = secondsElapsed;
+  else if (level2Seconds === 0 && level2Score > 0) level2Seconds = secondsElapsed;
+
+  const totalScore = level1Score + level2Score;
+  const totalTrialSecs = level1Seconds + level2Seconds;
+  const pct = Math.round((totalScore / MAX_SCORE_PER_TRIAL) * 100);
+  const scoreStr = `${totalScore}/${MAX_SCORE_PER_TRIAL}-${pct}%`;
+  const timeStr = formatSecondsToHHMMSS(totalTrialSecs);
+
+  const l1Pct = Math.round((level1Score / 52) * 100);
+  const l2Pct = Math.round((level2Score / 52) * 100);
+
+  sessionTrials[currentTrialNum - 1] = {
+    score: totalScore,
+    maxScore: MAX_SCORE_PER_TRIAL,
+    scoreStr: scoreStr,
+    secs: totalTrialSecs,
+    timeStr: timeStr
+  };
+  updateSessionTrackerUI();
+
+  localStorage.setItem("lastStudentCode", studentId);
+  localStorage.setItem("lastGameCode", GAME_CODE);
+  document.getElementById("submitTrialBtn").disabled = true;
+
+  const params = new URLSearchParams();
+  params.append("action", "saveGameData");
+  params.append("gameCode", GAME_CODE);
+  params.append("studentID", studentId);
+  params.append("studentId", studentId);
+  params.append("name", userName);
+  params.append("level1Score", `${level1Score}/52-${l1Pct}%`);
+  params.append("level1Time", formatSecondsToHHMMSS(level1Seconds));
+  params.append("level2Score", `${level2Score}/52-${l2Pct}%`);
+  params.append("level2Time", formatSecondsToHHMMSS(level2Seconds));
+  params.append("score", scoreStr);
+  params.append("trialId", String(currentTrialNum));
+
+  fetch(sheetAppScriptUrl, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  }).then(() => {
+    handlePostTrialFlow(scoreStr, timeStr);
+  }).catch(() => {
+    handlePostTrialFlow(scoreStr, timeStr);
+  });
+}
+
+function handlePostTrialFlow(scoreStr, timeStr) {
+  if (currentTrialNum < MAX_TRIALS) {
+    const remaining = MAX_TRIALS - currentTrialNum;
+    alert(`Trial ${currentTrialNum} of ${MAX_TRIALS} Saved!
+Score: ${scoreStr} | Time: ${timeStr}
+
+You have ${remaining} trial(s) remaining. Preparing Trial ${currentTrialNum + 1}...`);
+    currentTrialNum++;
+    document.getElementById("displayTrial").textContent = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
+    resetSameUser();
+  } else {
+    const totalScore = sessionTrials.reduce((acc, t) => acc + (t ? t.score : 0), 0);
+    const totalSecs = sessionTrials.reduce((acc, t) => acc + (t ? t.secs : 0), 0);
+    const totalPossible = MAX_TRIALS * MAX_SCORE_PER_TRIAL;
+    const totalPct = totalPossible > 0 ? Math.round((totalScore / totalPossible) * 100) : 0;
+    const cumulativeScoreStr = `${totalScore}/${totalPossible}-${totalPct}%`;
+    const cumulativeTimeStr = formatSecondsToHHMMSS(totalSecs);
+
+    const summaryParams = new URLSearchParams();
+    summaryParams.append("action", "saveSessionSummary");
+    summaryParams.append("gameCode", GAME_CODE);
+    summaryParams.append("studentId", studentId);
+    summaryParams.append("name", userName);
+    summaryParams.append("t1Score", sessionTrials[0] ? sessionTrials[0].scoreStr : "0/104-0%");
+    summaryParams.append("t1Time", sessionTrials[0] ? sessionTrials[0].timeStr : "00:00:00");
+    summaryParams.append("t2Score", sessionTrials[1] ? sessionTrials[1].scoreStr : "0/104-0%");
+    summaryParams.append("t2Time", sessionTrials[1] ? sessionTrials[1].timeStr : "00:00:00");
+    summaryParams.append("t3Score", sessionTrials[2] ? sessionTrials[2].scoreStr : "0/104-0%");
+    summaryParams.append("t3Time", sessionTrials[2] ? sessionTrials[2].timeStr : "00:00:00");
+    summaryParams.append("totalScore", cumulativeScoreStr);
+    summaryParams.append("totalTime", cumulativeTimeStr);
+
+    fetch(sheetAppScriptUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: summaryParams.toString()
+    }).finally(() => {
+      alert(
+        `All 3 Trials Completed for ${userName} (${studentId})!
+
+` +
+        `Trial 1: ${sessionTrials[0].scoreStr} (${sessionTrials[0].timeStr})
+` +
+        `Trial 2: ${sessionTrials[1].scoreStr} (${sessionTrials[1].timeStr})
+` +
+        `Trial 3: ${sessionTrials[2].scoreStr} (${sessionTrials[2].timeStr})
+` +
+        `Total Score: ${cumulativeScoreStr} | Total Time: ${cumulativeTimeStr}
+
+` +
+        `Returning to Homepage...`
+      );
+      window.location.href = "index.html";
+    });
+  }
+}
+
+function resetSameUser() {
+  clearInterval(timerInterval);
+  secondsElapsed = 0;
+  level1Seconds = 0;
+  level2Seconds = 0;
+  trialActive = false;
+  level1Score = 0;
+  level2Score = 0;
+
+  document.getElementById("timer").textContent = "00:00:00";
+  updateScoreUI();
+
+  document.getElementById("startTrialBtn").disabled = false;
+  document.getElementById("submitTrialBtn").disabled = true;
+  document.getElementById("resetTrialBtn").disabled = true;
+
+  autoBtn.disabled = true;
+  autoBtn.classList.remove("blink");
+  manBtn.disabled = true;
+  manBtn.classList.remove("blink");
+  mode2.style.display = "none";
+
+  document.querySelectorAll(".box").forEach(b => b.classList.remove("ok"));
+  resetTextCanvas();
+}
+
+draw(aCtx, false);
+draw(mCtx, false);
+</script>
+</body>
+</html>

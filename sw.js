@@ -1,4 +1,4 @@
-const CACHE_NAME = "amelur-lms-cache-v1";
+const CACHE_NAME = "amelur-lms-cache-v2";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -21,9 +21,8 @@ self.addEventListener("activate", (event) => {
       Promise.all(
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
@@ -31,8 +30,10 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        const cloned = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
+        if (networkResponse && networkResponse.status === 200) {
+          const cloned = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
+        }
         return networkResponse;
       })
       .catch(() => caches.match(event.request))

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pwa-dashboard-v2';
+const CACHE_NAME = 'pwa-dashboard-v3';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
@@ -18,7 +18,6 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Always fetch fresh for navigation/HTML requests to avoid ERR_FAILED
   if (e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request).catch(() => caches.match('./index.html'))

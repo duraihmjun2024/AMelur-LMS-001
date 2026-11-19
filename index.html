@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panchayat Union Primary School LMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .grid-border th, .grid-border td {
+            border: 1px solid #475569;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.75rem;
+            padding: 3px 2px;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .bg-boy-blue { background-color: #bae6fd; color: #0369a1; }
+        .bg-girl-pink { background-color: #fbcfe8; color: #be185d; }
+        .cell-hover:hover {
+            filter: brightness(0.92);
+            cursor: pointer;
+            transform: scale(1.03);
+            transition: transform 0.1s ease-in-out;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between select-none">
+
+    <div class="w-full max-w-[1440px] mx-auto p-3 flex-grow flex flex-col gap-4">
+
+        <!-- 1. TITLE BAR -->
+        <header class="bg-slate-900 text-white flex items-center justify-between px-4 py-3 rounded-xl border border-slate-800 shadow-md">
+            <div class="flex items-center gap-3 w-full overflow-hidden">
+                <i class="fa-solid fa-graduation-cap text-indigo-400 text-xl"></i>
+                <div class="w-full overflow-hidden flex items-center bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <i class="fa-solid fa-bullhorn text-yellow-400 mr-3 animate-pulse text-sm"></i>
+                    <marquee id="welcomeMarquee" class="text-sm font-bold tracking-wide text-yellow-400">
+                        Panchayat Union Primary School, Anjalam Melur, Trichy District, TamilNadu, India Welcomes You!
+                    </marquee>
+                </div>
+            </div>
+        </header>
+
+        <!-- 2. MENU BAR -->
+        <nav class="flex items-center overflow-x-auto no-scrollbar bg-white p-2 rounded-xl border border-slate-200 shadow-sm gap-2">
+            <button onclick="navAction('NoticeBoard')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">NoticeBoard</button>
+            <button onclick="navAction('Home')" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-sm">Home</button>
+            <button onclick="navAction('Goal')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Goal</button>
+            <button onclick="navAction('Gallery')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Gallery</button>
+            <button onclick="navAction('Staff')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Staff</button>
+            <button onclick="navAction('Games List')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Games List</button>
+            <button onclick="navAction('Downloads')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Downloads</button>
+            <button onclick="navAction('Events')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Events</button>
+            <button onclick="navAction('More')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">More</button>
+        </nav>
+
+        <main class="space-y-4">
+
+            <!-- 3. STUDENT ENTRY POINT -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+                <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                    <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student Entry Point (All Games Master Table)
+                    </h2>
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Click a ready game to expand/collapse</span>
+                </div>
+                <div id="studentEntryGridsContainer" class="space-y-3"></div>
+            </section>
+
+            <!-- 4. STUDENT DASHBOARD -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                    <span class="text-xs font-bold text-slate-800">Type the Student Code of the Student Entry Point to get status:</span>
+                    <input type="text" id="studentDashboardInput" value="1B01" onchange="loadStudentDashboard(this.value)" class="border border-emerald-300 rounded px-3 py-1 text-sm font-bold text-emerald-700 bg-white w-32 text-center uppercase">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full grid-border border-collapse bg-white">
+                        <tbody id="studentDashboardTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5. OVERALL LEADERBOARD -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-indigo-900 text-white p-2.5 rounded-lg gap-2">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-yellow-400 text-sm"></i> Overall Leaderboard
+                        </h2>
+                        <select id="overallGameSelect" onchange="filterLeaderboardsByGame()" class="bg-indigo-800 text-yellow-300 font-bold border border-indigo-600 rounded px-2 py-1 text-xs">
+                            <option value="E02">Game: E02</option>
+                            <option value="E03">Game: E03</option>
+                            <option value="ALL">All Games</option>
+                        </select>
+                    </div>
+                    <button onclick="toggleOverallExpand()" id="overallToggleBtn" class="bg-indigo-700 hover:bg-indigo-600 text-xs font-bold px-3 py-1 rounded border border-indigo-500">Show All Entries</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-sm bg-white text-center" id="overallLeaderboardTable">
+                        <thead>
+                            <tr class="bg-slate-100 font-bold text-slate-800 text-xs">
+                                <th class="border p-2">Game ID</th>
+                                <th class="border p-2">Rank</th>
+                                <th class="border p-2">Student ID</th>
+                                <th class="border p-2 text-left">Name</th>
+                                <th class="border p-2">Std</th>
+                                <th class="border p-2">L1 Score</th>
+                                <th class="border p-2">L1 Time</th>
+                                <th class="border p-2">L2 Score</th>
+                                <th class="border p-2">L2 Time</th>
+                                <th class="border p-2">Total Score</th>
+                                <th class="border p-2">Tot Time</th>
+                                <th class="border p-2">Trial</th>
+                                <th class="border p-2">Submitted At</th>
+                            </tr>
+                            <tr class="bg-slate-50 text-[10px]">
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="rank" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="studentId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="std" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l1Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l2Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l2Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="totTime" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="trialId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="submittedAt" class="w-full border rounded px-1 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="overallLeaderboardBody">
+                            <tr><td colspan="13" class="p-3 text-slate-400 italic">Loading live data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 6. CLASSWISE LEADERBOARD -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-800 text-white p-2.5 rounded-lg gap-2">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-medal text-yellow-400 text-sm"></i> Classwise Leaderboard
+                        </h2>
+                        <select id="classGameSelect" onchange="filterLeaderboardsByGame()" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
+                            <option value="E02">Game: E02</option>
+                            <option value="E03">Game: E03</option>
+                            <option value="ALL">All Games</option>
+                        </select>
+                        <select id="classSelectLeaderboard" onchange="loadClassLeaderboard(this.value)" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
+                            <option value="1">Standard 1</option>
+                            <option value="2">Standard 2</option>
+                            <option value="3">Standard 3</option>
+                            <option value="4">Standard 4</option>
+                            <option value="5">Standard 5</option>
+                        </select>
+                    </div>
+                    <button onclick="toggleClassExpand()" id="classToggleBtn" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-3 py-1 rounded border border-slate-600">Show All Entries</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-sm bg-white text-center" id="classLeaderboardTable">
+                        <thead>
+                            <tr class="bg-slate-100 font-bold text-slate-800 text-xs">
+                                <th class="border p-2">Game ID</th>
+                                <th class="border p-2">O_Rank</th>
+                                <th class="border p-2">C_Rank</th>
+                                <th class="border p-2">Student ID</th>
+                                <th class="border p-2 text-left">Name</th>
+                                <th class="border p-2">L1 Score</th>
+                                <th class="border p-2">L1 Time</th>
+                                <th class="border p-2">L2 Score</th>
+                                <th class="border p-2">L2 Time</th>
+                                <th class="border p-2">Total Score</th>
+                                <th class="border p-2">Tot Time</th>
+                                <th class="border p-2">Trial</th>
+                                <th class="border p-2">Submitted At</th>
+                            </tr>
+                            <tr class="bg-slate-50 text-[10px]">
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="oRank" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="cRank" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="studentId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l2Score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l2Time" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="score" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="totTime" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="trialId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="submittedAt" class="w-full border rounded px-1 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="classLeaderboardBody">
+                            <tr><td colspan="13" class="p-3 text-slate-400 italic">Select a class to view rankings.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-transparent text-center space-y-2 py-3">
+            <p class="text-xs font-bold text-slate-700">For more details, kindly send WhatsApp message to: +91 7010459876</p>
+            <a href="https://wa.me/917010459876" target="_blank" class="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500 text-white font-bold rounded-full text-xs shadow hover:bg-emerald-600">
+                <i class="fa-brands fa-whatsapp text-sm"></i> +91 7010459876
+            </a>
+        </footer>
+    </div>
+
+    <!-- REGISTRATION & LOGIN MODAL -->
+    <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-5 shadow-2xl border border-slate-100 space-y-3">
+            <h3 id="modalTitle" class="text-sm font-bold text-indigo-700 border-b pb-2">📋 Student Login &amp; Registration</h3>
+            <form id="userRegForm" class="space-y-3 text-xs" onsubmit="handleRegistrationSubmit(event)">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Student Code (Grid ID)</label>
+                        <input type="text" id="regStudentCode" readonly class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-slate-100 uppercase">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Student EMIS No (10 Digits) *</label>
+                        <input type="text" id="regEmisNumber" maxlength="10" required placeholder="10-Digit EMIS No" class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-indigo-50">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Student Name *</label>
+                        <input type="text" id="regFirstName" required placeholder="Student Name" class="w-full border rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">DOB (DD/MM/YYYY) *</label>
+                        <input type="text" id="regDob" maxlength="10" required placeholder="DD/MM/YYYY" class="w-full border rounded-lg p-2">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Cell No (10 digits) *</label>
+                        <input type="tel" id="regCell" maxlength="10" required placeholder="10-Digit Cell No" class="w-full border rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">WhatsApp No *</label>
+                        <input type="tel" id="regWhatsapp" required placeholder="+91..." class="w-full border rounded-lg p-2">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Institution</label>
+                        <input type="text" id="regSchool" value="PUPS Anjalam Melur" class="w-full border rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Place *</label>
+                        <input type="text" id="regPlace" required placeholder="Place" class="w-full border rounded-lg p-2">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Selected Game Code</label>
+                    <input type="text" id="regGameCode" readonly class="w-full border rounded-lg p-2 font-bold text-emerald-700 bg-emerald-50 uppercase">
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg bg-slate-200 font-bold">Cancel</button>
+                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Submit &amp; Launch Game</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+        let gameRecordsData = [];
+        let userRecordsData = [];
+        let isOverallExpanded = false;
+        let isClassExpanded = false;
+        let currentUserStudentId = "1B01";
+        let currentGameCode = "E02";
+        let expandedGameCodes = new Set(["E02"]);
+
+        const READY_GAMES = ["E02", "E03", "M03"];
+
+        function navAction(section) {
+            if (section === 'Home') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (section === 'Games List') {
+                document.getElementById('studentEntryGridsContainer').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert(`${section} section selected.`);
+            }
+        }
+
+        function parseScoreValue(scoreStr) {
+            if (!scoreStr) return 0;
+            const frac = String(scoreStr).match(/(\d+)\s*\/\s*(\d+)/);
+            if (frac) return (parseFloat(frac[1]) / parseFloat(frac[2])) * 100;
+            const pct = String(scoreStr).match(/(\d+(?:\.\d+)?)%/);
+            if (pct) return parseFloat(pct[1]);
+            const num = String(scoreStr).match(/(\d+(?:\.\d+)?)/);
+            return num ? parseFloat(num[1]) : 0;
+        }
+
+        function parseTimeToSeconds(timeStr) {
+            if (!timeStr || timeStr === '--' || timeStr === '---' || timeStr === '00:00:00') return 0;
+            const cleanStr = formatTimeDisplay(timeStr);
+            const parts = cleanStr.split(':');
+            
+            if (parts.length === 3) {
+                return (parseInt(parts[0], 10) * 3600) + (parseInt(parts[1], 10) * 60) + parseInt(parts[2], 10);
+            } else if (parts.length === 2) {
+                return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+            }
+
+            const numMatch = cleanStr.match(/(\d+)/);
+            return numMatch ? parseInt(numMatch[1], 10) : 0;
+        }
+
+        function formatSecondsToHHMMSS(totalSecs) {
+            if (isNaN(totalSecs) || totalSecs <= 0) return "00:00:00";
+            const hrs = String(Math.floor(totalSecs / 3600)).padStart(2, "0");
+            const mins = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, "0");
+            const secs = String(Math.floor(totalSecs % 60)).padStart(2, "0");
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        function formatTimeDisplay(timeStr) {
+            if (!timeStr || timeStr === '--' || timeStr === '---') return "00:00:00";
+            const str = String(timeStr).trim();
+            if (str.includes('T')) {
+                const timePart = str.split('T')[1];
+                if (timePart) {
+                    return timePart.split('.')[0];
+                }
+            }
+            return str;
+        }
+
+        function formatScoreDisplay(scoreStr) {
+            if (!scoreStr) return "0/10-0%";
+            return String(scoreStr);
+        }
+
+        function sortLeaderboardData(records) {
+            return records.sort((a, b) => {
+                const scoreA = parseScoreValue(a.score);
+                const scoreB = parseScoreValue(b.score);
+                if (scoreB !== scoreA) return scoreB - scoreA;
+                const timeA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
+                const timeB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
+                return timeA - timeB;
+            });
+        }
+
+        function fetchLiveSheetData() {
+            fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData`)
+                .then(res => res.json())
+                .then(data => {
+                    userRecordsData = data.userData || [];
+                    const rawGameData = data.gameData || [];
+                    
+                    const validGameData = rawGameData.filter(item => item.studentId && item.studentId !== "--" && item.score);
+                    gameRecordsData = sortLeaderboardData(validGameData);
+
+                    if (gameRecordsData.length > 0) {
+                        currentUserStudentId = data.latestStudentId || gameRecordsData[0].studentId;
+                        currentGameCode = data.latestGameCode || gameRecordsData[0].gameCode;
+                    } else if (data.latestStudentId) {
+                        currentUserStudentId = data.latestStudentId;
+                        currentGameCode = data.latestGameCode || "E02";
+                    }
+
+                    document.getElementById('studentDashboardInput').value = currentUserStudentId;
+
+                    const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
+                    document.getElementById('classSelectLeaderboard').value = studentStd;
+
+                    populateGameSelectors();
+                    updateAllHomepageTables();
+                })
+                .catch((err) => {
+                    console.error("Fetch error:", err);
+                    document.getElementById('studentDashboardInput').value = currentUserStudentId;
+                    
+                    const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
+                    document.getElementById('classSelectLeaderboard').value = studentStd;
+
+                    updateAllHomepageTables();
+                });
+        }
+
+        function populateGameSelectors() {
+            const activeGames = [...new Set(gameRecordsData.map(r => r.gameCode).filter(Boolean))];
+            if (!activeGames.includes("E03")) activeGames.unshift("E03");
+            if (!activeGames.includes("E02")) activeGames.unshift("E02");
+
+            const overallSel = document.getElementById('overallGameSelect');
+            const classSel = document.getElementById('classGameSelect');
+            
+            let opts = `<option value="ALL">All Games</option>`;
+            activeGames.forEach(g => {
+                opts += `<option value="${g}" ${g === currentGameCode ? 'selected' : ''}>Game: ${g}</option>`;
+            });
+            overallSel.innerHTML = opts;
+            classSel.innerHTML = opts;
+            if (activeGames.includes(currentGameCode)) {
+                overallSel.value = currentGameCode;
+                classSel.value = currentGameCode;
+            }
+        }
+
+        function filterLeaderboardsByGame() {
+            currentGameCode = document.getElementById('overallGameSelect').value;
+            document.getElementById('classGameSelect').value = currentGameCode;
+            renderOverallLeaderboard();
+            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
+        }
+
+        function renderOverallLeaderboard() {
+            applyLeaderboardFilters();
+        }
+
+        function applyLeaderboardFilters() {
+            const body = document.getElementById('overallLeaderboardBody');
+            const selectedGame = document.getElementById('overallGameSelect').value;
+            
+            let filtered = gameRecordsData;
+            if (selectedGame !== 'ALL') {
+                filtered = gameRecordsData.filter(r => (r.gameCode || 'E02') === selectedGame);
+            }
+
+            const inputs = document.querySelectorAll('#overallLeaderboardTable thead input');
+            const filters = {};
+            inputs.forEach(input => {
+                filters[input.dataset.col] = input.value.trim().toLowerCase();
+            });
+
+            let displayedData = filtered.map((row, idx) => {
+                const std = row.studentId && !row.studentId.startsWith('M') ? `Std ${row.studentId.charAt(0)}` : 'Member';
+                const l1Secs = parseTimeToSeconds(row.level1Time);
+                const l2Secs = parseTimeToSeconds(row.level2Time);
+                const totSecs = l1Secs + l2Secs;
+                return {
+                    ...row,
+                    rank: idx + 1,
+                    std: std,
+                    l1Score: formatScoreDisplay(row.level1Score),
+                    l1Time: formatTimeDisplay(row.level1Time),
+                    l2Score: formatScoreDisplay(row.level2Score),
+                    l2Time: formatTimeDisplay(row.level2Time),
+                    score: formatScoreDisplay(row.score),
+                    totTime: formatSecondsToHHMMSS(totSecs),
+                    trialId: row.trialId || '1'
+                };
+            }).filter(row => {
+                for (let key in filters) {
+                    if (filters[key]) {
+                        const val = String(row[key] || '').toLowerCase();
+                        if (!val.includes(filters[key])) return false;
+                    }
+                }
+                return true;
+            });
+
+            if (!isOverallExpanded && !Object.values(filters).some(v => v)) {
+                const top10 = displayedData.slice(0, 10);
+                const currentUserRow = displayedData.find(r => matchStudentId(r.studentId, currentUserStudentId));
+                if (currentUserRow && !top10.some(r => matchStudentId(r.studentId, currentUserStudentId))) {
+                    displayedData = [...top10, currentUserRow];
+                } else {
+                    displayedData = top10;
+                }
+            }
+
+            if (!displayedData.length) {
+                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            displayedData.forEach((row) => {
+                const isCurrentUser = matchStudentId(row.studentId, currentUserStudentId);
+                const highlightClass = isCurrentUser ? 'bg-amber-100 font-bold border-2 border-amber-400' : (row.rank === 1 ? 'bg-amber-50' : '');
+
+                html += `<tr class="${highlightClass}">
+                    <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
+                    <td class="border p-2 font-bold ${row.rank===1?'text-amber-600':''}">${row.rank}</td>
+                    <td class="border p-2 font-bold text-indigo-700">${row.studentId || '---'}</td>
+                    <td class="border p-2 text-left font-semibold">${row.name || 'User'}</td>
+                    <td class="border p-2">${row.std}</td>
+                    <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
+                    <td class="border p-2 font-semibold text-purple-600">${row.l2Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l2Time}</td>
+                    <td class="border p-2 font-bold text-emerald-600">${row.score}</td>
+                    <td class="border p-2 text-slate-700 font-mono">${row.totTime}</td>
+                    <td class="border p-2 font-bold text-amber-700">${row.trialId}</td>
+                    <td class="border p-2 text-xs text-slate-500">${row.submittedAt || '---'}</td>
+                </tr>`;
+            });
+            body.innerHTML = html;
+            document.getElementById('overallToggleBtn').innerText = isOverallExpanded ? "Show Top 10 Only" : "Show All Entries";
+        }
+
+        function toggleOverallExpand() {
+            isOverallExpanded = !isOverallExpanded;
+            renderOverallLeaderboard();
+        }
+
+        function loadClassLeaderboard(standard) {
+            applyClassLeaderboardFilters();
+        }
+
+        function applyClassLeaderboardFilters() {
+            const standard = document.getElementById('classSelectLeaderboard').value;
+            const body = document.getElementById('classLeaderboardBody');
+            const selectedGame = document.getElementById('classGameSelect').value;
+            
+            let filtered = gameRecordsData.filter(r => r.studentId && r.studentId.startsWith(String(standard)));
+            if (selectedGame !== 'ALL') {
+                filtered = filtered.filter(r => (r.gameCode || 'E02') === selectedGame);
+            }
+
+            const inputs = document.querySelectorAll('#classLeaderboardTable thead input');
+            const filters = {};
+            inputs.forEach(input => {
+                filters[input.dataset.col] = input.value.trim().toLowerCase();
+            });
+
+            let displayedClassData = filtered.map((row, idx) => {
+                const overallRank = gameRecordsData.findIndex(r => matchStudentId(r.studentId, row.studentId) && (r.gameCode||'E02')===(row.gameCode||'E02')) + 1;
+                const l1Secs = parseTimeToSeconds(row.level1Time);
+                const l2Secs = parseTimeToSeconds(row.level2Time);
+                const totSecs = l1Secs + l2Secs;
+                return {
+                    ...row,
+                    oRank: overallRank,
+                    cRank: idx + 1,
+                    l1Score: formatScoreDisplay(row.level1Score),
+                    l1Time: formatTimeDisplay(row.level1Time),
+                    l2Score: formatScoreDisplay(row.level2Score),
+                    l2Time: formatTimeDisplay(row.level2Time),
+                    score: formatScoreDisplay(row.score),
+                    totTime: formatSecondsToHHMMSS(totSecs),
+                    trialId: row.trialId || '1'
+                };
+            }).filter(row => {
+                for (let key in filters) {
+                    if (filters[key]) {
+                        const val = String(row[key] || '').toLowerCase();
+                        if (!val.includes(filters[key])) return false;
+                    }
+                }
+                return true;
+            });
+
+            if (!isClassExpanded && !Object.values(filters).some(v => v)) {
+                const top10 = displayedClassData.slice(0, 10);
+                const currentUserRow = displayedClassData.find(r => matchStudentId(r.studentId, currentUserStudentId));
+                if (currentUserRow && !top10.some(r => matchStudentId(r.studentId, currentUserStudentId))) {
+                    displayedClassData = [...top10, currentUserRow];
+                } else {
+                    displayedClassData = top10;
+                }
+            }
+
+            if (!displayedClassData.length) {
+                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found for Standard ${standard}.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            displayedClassData.forEach((row) => {
+                const isCurrentUser = matchStudentId(row.studentId, currentUserStudentId);
+                const highlightClass = isCurrentUser ? 'bg-amber-100 font-bold border-2 border-amber-400' : '';
+
+                html += `<tr class="${highlightClass}">
+                    <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
+                    <td class="border p-2 font-bold text-amber-700">#${row.oRank}</td>
+                    <td class="border p-2 font-bold text-emerald-700">${row.cRank}</td>
+                    <td class="border p-2 font-bold">${row.studentId}</td>
+                    <td class="border p-2 text-left font-semibold">${row.name}</td>
+                    <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
+                    <td class="border p-2 font-semibold text-purple-600">${row.l2Score}</td>
+                    <td class="border p-2 text-slate-600 font-mono">${row.l2Time}</td>
+                    <td class="border p-2 font-bold text-indigo-700">${row.score}</td>
+                    <td class="border p-2 text-slate-700 font-mono">${row.totTime}</td>
+                    <td class="border p-2 font-bold text-amber-700">${row.trialId}</td>
+                    <td class="border p-2 text-xs text-slate-500">${row.submittedAt || '---'}</td>
+                </tr>`;
+            });
+            body.innerHTML = html;
+            document.getElementById('classToggleBtn').innerText = isClassExpanded ? "Show Top 10 Only" : "Show All Entries";
+        }
+
+        function toggleClassExpand() {
+            isClassExpanded = !isClassExpanded;
+            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
+        }
+
+        function openStudentRegistration(studentId, gameCode) {
+            const targetGame = gameCode || currentGameCode;
+            document.getElementById('regStudentCode').value = studentId;
+            document.getElementById('regEmisNumber').value = "";
+            document.getElementById('regGameCode').value = targetGame;
+            document.getElementById('regFirstName').value = "";
+            document.getElementById('regDob').value = "";
+            document.getElementById('regCell').value = "";
+            document.getElementById('regWhatsapp').value = "";
+            document.getElementById('studentModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('studentModal').classList.add('hidden');
+        }
+
+        function getStudentMetricsForGame(studentId, gCode) {
+            const recs = gameRecordsData.filter(r => matchStudentId(r.studentId, studentId) && (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
+            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+            
+            const subs = recs.length;
+            const scores = recs.map(r => parseScoreValue(r.score));
+            const maxScore = Math.max(...scores);
+            const topScoreStr = maxScore > 0 ? `${Math.round(maxScore)}%` : '';
+            
+            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            let leastTimeStr = '';
+            if (times.length > 0) {
+                const minT = Math.min(...times);
+                const mins = Math.floor(minT / 60);
+                const secs = minT % 60;
+                leastTimeStr = mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
+            }
+            
+            const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const avgScoreStr = avgScore > 0 ? `${avgScore}%` : '';
+            
+            return { subs: subs, topScore: topScoreStr, leastTime: leastTimeStr, avgScore: avgScoreStr };
+        }
+
+        function getAllAvailableGames() {
+            const masterGames = [
+                "T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09",
+                "E01", "E03", "E05", "E07", "E09", "E11", "E13", "E15", "E17",
+                "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09",
+                "S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09",
+                "E02", "E04", "E06", "E08", "E10", "E12", "E14", "E16", "E18",
+                "G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"
+            ];
+            const sheetGames = [...new Set(gameRecordsData.map(r => (r.gameCode || '').trim().toUpperCase()).filter(Boolean))];
+            const extraGames = sheetGames.filter(g => !masterGames.includes(g));
+            return [...masterGames, ...extraGames];
+        }
+
+        function toggleGameGridExpansion(gCode) {
+            if (!READY_GAMES.includes(gCode)) {
+                alert("Game not yet ready!");
+                return;
+            }
+            if (expandedGameCodes.has(gCode)) {
+                expandedGameCodes.delete(gCode);
+            } else {
+                expandedGameCodes.add(gCode);
+            }
+            renderStudentEntryGrid();
+        }
+
+        function getGameSummaryStats(gCode) {
+            const recs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
+            if (!recs.length) {
+                return {
+                    startDate: '---',
+                    startTime: '---',
+                    endDate: '---',
+                    endTime: '---',
+                    roll: '150',
+                    finished: 0,
+                    pct: '0%',
+                    overallTop: '---',
+                    overallBest: '---',
+                    overallAvg: '---',
+                    stdStats: {
+                        '5': { top: '---', best: '---', avg: '---' },
+                        '4': { top: '---', best: '---', avg: '---' },
+                        '3': { top: '---', best: '---', avg: '---' },
+                        '2': { top: '---', best: '---', avg: '---' },
+                        '1': { top: '---', best: '---', avg: '---' }
+                    }
+                };
+            }
+
+            const dates = recs.map(r => r.submittedAt).filter(Boolean).sort();
+            const startDate = dates.length > 0 ? dates[0].split('T')[0] : '---';
+            const startTime = dates.length > 0 ? (dates[0].split('T')[1] || '').split('.')[0] : '---';
+            const endDate = dates.length > 0 ? dates[dates.length - 1].split('T')[0] : '---';
+            const endTime = dates.length > 0 ? (dates[dates.length - 1].split('T')[1] || '').split('.')[0] : '---';
+
+            const uniqueStudents = [...new Set(recs.map(r => r.studentId))];
+            const finishedCount = uniqueStudents.length;
+            const roll = 150;
+            const pct = Math.round((finishedCount / roll) * 100) + '%';
+
+            const sortedByScore = [...recs].sort((a, b) => parseScoreValue(b.score) - parseScoreValue(a.score));
+            const topRec = sortedByScore[0];
+            const overallTop = topRec ? `${String(topRec.studentId).substring(0,4)}, ${topRec.score}, ${formatTimeDisplay(topRec.level1Time)}` : '---';
+
+            const sortedByTime = [...recs].filter(r => (parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)) > 0).sort((a, b) => {
+                return (parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time)) - (parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time));
+            });
+            const bestRec = sortedByTime[0] || topRec;
+            const overallBest = bestRec ? `${String(bestRec.studentId).substring(0,4)}, ${bestRec.score}, ${formatTimeDisplay(bestRec.level1Time)}` : '---';
+
+            const allScores = recs.map(r => parseScoreValue(r.score));
+            const overallAvgScoreNum = allScores.length ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 0;
+            const allTimes = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const overallAvgTimeSecs = allTimes.length ? Math.round(allTimes.reduce((a, b) => a + b, 0) / allTimes.length) : 0;
+            const overallAvg = `${overallAvgScoreNum}%, ${formatSecondsToHHMMSS(overallAvgTimeSecs)}`;
+
+            const stdStats = {};
+            ['5', '4', '3', '2', '1'].forEach(std => {
+                const stdRecs = recs.filter(r => r.studentId && r.studentId.startsWith(std));
+                const sSortedScore = [...stdRecs].sort((a, b) => parseScoreValue(b.score) - parseScoreValue(a.score));
+                const sTop = sSortedScore[0];
+
+                const sSortedTime = [...stdRecs].filter(r => (parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)) > 0).sort((a, b) => {
+                    return (parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time)) - (parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time));
+                });
+                const sBest = sSortedTime[0] || sTop;
+
+                const sScores = stdRecs.map(r => parseScoreValue(r.score));
+                const sAvgScore = sScores.length ? Math.round(sScores.reduce((a, b) => a + b, 0) / sScores.length) + '%' : '0%';
+                const sTimes = stdRecs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+                const sAvgTime = sTimes.length ? formatSecondsToHHMMSS(Math.round(sTimes.reduce((a, b) => a + b, 0) / sTimes.length)) : '00:00:00';
+
+                stdStats[std] = {
+                    top: sTop ? `${String(sTop.studentId).substring(0,4)}, ${sTop.score}, ${formatTimeDisplay(sTop.level1Time)}` : '---',
+                    best: sBest ? `${String(sBest.studentId).substring(0,4)}, ${sBest.score}, ${formatTimeDisplay(sBest.level1Time)}` : '---',
+                    avg: `${sAvgScore}, ${sAvgTime}`
+                };
+            });
+
+            return { 
+                startDate, startTime, endDate, endTime, roll, finished: finishedCount, pct, 
+                overallTop, overallBest, overallAvg, stdStats 
+            };
+        }
+
+        function renderStudentEntryGrid() {
+            const container = document.getElementById('studentEntryGridsContainer');
+            if (!container) return;
+
+            const availableGames = getAllAvailableGames();
+            const standards = [1, 2, 3, 4, 5];
+            const subRowLabels = [
+                { label: "Submissions", key: "subs", cls: "bg-slate-50 text-indigo-700 font-bold" },
+                { label: "Top Score", key: "topScore", cls: "bg-slate-50 text-emerald-700 font-bold" },
+                { label: "Least Time", key: "leastTime", cls: "bg-slate-50 text-slate-700 font-mono" },
+                { label: "Avg Score", key: "avgScore", cls: "bg-slate-50 text-purple-700 font-bold" }
+            ];
+
+            function buildSingleGameGridHtml(gCode) {
+                let rowsHtml = '';
+                standards.forEach(std => {
+                    rowsHtml += `<tr><td class="w-24 font-bold bg-slate-200 text-xs">Std ${std}</td>`;
+                    for(let c=1; c<=15; c++) {
+                        const code = `${std}B${c < 10 ? '0'+c : c}`;
+                        rowsHtml += `<td class="cell-hover bg-boy-blue font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to login &amp; play ${gCode}">${code}</td>`;
+                    }
+                    for(let c=1; c<=15; c++) {
+                        const code = `${std}G${c < 10 ? '0'+c : c}`;
+                        rowsHtml += `<td class="cell-hover bg-girl-pink font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to login &amp; play ${gCode}">${code}</td>`;
+                    }
+                    rowsHtml += `</tr>`;
+
+                    subRowLabels.forEach(sRow => {
+                        rowsHtml += `<tr><td class="w-24 font-bold bg-slate-100 text-[10px] text-slate-700">${sRow.label}</td>`;
+                        for(let c=1; c<=15; c++) {
+                            const code = `${std}B${c < 10 ? '0'+c : c}`;
+                            const metrics = getStudentMetricsForGame(code, gCode);
+                            const val = metrics[sRow.key] !== undefined ? metrics[sRow.key] : '';
+                            rowsHtml += `<td class="${sRow.cls} text-[10px]">${val}</td>`;
+                        }
+                        for(let c=1; c<=15; c++) {
+                            const code = `${std}G${c < 10 ? '0'+c : c}`;
+                            const metrics = getStudentMetricsForGame(code, gCode);
+                            const val = metrics[sRow.key] !== undefined ? metrics[sRow.key] : '';
+                            rowsHtml += `<td class="${sRow.cls} text-[10px]">${val}</td>`;
+                        }
+                        rowsHtml += `</tr>`;
+                    });
+                });
+                return `<div class="overflow-x-auto mt-2"><table class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div>`;
+            }
+
+            let html = `<div class="border border-indigo-200 rounded-lg overflow-hidden bg-slate-50 p-3 space-y-3">
+                <div class="text-[11px] font-bold text-slate-700">All Game Codes (Green = ready to play, Gray = not yet ready. Click a ready game code to expand/collapse):</div>
+                <div class="overflow-x-auto">
+                    <table class="w-full grid-border border-collapse bg-white">
+                        <tbody>`;
+
+            const chunkSize = 9;
+            for (let i = 0; i < availableGames.length; i += chunkSize) {
+                const rowCodes = availableGames.slice(i, i + chunkSize);
+                html += `<tr>`;
+                rowCodes.forEach(gCode => {
+                    const isReady = READY_GAMES.includes(gCode);
+                    const count = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === gCode).length;
+                    const isExpanded = expandedGameCodes.has(gCode);
+
+                    let bgClass = 'bg-slate-100 hover:bg-slate-200 text-slate-600 opacity-75';
+                    if (isReady) {
+                        bgClass = isExpanded ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm' : 'bg-emerald-200 hover:bg-emerald-300 text-emerald-950 font-bold';
+                    }
+
+                    html += `<td onclick="toggleGameGridExpansion('${gCode}')" class="cell-hover ${bgClass} font-bold text-xs py-2 px-1 cursor-pointer transition-all" title="${isReady ? 'Click to expand/collapse ' + gCode : 'Game not yet ready!'}">
+                        ${gCode} <span class="text-[9px] opacity-80">(${count})</span>
+                    </td>`;
+                });
+                for (let empty = rowCodes.length; empty < chunkSize; empty++) {
+                    html += `<td class="bg-slate-50"></td>`;
+                }
+                html += `</tr>`;
+            }
+
+            html += `       </tbody>
+                    </table>
+                </div>`;
+
+            expandedGameCodes.forEach(gCode => {
+                const count = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === gCode).length;
+                const stats = getGameSummaryStats(gCode);
+
+                html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-3 shadow-sm mt-3">
+                    <div class="flex items-center justify-between px-2.5 py-1 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
+                        <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Game Code: ${gCode} (${count} Submissions)</span>
+                        <button type="button" onclick="toggleGameGridExpansion('${gCode}')" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Close Grid</button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full grid-border border-collapse text-[10px]">
+                            <thead>
+                                <tr class="bg-amber-100 text-slate-900 font-bold">
+                                    <th class="border p-1">GameCode</th>
+                                    <th class="border p-1">Start</th>
+                                    <th class="border p-1">End</th>
+                                    <th class="border p-1 bg-pink-100">Students</th>
+                                    <th class="border p-1 bg-pink-100">Tot</th>
+                                    <th class="border p-1 bg-pink-100">S5</th>
+                                    <th class="border p-1 bg-pink-100">S4</th>
+                                    <th class="border p-1 bg-pink-100">S3</th>
+                                    <th class="border p-1 bg-pink-100">S2</th>
+                                    <th class="border p-1 bg-pink-100">S1</th>
+                                    <th class="border p-1 bg-sky-200"></th>
+                                    <th class="border p-1 bg-sky-200" colspan="2">O_Score, Time</th>
+                                    <th class="border p-1 bg-sky-200" colspan="2">S5_Score, Time</th>
+                                    <th class="border p-1 bg-sky-200" colspan="2">S4_Score, Time</th>
+                                    <th class="border p-1 bg-sky-200" colspan="2">S3_Score, Time</th>
+                                    <th class="border p-1 bg-sky-200" colspan="2">S2_Score, Time</th>
+                                    <th class="border p-1 bg-sky-200" colspan="2">S1_Score, Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border p-1 font-bold text-indigo-700" rowspan="3">${gCode}</td>
+                                    <td class="border p-1">${stats.startDate}</td>
+                                    <td class="border p-1">${stats.endDate}</td>
+                                    <td class="border p-1 bg-pink-50 font-bold">Roll</td>
+                                    <td class="border p-1 bg-pink-50">${stats.roll}</td>
+                                    <td class="border p-1 bg-pink-50">30</td>
+                                    <td class="border p-1 bg-pink-50">30</td>
+                                    <td class="border p-1 bg-pink-50">30</td>
+                                    <td class="border p-1 bg-pink-50">30</td>
+                                    <td class="border p-1 bg-pink-50">30</td>
+                                    <td class="border p-1 bg-sky-50 font-bold">Top</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.overallTop}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['5'].top}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['4'].top}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['3'].top}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['2'].top}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['1'].top}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-1">${stats.startTime}</td>
+                                    <td class="border p-1">${stats.endTime}</td>
+                                    <td class="border p-1 bg-pink-50 font-bold">Finished</td>
+                                    <td class="border p-1 bg-pink-50">${stats.finished}</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-sky-50 font-bold">Best</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.overallBest}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['5'].best}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['4'].best}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['3'].best}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['2'].best}</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['1'].best}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-1 bg-orange-50" colspan="2">Game Content</td>
+                                    <td class="border p-1 bg-pink-50 font-bold">%</td>
+                                    <td class="border p-1 bg-pink-50">${stats.pct}</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-pink-50">-</td>
+                                    <td class="border p-1 bg-sky-50 font-bold">Avg</td>
+                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.overallAvg}</td>
+                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
+                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
+                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
+                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
+                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    ${buildSingleGameGridHtml(gCode)}
+                </div>`;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function matchStudentId(sheetId, homeId) {
+            if (!sheetId || !homeId) return false;
+            const cleanSheet = String(sheetId).trim().toUpperCase();
+            const cleanHome = String(homeId).trim().toUpperCase();
+            return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome);
+        }
+
+        function loadStudentDashboard(studentId) {
+            const sid = (studentId || document.getElementById('studentDashboardInput').value || currentUserStudentId).trim().toUpperCase();
+            currentUserStudentId = sid;
+            document.getElementById('studentDashboardInput').value = sid;
+
+            const studentRecords = gameRecordsData.filter(r => matchStudentId(r.studentId, sid));
+            
+            const gameBlocks = [
+                ["T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09"],
+                ["E01", "E03", "E05", "E07", "E09", "E11", "E13", "E15", "E17"],
+                ["E02", "E04", "E06", "E08", "E10", "E12", "E14", "E16", "E18"],
+                ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09"],
+                ["S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09"],
+                ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"]
+            ];
+
+            let dashboardHtml = '';
+
+            gameBlocks.forEach((block) => {
+                dashboardHtml += `<tr class="bg-slate-200 font-bold text-slate-800 text-xs">
+                    <th class="w-32 bg-amber-100">Student Dashboard</th>`;
+                block.forEach(code => {
+                    dashboardHtml += `<th>${code}</th>`;
+                });
+                dashboardHtml += `<th class="w-16 bg-slate-300">All</th></tr>`;
+
+                let blockTrials = 0;
+                let blockScoreSum = 0;
+                let blockTimeSum = 0;
+
+                dashboardHtml += `<tr><td class="font-bold bg-slate-50 text-left px-2">Trials_Done:</td>`;
+                block.forEach(code => {
+                    const matches = studentRecords.filter(r => (r.gameCode || 'E02').toUpperCase() === code);
+                    const trials = matches.length > 0 ? String(matches.length) : "---";
+                    blockTrials += matches.length;
+                    dashboardHtml += `<td>${trials}</td>`;
+                });
+                dashboardHtml += `<td class="font-bold text-indigo-700">${blockTrials || '---'}</td></tr>`;
+
+                dashboardHtml += `<tr><td class="font-bold bg-slate-50 text-left px-2">Best_Score:</td>`;
+                block.forEach(code => {
+                    const matches = studentRecords.filter(r => (r.gameCode || 'E02').toUpperCase() === code);
+                    let bestMatch = matches.length > 0 ? [...matches].sort((a,b) => parseScoreValue(b.score) - parseScoreValue(a.score))[0] : null;
+                    const score = bestMatch ? formatScoreDisplay(bestMatch.score) : "---";
+                    if (bestMatch) blockScoreSum += parseScoreValue(bestMatch.score);
+                    dashboardHtml += `<td>${score}</td>`;
+                });
+                dashboardHtml += `<td class="font-bold text-emerald-600">${blockScoreSum ? formatScoreDisplay(`${Math.round((blockScoreSum/100)*20)}/20-${Math.round(blockScoreSum)}%`) : '---'}</td></tr>`;
+
+                dashboardHtml += `<tr><td class="font-bold bg-slate-50 text-left px-2">Best_Time:</td>`;
+                block.forEach(code => {
+                    const matches = studentRecords.filter(r => (r.gameCode || 'E02').toUpperCase() === code);
+                    let bestMatch = matches.length > 0 ? [...matches].sort((a,b) => parseScoreValue(b.score) - parseScoreValue(a.score))[0] : null;
+                    let formattedTime = "---";
+                    if (bestMatch) {
+                        const totalSecs = parseTimeToSeconds(bestMatch.level1Time) + parseTimeToSeconds(bestMatch.level2Time);
+                        formattedTime = formatSecondsToHHMMSS(totalSecs);
+                        blockTimeSum += totalSecs;
+                    }
+                    dashboardHtml += `<td>${formattedTime}</td>`;
+                });
+                dashboardHtml += `<td class="font-bold text-slate-700">${formatSecondsToHHMMSS(blockTimeSum)}</td></tr>`;
+            });
+
+            document.getElementById('studentDashboardTableBody').innerHTML = dashboardHtml;
+        }
+
+        function updateAllHomepageTables() {
+            renderStudentEntryGrid();
+            renderOverallLeaderboard();
+            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
+            loadStudentDashboard(currentUserStudentId);
+        }
+
+        function handleRegistrationSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.innerText = "Saving...";
+
+            currentUserStudentId = document.getElementById('regStudentCode').value.trim().toUpperCase();
+            const emisNumber = document.getElementById('regEmisNumber').value.trim();
+            currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase();
+            const name = document.getElementById('regFirstName').value.trim();
+            const dob = document.getElementById('regDob').value.trim();
+            const cell = document.getElementById('regCell').value.trim();
+            const whatsapp = document.getElementById('regWhatsapp').value.trim();
+            const autoTrialId = "1";
+
+            const payload = {
+                action: "saveUserData",
+                studentId: currentUserStudentId,
+                emisNumber: emisNumber,
+                dob: dob,
+                name: name,
+                cell: cell,
+                whatsapp: whatsapp,
+                school: document.getElementById('regSchool').value.trim(),
+                place: document.getElementById('regPlace').value.trim(),
+                country: "India",
+                trialId: autoTrialId
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST", mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams(payload).toString()
+            }).then(() => {
+                closeModal();
+                btn.disabled = false; btn.innerText = "Submit & Launch Game";
+
+                let targetGameFile = 'Days_4.html';
+                if (currentGameCode === 'M03') {
+                    targetGameFile = 'SkipCounter.html';
+                } else if (currentGameCode === 'E03') {
+                    targetGameFile = 'Keyboard.html';
+                }
+
+                const queryParams = `gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
+                
+                window.location.href = `${targetGameFile}?${queryParams}`;
+            });
+        }
+
+        window.onload = function() {
+            updateAllHomepageTables();
+            fetchLiveSheetData();
+        };
+    </script>
+</body>
+</html>

@@ -81,9 +81,9 @@
 
                 <!-- Game Dashboard Matrix Table -->
                 <div class="space-y-1.5">
-                    <div class="flex items-center justify-between text-xs font-bold text-slate-800">
-                        <span id="gameMatrixTitle">Game Dashboard (E03)</span>
-                        <span class="text-[11px] text-slate-500">Click any student cell to view that student's report below</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900 text-slate-100 px-3 py-2 rounded-lg border border-slate-700">
+                        <span class="text-xs font-semibold">Enter any Game Code (shaded) found in the above Game Table to get the status of that game:</span>
+                        <input type="text" id="gameMatrixCodeInput" value="E03" onchange="setGameMatrixCode(this.value)" class="bg-slate-800 text-amber-300 border border-slate-500 rounded px-3 py-1 text-xs font-extrabold w-24 text-center uppercase focus:outline-none focus:border-amber-400">
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-slate-700 bg-slate-900">
                         <table id="gameDashboardMatrixTable" class="w-full border-collapse text-center text-[10px] text-slate-100">
@@ -405,6 +405,10 @@
                     }
 
                     document.getElementById('studentDashboardInput').value = currentUserStudentId;
+                    const matrixCodeInput = document.getElementById('gameMatrixCodeInput');
+                    if (matrixCodeInput && currentGameCode && currentGameCode !== 'ALL') {
+                        matrixCodeInput.value = currentGameCode;
+                    }
 
                     const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
                     document.getElementById('classSelectLeaderboard').value = studentStd;
@@ -443,9 +447,21 @@
             }
         }
 
+        function setGameMatrixCode(code) {
+            const cleaned = (code || 'E03').trim().toUpperCase();
+            currentGameCode = cleaned;
+            const inputEl = document.getElementById('gameMatrixCodeInput');
+            if (inputEl) inputEl.value = cleaned;
+            renderGameDashboardMatrix();
+        }
+
         function filterLeaderboardsByGame() {
             currentGameCode = document.getElementById('overallGameSelect').value;
             document.getElementById('classGameSelect').value = currentGameCode;
+            const matrixCodeInput = document.getElementById('gameMatrixCodeInput');
+            if (matrixCodeInput && currentGameCode && currentGameCode !== 'ALL') {
+                matrixCodeInput.value = currentGameCode;
+            }
             renderOverallLeaderboard();
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
             renderGameDashboardMatrix();
@@ -1071,12 +1087,12 @@
             const tbody = document.getElementById('gameDashboardMatrixBody');
             if (!tbody) return;
 
-            const activeGame = (currentGameCode && currentGameCode !== 'ALL') ? currentGameCode.toUpperCase() : 'E03';
-            document.getElementById('gameMatrixTitle').textContent = `Game Dashboard (${activeGame})`;
+            const matrixInputVal = document.getElementById('gameMatrixCodeInput')?.value?.trim().toUpperCase();
+            const activeGame = matrixInputVal || ((currentGameCode && currentGameCode !== 'ALL') ? currentGameCode.toUpperCase() : 'E03');
 
             const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
             const standards = ['5', '4', '3', '2', '1'];
-            const maxStudentsPerBand = 13;
+            const maxStudentsPerBand = 15;
 
             const cols = [];
             standards.forEach(std => {
@@ -1091,7 +1107,7 @@
             function getCellStats(code) {
                 const recs = gameRecs.filter(r => matchStudentId(r.studentId, code));
                 if (!recs.length) {
-                    return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+                    return { subs: '', topScore: '', leastTime: '', avgScore: '', subsNum: 0, maxPct: 0, minTime: 0, avgPct: 0 };
                 }
                 const scores = recs.map(r => parseScoreValue(r.score));
                 const maxPct = Math.round(Math.max(...scores));
@@ -1103,7 +1119,11 @@
                     subs: String(recs.length),
                     topScore: `${maxPct}%`,
                     leastTime: minTime > 0 ? formatCompactTime(minTime) : '---',
-                    avgScore: `${avgPct}%`
+                    avgScore: `${avgPct}%`,
+                    subsNum: recs.length,
+                    maxPct,
+                    minTime,
+                    avgPct
                 };
             }
 
@@ -1160,7 +1180,7 @@
                 html += `<td class="border border-slate-600 bg-slate-800"></td></tr>`;
             });
 
-            // Student-01 .. Student-13 rows
+            // Student-01 .. Student-15 rows
             for (let idx = 0; idx < maxStudentsPerBand; idx++) {
                 const studentNum = String(idx + 1).padStart(2, '0');
                 const metrics = ['Submission:', 'Top Score:', 'Least Time:', 'Avg Score:'];
@@ -1194,6 +1214,30 @@
                     html += `</tr>`;
                 });
             }
+
+            // Last Row: Overall Consolidated Data
+            const totalSubs = gameRecs.length;
+            const totalUsers = new Set(gameRecs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean)).size;
+            const allScores = gameRecs.map(r => parseScoreValue(r.score));
+            const topScoreOverall = allScores.length ? `${Math.round(Math.max(...allScores))}%` : '---';
+            const avgScoreOverall = allScores.length ? `${Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length)}%` : '---';
+            const allTimes = gameRecs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const leastTimeOverall = allTimes.length ? formatCompactTime(Math.min(...allTimes)) : '---';
+
+            html += `<tr class="bg-indigo-950 text-amber-200 font-extrabold border-t-2 border-amber-400">
+                <td class="border border-slate-600 px-2 py-1.5 text-left bg-indigo-900 text-yellow-300">Overall Consolidated Data</td>`;
+
+            cols.forEach(c => {
+                const st = getCellStats(c.code);
+                const summaryText = st.subsNum > 0
+                    ? `${st.subsNum} | ${st.topScore} | ${st.leastTime} | ${st.avgScore}`
+                    : '';
+                html += `<td onclick="selectStudentFromMatrix('${c.code}')" class="border border-slate-700 px-1 py-1 cursor-pointer hover:bg-indigo-900 text-amber-100" title="${c.code}: ${summaryText || 'No data'}">${summaryText}</td>`;
+            });
+
+            html += `<td class="border border-slate-600 px-2 py-1.5 text-left bg-indigo-900 text-yellow-300">
+                Users: ${totalUsers} | Subs: ${totalSubs} | Top: ${topScoreOverall} | MinT: ${leastTimeOverall} | Avg: ${avgScoreOverall}
+            </td></tr>`;
 
             tbody.innerHTML = html;
         }
@@ -1336,4 +1380,4 @@
     </script>
 </body>
 </html>
-```[cite: 3, 4, 5]
+```[cite: 3, 4, 5, 6]

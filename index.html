@@ -75,11 +75,11 @@
             <!-- 4. STUDENT DASHBOARD -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                    <span class="text-xs font-bold text-slate-800"><span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-3</span> Type the Student Code of the Student Entry Point to get status:</span>
+                    <span class="text-xs font-bold text-slate-800">Type the Student Code of the Student Entry Point to get status:</span>
                     <input type="text" id="studentDashboardInput" value="1B01" onchange="loadStudentDashboard(this.value)" class="border border-emerald-300 rounded px-3 py-1 text-sm font-bold text-emerald-700 bg-white w-32 text-center uppercase">
                 </div>
                 <div class="overflow-x-auto">
-                    <table id="table-3" aria-label="Table-3" class="w-full grid-border border-collapse bg-white">
+                    <table class="w-full grid-border border-collapse bg-white">
                         <tbody id="studentDashboardTableBody"></tbody>
                     </table>
                 </div>
@@ -855,13 +855,13 @@
                         rowsHtml += `</tr>`;
                     });
                 });
-                return `<div class="overflow-x-auto mt-2"><table aria-label="Table-2" class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div>`;
+                return `<div class="overflow-x-auto mt-2"><table class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div>`;
             }
 
             let html = `<div class="border border-indigo-200 rounded-lg overflow-hidden bg-slate-50 p-3 space-y-3">
-                <div class="text-[11px] font-bold text-slate-700"><span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-1</span> All Game Codes (Larger font = ready to play; Red→Green gradient only when submissions &gt; 0):</div>
+                <div class="text-[11px] font-bold text-slate-700">All Game Codes (Larger font = ready to play; Red→Green gradient only when submissions &gt; 0):</div>
                 <div class="overflow-x-auto">
-                    <table id="table-1" aria-label="Table-1" class="w-full grid-border border-collapse bg-white">
+                    <table class="w-full grid-border border-collapse bg-white">
                         <tbody>`;
 
             const chunkSize = 9;
@@ -906,12 +906,12 @@
 
                 html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-3 shadow-sm mt-3">
                     <div class="flex items-center justify-between px-2.5 py-1 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
-                        <span class="text-xs font-extrabold uppercase"><span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded mr-1.5">Table-2</span><i class="fa-solid fa-gamepad mr-1"></i>Game Code: ${gCode} (${count} Submissions)</span>
+                        <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Game Code: ${gCode} (${count} Submissions)</span>
                         <button type="button" onclick="toggleGameGridExpansion('${gCode}')" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Close Grid</button>
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table aria-label="Table-2" class="w-full grid-border border-collapse text-[10px]">
+                        <table class="w-full grid-border border-collapse text-[10px]">
                             <thead>
                                 <tr class="bg-amber-100 text-slate-900 font-bold">
                                     <th class="border p-1">GameCode</th>
@@ -1033,7 +1033,7 @@
 
             gameBlocks.forEach((block) => {
                 dashboardHtml += `<tr class="bg-slate-200 font-bold text-slate-800 text-xs">
-                    <th class="w-32 bg-amber-100">Table-3: Student Dashboard</th>`;
+                    <th class="w-32 bg-amber-100">Student Dashboard</th>`;
                 block.forEach(code => {
                     dashboardHtml += `<th>${code}</th>`;
                 });
@@ -1143,4 +1143,3 @@
     </script>
 </body>
 </html>
-```[cite: 3]

@@ -13,6 +13,7 @@ body {
   font-weight: bold;
   background: #0f172a;
   color: #f8fafc;
+  touch-action: manipulation;
 }
 
 /* Top Session Bar */
@@ -109,6 +110,9 @@ canvas {
   background: #ffffff;
   max-width: 100%;
   height: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 .controls {
   max-width: 900px;
@@ -129,6 +133,8 @@ button {
   background: #e2e8f0;
   color: #0f172a;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; animation: none; }
 .btn-green { background: #22c55e; color: #ffffff; border-color: #15803d; }
@@ -150,6 +156,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; animation: none; }
   border-radius: 5px;
   background: #f1f5f9;
   border: 1px solid #94a3b8;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .toggle.on { color: #15803d; background: #dcfce7; border-color: #22c55e; }
 
@@ -247,7 +255,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; animation: none; }
 const sheetAppScriptUrl = "https://script.google.com/macros/s/AKfycbydKddCA-uZwXlnt9yvRMS6HgFwSXgT3RiphSojuQ3PyERaURSBhjCh-bFdHX54Hf0x/exec";
 const GAME_CODE = "E03";
 const MAX_TRIALS = 3;
-const MAX_SCORE_PER_TRIAL = 52; // 4 sets x 13 pairs in Mode 1 + Mode 2 tracked cleanly
+const MAX_SCORE_PER_TRIAL = 52;
 
 let studentId = "1B01";
 let userName = "Student";
@@ -318,7 +326,7 @@ function unlockSpeech() {
   } catch (e) {}
 }
 
-["click", "touchstart", "keydown"].forEach(evt => {
+["click", "pointerdown", "touchstart", "keydown"].forEach(evt => {
   document.addEventListener(evt, unlockSpeech, { once: true });
 });
 
@@ -377,8 +385,9 @@ const keyPos = {
   Y:[460,40],  Z:[120,200]
 };
 
+const manualCanvas = document.getElementById("manualCanvas");
 const aCtx = document.getElementById("autoCanvas").getContext("2d");
-const mCtx = document.getElementById("manualCanvas").getContext("2d");
+const mCtx = manualCanvas.getContext("2d");
 let ai = 0, mi = 0, stage = 0;
 
 function draw(ctx, lower) {
@@ -449,6 +458,7 @@ autoBtn.onclick = () => {
       autoBtn.classList.remove("blink");
       mode2.style.display = "block";
       manBtn.disabled = false;
+      draw(mCtx, ML());
     }
   }
 };
@@ -461,9 +471,9 @@ function processCorrectKey(letter) {
   draw(mCtx, ML());
   const [kx, ky] = keyPos[letter];
   mCtx.strokeStyle = "green";
-  mCtx.lineWidth = 2;
+  mCtx.lineWidth = 3;
   mCtx.beginPath();
-  mCtx.arc(kx, ky, 16, 0, 2 * Math.PI);
+  mCtx.arc(kx, ky, 18, 0, 2 * Math.PI);
   mCtx.stroke();
 
   stage++;
@@ -472,6 +482,12 @@ function processCorrectKey(letter) {
     animateLine(mCtx, A, B, ML(), 30);
     manualOutput.value += (ML() ? A.toLowerCase() + B.toLowerCase() : A + B) + " ";
     speakPair(A, B, ML());
+
+    if (completedPairsCount < MAX_SCORE_PER_TRIAL) {
+      completedPairsCount++;
+      updateScoreUI();
+    }
+
     mi++;
     stage = 0;
 
@@ -483,23 +499,57 @@ function processCorrectKey(letter) {
   }
 }
 
-document.getElementById("manualCanvas").onclick = e => {
-  if (!trialActive || manBtn.disabled) return;
+let lastManualInputAt = 0;
+function handleManualCanvasInput(clientX, clientY) {
+  if (!trialActive || mode2.style.display === "none") return;
+
+  const now = Date.now();
+  if (now - lastManualInputAt < 120) return;
+  lastManualInputAt = now;
+
   const [A, B] = (MD() ? desc() : asc)[mi];
-  const r = e.target.getBoundingClientRect();
-  const x = e.clientX - r.left, y = e.clientY - r.top;
+  const r = manualCanvas.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+
+  // Map CSS display coordinates back to internal 900x260 canvas coordinates
+  const scaleX = manualCanvas.width / r.width;
+  const scaleY = manualCanvas.height / r.height;
+  const x = (clientX - r.left) * scaleX;
+  const y = (clientY - r.top) * scaleY;
+
+  let nearestKey = null;
+  let nearestDistSq = 1200; // ~34.6px radius in canvas space for comfortable tablet taps
+
   for (const k in keyPos) {
     const [kx, ky] = keyPos[k];
-    if ((x - kx) ** 2 + (y - ky) ** 2 < 300) {
-      if (k === (stage === 0 ? A : B)) processCorrectKey(k);
-      else stage = 0;
-      break;
+    const dSq = (x - kx) ** 2 + (y - ky) ** 2;
+    if (dSq < nearestDistSq) {
+      nearestDistSq = dSq;
+      nearestKey = k;
     }
   }
-};
+
+  if (nearestKey) {
+    if (nearestKey === (stage === 0 ? A : B)) {
+      processCorrectKey(nearestKey);
+    } else if (nearestKey === A) {
+      stage = 0;
+      processCorrectKey(A);
+    }
+  }
+}
+
+manualCanvas.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  handleManualCanvasInput(e.clientX, e.clientY);
+}, { passive: false });
+
+manualCanvas.addEventListener("click", e => {
+  handleManualCanvasInput(e.clientX, e.clientY);
+});
 
 document.addEventListener("keydown", e => {
-  if (!trialActive || mode2.style.display !== "block") return;
+  if (!trialActive || mode2.style.display === "none") return;
   if (!/^[A-Za-z]$/.test(e.key)) return;
   const isLower = e.key === e.key.toLowerCase();
   if (isLower !== ML()) return;
@@ -669,4 +719,3 @@ draw(mCtx, false);
 </script>
 </body>
 </html>
-

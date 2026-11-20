@@ -20,7 +20,7 @@
         .bg-boy-blue { background-color: #bae6fd; color: #0369a1; }
         .bg-girl-pink { background-color: #fbcfe8; color: #be185d; }
         .cell-hover:hover {
-            filter: brightness(0.92);
+            filter: brightness(0.95);
             cursor: pointer;
             transform: scale(1.03);
             transition: transform 0.1s ease-in-out;
@@ -662,6 +662,48 @@
             return [...masterGames, ...extraGames];
         }
 
+        function getRedToGreenStyle(count, maxCount) {
+            if (!count || count <= 0) return "";
+            const ratio = Math.min(1, Math.max(0, count / Math.max(1, maxCount)));
+            const hue = Math.round(ratio * 120); // 0 = red, 120 = green
+            return `background-color: hsl(${hue}, 85%, 78%); color: #0f172a; border-color: hsl(${hue}, 65%, 45%);`;
+        }
+
+        function getCurrentWeekStart() {
+            const now = new Date();
+            const day = now.getDay(); // 0 = Sun, 1 = Mon...
+            const diffToMonday = day === 0 ? -6 : 1 - day;
+            const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday, 0, 0, 0, 0);
+            return monday;
+        }
+
+        function getWeeklyTrialMilestones(recs) {
+            const weekStart = getCurrentWeekStart();
+            const countsByStudent = {};
+
+            recs.forEach(r => {
+                if (!r.studentId) return;
+                const sid = String(r.studentId).trim().toUpperCase();
+                let inThisWeek = true;
+                if (r.submittedAt) {
+                    const parsedDate = new Date(r.submittedAt);
+                    if (!isNaN(parsedDate.getTime())) {
+                        inThisWeek = parsedDate >= weekStart;
+                    }
+                }
+                if (inThisWeek) {
+                    countsByStudent[sid] = (countsByStudent[sid] || 0) + 1;
+                }
+            });
+
+            const values = Object.values(countsByStudent);
+            return {
+                finished3: values.filter(c => c >= 3).length,
+                finished6: values.filter(c => c >= 6).length,
+                finished9: values.filter(c => c >= 9).length
+            };
+        }
+
         function toggleGameGridExpansion(gCode) {
             if (!READY_GAMES.includes(gCode)) {
                 alert("Game not yet ready!");
@@ -677,6 +719,8 @@
 
         function getGameSummaryStats(gCode) {
             const recs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
+            const weeklyMilestones = getWeeklyTrialMilestones(recs);
+
             if (!recs.length) {
                 return {
                     startDate: '---',
@@ -686,6 +730,9 @@
                     roll: '150',
                     finished: 0,
                     pct: '0%',
+                    weekly3: 0,
+                    weekly6: 0,
+                    weekly9: 0,
                     overallTop: '---',
                     overallBest: '---',
                     overallAvg: '---',
@@ -750,7 +797,10 @@
             });
 
             return { 
-                startDate, startTime, endDate, endTime, roll, finished: finishedCount, pct, 
+                startDate, startTime, endDate, endTime, roll, finished: finishedCount, pct,
+                weekly3: weeklyMilestones.finished3,
+                weekly6: weeklyMilestones.finished6,
+                weekly9: weeklyMilestones.finished9,
                 overallTop, overallBest, overallAvg, stdStats 
             };
         }
@@ -760,6 +810,12 @@
             if (!container) return;
 
             const availableGames = getAllAvailableGames();
+            const gameCounts = {};
+            availableGames.forEach(g => {
+                gameCounts[g] = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === g).length;
+            });
+            const maxSubmissions = Math.max(1, ...Object.values(gameCounts));
+
             const standards = [1, 2, 3, 4, 5];
             const subRowLabels = [
                 { label: "Submissions", key: "subs", cls: "bg-slate-50 text-indigo-700 font-bold" },
@@ -803,7 +859,7 @@
             }
 
             let html = `<div class="border border-indigo-200 rounded-lg overflow-hidden bg-slate-50 p-3 space-y-3">
-                <div class="text-[11px] font-bold text-slate-700">All Game Codes (Green = ready to play, Gray = not yet ready. Click a ready game code to expand/collapse):</div>
+                <div class="text-[11px] font-bold text-slate-700">All Game Codes (Larger font = ready to play; Red→Green gradient only when submissions &gt; 0):</div>
                 <div class="overflow-x-auto">
                     <table class="w-full grid-border border-collapse bg-white">
                         <tbody>`;
@@ -814,16 +870,24 @@
                 html += `<tr>`;
                 rowCodes.forEach(gCode => {
                     const isReady = READY_GAMES.includes(gCode);
-                    const count = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === gCode).length;
+                    const count = gameCounts[gCode] || 0;
                     const isExpanded = expandedGameCodes.has(gCode);
 
-                    let bgClass = 'bg-slate-100 hover:bg-slate-200 text-slate-600 opacity-75';
-                    if (isReady) {
-                        bgClass = isExpanded ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm' : 'bg-emerald-200 hover:bg-emerald-300 text-emerald-950 font-bold';
+                    let bgClass = 'bg-slate-100 hover:bg-slate-200 text-slate-600 opacity-80';
+                    let inlineStyle = '';
+
+                    if (count > 0) {
+                        inlineStyle = getRedToGreenStyle(count, maxSubmissions);
+                        bgClass = isExpanded ? 'ring-2 ring-slate-900 font-extrabold' : 'font-bold';
+                    } else if (isReady) {
+                        bgClass = isExpanded ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold';
                     }
 
-                    html += `<td onclick="toggleGameGridExpansion('${gCode}')" class="cell-hover ${bgClass} font-bold text-xs py-2 px-1 cursor-pointer transition-all" title="${isReady ? 'Click to expand/collapse ' + gCode : 'Game not yet ready!'}">
-                        ${gCode} <span class="text-[9px] opacity-80">(${count})</span>
+                    const sizeClass = isReady ? 'text-base py-3 px-2 font-extrabold' : 'text-xs py-2 px-1 font-semibold';
+                    const countSizeClass = isReady ? 'text-xs' : 'text-[10px]';
+
+                    html += `<td onclick="toggleGameGridExpansion('${gCode}')" style="${inlineStyle}" class="cell-hover ${bgClass} ${sizeClass} cursor-pointer transition-all" title="${isReady ? 'Ready: Click to expand/collapse ' + gCode : 'Not yet ready: ' + gCode}">
+                        ${gCode} <span class="${countSizeClass} opacity-85">(${count})</span>
                     </td>`;
                 });
                 for (let empty = rowCodes.length; empty < chunkSize; empty++) {
@@ -837,7 +901,7 @@
                 </div>`;
 
             expandedGameCodes.forEach(gCode => {
-                const count = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === gCode).length;
+                const count = gameCounts[gCode] || 0;
                 const stats = getGameSummaryStats(gCode);
 
                 html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-3 shadow-sm mt-3">
@@ -855,6 +919,9 @@
                                     <th class="border p-1">End</th>
                                     <th class="border p-1 bg-pink-100">Students</th>
                                     <th class="border p-1 bg-pink-100">Tot</th>
+                                    <th class="border p-1 bg-emerald-100">Wk 3T</th>
+                                    <th class="border p-1 bg-emerald-100">Wk 6T</th>
+                                    <th class="border p-1 bg-emerald-100">Wk 9T</th>
                                     <th class="border p-1 bg-pink-100">S5</th>
                                     <th class="border p-1 bg-pink-100">S4</th>
                                     <th class="border p-1 bg-pink-100">S3</th>
@@ -876,6 +943,9 @@
                                     <td class="border p-1">${stats.endDate}</td>
                                     <td class="border p-1 bg-pink-50 font-bold">Roll</td>
                                     <td class="border p-1 bg-pink-50">${stats.roll}</td>
+                                    <td class="border p-1 bg-emerald-50 font-bold" rowspan="3">${stats.weekly3}</td>
+                                    <td class="border p-1 bg-emerald-50 font-bold" rowspan="3">${stats.weekly6}</td>
+                                    <td class="border p-1 bg-emerald-50 font-bold" rowspan="3">${stats.weekly9}</td>
                                     <td class="border p-1 bg-pink-50">30</td>
                                     <td class="border p-1 bg-pink-50">30</td>
                                     <td class="border p-1 bg-pink-50">30</td>

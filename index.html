@@ -75,11 +75,11 @@
             <!-- 4. STUDENT DASHBOARD -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                    <span class="text-xs font-bold text-slate-800">Type the Student Code of the Student Entry Point to get status:</span>
+                    <span class="text-xs font-bold text-slate-800"><span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-4</span> Type the Student Code of the Student Entry Point to get status:</span>
                     <input type="text" id="studentDashboardInput" value="1B01" onchange="loadStudentDashboard(this.value)" class="border border-emerald-300 rounded px-3 py-1 text-sm font-bold text-emerald-700 bg-white w-32 text-center uppercase">
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full grid-border border-collapse bg-white">
+                    <table id="table-4" aria-label="Table-4" class="w-full grid-border border-collapse bg-white">
                         <tbody id="studentDashboardTableBody"></tbody>
                     </table>
                 </div>
@@ -289,7 +289,6 @@
         let expandedGameCodes = new Set(["E02"]);
 
         const READY_GAMES = ["E02", "E03", "M03"];
-        const TOTAL_TARGET_STUDENTS = 92;
 
         function navAction(section) {
             if (section === 'Home') {
@@ -663,18 +662,19 @@
             return [...masterGames, ...extraGames];
         }
 
-        function getRedToGreenFor92Students(studentCount) {
-            if (!studentCount || studentCount <= 0) return "";
-            const ratio = Math.min(1, Math.max(0, studentCount / TOTAL_TARGET_STUDENTS));
-            const hue = Math.round(ratio * 120); // 0 = Red (0 students) -> 120 = Green (92 students)
-            return `background-color: hsl(${hue}, 85%, 76%); color: #0f172a; border-color: hsl(${hue}, 65%, 45%);`;
+        function getRedToGreenStyle(count, maxCount) {
+            if (!count || count <= 0) return "";
+            const ratio = Math.min(1, Math.max(0, count / Math.max(1, maxCount)));
+            const hue = Math.round(ratio * 120); // 0 = red, 120 = green
+            return `background-color: hsl(${hue}, 85%, 78%); color: #0f172a; border-color: hsl(${hue}, 65%, 45%);`;
         }
 
         function getCurrentWeekStart() {
             const now = new Date();
             const day = now.getDay(); // 0 = Sun, 1 = Mon...
             const diffToMonday = day === 0 ? -6 : 1 - day;
-            return new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday, 0, 0, 0, 0);
+            const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday, 0, 0, 0, 0);
+            return monday;
         }
 
         function getWeeklyTrialMilestones(recs) {
@@ -717,6 +717,121 @@
             renderStudentEntryGrid();
         }
 
+        function buildClasswiseGameSummaryTableHtml(gCode) {
+            const recs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
+            const stdRoll = 30;
+            const standards = ['5', '4', '3', '2', '1'];
+
+            function summarizeGroup(label, groupRecs, rollCount) {
+                const milestones = getWeeklyTrialMilestones(groupRecs);
+                const subs = groupRecs.length;
+                const uniqueStudents = [...new Set(groupRecs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean))];
+                const finished = uniqueStudents.length;
+                const pct = rollCount > 0 ? `${Math.round((finished / rollCount) * 100)}%` : '0%';
+
+                if (!subs) {
+                    return {
+                        label,
+                        roll: rollCount,
+                        finished,
+                        pct,
+                        subs,
+                        wk3: 0,
+                        wk6: 0,
+                        wk9: 0,
+                        top: '---',
+                        best: '---',
+                        avg: '---'
+                    };
+                }
+
+                const sortedByScore = [...groupRecs].sort((a, b) => parseScoreValue(b.score) - parseScoreValue(a.score));
+                const topRec = sortedByScore[0];
+                const topTimeStr = formatTimeDisplay(topRec.level1Time !== '00:00:00' ? topRec.level1Time : topRec.level2Time);
+                const top = `${String(topRec.studentId || '').substring(0, 4)}, ${formatScoreDisplay(topRec.score)}, ${topTimeStr}`;
+
+                const timedRecs = groupRecs.filter(r => (parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)) > 0);
+                const sortedByTime = [...timedRecs].sort((a, b) => {
+                    return (parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time)) - (parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time));
+                });
+                const bestRec = sortedByTime[0] || topRec;
+                const bestTimeStr = formatTimeDisplay(bestRec.level1Time !== '00:00:00' ? bestRec.level1Time : bestRec.level2Time);
+                const best = `${String(bestRec.studentId || '').substring(0, 4)}, ${formatScoreDisplay(bestRec.score)}, ${bestTimeStr}`;
+
+                const scores = groupRecs.map(r => parseScoreValue(r.score));
+                const avgScorePct = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+                const times = timedRecs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time));
+                const avgTimeSecs = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
+                const avg = `${avgScorePct}%, ${formatSecondsToHHMMSS(avgTimeSecs)}`;
+
+                return {
+                    label,
+                    roll: rollCount,
+                    finished,
+                    pct,
+                    subs,
+                    wk3: milestones.finished3,
+                    wk6: milestones.finished6,
+                    wk9: milestones.finished9,
+                    top,
+                    best,
+                    avg
+                };
+            }
+
+            const allRow = summarizeGroup('All Stds', recs, stdRoll * standards.length);
+            const stdRows = standards.map(std => {
+                const stdRecs = recs.filter(r => r.studentId && String(r.studentId).trim().startsWith(std));
+                return summarizeGroup(`Std ${std}`, stdRecs, stdRoll);
+            });
+
+            const rowsToRender = [allRow, ...stdRows];
+            let bodyRowsHtml = '';
+
+            rowsToRender.forEach((row, idx) => {
+                const isAll = idx === 0;
+                bodyRowsHtml += `<tr class="${isAll ? 'bg-slate-800/90 text-white font-bold' : 'bg-slate-900/80 text-slate-200'}">
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold ${isAll ? 'text-white' : 'text-slate-100'}">${row.label}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold">${row.roll}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold text-emerald-400">${row.finished}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold">${row.pct}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold text-sky-400">${row.subs}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold bg-emerald-950/70 text-emerald-200">${row.wk3}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold bg-emerald-950/70 text-emerald-200">${row.wk6}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-bold bg-emerald-950/70 text-emerald-200">${row.wk9}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-mono text-slate-100">${row.top}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-mono text-slate-100">${row.best}</td>
+                    <td class="border border-slate-600 px-2 py-1.5 font-mono text-slate-100">${row.avg}</td>
+                </tr>`;
+            });
+
+            return `
+                <div class="space-y-1.5 mt-2">
+                    <div class="text-xs font-bold text-slate-800">Table-2: Classwise Game Summary</div>
+                    <div class="overflow-x-auto rounded-lg border border-slate-700 bg-slate-900">
+                        <table aria-label="Table-2" class="w-full border-collapse text-center text-xs">
+                            <thead>
+                                <tr class="bg-slate-800 text-slate-100 font-bold">
+                                    <th class="border border-slate-600 px-2 py-2">Standard</th>
+                                    <th class="border border-slate-600 px-2 py-2">Roll</th>
+                                    <th class="border border-slate-600 px-2 py-2">Finished</th>
+                                    <th class="border border-slate-600 px-2 py-2">%</th>
+                                    <th class="border border-slate-600 px-2 py-2">Subs</th>
+                                    <th class="border border-slate-600 px-2 py-2 bg-emerald-900 text-emerald-200">Wk 3T</th>
+                                    <th class="border border-slate-600 px-2 py-2 bg-emerald-900 text-emerald-200">Wk 6T</th>
+                                    <th class="border border-slate-600 px-2 py-2 bg-emerald-900 text-emerald-200">Wk 9T</th>
+                                    <th class="border border-slate-600 px-2 py-2">Top (ID, Score, Time)</th>
+                                    <th class="border border-slate-600 px-2 py-2">Best (ID, Score, Time)</th>
+                                    <th class="border border-slate-600 px-2 py-2">Avg (Score, Time)</th>
+                                </tr>
+                            </thead>
+                            <tbody>${bodyRowsHtml}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
         function getGameSummaryStats(gCode) {
             const recs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
             const weeklyMilestones = getWeeklyTrialMilestones(recs);
@@ -727,7 +842,7 @@
                     startTime: '---',
                     endDate: '---',
                     endTime: '---',
-                    roll: String(TOTAL_TARGET_STUDENTS),
+                    roll: '150',
                     finished: 0,
                     pct: '0%',
                     weekly3: 0,
@@ -752,9 +867,9 @@
             const endDate = dates.length > 0 ? dates[dates.length - 1].split('T')[0] : '---';
             const endTime = dates.length > 0 ? (dates[dates.length - 1].split('T')[1] || '').split('.')[0] : '---';
 
-            const uniqueStudents = [...new Set(recs.map(r => String(r.studentId).trim().toUpperCase()))];
+            const uniqueStudents = [...new Set(recs.map(r => r.studentId))];
             const finishedCount = uniqueStudents.length;
-            const roll = TOTAL_TARGET_STUDENTS;
+            const roll = 150;
             const pct = Math.round((finishedCount / roll) * 100) + '%';
 
             const sortedByScore = [...recs].sort((a, b) => parseScoreValue(b.score) - parseScoreValue(a.score));
@@ -811,13 +926,10 @@
 
             const availableGames = getAllAvailableGames();
             const gameCounts = {};
-            const gameStudentCounts = {};
-
             availableGames.forEach(g => {
-                const matchingRecs = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === g);
-                gameCounts[g] = matchingRecs.length;
-                gameStudentCounts[g] = new Set(matchingRecs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean)).size;
+                gameCounts[g] = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === g).length;
             });
+            const maxSubmissions = Math.max(1, ...Object.values(gameCounts));
 
             const standards = [1, 2, 3, 4, 5];
             const subRowLabels = [
@@ -858,13 +970,13 @@
                         rowsHtml += `</tr>`;
                     });
                 });
-                return `<div class="overflow-x-auto mt-2"><table class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div>`;
+                return `<div class="space-y-1.5 mt-2"><div class="text-xs font-bold text-slate-800">Table-3: Student Entry Grid (${gCode})</div><div class="overflow-x-auto"><table aria-label="Table-3" class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div></div>`;
             }
 
             let html = `<div class="border border-indigo-200 rounded-lg overflow-hidden bg-slate-50 p-3 space-y-3">
-                <div class="text-[11px] font-bold text-slate-700">All Game Codes (Larger font = ready to play; Red→Green gradient for 0 to 92 students when submissions &gt; 0):</div>
+                <div class="text-[11px] font-bold text-slate-700"><span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-1</span> All Game Codes (Larger font = ready to play; Red→Green gradient only when submissions &gt; 0):</div>
                 <div class="overflow-x-auto">
-                    <table class="w-full grid-border border-collapse bg-white">
+                    <table id="table-1" aria-label="Table-1" class="w-full grid-border border-collapse bg-white">
                         <tbody>`;
 
             const chunkSize = 9;
@@ -873,15 +985,14 @@
                 html += `<tr>`;
                 rowCodes.forEach(gCode => {
                     const isReady = READY_GAMES.includes(gCode);
-                    const subCount = gameCounts[gCode] || 0;
-                    const uniqueStudentsCount = gameStudentCounts[gCode] || 0;
+                    const count = gameCounts[gCode] || 0;
                     const isExpanded = expandedGameCodes.has(gCode);
 
                     let bgClass = 'bg-slate-100 hover:bg-slate-200 text-slate-600 opacity-80';
                     let inlineStyle = '';
 
-                    if (subCount > 0) {
-                        inlineStyle = getRedToGreenFor92Students(uniqueStudentsCount);
+                    if (count > 0) {
+                        inlineStyle = getRedToGreenStyle(count, maxSubmissions);
                         bgClass = isExpanded ? 'ring-2 ring-slate-900 font-extrabold' : 'font-bold';
                     } else if (isReady) {
                         bgClass = isExpanded ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold';
@@ -890,8 +1001,8 @@
                     const sizeClass = isReady ? 'text-base py-3 px-2 font-extrabold' : 'text-xs py-2 px-1 font-semibold';
                     const countSizeClass = isReady ? 'text-xs' : 'text-[10px]';
 
-                    html += `<td onclick="toggleGameGridExpansion('${gCode}')" style="${inlineStyle}" class="cell-hover ${bgClass} ${sizeClass} cursor-pointer transition-all" title="${isReady ? 'Ready: ' + uniqueStudentsCount + '/92 students (' + subCount + ' submissions)' : 'Not yet ready: ' + gCode}">
-                        ${gCode} <span class="${countSizeClass} opacity-85">(${uniqueStudentsCount}/${subCount})</span>
+                    html += `<td onclick="toggleGameGridExpansion('${gCode}')" style="${inlineStyle}" class="cell-hover ${bgClass} ${sizeClass} cursor-pointer transition-all" title="${isReady ? 'Ready: Click to expand/collapse ' + gCode : 'Not yet ready: ' + gCode}">
+                        ${gCode} <span class="${countSizeClass} opacity-85">(${count})</span>
                     </td>`;
                 });
                 for (let empty = rowCodes.length; empty < chunkSize; empty++) {
@@ -906,7 +1017,6 @@
 
             expandedGameCodes.forEach(gCode => {
                 const count = gameCounts[gCode] || 0;
-                const stats = getGameSummaryStats(gCode);
 
                 html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-3 shadow-sm mt-3">
                     <div class="flex items-center justify-between px-2.5 py-1 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
@@ -914,94 +1024,7 @@
                         <button type="button" onclick="toggleGameGridExpansion('${gCode}')" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Close Grid</button>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full grid-border border-collapse text-[10px]">
-                            <thead>
-                                <tr class="bg-amber-100 text-slate-900 font-bold">
-                                    <th class="border p-1">GameCode</th>
-                                    <th class="border p-1">Start</th>
-                                    <th class="border p-1">End</th>
-                                    <th class="border p-1 bg-emerald-100" colspan="2">Weekly Trials</th>
-                                    <th class="border p-1 bg-pink-100">Students</th>
-                                    <th class="border p-1 bg-pink-100">Tot</th>
-                                    <th class="border p-1 bg-pink-100">S5</th>
-                                    <th class="border p-1 bg-pink-100">S4</th>
-                                    <th class="border p-1 bg-pink-100">S3</th>
-                                    <th class="border p-1 bg-pink-100">S2</th>
-                                    <th class="border p-1 bg-pink-100">S1</th>
-                                    <th class="border p-1 bg-sky-200"></th>
-                                    <th class="border p-1 bg-sky-200" colspan="2">O_Score, Time</th>
-                                    <th class="border p-1 bg-sky-200" colspan="2">S5_Score, Time</th>
-                                    <th class="border p-1 bg-sky-200" colspan="2">S4_Score, Time</th>
-                                    <th class="border p-1 bg-sky-200" colspan="2">S3_Score, Time</th>
-                                    <th class="border p-1 bg-sky-200" colspan="2">S2_Score, Time</th>
-                                    <th class="border p-1 bg-sky-200" colspan="2">S1_Score, Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="border p-1 font-bold text-indigo-700" rowspan="3">${gCode}</td>
-                                    <td class="border p-1">${stats.startDate}</td>
-                                    <td class="border p-1">${stats.endDate}</td>
-                                    <td class="border p-1 bg-emerald-50 font-bold">Wk 3T</td>
-                                    <td class="border p-1 bg-emerald-50 font-bold">${stats.weekly3}</td>
-                                    <td class="border p-1 bg-pink-50 font-bold">Roll</td>
-                                    <td class="border p-1 bg-pink-50">${stats.roll}</td>
-                                    <td class="border p-1 bg-pink-50">30</td>
-                                    <td class="border p-1 bg-pink-50">30</td>
-                                    <td class="border p-1 bg-pink-50">30</td>
-                                    <td class="border p-1 bg-pink-50">30</td>
-                                    <td class="border p-1 bg-pink-50">30</td>
-                                    <td class="border p-1 bg-sky-50 font-bold">Top</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.overallTop}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['5'].top}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['4'].top}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['3'].top}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['2'].top}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['1'].top}</td>
-                                </tr>
-                                <tr>
-                                    <td class="border p-1">${stats.startTime}</td>
-                                    <td class="border p-1">${stats.endTime}</td>
-                                    <td class="border p-1 bg-emerald-50 font-bold">Wk 6T</td>
-                                    <td class="border p-1 bg-emerald-50 font-bold">${stats.weekly6}</td>
-                                    <td class="border p-1 bg-pink-50 font-bold">Finished</td>
-                                    <td class="border p-1 bg-pink-50">${stats.finished}</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-sky-50 font-bold">Best</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.overallBest}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['5'].best}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['4'].best}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['3'].best}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['2'].best}</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.stdStats['1'].best}</td>
-                                </tr>
-                                <tr>
-                                    <td class="border p-1 bg-orange-50" colspan="2">Game Content</td>
-                                    <td class="border p-1 bg-emerald-50 font-bold">Wk 9T</td>
-                                    <td class="border p-1 bg-emerald-50 font-bold">${stats.weekly9}</td>
-                                    <td class="border p-1 bg-pink-50 font-bold">%</td>
-                                    <td class="border p-1 bg-pink-50">${stats.pct}</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-pink-50">-</td>
-                                    <td class="border p-1 bg-sky-50 font-bold">Avg</td>
-                                    <td class="border p-1 bg-sky-50" colspan="2">${stats.overallAvg}</td>
-                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
-                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
-                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
-                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
-                                    <td class="border p-1 bg-slate-900 text-slate-900" colspan="2"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    ${buildClasswiseGameSummaryTableHtml(gCode)}
 
                     ${buildSingleGameGridHtml(gCode)}
                 </div>`;
@@ -1038,7 +1061,7 @@
 
             gameBlocks.forEach((block) => {
                 dashboardHtml += `<tr class="bg-slate-200 font-bold text-slate-800 text-xs">
-                    <th class="w-32 bg-amber-100">Student Dashboard</th>`;
+                    <th class="w-32 bg-amber-100">Table-4: Student Dashboard</th>`;
                 block.forEach(code => {
                     dashboardHtml += `<th>${code}</th>`;
                 });
@@ -1148,3 +1171,4 @@
     </script>
 </body>
 </html>
+```[cite: 3, 4]

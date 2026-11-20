@@ -91,7 +91,7 @@
                 <div id="studentEntryGridsContainer" class="space-y-3"></div>
             </section>
 
-            <!-- 4. GAME DASHBOARD MATRIX (REPLACED TABLE-4) -->
+            <!-- 4. GAME DASHBOARD MATRIX -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-2">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900 text-slate-100 px-3 py-2 rounded-lg border border-slate-700">
                     <span class="text-xs font-bold">Enter any Game Code(shaded) found in the above Game Table to get the status of that game:</span>
@@ -1126,7 +1126,6 @@
 
             const memberSummary = computeCohortMetrics(memberRecsAll, Math.max(15, memberRecsAll.length));
 
-            // Build top 15 ranked members list
             const memberIds = [...new Set(memberRecsAll.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean))];
             const rankedMembers = memberIds.map(mid => {
                 const st = computeStudentStatsForCode(memberRecsAll, mid);
@@ -1138,7 +1137,6 @@
                 return a.minTime - b.minTime;
             });
 
-            // Helper to get the 3 sub-column values for a cohort on a summary row
             function getSummaryTriplet(cohort, metricKey) {
                 if (!cohort.subs) return ['', '', ''];
                 const mainVal = cohort[metricKey] || '';
@@ -1169,11 +1167,11 @@
 
             // ROW 1: Main Group Headers
             html += `<tr class="bg-slate-800 text-slate-100 font-extrabold">
-                <th class="px-2 py-1.5 text-center" colspan="2" rowspan="2">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
+                <th class="px-2 py-1.5 text-center" colspan="2" rowspan="3">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
             groupStats.forEach(g => {
                 html += `<th class="group-divider-left px-2 py-1.5" colspan="6">${g.title}</th>`;
             });
-            html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="2">All Members &amp;<br>Top 15 Members</th>
+            html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="3">All Members &amp;<br>Top 15 Members</th>
             </tr>`;
 
             // ROW 2: Boys / Girls Subheaders
@@ -1184,7 +1182,15 @@
             });
             html += `</tr>`;
 
-            // ROWS 3..8: Summary Metrics
+            // ROW 3: Table4 Label Row below Boys/Girls
+            html += `<tr class="bg-amber-950/80 text-amber-200 font-extrabold text-[10px]">`;
+            groupStats.forEach((g) => {
+                html += `<th class="group-divider-left px-1 py-0.5 text-amber-300" colspan="3">Table4</th>
+                         <th class="px-1 py-0.5 text-amber-300" colspan="3">Table4</th>`;
+            });
+            html += `</tr>`;
+
+            // Summary Metrics Rows
             const summaryRows = [
                 { label: 'Submissions:', key: 'subs', cls: 'text-sky-300 font-bold' },
                 { label: 'Users:', key: 'users', cls: 'text-emerald-300 font-bold' },
@@ -1209,7 +1215,6 @@
                     });
                 });
 
-                // Right 6 columns: 3 shaded grey cells + 3 member summary cells
                 const mVals = getSummaryTriplet(memberSummary, sRow.key);
                 html += `<td class="group-divider-left bg-slate-700/70 min-w-[34px]"></td>
                          <td class="bg-slate-700/70 min-w-[34px]"></td>
@@ -1220,7 +1225,6 @@
                 </tr>`;
             });
 
-            // Helper to get the 3 sub-column values for Student-01 .. Student-15
             function getStudentSlotTriplet(group, gender, slotNum, metricField) {
                 const pad = slotNum < 10 ? `0${slotNum}` : `${slotNum}`;
                 if (group.stdPrefix) {
@@ -1229,7 +1233,6 @@
                     const val = st[metricField] || '';
                     return [val, '', ''];
                 } else {
-                    // "Students" group aggregates across Std 1..5 for slot 01..15
                     const slotRecs = [];
                     for (let s = 1; s <= 5; s++) {
                         const code = `${s}${gender}${pad}`;
@@ -1296,7 +1299,7 @@
                 });
             }
 
-            // LAST BLOCK: Overall Consolidated Data (4 rows matching the exact column grid)
+            // LAST BLOCK: Overall Consolidated Data
             const overallAll = computeCohortMetrics(gameRecs, 150);
             studentMetricRows.forEach((mRow, mIdx) => {
                 const topBorder = mIdx === 0 ? 'block-divider-top' : '';

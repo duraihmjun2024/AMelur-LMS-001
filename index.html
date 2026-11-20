@@ -72,16 +72,34 @@
                 <div id="studentEntryGridsContainer" class="space-y-3"></div>
             </section>
 
-            <!-- 4. STUDENT DASHBOARD -->
-            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+            <!-- 4. GAME DASHBOARD MATRIX + INDIVIDUAL STUDENT REPORT -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                     <span class="text-xs font-bold text-slate-800"><span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-4</span> Type the Student Code of the Student Entry Point to get status:</span>
                     <input type="text" id="studentDashboardInput" value="1B01" onchange="loadStudentDashboard(this.value)" class="border border-emerald-300 rounded px-3 py-1 text-sm font-bold text-emerald-700 bg-white w-32 text-center uppercase">
                 </div>
-                <div class="overflow-x-auto">
-                    <table id="table-4" aria-label="Table-4" class="w-full grid-border border-collapse bg-white">
-                        <tbody id="studentDashboardTableBody"></tbody>
-                    </table>
+
+                <!-- Game Dashboard Matrix Table -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span id="gameMatrixTitle">Game Dashboard (E03)</span>
+                        <span class="text-[11px] text-slate-500">Click any student cell to view that student's report below</span>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg border border-slate-700 bg-slate-900">
+                        <table id="gameDashboardMatrixTable" class="w-full border-collapse text-center text-[10px] text-slate-100">
+                            <tbody id="gameDashboardMatrixBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Individual Student Report Table -->
+                <div class="space-y-1.5">
+                    <div class="text-xs font-bold text-slate-800">Individual Student Report (<span id="selectedStudentReportCode">1B01</span>)</div>
+                    <div class="overflow-x-auto">
+                        <table id="table-4" aria-label="Table-4" class="w-full grid-border border-collapse bg-white">
+                            <tbody id="studentDashboardTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -285,7 +303,7 @@
         let isOverallExpanded = false;
         let isClassExpanded = false;
         let currentUserStudentId = "1B01";
-        let currentGameCode = "E02";
+        let currentGameCode = "E03";
         let expandedGameCodes = new Set(["E02"]);
 
         const READY_GAMES = ["E02", "E03", "M03"];
@@ -333,6 +351,13 @@
             return `${hrs}:${mins}:${secs}`;
         }
 
+        function formatCompactTime(totalSecs) {
+            if (!totalSecs || isNaN(totalSecs) || totalSecs <= 0) return "---";
+            const mins = Math.floor(totalSecs / 60);
+            const secs = totalSecs % 60;
+            return mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
+        }
+
         function formatTimeDisplay(timeStr) {
             if (!timeStr || timeStr === '--' || timeStr === '---') return "00:00:00";
             const str = String(timeStr).trim();
@@ -376,7 +401,7 @@
                         currentGameCode = data.latestGameCode || gameRecordsData[0].gameCode;
                     } else if (data.latestStudentId) {
                         currentUserStudentId = data.latestStudentId;
-                        currentGameCode = data.latestGameCode || "E02";
+                        currentGameCode = data.latestGameCode || "E03";
                     }
 
                     document.getElementById('studentDashboardInput').value = currentUserStudentId;
@@ -423,6 +448,7 @@
             document.getElementById('classGameSelect').value = currentGameCode;
             renderOverallLeaderboard();
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
+            renderGameDashboardMatrix();
         }
 
         function renderOverallLeaderboard() {
@@ -1041,10 +1067,148 @@
             return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome);
         }
 
+        function renderGameDashboardMatrix() {
+            const tbody = document.getElementById('gameDashboardMatrixBody');
+            if (!tbody) return;
+
+            const activeGame = (currentGameCode && currentGameCode !== 'ALL') ? currentGameCode.toUpperCase() : 'E03';
+            document.getElementById('gameMatrixTitle').textContent = `Game Dashboard (${activeGame})`;
+
+            const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
+            const standards = ['5', '4', '3', '2', '1'];
+            const maxStudentsPerBand = 13;
+
+            const cols = [];
+            standards.forEach(std => {
+                for (let b = 1; b <= 15; b++) {
+                    cols.push({ std, gender: 'B', code: `${std}B${b < 10 ? '0' + b : b}` });
+                }
+                for (let g = 1; g <= 15; g++) {
+                    cols.push({ std, gender: 'G', code: `${std}G${g < 10 ? '0' + g : g}` });
+                }
+            });
+
+            function getCellStats(code) {
+                const recs = gameRecs.filter(r => matchStudentId(r.studentId, code));
+                if (!recs.length) {
+                    return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+                }
+                const scores = recs.map(r => parseScoreValue(r.score));
+                const maxPct = Math.round(Math.max(...scores));
+                const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+                const minTime = times.length ? Math.min(...times) : 0;
+
+                return {
+                    subs: String(recs.length),
+                    topScore: `${maxPct}%`,
+                    leastTime: minTime > 0 ? formatCompactTime(minTime) : '---',
+                    avgScore: `${avgPct}%`
+                };
+            }
+
+            let html = '';
+
+            // Top Header Row
+            html += `<tr class="bg-slate-800 text-slate-100 font-bold">
+                <th class="border border-slate-600 px-2 py-1.5 text-left" rowspan="2">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>
+                <th class="border border-slate-600 px-1 py-1" colspan="30">Students</th>
+                <th class="border border-slate-600 px-1 py-1" colspan="30">Std 5</th>
+                <th class="border border-slate-600 px-1 py-1" colspan="30">Std 4</th>
+                <th class="border border-slate-600 px-1 py-1" colspan="30">Std 3</th>
+                <th class="border border-slate-600 px-1 py-1" colspan="30">Std 2</th>
+                <th class="border border-slate-600 px-1 py-1" colspan="30">Std 1</th>
+                <th class="border border-slate-600 px-2 py-1.5" rowspan="2">All Members &amp;<br>Top 15 Members</th>
+            </tr>`;
+
+            // Subheader Row (Boys / Girls per block)
+            html += `<tr class="bg-slate-900 text-slate-300 font-bold">`;
+            for (let blk = 0; blk < 6; blk++) {
+                html += `<th class="border border-slate-600 px-1 py-0.5 text-sky-300" colspan="15">Boys</th>`;
+                html += `<th class="border border-slate-600 px-1 py-0.5 text-pink-300" colspan="15">Girls</th>`;
+            }
+            html += `</tr>`;
+
+            // Summary rows at top of matrix
+            const summaryDefs = [
+                { label: 'Submissions:', type: 'subs', cls: 'text-sky-300 font-bold' },
+                { label: 'Users:', type: 'users', cls: 'text-emerald-300 font-bold' },
+                { label: 'Absentees:', type: 'absentees', cls: 'text-amber-300 font-bold' },
+                { label: 'Top Score:', type: 'topScore', cls: 'text-emerald-300 font-bold' },
+                { label: 'Least Time:', type: 'leastTime', cls: 'text-slate-200 font-mono' },
+                { label: 'Avg. Score:', type: 'avgScore', cls: 'text-purple-300 font-bold' }
+            ];
+
+            summaryDefs.forEach(sDef => {
+                html += `<tr class="bg-slate-900/90 border-b border-slate-700">
+                    <td class="border border-slate-600 px-2 py-1 text-left font-bold bg-slate-800 text-slate-100">${sDef.label}</td>`;
+
+                cols.forEach(c => {
+                    const st = getCellStats(c.code);
+                    let cellVal = '';
+                    if (sDef.type === 'subs') cellVal = st.subs;
+                    else if (sDef.type === 'users') cellVal = st.subs ? '1' : '';
+                    else if (sDef.type === 'absentees') cellVal = '';
+                    else if (sDef.type === 'topScore') cellVal = st.topScore;
+                    else if (sDef.type === 'leastTime') cellVal = st.leastTime;
+                    else if (sDef.type === 'avgScore') cellVal = st.avgScore;
+
+                    const activeClass = matchStudentId(currentUserStudentId, c.code) ? 'bg-amber-900/60 ring-1 ring-amber-400' : '';
+                    html += `<td onclick="selectStudentFromMatrix('${c.code}')" class="border border-slate-700 px-1 py-1 cursor-pointer hover:bg-slate-700 ${sDef.cls} ${activeClass}" title="${c.code}">${cellVal}</td>`;
+                });
+
+                html += `<td class="border border-slate-600 bg-slate-800"></td></tr>`;
+            });
+
+            // Student-01 .. Student-13 rows
+            for (let idx = 0; idx < maxStudentsPerBand; idx++) {
+                const studentNum = String(idx + 1).padStart(2, '0');
+                const metrics = ['Submission:', 'Top Score:', 'Least Time:', 'Avg Score:'];
+
+                metrics.forEach((mLabel, mIdx) => {
+                    html += `<tr class="bg-slate-950/90 hover:bg-slate-900">`;
+                    if (mIdx === 0) {
+                        html += `<td class="border border-slate-600 px-2 py-1 text-left font-bold bg-slate-800 text-slate-100" rowspan="4">Student-${studentNum}</td>`;
+                    }
+                    html += `<td class="border border-slate-700 px-1.5 py-0.5 text-left font-bold bg-slate-900 text-slate-300">${mLabel}</td>`;
+
+                    cols.forEach(c => {
+                        const isSelected = matchStudentId(currentUserStudentId, c.code);
+                        const isCurrentSlot = idx === 0 && matchStudentId(currentUserStudentId, c.code);
+                        const st = isCurrentSlot ? getCellStats(c.code) : { subs: '', topScore: '', leastTime: '', avgScore: '' };
+
+                        let val = '';
+                        let textCls = 'text-slate-200';
+                        if (mIdx === 0) { val = st.subs; textCls = 'text-sky-300 font-bold'; }
+                        else if (mIdx === 1) { val = st.topScore; textCls = 'text-emerald-300 font-bold'; }
+                        else if (mIdx === 2) { val = st.leastTime; textCls = 'text-slate-200 font-mono'; }
+                        else if (mIdx === 3) { val = st.avgScore; textCls = 'text-purple-300 font-bold'; }
+
+                        const highlight = isSelected ? 'bg-amber-950/50' : '';
+                        html += `<td onclick="selectStudentFromMatrix('${c.code}')" class="border border-slate-800 px-1 py-0.5 cursor-pointer ${textCls} ${highlight}" title="${c.code}">${val}</td>`;
+                    });
+
+                    if (mIdx === 0) {
+                        html += `<td class="border border-slate-600 px-2 py-1 text-left font-bold bg-slate-800 text-slate-200" rowspan="4">Rank-${idx + 1}: Member ID:</td>`;
+                    }
+                    html += `</tr>`;
+                });
+            }
+
+            tbody.innerHTML = html;
+        }
+
+        function selectStudentFromMatrix(code) {
+            loadStudentDashboard(code);
+            document.getElementById('table-4').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
         function loadStudentDashboard(studentId) {
             const sid = (studentId || document.getElementById('studentDashboardInput').value || currentUserStudentId).trim().toUpperCase();
             currentUserStudentId = sid;
             document.getElementById('studentDashboardInput').value = sid;
+            const reportCodeEl = document.getElementById('selectedStudentReportCode');
+            if (reportCodeEl) reportCodeEl.textContent = sid;
 
             const studentRecords = gameRecordsData.filter(r => matchStudentId(r.studentId, sid));
             
@@ -1106,6 +1270,7 @@
             });
 
             document.getElementById('studentDashboardTableBody').innerHTML = dashboardHtml;
+            renderGameDashboardMatrix();
         }
 
         function updateAllHomepageTables() {
@@ -1171,4 +1336,4 @@
     </script>
 </body>
 </html>
-```[cite: 3, 4]
+```[cite: 3, 4, 5]

@@ -443,8 +443,64 @@ function spellOutEveryLetterForTTS(syllableText) {
 }
 
 function speakSyllableSpelling(syllableText) {
-    const spelledLetters = spellOutEveryLetterForTTS(syllableText);
-    speakText(spelledLetters);
+    // Speak each letter separately, with a shorter pause between letters.
+    // The previous comma-separated utterance created a longer punctuation pause.
+    const letters = syllableText.replace(/[^a-zA-Z]/g, "").toUpperCase().split("");
+    speakLettersWithReducedGap(letters);
+}
+
+function speakLettersWithReducedGap(letters) {
+    stopSmartTTS();
+    if (!("speechSynthesis" in window) || !letters.length) return;
+
+    const synth = window.speechSynthesis;
+    const currentId = ++ttsId;
+    const indianVoice = selectIndianEnglishVoice(synth);
+    const INTER_LETTER_GAP_MS = 120; // Approximately 50% shorter than the comma pause.
+
+    let letterIndex = 0;
+    let letterWatchdog = null;
+
+    function speakNextLetter() {
+        if (currentId !== ttsId || letterIndex >= letters.length) {
+            activeUtterance = null;
+            return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(letters[letterIndex]);
+        utterance.lang = INDIC_ENGLISH_LOCALE;
+        if (indianVoice) utterance.voice = indianVoice;
+        utterance.rate = 0.85;
+        utterance.volume = 1.0;
+        activeUtterance = utterance;
+
+        let advanced = false;
+        const advance = () => {
+            if (advanced || currentId !== ttsId) return;
+            advanced = true;
+            clearTimeout(letterWatchdog);
+            letterIndex++;
+            if (letterIndex < letters.length) {
+                setTimeout(speakNextLetter, INTER_LETTER_GAP_MS);
+            } else {
+                activeUtterance = null;
+            }
+        };
+
+        utterance.onend = advance;
+        utterance.onerror = advance;
+
+        // Prevent a browser/device TTS issue from stopping the remaining letters.
+        letterWatchdog = setTimeout(advance, 2500);
+
+        try {
+            synth.speak(utterance);
+        } catch (error) {
+            advance();
+        }
+    }
+
+    speakNextLetter();
 }
 
 function matchesSyllableSpelling(spokenText, syllableText) {

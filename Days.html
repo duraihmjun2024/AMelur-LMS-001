@@ -362,7 +362,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <div class="stt-grid" id="sttGrid"></div>
 
     <h2>Level 3: Speak Syllable Spellings &amp; Whole Words (TTS &amp; STT)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Listen to each syllable in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Listen in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 </div>
 
@@ -437,17 +437,19 @@ function cleanSttTranscript(rawText) {
         .replace(/\bseven\b/gi, "Seven");
 }
 
-// Keep letters together within each syllable (e.g., "Da-ys" -> "Da, ys", "Se-ven" -> "Se, ven")
-function formatSyllablesForTTS(syllableText) {
-    return syllableText
+// Keep letters joined without gaps inside each part, pause only at "-", then say whole word
+function formatSyllablesForTTS(syllableText, wholeWord) {
+    const partsWithNoGap = syllableText
         .split("-")
         .map(part => part.replace(/[^a-zA-Z]/g, ""))
-        .filter(Boolean)
-        .join(", ");
+        .filter(Boolean);
+
+    const partsJoinedWithPause = partsWithNoGap.join(" ... ");
+    return wholeWord ? `${partsJoinedWithPause} ... ${wholeWord}` : partsJoinedWithPause;
 }
 
-function speakSyllableSpelling(syllableText) {
-    const syllableSpeech = formatSyllablesForTTS(syllableText);
+function speakSyllableSpelling(syllableText, wholeWord) {
+    const syllableSpeech = formatSyllablesForTTS(syllableText, wholeWord);
     speakText(syllableSpeech);
 }
 
@@ -670,12 +672,12 @@ function initGame() {
         const card = document.createElement("div");
         card.className = "stt-card";
         card.id = `spell-card-${serialNum}`;
-        card.addEventListener("click", () => speakSyllableSpelling(syllable));
+        card.addEventListener("click", () => speakSyllableSpelling(syllable, wholeWord));
         card.innerHTML = `
             <div class="stt-serial">Spelling #${serialNum}</div>
             <div class="spelling-label">${syllable}</div>
             <div class="card-btn-row">
-                <button class="btn-blue" id="listen-spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakSyllableSpelling('${syllable}')">🔊 Listen</button>
+                <button class="btn-blue" id="listen-spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakSyllableSpelling('${syllable}', '${wholeWord}')">🔊 Listen</button>
                 <button class="btn-green" id="spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); testSyllableBox('${syllable}', ${serialNum})" disabled>🎙️ Speak</button>
                 <button class="btn-purple" id="whole-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakWholeWordSTT('${wholeWord}', ${serialNum})">🗣️ Whole Word</button>
             </div>

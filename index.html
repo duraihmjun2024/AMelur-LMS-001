@@ -340,9 +340,39 @@
         let expandedGameCodes = new Set(["E03"]);
         let expandedSubmissionClasses = new Set(["1"]);
         let isUnavailableGamesExpanded = false;
+        let dashboardExpandedStandardsByGame = {
+            E03: new Set(["5", "4", "3", "2", "1"])
+        };
 
         const READY_GAMES = ["E02", "E03", "M03"];
         const SUB_IDS = ["1", "2", "3"];
+        const DASHBOARD_STANDARDS = ["5", "4", "3", "2", "1"];
+
+        function getDashboardStandardSet(gCode) {
+            const key = String(gCode || 'E03').trim().toUpperCase();
+            if (!dashboardExpandedStandardsByGame[key]) {
+                dashboardExpandedStandardsByGame[key] = new Set(["5", "4", "3", "2", "1"]);
+            }
+            return dashboardExpandedStandardsByGame[key];
+        }
+
+        function toggleDashboardStandard(gCode, std) {
+            const key = String(gCode || 'E03').trim().toUpperCase();
+            const stdKey = String(std);
+            const set = getDashboardStandardSet(key);
+            if (set.has(stdKey)) {
+                set.delete(stdKey);
+            } else {
+                set.add(stdKey);
+            }
+            renderStudentEntryGrid();
+        }
+
+        function setAllDashboardStandards(gCode, expand) {
+            const key = String(gCode || 'E03').trim().toUpperCase();
+            dashboardExpandedStandardsByGame[key] = expand ? new Set(["5", "4", "3", "2", "1"]) : new Set();
+            renderStudentEntryGrid();
+        }
 
         function navAction(section) {
             if (section === 'Home') {
@@ -1075,6 +1105,7 @@
         function buildGameDashboardMatrixHtml(activeGameCode) {
             const activeGame = String(activeGameCode || 'E03').trim().toUpperCase();
             const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
+            const expandedStds = getDashboardStandardSet(activeGame);
 
             const studentRecsAll = gameRecs.filter(r => /^[1-5][BG]\d+/i.test(String(r.studentId || '').trim()));
             const memberRecsAll = gameRecs.filter(r => !/^[1-5][BG]\d+/i.test(String(r.studentId || '').trim()));
@@ -1085,49 +1116,63 @@
                     boysRecs: studentRecsAll.filter(r => /^[1-5]B/i.test(String(r.studentId || '').trim())),
                     girlsRecs: studentRecsAll.filter(r => /^[1-5]G/i.test(String(r.studentId || '').trim())),
                     roll: 75,
-                    stdPrefix: null
+                    stdPrefix: null,
+                    isExpanded: true,
+                    toggleTargetStd: null
                 },
                 {
                     title: 'Std5',
                     boysRecs: studentRecsAll.filter(r => /^5B/i.test(String(r.studentId || '').trim())),
                     girlsRecs: studentRecsAll.filter(r => /^5G/i.test(String(r.studentId || '').trim())),
                     roll: 15,
-                    stdPrefix: '5'
+                    stdPrefix: '5',
+                    isExpanded: expandedStds.has('5'),
+                    toggleTargetStd: '5'
                 },
                 {
                     title: 'Std4',
                     boysRecs: studentRecsAll.filter(r => /^4B/i.test(String(r.studentId || '').trim())),
                     girlsRecs: studentRecsAll.filter(r => /^4G/i.test(String(r.studentId || '').trim())),
                     roll: 15,
-                    stdPrefix: '4'
+                    stdPrefix: '4',
+                    isExpanded: expandedStds.has('4'),
+                    toggleTargetStd: '4'
                 },
                 {
                     title: 'Std3',
                     boysRecs: studentRecsAll.filter(r => /^3B/i.test(String(r.studentId || '').trim())),
                     girlsRecs: studentRecsAll.filter(r => /^3G/i.test(String(r.studentId || '').trim())),
                     roll: 15,
-                    stdPrefix: '3'
+                    stdPrefix: '3',
+                    isExpanded: expandedStds.has('3'),
+                    toggleTargetStd: '3'
                 },
                 {
                     title: 'Std2',
                     boysRecs: studentRecsAll.filter(r => /^2B/i.test(String(r.studentId || '').trim())),
                     girlsRecs: studentRecsAll.filter(r => /^2G/i.test(String(r.studentId || '').trim())),
                     roll: 15,
-                    stdPrefix: '2'
+                    stdPrefix: '2',
+                    isExpanded: expandedStds.has('2'),
+                    toggleTargetStd: '2'
                 },
                 {
                     title: 'Std1',
                     boysRecs: studentRecsAll.filter(r => /^1B/i.test(String(r.studentId || '').trim())),
                     girlsRecs: studentRecsAll.filter(r => /^1G/i.test(String(r.studentId || '').trim())),
                     roll: 15,
-                    stdPrefix: '1'
+                    stdPrefix: '1',
+                    isExpanded: expandedStds.has('1'),
+                    toggleTargetStd: '1'
                 }
             ];
 
             const groupStats = groups.map(g => ({
                 ...g,
                 boysBySub: SUB_IDS.map(subId => computeSubIdMetrics(g.boysRecs, g.roll, subId)),
-                girlsBySub: SUB_IDS.map(subId => computeSubIdMetrics(g.girlsRecs, g.roll, subId))
+                girlsBySub: SUB_IDS.map(subId => computeSubIdMetrics(g.girlsRecs, g.roll, subId)),
+                boysAll: computeCohortMetrics(g.boysRecs, g.roll),
+                girlsAll: computeCohortMetrics(g.girlsRecs, g.roll)
             }));
 
             const memberBySub = SUB_IDS.map(subId => computeSubIdMetrics(memberRecsAll, Math.max(15, memberRecsAll.length), subId));
@@ -1148,8 +1193,20 @@
                 return a.minTime - b.minTime;
             });
 
-            function getTripletForCohortBySub(cohortList, metricKey) {
-                return SUB_IDS.map((_, idx) => (cohortList[idx] && cohortList[idx][metricKey]) ? cohortList[idx][metricKey] : '');
+            function getGenderCellsForSummary(group, genderKey, metricKey) {
+                const bySubList = genderKey === 'boys' ? group.boysBySub : group.girlsBySub;
+                const allCohort = genderKey === 'boys' ? group.boysAll : group.girlsAll;
+                const dividerCls = genderKey === 'boys' ? 'group-divider-left' : '';
+
+                if (group.isExpanded) {
+                    return SUB_IDS.map((_, idx) => {
+                        const val = (bySubList[idx] && bySubList[idx][metricKey]) ? bySubList[idx][metricKey] : '';
+                        return { val, extraCls: idx === 0 ? dividerCls : '' };
+                    });
+                }
+
+                const collapsedVal = allCohort[metricKey] || '';
+                return [{ val: collapsedVal, extraCls: dividerCls }];
             }
 
             let html = '';
@@ -1158,29 +1215,40 @@
             html += `<tr class="bg-slate-800 text-slate-100 font-extrabold">
                 <th class="px-2 py-1.5 text-center" colspan="2" rowspan="2">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
             groupStats.forEach(g => {
-                html += `<th class="group-divider-left px-2 py-1.5" colspan="6">${g.title}</th>`;
+                const span = g.isExpanded ? 6 : 2;
+                if (g.toggleTargetStd) {
+                    html += `<th onclick="toggleDashboardStandard('${activeGame}', '${g.toggleTargetStd}')" class="group-divider-left px-2 py-1.5 cursor-pointer hover:bg-slate-700 select-none" colspan="${span}" title="Click to ${g.isExpanded ? 'collapse' : 'expand'} ${g.title}"><span class="text-yellow-300 mr-1">${g.isExpanded ? '▾' : '▸'}</span>${g.title}</th>`;
+                } else {
+                    html += `<th class="group-divider-left px-2 py-1.5" colspan="${span}">${g.title}</th>`;
+                }
             });
             html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="2">All Members &amp;<br>Top 15 Members</th>
             </tr>`;
 
             // ROW 2: Boys / Girls Subheaders
             html += `<tr class="bg-slate-900 text-slate-200 font-bold">`;
-            groupStats.forEach(() => {
-                html += `<th class="group-divider-left text-sky-300 px-1 py-1" colspan="3">Boys</th>
-                         <th class="text-pink-300 px-1 py-1" colspan="3">Girls</th>`;
+            groupStats.forEach(g => {
+                const genderSpan = g.isExpanded ? 3 : 1;
+                html += `<th class="group-divider-left text-sky-300 px-1 py-1" colspan="${genderSpan}">Boys</th>
+                         <th class="text-pink-300 px-1 py-1" colspan="${genderSpan}">Girls</th>`;
             });
             html += `</tr>`;
 
             // Sub_ID Header Label Row
             html += `<tr class="bg-slate-800/90 text-amber-200 font-extrabold text-[10px]">
                 <td class="px-2 py-1 text-left bg-slate-800 text-amber-300" colspan="2">Sub_ID:</td>`;
-            groupStats.forEach(() => {
-                SUB_IDS.forEach((subId, i) => {
-                    html += `<td class="${i === 0 ? 'group-divider-left' : ''} text-amber-200 min-w-[26px]">${subId}</td>`;
-                });
-                SUB_IDS.forEach((subId) => {
-                    html += `<td class="text-amber-200 min-w-[26px]">${subId}</td>`;
-                });
+            groupStats.forEach(g => {
+                if (g.isExpanded) {
+                    SUB_IDS.forEach((subId, i) => {
+                        html += `<td class="${i === 0 ? 'group-divider-left' : ''} text-amber-200 min-w-[26px]">${subId}</td>`;
+                    });
+                    SUB_IDS.forEach((subId) => {
+                        html += `<td class="text-amber-200 min-w-[26px]">${subId}</td>`;
+                    });
+                } else {
+                    html += `<td onclick="toggleDashboardStandard('${activeGame}', '${g.toggleTargetStd}')" class="group-divider-left text-slate-300 cursor-pointer hover:bg-slate-700 min-w-[34px]" title="Click to expand ${g.title}">All</td>`;
+                    html += `<td onclick="toggleDashboardStandard('${activeGame}', '${g.toggleTargetStd}')" class="text-slate-300 cursor-pointer hover:bg-slate-700 min-w-[34px]" title="Click to expand ${g.title}">All</td>`;
+                }
             });
             SUB_IDS.forEach((subId, i) => {
                 html += `<td class="${i === 0 ? 'group-divider-left' : ''} text-amber-200 min-w-[28px]">${subId}</td>`;
@@ -1190,7 +1258,7 @@
             });
             html += `</tr>`;
 
-            // Summary Metrics Rows per Sub_ID
+            // Summary Metrics Rows
             const summaryRows = [
                 { label: 'Users:', key: 'users', cls: 'text-emerald-300 font-bold' },
                 { label: 'Absentees:', key: 'absentees', cls: 'text-amber-300 font-bold' },
@@ -1204,17 +1272,17 @@
                     <td class="px-2 py-1 text-left font-bold bg-slate-800 text-slate-100" colspan="2">${sRow.label}</td>`;
 
                 groupStats.forEach(g => {
-                    const bVals = getTripletForCohortBySub(g.boysBySub, sRow.key);
-                    const gVals = getTripletForCohortBySub(g.girlsBySub, sRow.key);
-                    bVals.forEach((v, i) => {
-                        html += `<td class="${i === 0 ? 'group-divider-left' : ''} ${sRow.cls} min-w-[26px]">${v}</td>`;
+                    const bCells = getGenderCellsForSummary(g, 'boys', sRow.key);
+                    const gCells = getGenderCellsForSummary(g, 'girls', sRow.key);
+                    bCells.forEach(cell => {
+                        html += `<td class="${cell.extraCls} ${sRow.cls} min-w-[26px]">${cell.val}</td>`;
                     });
-                    gVals.forEach((v) => {
-                        html += `<td class="${sRow.cls} min-w-[26px]">${v}</td>`;
+                    gCells.forEach(cell => {
+                        html += `<td class="${cell.extraCls} ${sRow.cls} min-w-[26px]">${cell.val}</td>`;
                     });
                 });
 
-                const mVals = getTripletForCohortBySub(memberBySub, sRow.key);
+                const mVals = SUB_IDS.map((_, idx) => (memberBySub[idx] && memberBySub[idx][sRow.key]) ? memberBySub[idx][sRow.key] : '');
                 mVals.forEach((v, i) => {
                     html += `<td class="${i === 0 ? 'group-divider-left' : ''} bg-slate-700/70 min-w-[28px]">${v}</td>`;
                 });
@@ -1224,26 +1292,49 @@
                 html += `</tr>`;
             });
 
-            function getStudentSlotTripletBySub(group, gender, slotNum, metricField) {
+            function getStudentSlotCells(group, gender, slotNum, metricField) {
                 const pad = slotNum < 10 ? `0${slotNum}` : `${slotNum}`;
+                const dividerCls = gender === 'B' ? 'group-divider-left' : '';
+
                 if (group.stdPrefix) {
                     const code = `${group.stdPrefix}${gender}${pad}`;
+                    if (!group.isExpanded) {
+                        if (metricField === 'stuCode') {
+                            return [{ val: code, extraCls: dividerCls, clickableCode: code, subLabel: 'All' }];
+                        }
+                        if (metricField === 'stuName') {
+                            return [{ val: lookupStudentInitialsByCode(code, gameRecs), extraCls: dividerCls, clickableCode: '', subLabel: '' }];
+                        }
+                        const stAll = computeStudentStatsForCode(gameRecs, code);
+                        return [{ val: stAll[metricField] || '', extraCls: dividerCls, clickableCode: '', subLabel: '' }];
+                    }
+
                     if (metricField === 'stuCode') {
-                        return SUB_IDS.map(() => code);
+                        return SUB_IDS.map((subId, i) => ({
+                            val: code,
+                            extraCls: i === 0 ? dividerCls : '',
+                            clickableCode: code,
+                            subLabel: `Sub_ID ${subId}`
+                        }));
                     }
                     if (metricField === 'stuName') {
                         const initials = lookupStudentInitialsByCode(code, gameRecs);
-                        return SUB_IDS.map(() => initials);
+                        return SUB_IDS.map((_, i) => ({
+                            val: initials,
+                            extraCls: i === 0 ? dividerCls : '',
+                            clickableCode: '',
+                            subLabel: ''
+                        }));
                     }
-                    return SUB_IDS.map(subId => {
+                    return SUB_IDS.map((subId, i) => {
                         const st = computeStudentStatsForSubId(gameRecs, code, subId);
-                        return st[metricField] || '';
+                        return { val: st[metricField] || '', extraCls: i === 0 ? dividerCls : '', clickableCode: '', subLabel: '' };
                     });
                 } else {
                     if (metricField === 'stuCode' || metricField === 'stuName') {
-                        return ['', '', ''];
+                        return SUB_IDS.map((_, i) => ({ val: '', extraCls: i === 0 ? dividerCls : '', clickableCode: '', subLabel: '' }));
                     }
-                    return SUB_IDS.map(subId => {
+                    return SUB_IDS.map((subId, i) => {
                         const slotRecs = [];
                         for (let s = 1; s <= 5; s++) {
                             const code = `${s}${gender}${pad}`;
@@ -1252,7 +1343,7 @@
                             });
                         }
                         const coh = computeSubIdMetrics(slotRecs, 5, subId);
-                        return coh[metricField] || '';
+                        return { val: coh[metricField] || '', extraCls: i === 0 ? dividerCls : '', clickableCode: '', subLabel: '' };
                     });
                 }
             }
@@ -1282,22 +1373,22 @@
                     html += `<td class="${topBorder} bg-slate-900 text-slate-300 font-bold text-left px-2 py-0.5">${mRow.label}</td>`;
 
                     groupStats.forEach(g => {
-                        const bTriplet = getStudentSlotTripletBySub(g, 'B', sIdx, mRow.field);
-                        const gTriplet = getStudentSlotTripletBySub(g, 'G', sIdx, mRow.field);
+                        const bCells = getStudentSlotCells(g, 'B', sIdx, mRow.field);
+                        const gCells = getStudentSlotCells(g, 'G', sIdx, mRow.field);
 
-                        bTriplet.forEach((v, i) => {
-                            const clickableAttr = (g.stdPrefix && mRow.field === 'stuCode' && v)
-                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v} (Sub_ID ${SUB_IDS[i]})"`
+                        bCells.forEach((cell) => {
+                            const clickableAttr = cell.clickableCode
+                                ? `onclick="openStudentRegistration('${cell.clickableCode}', '${activeGame}')" title="Click to login & play ${activeGame} as ${cell.clickableCode} (${cell.subLabel})"`
                                 : '';
-                            const cursorCls = (g.stdPrefix && mRow.field === 'stuCode' && v) ? 'cursor-pointer hover:underline' : '';
-                            html += `<td ${clickableAttr} class="${topBorder} ${i === 0 ? 'group-divider-left' : ''} ${mRow.cls} ${cursorCls}">${v}</td>`;
+                            const cursorCls = cell.clickableCode ? 'cursor-pointer hover:underline' : '';
+                            html += `<td ${clickableAttr} class="${topBorder} ${cell.extraCls} ${mRow.cls} ${cursorCls}">${cell.val}</td>`;
                         });
-                        gTriplet.forEach((v, i) => {
-                            const clickableAttr = (g.stdPrefix && mRow.field === 'stuCode' && v)
-                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v} (Sub_ID ${SUB_IDS[i]})"`
+                        gCells.forEach((cell) => {
+                            const clickableAttr = cell.clickableCode
+                                ? `onclick="openStudentRegistration('${cell.clickableCode}', '${activeGame}')" title="Click to login & play ${activeGame} as ${cell.clickableCode} (${cell.subLabel})"`
                                 : '';
-                            const cursorCls = (g.stdPrefix && mRow.field === 'stuCode' && v) ? 'cursor-pointer hover:underline' : '';
-                            html += `<td ${clickableAttr} class="${topBorder} ${mRow.cls} ${cursorCls}">${v}</td>`;
+                            const cursorCls = cell.clickableCode ? 'cursor-pointer hover:underline' : '';
+                            html += `<td ${clickableAttr} class="${topBorder} ${cell.extraCls} ${mRow.cls} ${cursorCls}">${cell.val}</td>`;
                         });
                     });
 
@@ -1326,6 +1417,7 @@
                 { label: 'Avg Score:', field: 'avgScore' }
             ];
             const overallBySub = SUB_IDS.map(subId => computeSubIdMetrics(gameRecs, 150, subId));
+            const overallAll = computeCohortMetrics(gameRecs, 150);
 
             overallMetricRows.forEach((mRow, mIdx) => {
                 const topBorder = mIdx === 0 ? 'block-divider-top' : '';
@@ -1339,14 +1431,14 @@
                 html += `<td class="${topBorder} bg-indigo-900/90 text-amber-200 font-bold text-left px-2 py-0.5">${mRow.label}</td>`;
 
                 groupStats.forEach(g => {
-                    const bTriplet = getTripletForCohortBySub(g.boysBySub, mRow.field);
-                    const gTriplet = getTripletForCohortBySub(g.girlsBySub, mRow.field);
+                    const bCells = getGenderCellsForSummary(g, 'boys', mRow.field);
+                    const gCells = getGenderCellsForSummary(g, 'girls', mRow.field);
 
-                    bTriplet.forEach((v, i) => {
-                        html += `<td class="${topBorder} ${i === 0 ? 'group-divider-left' : ''} text-amber-200">${v}</td>`;
+                    bCells.forEach(cell => {
+                        html += `<td class="${topBorder} ${cell.extraCls} text-amber-200">${cell.val}</td>`;
                     });
-                    gTriplet.forEach((v) => {
-                        html += `<td class="${topBorder} text-amber-200">${v}</td>`;
+                    gCells.forEach(cell => {
+                        html += `<td class="${topBorder} ${cell.extraCls} text-amber-200">${cell.val}</td>`;
                     });
                 });
 
@@ -1354,7 +1446,7 @@
                     html += `<td class="${topBorder} group-divider-left bg-indigo-900 text-yellow-300 font-extrabold text-left px-2 py-1" colspan="3" rowspan="3">Overall Consolidated Data</td>`;
                 }
 
-                const oTriplet = getTripletForCohortBySub(overallBySub, mRow.field);
+                const oTriplet = SUB_IDS.map((_, idx) => (overallBySub[idx] && overallBySub[idx][mRow.field]) ? overallBySub[idx][mRow.field] : (overallAll[mRow.field] || ''));
                 oTriplet.forEach((v) => {
                     html += `<td class="${topBorder} text-yellow-300">${v}</td>`;
                 });
@@ -1422,11 +1514,25 @@
 
             expandedGameCodes.forEach(gCode => {
                 const count = gameCounts[gCode] || 0;
+                const expandedStds = getDashboardStandardSet(gCode);
+
+                const stdButtonsHtml = DASHBOARD_STANDARDS.map(std => {
+                    const isOpen = expandedStds.has(std);
+                    const btnCls = isOpen
+                        ? 'bg-emerald-600 text-white border-emerald-400'
+                        : 'bg-white text-slate-700 border-indigo-300 hover:bg-indigo-100';
+                    return `<button type="button" onclick="toggleDashboardStandard('${gCode}', '${std}')" class="text-[10px] font-bold px-2 py-0.5 rounded border ${btnCls}">${isOpen ? '▾' : '▸'} Std ${std}</button>`;
+                }).join('');
 
                 html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-2 shadow-sm mt-3">
-                    <div class="flex items-center justify-between px-2.5 py-1.5 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
+                    <div class="flex flex-wrap items-center justify-between gap-2 px-2.5 py-1.5 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
                         <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Game Dashboard: ${gCode} (${count} Submissions)</span>
-                        <button type="button" onclick="toggleGameGridExpansion('${gCode}', false)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Collapse</button>
+                        <div class="flex flex-wrap items-center gap-1">
+                            ${stdButtonsHtml}
+                            <button type="button" onclick="setAllDashboardStandards('${gCode}', true)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-600 text-white border border-indigo-500 hover:bg-indigo-500">Expand All</button>
+                            <button type="button" onclick="setAllDashboardStandards('${gCode}', false)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700 text-white border border-slate-600 hover:bg-slate-600">Collapse All</button>
+                            <button type="button" onclick="toggleGameGridExpansion('${gCode}', false)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Close</button>
+                        </div>
                     </div>
                     <div class="overflow-x-auto rounded-lg border-2 border-slate-600 bg-slate-950">
                         <table aria-label="Game Dashboard ${gCode}" class="w-full matrix-table border-collapse text-[11px] text-slate-100">
@@ -1446,6 +1552,75 @@
             const cleanHome = String(homeId).trim().toUpperCase();
             if (exactOnly) return cleanSheet === cleanHome;
             return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_");
+        }
+
+        function computeCohortMetrics(recs, rollCount) {
+            if (!recs.length) {
+                return {
+                    subs: '',
+                    users: '',
+                    absentees: '',
+                    topScore: '',
+                    leastTime: '',
+                    avgScore: '',
+                    top3: [null, null, null]
+                };
+            }
+
+            const uniqueIds = new Set(recs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean));
+            const users = uniqueIds.size;
+            const absentees = Math.max(0, rollCount - users);
+            const scores = recs.map(r => parseScoreValue(r.score));
+            const maxPct = Math.round(Math.max(...scores));
+            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const minTime = times.length ? Math.min(...times) : 0;
+
+            const sortedRecs = [...recs].sort((a, b) => {
+                const sDiff = parseScoreValue(b.score) - parseScoreValue(a.score);
+                if (sDiff !== 0) return sDiff;
+                const tA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
+                const tB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
+                return tA - tB;
+            });
+
+            const top3 = [0, 1, 2].map(i => {
+                const r = sortedRecs[i];
+                if (!r) return null;
+                const t = parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time);
+                return {
+                    subs: '1',
+                    topScore: `${Math.round(parseScoreValue(r.score))}%`,
+                    leastTime: formatCompactTime(t),
+                    avgScore: `${Math.round(parseScoreValue(r.score))}%`
+                };
+            });
+
+            return {
+                subs: String(recs.length),
+                users: String(users),
+                absentees: String(absentees),
+                topScore: `${maxPct}%`,
+                leastTime: formatCompactTime(minTime),
+                avgScore: `${avgPct}%`,
+                top3
+            };
+        }
+
+        function computeStudentStatsForCode(gameRecs, studentCode) {
+            const recs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
+            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+            const scores = recs.map(r => parseScoreValue(r.score));
+            const maxPct = Math.round(Math.max(...scores));
+            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const minTime = times.length ? Math.min(...times) : 0;
+            return {
+                subs: String(recs.length),
+                topScore: `${maxPct}%`,
+                leastTime: formatCompactTime(minTime),
+                avgScore: `${avgPct}%`
+            };
         }
 
         function updateAllHomepageTables() {

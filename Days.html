@@ -272,6 +272,19 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     background: #1e293b;
 }
 .stt-serial { font-weight: bold; color: #38bdf8; font-size: 1.2rem; }
+.spelling-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+.card-btn-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 6px;
+}
 .stt-user-speech { font-size: 0.85rem; color: #facc15; margin-top: 4px; font-weight: 500; min-height: 20px; }
 .stt-status { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
 .box-timer { font-size: 0.8rem; color: #ef4444; font-weight: bold; margin-top: 2px; }
@@ -344,6 +357,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <h2>Level 2: Speak All 10 Words</h2>
     <p style="color: #94a3b8; font-size: 0.95rem;">Mics unlock sequentially. Previous mics lock automatically.</p>
     <div class="stt-grid" id="sttGrid"></div>
+
+    <h2>Level 3: Speak Syllable Spellings (TTS &amp; STT)</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Listen with TTS, then speak each syllable spelling clearly as mics unlock in order.</p>
+    <div class="stt-grid" id="spellingGrid"></div>
 </div>
 
 <script>
@@ -351,6 +368,18 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 
 const sheetAppScriptUrl = "https://script.google.com/macros/s/AKfycbydKddCA-uZwXlnt9yvRMS6HgFwSXgT3RiphSojuQ3PyERaURSBhjCh-bFdHX54Hf0x/exec";
 const targetWords = ["Days", "Seven", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Week"];
+const syllableSpellings = [
+    "Da-ys",
+    "Se-ven",
+    "Sun-day",
+    "Mon-day",
+    "Tues-day",
+    "Wed-nes-day",
+    "Thu-rs-day",
+    "Fri-day",
+    "Sa-tur-day",
+    "Week"
+];
 
 let timerInterval = null;
 let secondsElapsed = 0;
@@ -363,10 +392,13 @@ let activeUtterance = null;
 
 let level1Score = 0;
 let level2Score = 0;
+let level3CompletedCount = 0;
 let verifiedL2Words = new Set();
+let verifiedL3Words = new Set();
 let currentTrialNum = 1;
 const MAX_TRIALS = 3;
 let level1Completed = false;
+let level2Completed = false;
 
 // Stores { score, maxScore, scoreStr, secs, timeStr } for trials 1, 2, 3
 let sessionTrials = [];
@@ -376,12 +408,43 @@ let recognition = null;
 let draggedCard = null;
 let boxTimerInterval = null;
 
-// Converts standalone digit "7" from STT into "Seven" for both display and scoring
 function cleanSttTranscript(rawText) {
     return rawText
         .trim()
         .replace(/\b7\b/g, "Seven")
         .replace(/\bseven\b/gi, "Seven");
+}
+
+function speakSyllableSpelling(syllableText) {
+    // Speak syllable parts gently so TTS pronounces each syllable clearly
+    const spokenParts = syllableText.replace(/-/g, ", ");
+    speakText(spokenParts);
+}
+
+function matchesSyllableSpelling(spokenText, syllableText) {
+    const cleanSpoken = cleanSttTranscript(spokenText)
+        .toLowerCase()
+        .replace(/[^a-z\s-]/g, " ")
+        .trim();
+
+    const joinedTarget = syllableText.toLowerCase().replace(/-/g, "");
+    const parts = syllableText.toLowerCase().split("-").filter(Boolean);
+
+    // Compact spoken string with spaces/hyphens removed (e.g. "da ys" -> "days", "wed nes day" -> "wednesday")
+    const compactSpoken = cleanSpoken.replace(/[\s-]+/g, "");
+
+    if (compactSpoken.includes(joinedTarget)) {
+        return true;
+    }
+
+    // Check if all syllable parts appear in order
+    let searchFrom = 0;
+    for (const part of parts) {
+        const idx = compactSpoken.indexOf(part, searchFrom);
+        if (idx === -1) return false;
+        searchFrom = idx + part.length;
+    }
+    return parts.length > 0;
 }
 
 function formatSecondsToHHMMSS(totalSecs) {
@@ -511,6 +574,9 @@ function initGame() {
     sourcePool.innerHTML = "";
     dropZonesGrid.innerHTML = "";
     verifiedL2Words.clear();
+    verifiedL3Words.clear();
+    level3CompletedCount = 0;
+    level2Completed = false;
     if (boxTimerInterval) clearInterval(boxTimerInterval);
 
     for (let i = 1; i <= 10; i++) {
@@ -567,6 +633,28 @@ function initGame() {
         sttGrid.appendChild(card);
     });
 
+    const spellingGrid = document.getElementById("spellingGrid");
+    spellingGrid.innerHTML = "";
+    syllableSpellings.forEach((syllable, index) => {
+        const serialNum = index + 1;
+        const card = document.createElement("div");
+        card.className = "stt-card";
+        card.id = `spell-card-${serialNum}`;
+        card.addEventListener("click", () => speakSyllableSpelling(syllable));
+        card.innerHTML = `
+            <div class="stt-serial">Spelling #${serialNum}</div>
+            <div class="spelling-label">${syllable}</div>
+            <div class="card-btn-row">
+                <button class="btn-blue" id="listen-spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakSyllableSpelling('${syllable}')">🔊 Listen</button>
+                <button class="btn-green" id="spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); testSyllableBox('${syllable}', ${serialNum})" disabled>🎙️ Speak</button>
+            </div>
+            <div class="stt-user-speech" id="spell-speech-${serialNum}">You said: --</div>
+            <div class="stt-status" id="spell-status-${serialNum}">Locked</div>
+            <div class="box-timer" id="spell-timer-${serialNum}"></div>
+        `;
+        spellingGrid.appendChild(card);
+    });
+
     document.getElementById("scoreDisplay").style.display = "none";
     updateScoreDisplay();
 }
@@ -616,6 +704,19 @@ function unlockLevel2() {
     }
 }
 
+function unlockLevel3() {
+    if (level2Completed) return;
+    level2Completed = true;
+    level2Seconds = secondsElapsed;
+    const firstBtn = document.getElementById("spell-btn-1");
+    const firstStatus = document.getElementById("spell-status-1");
+    if (firstBtn) firstBtn.disabled = false;
+    if (firstStatus) {
+        firstStatus.textContent = "Pending";
+        firstStatus.style.color = "#94a3b8";
+    }
+}
+
 function updateScoreDisplay() {
     const totalScore = level1Score + level2Score;
     const percentage = Math.round((totalScore / 20) * 100);
@@ -630,8 +731,11 @@ function startGame() {
     level2Seconds = 0;
     level1Score = 0;
     level2Score = 0;
+    level3CompletedCount = 0;
     verifiedL2Words.clear();
+    verifiedL3Words.clear();
     level1Completed = false;
+    level2Completed = false;
 
     shuffleSourcePool();
 
@@ -664,7 +768,28 @@ function advanceToNextMic(currentSerial) {
             nextStatus.style.color = "#94a3b8";
         }
     } else {
-        level2Seconds = secondsElapsed;
+        unlockLevel3();
+    }
+}
+
+function advanceToNextSyllableMic(currentSerial) {
+    const currentCard = document.getElementById(`spell-card-${currentSerial}`);
+    const currentBtn = document.getElementById(`spell-btn-${currentSerial}`);
+    const currentTimerDiv = document.getElementById(`spell-timer-${currentSerial}`);
+
+    if (currentCard) currentCard.classList.remove("active-box");
+    if (currentBtn) currentBtn.disabled = true;
+    if (currentTimerDiv) currentTimerDiv.textContent = "";
+
+    const nextSerial = currentSerial + 1;
+    if (nextSerial <= 10) {
+        const nextBtn = document.getElementById(`spell-btn-${nextSerial}`);
+        const nextStatus = document.getElementById(`spell-status-${nextSerial}`);
+        if (nextBtn) nextBtn.disabled = false;
+        if (nextStatus) {
+            nextStatus.textContent = "Pending";
+            nextStatus.style.color = "#94a3b8";
+        }
     }
 }
 
@@ -741,6 +866,74 @@ function testSpeechBox(targetWord, serialNum) {
     }, 1000);
 }
 
+function testSyllableBox(syllableText, serialNum) {
+    if (!gameActive || !level2Completed) {
+        alert("Please complete Level 2 first!");
+        return;
+    }
+    if (!SpeechRecognition) return;
+
+    if (boxTimerInterval) clearInterval(boxTimerInterval);
+
+    const card = document.getElementById(`spell-card-${serialNum}`);
+    const speechDiv = document.getElementById(`spell-speech-${serialNum}`);
+    const statusDiv = document.getElementById(`spell-status-${serialNum}`);
+    const timerDiv = document.getElementById(`spell-timer-${serialNum}`);
+
+    card.classList.add("active-box");
+    statusDiv.textContent = "Listening...";
+    statusDiv.style.color = "#facc15";
+
+    let timeLeft = 5;
+    timerDiv.textContent = `⏱️ ${timeLeft}s`;
+    let evaluationDone = false;
+
+    const finalizeSpellBox = () => {
+        if (evaluationDone) return;
+        evaluationDone = true;
+        clearInterval(boxTimerInterval);
+        if (recognition) try { recognition.abort(); } catch(e){}
+        advanceToNextSyllableMic(serialNum);
+    };
+
+    try {
+        if (recognition) recognition.abort();
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const spoken = cleanSttTranscript(event.results[0][0].transcript);
+            document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
+            speechDiv.textContent = `You said: "${spoken}"`;
+
+            if (matchesSyllableSpelling(spoken, syllableText)) {
+                statusDiv.textContent = "✓ Spoken";
+                statusDiv.style.color = "#22c55e";
+                if (!verifiedL3Words.has(serialNum)) {
+                    verifiedL3Words.add(serialNum);
+                    level3CompletedCount += 1;
+                }
+            } else {
+                statusDiv.textContent = `Heard: "${spoken}"`;
+                statusDiv.style.color = "#ef4444";
+            }
+            finalizeSpellBox();
+        };
+        recognition.onerror = () => { finalizeSpellBox(); };
+        recognition.onend = () => { finalizeSpellBox(); };
+        recognition.start();
+    } catch(e) {
+        finalizeSpellBox();
+    }
+
+    boxTimerInterval = setInterval(() => {
+        timeLeft--;
+        timerDiv.textContent = `⏱️ ${timeLeft}s`;
+        if (timeLeft <= 0) { finalizeSpellBox(); }
+    }, 1000);
+}
+
 function submitData() {
     const studentIdInput = document.getElementById("studentId").value.trim() || "1B01";
     const nameInput = document.getElementById("userName").value.trim();
@@ -790,6 +983,7 @@ function submitData() {
     params.append("level1Time", level1TimeStr);
     params.append("level2Score", `${level2Score}/10-${Math.round((level2Score/10)*100)}%`);
     params.append("level2Time", level2TimeStr);
+    params.append("level3Syllables", `${level3CompletedCount}/10`);
     params.append("score", scoreStr);
     params.append("trialId", String(currentTrialNum));
 
@@ -864,8 +1058,11 @@ function resetSameUser() {
     gameActive = false;
     level1Score = 0;
     level2Score = 0;
+    level3CompletedCount = 0;
     verifiedL2Words.clear();
+    verifiedL3Words.clear();
     level1Completed = false;
+    level2Completed = false;
 
     document.getElementById("timer").textContent = "00:00:00";
     document.getElementById("scoreDisplay").textContent = "Score: 0/20-0%";

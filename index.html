@@ -1030,7 +1030,6 @@
             const subRecs = filterRecordsBySubId(recs, subId);
             if (!subRecs.length) {
                 return {
-                    subs: '',
                     users: '',
                     absentees: '',
                     topScore: '',
@@ -1049,7 +1048,6 @@
             const minTime = times.length ? Math.min(...times) : 0;
 
             return {
-                subs: String(subRecs.length),
                 users: String(users),
                 absentees: String(absentees),
                 topScore: `${maxPct}%`,
@@ -1061,14 +1059,13 @@
         function computeStudentStatsForSubId(gameRecs, studentCode, subId) {
             const stuRecs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
             const recs = filterRecordsBySubId(stuRecs, subId);
-            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+            if (!recs.length) return { topScore: '', leastTime: '', avgScore: '' };
             const scores = recs.map(r => parseScoreValue(r.score));
             const maxPct = Math.round(Math.max(...scores));
             const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
             const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
             const minTime = times.length ? Math.min(...times) : 0;
             return {
-                subs: String(recs.length),
                 topScore: `${maxPct}%`,
                 leastTime: formatCompactTime(minTime),
                 avgScore: `${avgPct}%`
@@ -1159,11 +1156,11 @@
 
             // ROW 1: Main Group Headers
             html += `<tr class="bg-slate-800 text-slate-100 font-extrabold">
-                <th class="px-2 py-1.5 text-center" colspan="2" rowspan="3">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
+                <th class="px-2 py-1.5 text-center" colspan="2" rowspan="2">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
             groupStats.forEach(g => {
                 html += `<th class="group-divider-left px-2 py-1.5" colspan="6">${g.title}</th>`;
             });
-            html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="3">All Members &amp;<br>Top 15 Members</th>
+            html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="2">All Members &amp;<br>Top 15 Members</th>
             </tr>`;
 
             // ROW 2: Boys / Girls Subheaders
@@ -1171,18 +1168,6 @@
             groupStats.forEach(() => {
                 html += `<th class="group-divider-left text-sky-300 px-1 py-1" colspan="3">Boys</th>
                          <th class="text-pink-300 px-1 py-1" colspan="3">Girls</th>`;
-            });
-            html += `</tr>`;
-
-            // ROW 3: Sub_ID Row with 3 Split Cells (1, 2, 3)
-            html += `<tr class="bg-amber-950/80 text-amber-200 font-extrabold text-[10px]">`;
-            groupStats.forEach(() => {
-                SUB_IDS.forEach((subId, i) => {
-                    html += `<th class="${i === 0 ? 'group-divider-left' : ''} px-1 py-0.5 text-amber-300 min-w-[26px]">${subId}</th>`;
-                });
-                SUB_IDS.forEach((subId) => {
-                    html += `<th class="px-1 py-0.5 text-amber-300 min-w-[26px]">${subId}</th>`;
-                });
             });
             html += `</tr>`;
 
@@ -1207,7 +1192,6 @@
 
             // Summary Metrics Rows per Sub_ID
             const summaryRows = [
-                { label: 'Submissions:', key: 'subs', cls: 'text-sky-300 font-bold' },
                 { label: 'Users:', key: 'users', cls: 'text-emerald-300 font-bold' },
                 { label: 'Absentees:', key: 'absentees', cls: 'text-amber-300 font-bold' },
                 { label: 'Top Score:', key: 'topScore', cls: 'text-emerald-300 font-bold' },
@@ -1275,8 +1259,7 @@
 
             const studentMetricRows = [
                 { label: 'Stu_Code:', field: 'stuCode', cls: 'text-amber-300 font-bold' },
-                { label: 'Stu_Name:', field: 'stuName', cls: 'text-yellow-200 font-extrabold' },
-                { label: 'Submission:', field: 'subs', cls: 'text-sky-300 font-bold' },
+                { label: 'Stu_Name:', field: 'stuName', cls: 'text-yellow-200 font-extrabold text-sm' },
                 { label: 'Top Score:', field: 'topScore', cls: 'text-emerald-300 font-bold' },
                 { label: 'Least Time:', field: 'leastTime', cls: 'text-slate-200 font-mono' },
                 { label: 'Avg Score:', field: 'avgScore', cls: 'text-purple-300 font-bold' }
@@ -1292,7 +1275,7 @@
                     html += `<tr class="bg-slate-950 hover:bg-slate-900">`;
 
                     if (mIdx === 0) {
-                        html += `<td class="${topBorder} bg-slate-800 text-slate-100 font-extrabold px-1 py-1 w-7" rowspan="6">
+                        html += `<td class="${topBorder} bg-slate-800 text-slate-100 font-extrabold px-1 py-1 w-7" rowspan="5">
                             <span class="vertical-student-label inline-block">Student-${sNum}</span>
                         </td>`;
                     }
@@ -1320,7 +1303,7 @@
 
                     if (mIdx === 0) {
                         const memberText = rankedMember ? `Rank-${sIdx}: Member ID: ${rankedMember.id}` : `Rank-${sIdx}: Member ID:`;
-                        html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="6">${memberText}</td>`;
+                        html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="5">${memberText}</td>`;
                     }
 
                     SUB_IDS.forEach((_, subIdx) => {
@@ -1338,7 +1321,6 @@
             }
 
             const overallMetricRows = [
-                { label: 'Submission:', field: 'subs' },
                 { label: 'Top Score:', field: 'topScore' },
                 { label: 'Least Time:', field: 'leastTime' },
                 { label: 'Avg Score:', field: 'avgScore' }
@@ -1350,7 +1332,7 @@
                 html += `<tr class="bg-indigo-950/90 text-amber-100 font-extrabold">`;
 
                 if (mIdx === 0) {
-                    html += `<td class="${topBorder} bg-indigo-900 text-yellow-300 font-extrabold px-1 py-1 w-7" rowspan="4">
+                    html += `<td class="${topBorder} bg-indigo-900 text-yellow-300 font-extrabold px-1 py-1 w-7" rowspan="3">
                         <span class="vertical-student-label inline-block">Overall</span>
                     </td>`;
                 }
@@ -1369,7 +1351,7 @@
                 });
 
                 if (mIdx === 0) {
-                    html += `<td class="${topBorder} group-divider-left bg-indigo-900 text-yellow-300 font-extrabold text-left px-2 py-1" colspan="3" rowspan="4">Overall Consolidated Data</td>`;
+                    html += `<td class="${topBorder} group-divider-left bg-indigo-900 text-yellow-300 font-extrabold text-left px-2 py-1" colspan="3" rowspan="3">Overall Consolidated Data</td>`;
                 }
 
                 const oTriplet = getTripletForCohortBySub(overallBySub, mRow.field);

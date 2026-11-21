@@ -438,8 +438,8 @@ function cleanSttTranscript(rawText) {
 }
 
 function spellOutEveryLetterForTTS(syllableText) {
-    // Use spoken letter names in ONE utterance. This avoids the pauses
-    // caused by commas or by starting a new TTS utterance for each letter.
+    // No comma pause between letters. Keep a pause only at each hyphen,
+    // so syllables remain separated as in the original spelling.
     const letterNames = {
         A: "ay", B: "bee", C: "see", D: "dee", E: "ee",
         F: "eff", G: "jee", H: "aitch", I: "eye", J: "jay",
@@ -448,12 +448,17 @@ function spellOutEveryLetterForTTS(syllableText) {
         U: "you", V: "vee", W: "double you", X: "ex",
         Y: "why", Z: "zed"
     };
+
     return syllableText
-        .replace(/[^a-zA-Z]/g, "")
-        .toUpperCase()
-        .split("")
-        .map(letter => letterNames[letter] || letter)
-        .join(" ");
+        .split("-")
+        .map(part => part
+            .replace(/[^a-zA-Z]/g, "")
+            .toUpperCase()
+            .split("")
+            .map(letter => letterNames[letter] || letter)
+            .join(" "))
+        .filter(part => part.length > 0)
+        .join(", ");
 }
 
 function speakSyllableSpelling(syllableText) {

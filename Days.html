@@ -376,6 +376,14 @@ let recognition = null;
 let draggedCard = null;
 let boxTimerInterval = null;
 
+// Converts standalone digit "7" from STT into "Seven" for both display and scoring
+function cleanSttTranscript(rawText) {
+    return rawText
+        .trim()
+        .replace(/\b7\b/g, "Seven")
+        .replace(/\bseven\b/gi, "Seven");
+}
+
 function formatSecondsToHHMMSS(totalSecs) {
     if (isNaN(totalSecs) || totalSecs <= 0) return "00:00:00";
     const hrs = String(Math.floor(totalSecs / 3600)).padStart(2, "0");
@@ -455,7 +463,7 @@ function testToolbarMic() {
         document.getElementById("userSaidDisplay").textContent = "You said: Say something...";
 
         recognition.onresult = (event) => {
-            const spoken = event.results[0][0].transcript.trim();
+            const spoken = cleanSttTranscript(event.results[0][0].transcript);
             document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
             resetMicButtonState();
         };
@@ -660,16 +668,6 @@ function advanceToNextMic(currentSerial) {
     }
 }
 
-function normalizeSpokenForTarget(spokenText, targetWord) {
-    let cleaned = spokenText.toLowerCase().trim();
-
-    if (targetWord.toLowerCase() === "seven") {
-        cleaned = cleaned.replace(/\b7\b/g, "seven");
-    }
-
-    return cleaned;
-}
-
 function testSpeechBox(targetWord, serialNum) {
     if (!gameActive || !level1Completed) {
         alert("Please complete Level 1 first!");
@@ -707,15 +705,13 @@ function testSpeechBox(targetWord, serialNum) {
         recognition.interimResults = false;
 
         recognition.onresult = (event) => {
-            const rawSpoken = event.results[0][0].transcript.trim();
-            const normalizedSpoken = normalizeSpokenForTarget(rawSpoken, targetWord);
-
-            document.getElementById("userSaidDisplay").textContent = `You said: "${rawSpoken}"`;
-            speechDiv.textContent = `You said: "${rawSpoken}"`;
+            const spoken = cleanSttTranscript(event.results[0][0].transcript);
+            document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
+            speechDiv.textContent = `You said: "${spoken}"`;
 
             const targetLower = targetWord.toLowerCase();
-            const isMatch = new RegExp(`\\b${targetLower}\\b`, "i").test(normalizedSpoken) ||
-                            normalizedSpoken.includes(targetLower);
+            const isMatch = new RegExp(`\\b${targetLower}\\b`, "i").test(spoken) ||
+                            spoken.toLowerCase().includes(targetLower);
 
             if (isMatch) {
                 statusDiv.textContent = "✓ Correct (+1)";
@@ -726,7 +722,7 @@ function testSpeechBox(targetWord, serialNum) {
                     updateScoreDisplay();
                 }
             } else {
-                statusDiv.textContent = `Heard: "${rawSpoken}"`;
+                statusDiv.textContent = `Heard: "${spoken}"`;
                 statusDiv.style.color = "#ef4444";
             }
             finalizeBox();

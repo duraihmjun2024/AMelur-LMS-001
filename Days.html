@@ -660,6 +660,16 @@ function advanceToNextMic(currentSerial) {
     }
 }
 
+function normalizeSpokenForTarget(spokenText, targetWord) {
+    let cleaned = spokenText.toLowerCase().trim();
+
+    if (targetWord.toLowerCase() === "seven") {
+        cleaned = cleaned.replace(/\b7\b/g, "seven");
+    }
+
+    return cleaned;
+}
+
 function testSpeechBox(targetWord, serialNum) {
     if (!gameActive || !level1Completed) {
         alert("Please complete Level 1 first!");
@@ -697,11 +707,17 @@ function testSpeechBox(targetWord, serialNum) {
         recognition.interimResults = false;
 
         recognition.onresult = (event) => {
-            const spoken = event.results[0][0].transcript.trim();
-            document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
-            speechDiv.textContent = `You said: "${spoken}"`;
+            const rawSpoken = event.results[0][0].transcript.trim();
+            const normalizedSpoken = normalizeSpokenForTarget(rawSpoken, targetWord);
 
-            if (spoken.toLowerCase().includes(targetWord.toLowerCase())) {
+            document.getElementById("userSaidDisplay").textContent = `You said: "${rawSpoken}"`;
+            speechDiv.textContent = `You said: "${rawSpoken}"`;
+
+            const targetLower = targetWord.toLowerCase();
+            const isMatch = new RegExp(`\\b${targetLower}\\b`, "i").test(normalizedSpoken) ||
+                            normalizedSpoken.includes(targetLower);
+
+            if (isMatch) {
                 statusDiv.textContent = "✓ Correct (+1)";
                 statusDiv.style.color = "#22c55e";
                 if (!verifiedL2Words.has(serialNum)) {
@@ -710,7 +726,7 @@ function testSpeechBox(targetWord, serialNum) {
                     updateScoreDisplay();
                 }
             } else {
-                statusDiv.textContent = `Heard: "${spoken}"`;
+                statusDiv.textContent = `Heard: "${rawSpoken}"`;
                 statusDiv.style.color = "#ef4444";
             }
             finalizeBox();

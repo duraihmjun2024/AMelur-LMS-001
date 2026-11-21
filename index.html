@@ -96,31 +96,18 @@
 
         <main class="space-y-4">
 
-            <!-- 3. STUDENT ENTRY POINT -->
+            <!-- 3. STUDENT ENTRY POINT & LINKED GAME DASHBOARD -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
                 <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                     <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
                         <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student Entry Point (All Games Master Table)
                     </h2>
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked tables</span>
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked table</span>
                 </div>
                 <div id="studentEntryGridsContainer" class="space-y-3"></div>
             </section>
 
-            <!-- 4. GAME DASHBOARD MATRIX -->
-            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-2">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900 text-slate-100 px-3 py-2 rounded-lg border border-slate-700">
-                    <span class="text-xs font-bold">Enter any Game Code found in the above Game Table to get the status of that game:</span>
-                    <input type="text" id="gameMatrixCodeInput" value="E03" onchange="setGameMatrixCode(this.value)" onkeyup="if(event.key==='Enter') setGameMatrixCode(this.value)" class="bg-slate-800 text-amber-300 border-2 border-indigo-400 rounded px-3 py-1 text-xs font-extrabold w-24 text-center uppercase focus:outline-none focus:border-amber-400">
-                </div>
-                <div class="overflow-x-auto rounded-lg border-2 border-slate-600 bg-slate-950">
-                    <table id="gameDashboardMatrixTable" aria-label="Game Dashboard" class="w-full matrix-table border-collapse text-[11px] text-slate-100">
-                        <tbody id="gameDashboardMatrixBody"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- 4B. GAME X STUDENT SUBMISSION COUNTS (CLASSWISE EXPANDABLE) -->
+            <!-- 4. GAME X STUDENT SUBMISSION COUNTS (CLASSWISE EXPANDABLE) -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 bg-slate-900 text-white px-3 py-2.5 rounded-lg border border-slate-700">
                     <div class="flex flex-wrap items-center gap-2">
@@ -135,6 +122,7 @@
                         <button type="button" onclick="toggleSubmissionClass('3')" id="subClassBtn3" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
                         <button type="button" onclick="toggleSubmissionClass('4')" id="subClassBtn4" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
                         <button type="button" onclick="toggleSubmissionClass('5')" id="subClassBtn5" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
+                        <button type="button" onclick="toggleUnavailableGamesRow()" id="toggleUnavailableBtn" class="px-2.5 py-1 rounded text-[11px] font-bold bg-amber-600 hover:bg-amber-500 text-white border border-amber-400">▸ Unavailable Games</button>
                         <button type="button" onclick="setAllSubmissionClasses(true)" class="px-2.5 py-1 rounded text-[11px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400">Expand All</button>
                         <button type="button" onclick="setAllSubmissionClasses(false)" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-500">Collapse All</button>
                     </div>
@@ -351,6 +339,7 @@
         let currentGameCode = "E03";
         let expandedGameCodes = new Set(["E03"]);
         let expandedSubmissionClasses = new Set(["1"]);
+        let isUnavailableGamesExpanded = false;
 
         const READY_GAMES = ["E02", "E03", "M03"];
 
@@ -436,15 +425,12 @@
             const target = String(studentCode || '').trim().toUpperCase();
             if (!target) return '';
 
-            // 1. Check matching records in the active game's submissions first
             const gameRec = (gameRecs || []).find(r => matchStudentId(r.studentId, target, false) && r.name);
             if (gameRec && gameRec.name) return getStudentInitials(gameRec.name);
 
-            // 2. Check all game records
             const anyGameRec = gameRecordsData.find(r => matchStudentId(r.studentId, target, false) && r.name);
             if (anyGameRec && anyGameRec.name) return getStudentInitials(anyGameRec.name);
 
-            // 3. Check registered user records
             const userRec = userRecordsData.find(u => matchStudentId(u.studentId || u.studentCode, target, false) && (u.name || u.firstName));
             if (userRec) {
                 const combined = userRec.lastName ? `${userRec.firstName || userRec.name || ''} ${userRec.lastName}` : (userRec.name || userRec.firstName || '');
@@ -481,11 +467,6 @@
                     } else if (data.latestStudentId) {
                         currentUserStudentId = data.latestStudentId;
                         currentGameCode = data.latestGameCode || "E03";
-                    }
-
-                    const matrixCodeInput = document.getElementById('gameMatrixCodeInput');
-                    if (matrixCodeInput && currentGameCode && currentGameCode !== 'ALL') {
-                        matrixCodeInput.value = currentGameCode;
                     }
 
                     const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
@@ -526,22 +507,15 @@
         function setGameMatrixCode(code) {
             const cleaned = (code || 'E03').trim().toUpperCase();
             currentGameCode = cleaned;
-            const inputEl = document.getElementById('gameMatrixCodeInput');
-            if (inputEl) inputEl.value = cleaned;
-            renderGameDashboardMatrix();
+            renderStudentEntryGrid();
             renderGameStudentSubmissionMatrix();
         }
 
         function filterLeaderboardsByGame() {
             currentGameCode = document.getElementById('overallGameSelect').value;
             document.getElementById('classGameSelect').value = currentGameCode;
-            const matrixCodeInput = document.getElementById('gameMatrixCodeInput');
-            if (matrixCodeInput && currentGameCode && currentGameCode !== 'ALL') {
-                matrixCodeInput.value = currentGameCode;
-            }
             renderOverallLeaderboard();
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
-            renderGameDashboardMatrix();
             renderGameStudentSubmissionMatrix();
         }
 
@@ -552,6 +526,11 @@
             } else {
                 expandedSubmissionClasses.add(key);
             }
+            renderGameStudentSubmissionMatrix();
+        }
+
+        function toggleUnavailableGamesRow() {
+            isUnavailableGamesExpanded = !isUnavailableGamesExpanded;
             renderGameStudentSubmissionMatrix();
         }
 
@@ -593,12 +572,22 @@
             });
 
             const availableGames = getAllAvailableGames();
+            const readyGamesList = availableGames.filter(g => READY_GAMES.includes(g));
+            const unavailableGamesList = availableGames.filter(g => !READY_GAMES.includes(g));
+
+            const unavailBtn = document.getElementById('toggleUnavailableBtn');
+            if (unavailBtn) {
+                unavailBtn.innerHTML = `${isUnavailableGamesExpanded ? '▾' : '▸'} Unavailable (${unavailableGamesList.length})`;
+                unavailBtn.className = isUnavailableGamesExpanded
+                    ? 'px-2.5 py-1 rounded text-[11px] font-bold bg-amber-500 text-slate-950 border border-amber-300'
+                    : 'px-2.5 py-1 rounded text-[11px] font-bold bg-amber-700 hover:bg-amber-600 text-amber-100 border border-amber-500';
+            }
+
             const classStudentCodesMap = {};
             standards.forEach(std => {
                 classStudentCodesMap[std] = getClassStudentCodes(std);
             });
 
-            // Pre-index submission counts per gameCode and normalized student prefix
             const gameStudentCounts = {};
             availableGames.forEach(g => {
                 gameStudentCounts[g] = {};
@@ -613,7 +602,6 @@
                 gameStudentCounts[gCode][baseCode] = (gameStudentCounts[gCode][baseCode] || 0) + 1;
             });
 
-            // Build top class header row & second student code header row
             let topHeaderHtml = `<tr class="bg-slate-800 text-white font-bold">
                 <th class="sticky-game-col bg-slate-900 text-amber-300 px-2 py-2" rowspan="2">Game Code</th>`;
             let subHeaderHtml = `<tr class="bg-slate-100 text-slate-800 font-bold text-[10px]">`;
@@ -644,8 +632,6 @@
 
             thead.innerHTML = topHeaderHtml + subHeaderHtml;
 
-            // Build rows per available game code
-            let bodyHtml = '';
             const classColumnTotals = {};
             standards.forEach(std => {
                 classColumnTotals[std] = {};
@@ -656,7 +642,7 @@
             });
             let grandTotalSubmissions = 0;
 
-            availableGames.forEach(gCode => {
+            function buildGameRowHtml(gCode) {
                 const isReady = READY_GAMES.includes(gCode);
                 const isSelectedGame = currentGameCode && currentGameCode.toUpperCase() === gCode;
                 const rowCounts = gameStudentCounts[gCode] || {};
@@ -700,16 +686,65 @@
 
                 const gameBadgeCls = isSelectedGame
                     ? 'bg-amber-200 text-slate-950 font-extrabold'
-                    : (isReady ? 'bg-emerald-50 text-emerald-900 font-extrabold' : 'bg-slate-50 text-slate-700 font-bold');
+                    : (isReady ? 'bg-emerald-50 text-emerald-900 font-extrabold' : 'bg-slate-100 text-slate-600 font-semibold');
 
-                bodyHtml += `<tr class="${isReady ? 'bg-white' : 'bg-slate-50/50'} hover:bg-amber-50/40">
-                    <td onclick="setGameMatrixCode('${gCode}')" class="sticky-game-col ${gameBadgeCls} px-2 py-1 cursor-pointer" title="Click to select ${gCode} in Game Dashboard">${gCode}${isReady ? ' ★' : ''}</td>
+                return `<tr class="${isReady ? 'bg-white' : 'bg-slate-50/80'} hover:bg-amber-50/40">
+                    <td onclick="setGameMatrixCode('${gCode}')" class="sticky-game-col ${gameBadgeCls} px-2 py-1 cursor-pointer" title="Click to select ${gCode}">${gCode}${isReady ? ' ★' : ''}</td>
                     ${cellsHtml}
                     <td class="class-boundary ${rowGrandTotal > 0 ? 'bg-emerald-100 text-emerald-950' : 'bg-slate-100 text-slate-500'} font-extrabold">${rowGrandTotal}</td>
                 </tr>`;
-            });
+            }
 
-            // Footer / Total row across all games
+            let bodyHtml = readyGamesList.map(gCode => buildGameRowHtml(gCode)).join('');
+
+            if (unavailableGamesList.length > 0) {
+                let unavailStdTotals = {};
+                let unavailGrandTotal = 0;
+                standards.forEach(std => {
+                    let sTot = 0;
+                    unavailableGamesList.forEach(gCode => {
+                        const rowCounts = gameStudentCounts[gCode] || {};
+                        classStudentCodesMap[std].forEach(code => {
+                            sTot += (rowCounts[code] || 0);
+                        });
+                    });
+                    unavailStdTotals[std] = sTot;
+                    unavailGrandTotal += sTot;
+                });
+
+                let bannerCells = '';
+                standards.forEach(std => {
+                    const isOpen = expandedSubmissionClasses.has(std);
+                    const codes = classStudentCodesMap[std];
+                    const sTot = unavailStdTotals[std];
+                    if (isOpen) {
+                        codes.forEach((code, idx) => {
+                            let cSum = 0;
+                            unavailableGamesList.forEach(gCode => {
+                                cSum += ((gameStudentCounts[gCode] || {})[code] || 0);
+                            });
+                            bannerCells += `<td class="${idx === 0 ? 'class-boundary' : ''} bg-amber-50/70 text-amber-900 font-semibold">${cSum > 0 ? cSum : '·'}</td>`;
+                        });
+                        bannerCells += `<td class="bg-amber-100 text-amber-950 font-bold">${sTot}</td>`;
+                    } else {
+                        bannerCells += `<td class="class-boundary bg-amber-50/70 text-amber-900 font-semibold">${sTot > 0 ? sTot + ' subs' : '0'}</td>`;
+                        bannerCells += `<td class="bg-amber-100 text-amber-950 font-bold">${sTot}</td>`;
+                    }
+                });
+
+                bodyHtml += `<tr onclick="toggleUnavailableGamesRow()" class="bg-amber-50 hover:bg-amber-100 cursor-pointer border-t border-amber-200" title="Click to ${isUnavailableGamesExpanded ? 'collapse' : 'expand'} unavailable game rows">
+                    <td class="sticky-game-col bg-amber-100 text-amber-950 font-extrabold px-2 py-1.5 text-left">
+                        <span>${isUnavailableGamesExpanded ? '▾' : '▸'} Unavailable (${unavailableGamesList.length})</span>
+                    </td>
+                    ${bannerCells}
+                    <td class="class-boundary bg-amber-200 text-amber-950 font-extrabold">${unavailGrandTotal}</td>
+                </tr>`;
+
+                if (isUnavailableGamesExpanded) {
+                    bodyHtml += unavailableGamesList.map(gCode => buildGameRowHtml(gCode)).join('');
+                }
+            }
+
             let totalRowCells = `<td class="sticky-game-col bg-slate-800 text-yellow-300 font-extrabold px-2 py-1.5">Total</td>`;
             standards.forEach(std => {
                 const isOpen = expandedSubmissionClasses.has(std);
@@ -956,13 +991,11 @@
             if (shouldExpand) {
                 expandedGameCodes.add(gCode);
                 currentGameCode = gCode;
-                const matrixCodeInput = document.getElementById('gameMatrixCodeInput');
-                if (matrixCodeInput) matrixCodeInput.value = gCode;
             } else {
                 expandedGameCodes.delete(gCode);
             }
             renderStudentEntryGrid();
-            renderGameDashboardMatrix();
+            renderGameStudentSubmissionMatrix();
         }
 
         function buildGameDashboardMatrixHtml(activeGameCode) {
@@ -1064,7 +1097,6 @@
 
             let html = '';
 
-            // ROW 1: Main Group Headers
             html += `<tr class="bg-slate-800 text-slate-100 font-extrabold">
                 <th class="px-2 py-1.5 text-center" colspan="2" rowspan="3">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
             groupStats.forEach(g => {
@@ -1073,7 +1105,6 @@
             html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="3">All Members &amp;<br>Top 15 Members</th>
             </tr>`;
 
-            // ROW 2: Boys / Girls Subheaders
             html += `<tr class="bg-slate-900 text-slate-200 font-bold">`;
             groupStats.forEach(() => {
                 html += `<th class="group-divider-left text-sky-300 px-1 py-1" colspan="3">Boys</th>
@@ -1081,7 +1112,6 @@
             });
             html += `</tr>`;
 
-            // ROW 3: Table4 Label Row below Boys/Girls
             html += `<tr class="bg-amber-950/80 text-amber-200 font-extrabold text-[10px]">`;
             groupStats.forEach(() => {
                 html += `<th class="group-divider-left px-1 py-0.5 text-amber-300" colspan="3">Table4</th>
@@ -1089,7 +1119,6 @@
             });
             html += `</tr>`;
 
-            // Summary Metrics Rows
             const summaryRows = [
                 { label: 'Submissions:', key: 'subs', cls: 'text-sky-300 font-bold' },
                 { label: 'Users:', key: 'users', cls: 'text-emerald-300 font-bold' },
@@ -1168,7 +1197,6 @@
                 { label: 'Avg Score:', field: 'avgScore', cls: 'text-purple-300 font-bold' }
             ];
 
-            // 15 Student Blocks (Student-01 .. Student-15), each with 6 rows (Stu_Code, Stu_Name, Submission, Top Score, Least Time, Avg Score)
             for (let sIdx = 1; sIdx <= 15; sIdx++) {
                 const sNum = sIdx < 10 ? `0${sIdx}` : `${sIdx}`;
                 const rankedMember = rankedMembers[sIdx - 1] || null;
@@ -1223,7 +1251,6 @@
                 });
             }
 
-            // LAST BLOCK: Overall Consolidated Data
             const overallMetricRows = [
                 { label: 'Submission:', field: 'subs' },
                 { label: 'Top Score:', field: 'topScore' },
@@ -1294,14 +1321,12 @@
                 html += `<tr>`;
                 rowCodes.forEach(gCode => {
                     const isReady = READY_GAMES.includes(gCode);
-                    const count = gameCounts[gCode] || 0;
                     const isExpanded = expandedGameCodes.has(gCode);
 
                     const cellBgClass = isReady
                         ? 'bg-white text-slate-900 font-extrabold'
                         : 'bg-white text-slate-500 font-semibold';
                     const sizeClass = isReady ? 'text-sm py-2.5 px-2' : 'text-xs py-2 px-1.5';
-                    const countSizeClass = isReady ? 'text-xs text-slate-600' : 'text-[10px] text-slate-400';
 
                     const checkboxHtml = isReady
                         ? `<input type="checkbox" ${isExpanded ? 'checked' : ''} onchange="toggleGameGridExpansion('${gCode}', this.checked)" aria-label="Expand or collapse ${gCode}" title="Check to expand/collapse ${gCode} linked table" class="w-3.5 h-3.5 accent-indigo-600 cursor-pointer ml-1.5 align-middle">`
@@ -1310,7 +1335,7 @@
                     html += `<td class="${cellBgClass} ${sizeClass} transition-all" title="${isReady ? 'Available Game: ' + gCode : 'Not yet available: ' + gCode}">
                         <div class="inline-flex items-center justify-center gap-1">
                             <span onclick="${isReady ? `toggleGameGridExpansion('${gCode}')` : `alert('Game not yet ready!')`}" class="${isReady ? 'cursor-pointer hover:text-indigo-700' : 'cursor-not-allowed'}">
-                                ${gCode} <span class="${countSizeClass}">(${count})</span>
+                                ${gCode}
                             </span>
                             ${checkboxHtml}
                         </div>
@@ -1331,11 +1356,11 @@
 
                 html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-2 shadow-sm mt-3">
                     <div class="flex items-center justify-between px-2.5 py-1.5 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
-                        <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Linked Game Dashboard: ${gCode} (${count} Submissions)</span>
+                        <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Game Dashboard: ${gCode} (${count} Submissions)</span>
                         <button type="button" onclick="toggleGameGridExpansion('${gCode}', false)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Collapse</button>
                     </div>
                     <div class="overflow-x-auto rounded-lg border-2 border-slate-600 bg-slate-950">
-                        <table aria-label="Linked Game Dashboard ${gCode}" class="w-full matrix-table border-collapse text-[11px] text-slate-100">
+                        <table aria-label="Game Dashboard ${gCode}" class="w-full matrix-table border-collapse text-[11px] text-slate-100">
                             <tbody>${buildGameDashboardMatrixHtml(gCode)}</tbody>
                         </table>
                     </div>
@@ -1423,18 +1448,8 @@
             };
         }
 
-        function renderGameDashboardMatrix() {
-            const tbody = document.getElementById('gameDashboardMatrixBody');
-            if (!tbody) return;
-
-            const matrixInputVal = document.getElementById('gameMatrixCodeInput')?.value?.trim().toUpperCase();
-            const activeGame = matrixInputVal || ((currentGameCode && currentGameCode !== 'ALL') ? currentGameCode.toUpperCase() : 'E03');
-            tbody.innerHTML = buildGameDashboardMatrixHtml(activeGame);
-        }
-
         function updateAllHomepageTables() {
             renderStudentEntryGrid();
-            renderGameDashboardMatrix();
             renderGameStudentSubmissionMatrix();
             renderOverallLeaderboard();
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);

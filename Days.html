@@ -362,7 +362,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <div class="stt-grid" id="sttGrid"></div>
 
     <h2>Level 3: Speak Syllable Spellings &amp; Whole Words (TTS &amp; STT)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Listen to every letter in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Listen to each syllable in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 </div>
 
@@ -437,14 +437,18 @@ function cleanSttTranscript(rawText) {
         .replace(/\bseven\b/gi, "Seven");
 }
 
-function spellOutEveryLetterForTTS(syllableText) {
-    const lettersOnly = syllableText.replace(/[^a-zA-Z]/g, "").split("");
-    return lettersOnly.join(", ");
+// Keep letters together within each syllable (e.g., "Da-ys" -> "Da, ys", "Se-ven" -> "Se, ven")
+function formatSyllablesForTTS(syllableText) {
+    return syllableText
+        .split("-")
+        .map(part => part.replace(/[^a-zA-Z]/g, ""))
+        .filter(Boolean)
+        .join(", ");
 }
 
 function speakSyllableSpelling(syllableText) {
-    const spelledLetters = spellOutEveryLetterForTTS(syllableText);
-    speakText(spelledLetters);
+    const syllableSpeech = formatSyllablesForTTS(syllableText);
+    speakText(syllableSpeech);
 }
 
 function matchesSyllableSpelling(spokenText, syllableText) {

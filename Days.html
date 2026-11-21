@@ -470,7 +470,7 @@ function speakLettersWithReducedGap(letters) {
         const utterance = new SpeechSynthesisUtterance(letters[letterIndex]);
         utterance.lang = INDIC_ENGLISH_LOCALE;
         if (indianVoice) utterance.voice = indianVoice;
-        utterance.rate = 0.85;
+        utterance.rate = 1.0;
         utterance.volume = 1.0;
         activeUtterance = utterance;
 
@@ -492,7 +492,7 @@ function speakLettersWithReducedGap(letters) {
         utterance.onerror = advance;
 
         // Prevent a browser/device TTS issue from stopping the remaining letters.
-        letterWatchdog = setTimeout(advance, 2500);
+        letterWatchdog = setTimeout(advance, 1250);
 
         try {
             synth.speak(utterance);

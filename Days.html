@@ -362,7 +362,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <div class="stt-grid" id="sttGrid"></div>
 
     <h2>Level 3: Speak Syllable Spellings &amp; Whole Words (TTS &amp; STT)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Listen in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Listen letter by letter in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 </div>
 
@@ -437,14 +437,14 @@ function cleanSttTranscript(rawText) {
         .replace(/\bseven\b/gi, "Seven");
 }
 
-// 0 gap between letters inside each syllable; keep pause at "-" and speak the whole word at the end
+// Dictate letter by letter within each part, pause at "-", then speak the whole word at the end
 function formatSyllablesForTTS(syllableText, wholeWord) {
-    const partsWithZeroLetterGap = syllableText
+    const letterSpelledParts = syllableText
         .split("-")
-        .map(part => part.replace(/[^a-zA-Z]/g, "").split("").join(""))
+        .map(part => part.replace(/[^a-zA-Z]/g, "").split("").join(", "))
         .filter(Boolean);
 
-    const joinedWithHyphenPause = partsWithZeroLetterGap.join(" ... ");
+    const joinedWithHyphenPause = letterSpelledParts.join(" ... ");
     return wholeWord ? `${joinedWithHyphenPause} ... ${wholeWord}` : joinedWithHyphenPause;
 }
 

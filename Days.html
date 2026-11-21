@@ -187,6 +187,7 @@ button {
 button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 .btn-green { background: #22c55e; }
 .btn-blue { background: #3b82f6; }
+.btn-purple { background: #8b5cf6; }
 .btn-orange { background: #f59e0b; }
 .btn-red { background: #ef4444; }
 
@@ -283,9 +284,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     display: flex;
     gap: 6px;
     justify-content: center;
+    flex-wrap: wrap;
     margin-top: 6px;
 }
 .stt-user-speech { font-size: 0.85rem; color: #facc15; margin-top: 4px; font-weight: 500; min-height: 20px; }
+.stt-whole-speech { font-size: 0.82rem; color: #c4b5fd; margin-top: 2px; min-height: 18px; }
 .stt-status { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
 .box-timer { font-size: 0.8rem; color: #ef4444; font-weight: bold; margin-top: 2px; }
 </style>
@@ -358,8 +361,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <p style="color: #94a3b8; font-size: 0.95rem;">Mics unlock sequentially. Previous mics lock automatically.</p>
     <div class="stt-grid" id="sttGrid"></div>
 
-    <h2>Level 3: Speak Syllable Spellings (TTS &amp; STT)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Listen with TTS, then speak each syllable spelling clearly as mics unlock in order.</p>
+    <h2>Level 3: Speak Syllable Spellings &amp; Whole Words (TTS &amp; STT)</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Listen with TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 </div>
 
@@ -405,6 +408,7 @@ let sessionTrials = [];
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
+let wholeRecognition = null;
 let draggedCard = null;
 let boxTimerInterval = null;
 
@@ -416,7 +420,6 @@ function cleanSttTranscript(rawText) {
 }
 
 function speakSyllableSpelling(syllableText) {
-    // Speak syllable parts gently so TTS pronounces each syllable clearly
     const spokenParts = syllableText.replace(/-/g, ", ");
     speakText(spokenParts);
 }
@@ -429,15 +432,12 @@ function matchesSyllableSpelling(spokenText, syllableText) {
 
     const joinedTarget = syllableText.toLowerCase().replace(/-/g, "");
     const parts = syllableText.toLowerCase().split("-").filter(Boolean);
-
-    // Compact spoken string with spaces/hyphens removed (e.g. "da ys" -> "days", "wed nes day" -> "wednesday")
     const compactSpoken = cleanSpoken.replace(/[\s-]+/g, "");
 
     if (compactSpoken.includes(joinedTarget)) {
         return true;
     }
 
-    // Check if all syllable parts appear in order
     let searchFrom = 0;
     for (const part of parts) {
         const idx = compactSpoken.indexOf(part, searchFrom);
@@ -637,6 +637,7 @@ function initGame() {
     spellingGrid.innerHTML = "";
     syllableSpellings.forEach((syllable, index) => {
         const serialNum = index + 1;
+        const wholeWord = targetWords[index];
         const card = document.createElement("div");
         card.className = "stt-card";
         card.id = `spell-card-${serialNum}`;
@@ -647,8 +648,10 @@ function initGame() {
             <div class="card-btn-row">
                 <button class="btn-blue" id="listen-spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakSyllableSpelling('${syllable}')">🔊 Listen</button>
                 <button class="btn-green" id="spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); testSyllableBox('${syllable}', ${serialNum})" disabled>🎙️ Speak</button>
+                <button class="btn-purple" id="whole-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakWholeWordSTT('${wholeWord}', ${serialNum})">🗣️ Whole Word</button>
             </div>
             <div class="stt-user-speech" id="spell-speech-${serialNum}">You said: --</div>
+            <div class="stt-whole-speech" id="whole-speech-${serialNum}">Whole word: --</div>
             <div class="stt-status" id="spell-status-${serialNum}">Locked</div>
             <div class="box-timer" id="spell-timer-${serialNum}"></div>
         `;
@@ -934,6 +937,79 @@ function testSyllableBox(syllableText, serialNum) {
     }, 1000);
 }
 
+function speakWholeWordSTT(wholeWord, serialNum) {
+    if (!SpeechRecognition) {
+        alert("Speech Recognition not supported on this browser.");
+        return;
+    }
+
+    const wholeBtn = document.getElementById(`whole-btn-${serialNum}`);
+    const wholeSpeechDiv = document.getElementById(`whole-speech-${serialNum}`);
+    const statusDiv = document.getElementById(`spell-status-${serialNum}`);
+
+    if (wholeBtn) {
+        wholeBtn.disabled = true;
+        wholeBtn.textContent = "🎙️ Listening...";
+    }
+    if (wholeSpeechDiv) wholeSpeechDiv.textContent = "Whole word: Listening...";
+    document.getElementById("userSaidDisplay").textContent = `You said: Say "${wholeWord}"...`;
+
+    let done = false;
+    const finishWholeMic = () => {
+        if (done) return;
+        done = true;
+        if (wholeRecognition) try { wholeRecognition.abort(); } catch (e) {}
+        if (wholeBtn) {
+            wholeBtn.disabled = false;
+            wholeBtn.textContent = "🗣️ Whole Word";
+        }
+    };
+
+    try {
+        if (wholeRecognition) wholeRecognition.abort();
+        wholeRecognition = new SpeechRecognition();
+        wholeRecognition.lang = "en-IN";
+        wholeRecognition.interimResults = false;
+
+        wholeRecognition.onresult = (event) => {
+            const spoken = cleanSttTranscript(event.results[0][0].transcript);
+            document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
+            if (wholeSpeechDiv) wholeSpeechDiv.textContent = `Whole word: "${spoken}"`;
+
+            const targetLower = wholeWord.toLowerCase();
+            const isWholeMatch = new RegExp(`\\b${targetLower}\\b`, "i").test(spoken) ||
+                                 spoken.toLowerCase().includes(targetLower);
+
+            if (isWholeMatch && statusDiv) {
+                statusDiv.textContent = `✓ Whole word: "${spoken}"`;
+                statusDiv.style.color = "#22c55e";
+            } else if (statusDiv) {
+                statusDiv.textContent = `Whole heard: "${spoken}"`;
+                statusDiv.style.color = "#c4b5fd";
+            }
+            finishWholeMic();
+        };
+
+        wholeRecognition.onerror = () => {
+            if (wholeSpeechDiv) wholeSpeechDiv.textContent = "Whole word: --";
+            finishWholeMic();
+        };
+
+        wholeRecognition.onend = () => {
+            if (wholeSpeechDiv && wholeSpeechDiv.textContent === "Whole word: Listening...") {
+                wholeSpeechDiv.textContent = "Whole word: --";
+            }
+            finishWholeMic();
+        };
+
+        wholeRecognition.start();
+        setTimeout(finishWholeMic, 5000);
+    } catch (e) {
+        if (wholeSpeechDiv) wholeSpeechDiv.textContent = "Whole word: --";
+        finishWholeMic();
+    }
+}
+
 function submitData() {
     const studentIdInput = document.getElementById("studentId").value.trim() || "1B01";
     const nameInput = document.getElementById("userName").value.trim();
@@ -1051,6 +1127,7 @@ function resetSameUser() {
     clearInterval(timerInterval);
     if (boxTimerInterval) clearInterval(boxTimerInterval);
     if (recognition) try { recognition.abort(); } catch(e){}
+    if (wholeRecognition) try { wholeRecognition.abort(); } catch(e){}
     
     secondsElapsed = 0;
     level1Seconds = 0;

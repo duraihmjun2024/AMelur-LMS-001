@@ -342,6 +342,7 @@
         let isUnavailableGamesExpanded = false;
 
         const READY_GAMES = ["E02", "E03", "M03"];
+        const SUB_IDS = ["1", "2", "3"];
 
         function navAction(section) {
             if (section === 'Home') {
@@ -438,6 +439,33 @@
             }
 
             return '';
+        }
+
+        function getSubmissionIdForRecord(record, indexWithinStudent) {
+            const explicitTrial = String(record.trialId || record.subId || record.submissionId || '').trim();
+            const match = explicitTrial.match(/(\d+)/);
+            if (match) {
+                return String(parseInt(match[1], 10));
+            }
+            return String(indexWithinStudent + 1);
+        }
+
+        function filterRecordsBySubId(recs, subId) {
+            const targetSub = String(subId);
+            const perStudentCounter = {};
+            const matched = [];
+
+            recs.forEach(r => {
+                const sidKey = String(r.studentId || '').trim().toUpperCase().split('_')[0] || '__ANON__';
+                const idx = perStudentCounter[sidKey] || 0;
+                perStudentCounter[sidKey] = idx + 1;
+                const recSubId = getSubmissionIdForRecord(r, idx);
+                if (recSubId === targetSub) {
+                    matched.push(r);
+                }
+            });
+
+            return matched;
         }
 
         function sortLeaderboardData(records) {
@@ -998,6 +1026,55 @@
             renderGameStudentSubmissionMatrix();
         }
 
+        function computeSubIdMetrics(recs, rollCount, subId) {
+            const subRecs = filterRecordsBySubId(recs, subId);
+            if (!subRecs.length) {
+                return {
+                    subs: '',
+                    users: '',
+                    absentees: '',
+                    topScore: '',
+                    leastTime: '',
+                    avgScore: ''
+                };
+            }
+
+            const uniqueIds = new Set(subRecs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean));
+            const users = uniqueIds.size;
+            const absentees = Math.max(0, rollCount - users);
+            const scores = subRecs.map(r => parseScoreValue(r.score));
+            const maxPct = Math.round(Math.max(...scores));
+            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const times = subRecs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const minTime = times.length ? Math.min(...times) : 0;
+
+            return {
+                subs: String(subRecs.length),
+                users: String(users),
+                absentees: String(absentees),
+                topScore: `${maxPct}%`,
+                leastTime: formatCompactTime(minTime),
+                avgScore: `${avgPct}%`
+            };
+        }
+
+        function computeStudentStatsForSubId(gameRecs, studentCode, subId) {
+            const stuRecs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
+            const recs = filterRecordsBySubId(stuRecs, subId);
+            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+            const scores = recs.map(r => parseScoreValue(r.score));
+            const maxPct = Math.round(Math.max(...scores));
+            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const minTime = times.length ? Math.min(...times) : 0;
+            return {
+                subs: String(recs.length),
+                topScore: `${maxPct}%`,
+                leastTime: formatCompactTime(minTime),
+                avgScore: `${avgPct}%`
+            };
+        }
+
         function buildGameDashboardMatrixHtml(activeGameCode) {
             const activeGame = String(activeGameCode || 'E03').trim().toUpperCase();
             const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
@@ -1052,51 +1129,35 @@
 
             const groupStats = groups.map(g => ({
                 ...g,
-                boys: computeCohortMetrics(g.boysRecs, g.roll),
-                girls: computeCohortMetrics(g.girlsRecs, g.roll)
+                boysBySub: SUB_IDS.map(subId => computeSubIdMetrics(g.boysRecs, g.roll, subId)),
+                girlsBySub: SUB_IDS.map(subId => computeSubIdMetrics(g.girlsRecs, g.roll, subId))
             }));
 
-            const memberSummary = computeCohortMetrics(memberRecsAll, Math.max(15, memberRecsAll.length));
+            const memberBySub = SUB_IDS.map(subId => computeSubIdMetrics(memberRecsAll, Math.max(15, memberRecsAll.length), subId));
 
             const memberIds = [...new Set(memberRecsAll.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean))];
             const rankedMembers = memberIds.map(mid => {
-                const st = computeStudentStatsForCode(memberRecsAll, mid);
-                const maxScore = parseScoreValue(st.topScore);
-                const minTime = parseTimeToSeconds(st.leastTime);
-                return { id: mid, ...st, maxScore, minTime };
+                const subStats = SUB_IDS.map(subId => computeStudentStatsForSubId(memberRecsAll, mid, subId));
+                const scores = subStats.map(s => parseScoreValue(s.topScore)).filter(n => n > 0);
+                const times = subStats.map(s => parseTimeToSeconds(s.leastTime)).filter(n => n > 0);
+                return {
+                    id: mid,
+                    subStats,
+                    maxScore: scores.length ? Math.max(...scores) : 0,
+                    minTime: times.length ? Math.min(...times) : Infinity
+                };
             }).sort((a, b) => {
                 if (b.maxScore !== a.maxScore) return b.maxScore - a.maxScore;
                 return a.minTime - b.minTime;
             });
 
-            function getSummaryTriplet(cohort, metricKey) {
-                if (!cohort.subs) return ['', '', ''];
-                const mainVal = cohort[metricKey] || '';
-                const t1 = cohort.top3[0];
-                const t2 = cohort.top3[1];
-                if (metricKey === 'subs') {
-                    return [mainVal, t1 ? '1' : '', t2 ? '1' : ''];
-                }
-                if (metricKey === 'users') {
-                    return [mainVal, t1 ? '1' : '', t2 ? '1' : ''];
-                }
-                if (metricKey === 'absentees') {
-                    return [mainVal, '', ''];
-                }
-                if (metricKey === 'topScore') {
-                    return [mainVal, t1 ? t1.topScore : '', t2 ? t2.topScore : ''];
-                }
-                if (metricKey === 'leastTime') {
-                    return [mainVal, t1 ? t1.leastTime : '', t2 ? t2.leastTime : ''];
-                }
-                if (metricKey === 'avgScore') {
-                    return [mainVal, t1 ? t1.avgScore : '', t2 ? t2.avgScore : ''];
-                }
-                return ['', '', ''];
+            function getTripletForCohortBySub(cohortList, metricKey) {
+                return SUB_IDS.map((_, idx) => (cohortList[idx] && cohortList[idx][metricKey]) ? cohortList[idx][metricKey] : '');
             }
 
             let html = '';
 
+            // ROW 1: Main Group Headers
             html += `<tr class="bg-slate-800 text-slate-100 font-extrabold">
                 <th class="px-2 py-1.5 text-center" colspan="2" rowspan="3">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
             groupStats.forEach(g => {
@@ -1105,6 +1166,7 @@
             html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="3">All Members &amp;<br>Top 15 Members</th>
             </tr>`;
 
+            // ROW 2: Boys / Girls Subheaders
             html += `<tr class="bg-slate-900 text-slate-200 font-bold">`;
             groupStats.forEach(() => {
                 html += `<th class="group-divider-left text-sky-300 px-1 py-1" colspan="3">Boys</th>
@@ -1112,13 +1174,38 @@
             });
             html += `</tr>`;
 
+            // ROW 3: Sub_ID Row with 3 Split Cells (1, 2, 3)
             html += `<tr class="bg-amber-950/80 text-amber-200 font-extrabold text-[10px]">`;
             groupStats.forEach(() => {
-                html += `<th class="group-divider-left px-1 py-0.5 text-amber-300" colspan="3">Table4</th>
-                         <th class="px-1 py-0.5 text-amber-300" colspan="3">Table4</th>`;
+                SUB_IDS.forEach((subId, i) => {
+                    html += `<th class="${i === 0 ? 'group-divider-left' : ''} px-1 py-0.5 text-amber-300 min-w-[26px]">${subId}</th>`;
+                });
+                SUB_IDS.forEach((subId) => {
+                    html += `<th class="px-1 py-0.5 text-amber-300 min-w-[26px]">${subId}</th>`;
+                });
             });
             html += `</tr>`;
 
+            // Sub_ID Header Label Row
+            html += `<tr class="bg-slate-800/90 text-amber-200 font-extrabold text-[10px]">
+                <td class="px-2 py-1 text-left bg-slate-800 text-amber-300" colspan="2">Sub_ID:</td>`;
+            groupStats.forEach(() => {
+                SUB_IDS.forEach((subId, i) => {
+                    html += `<td class="${i === 0 ? 'group-divider-left' : ''} text-amber-200 min-w-[26px]">${subId}</td>`;
+                });
+                SUB_IDS.forEach((subId) => {
+                    html += `<td class="text-amber-200 min-w-[26px]">${subId}</td>`;
+                });
+            });
+            SUB_IDS.forEach((subId, i) => {
+                html += `<td class="${i === 0 ? 'group-divider-left' : ''} text-amber-200 min-w-[28px]">${subId}</td>`;
+            });
+            SUB_IDS.forEach((subId) => {
+                html += `<td class="text-amber-200 min-w-[28px]">${subId}</td>`;
+            });
+            html += `</tr>`;
+
+            // Summary Metrics Rows per Sub_ID
             const summaryRows = [
                 { label: 'Submissions:', key: 'subs', cls: 'text-sky-300 font-bold' },
                 { label: 'Users:', key: 'users', cls: 'text-emerald-300 font-bold' },
@@ -1133,8 +1220,8 @@
                     <td class="px-2 py-1 text-left font-bold bg-slate-800 text-slate-100" colspan="2">${sRow.label}</td>`;
 
                 groupStats.forEach(g => {
-                    const bVals = getSummaryTriplet(g.boys, sRow.key);
-                    const gVals = getSummaryTriplet(g.girls, sRow.key);
+                    const bVals = getTripletForCohortBySub(g.boysBySub, sRow.key);
+                    const gVals = getTripletForCohortBySub(g.girlsBySub, sRow.key);
                     bVals.forEach((v, i) => {
                         html += `<td class="${i === 0 ? 'group-divider-left' : ''} ${sRow.cls} min-w-[26px]">${v}</td>`;
                     });
@@ -1143,48 +1230,46 @@
                     });
                 });
 
-                const mVals = getSummaryTriplet(memberSummary, sRow.key);
-                html += `<td class="group-divider-left bg-slate-700/70 min-w-[34px]"></td>
-                         <td class="bg-slate-700/70 min-w-[34px]"></td>
-                         <td class="bg-slate-700/70 min-w-[34px]"></td>
-                         <td class="${sRow.cls} min-w-[28px]">${mVals[0]}</td>
-                         <td class="${sRow.cls} min-w-[28px]">${mVals[1]}</td>
-                         <td class="${sRow.cls} min-w-[28px]">${mVals[2]}</td>
-                </tr>`;
+                const mVals = getTripletForCohortBySub(memberBySub, sRow.key);
+                mVals.forEach((v, i) => {
+                    html += `<td class="${i === 0 ? 'group-divider-left' : ''} bg-slate-700/70 min-w-[28px]">${v}</td>`;
+                });
+                mVals.forEach((v) => {
+                    html += `<td class="${sRow.cls} min-w-[28px]">${v}</td>`;
+                });
+                html += `</tr>`;
             });
 
-            function getStudentSlotTriplet(group, gender, slotNum, metricField) {
+            function getStudentSlotTripletBySub(group, gender, slotNum, metricField) {
                 const pad = slotNum < 10 ? `0${slotNum}` : `${slotNum}`;
                 if (group.stdPrefix) {
                     const code = `${group.stdPrefix}${gender}${pad}`;
                     if (metricField === 'stuCode') {
-                        return [code, '', ''];
+                        return SUB_IDS.map(() => code);
                     }
                     if (metricField === 'stuName') {
                         const initials = lookupStudentInitialsByCode(code, gameRecs);
-                        return [initials, '', ''];
+                        return SUB_IDS.map(() => initials);
                     }
-                    const st = computeStudentStatsForCode(gameRecs, code);
-                    const val = st[metricField] || '';
-                    return [val, '', ''];
+                    return SUB_IDS.map(subId => {
+                        const st = computeStudentStatsForSubId(gameRecs, code, subId);
+                        return st[metricField] || '';
+                    });
                 } else {
                     if (metricField === 'stuCode' || metricField === 'stuName') {
                         return ['', '', ''];
                     }
-                    const slotRecs = [];
-                    for (let s = 1; s <= 5; s++) {
-                        const code = `${s}${gender}${pad}`;
-                        gameRecs.forEach(r => {
-                            if (matchStudentId(r.studentId, code, false)) slotRecs.push(r);
-                        });
-                    }
-                    if (!slotRecs.length) return ['', '', ''];
-                    const coh = computeCohortMetrics(slotRecs, 5);
-                    if (metricField === 'subs') return [coh.subs, coh.top3[0] ? '1' : '', coh.top3[1] ? '1' : ''];
-                    if (metricField === 'topScore') return [coh.topScore, coh.top3[0] ? coh.top3[0].topScore : '', coh.top3[1] ? coh.top3[1].topScore : ''];
-                    if (metricField === 'leastTime') return [coh.leastTime, coh.top3[0] ? coh.top3[0].leastTime : '', coh.top3[1] ? coh.top3[1].leastTime : ''];
-                    if (metricField === 'avgScore') return [coh.avgScore, coh.top3[0] ? coh.top3[0].avgScore : '', coh.top3[1] ? coh.top3[1].avgScore : ''];
-                    return ['', '', ''];
+                    return SUB_IDS.map(subId => {
+                        const slotRecs = [];
+                        for (let s = 1; s <= 5; s++) {
+                            const code = `${s}${gender}${pad}`;
+                            gameRecs.forEach(r => {
+                                if (matchStudentId(r.studentId, code, false)) slotRecs.push(r);
+                            });
+                        }
+                        const coh = computeSubIdMetrics(slotRecs, 5, subId);
+                        return coh[metricField] || '';
+                    });
                 }
             }
 
@@ -1200,6 +1285,7 @@
             for (let sIdx = 1; sIdx <= 15; sIdx++) {
                 const sNum = sIdx < 10 ? `0${sIdx}` : `${sIdx}`;
                 const rankedMember = rankedMembers[sIdx - 1] || null;
+                const memberInitials = rankedMember ? lookupStudentInitialsByCode(rankedMember.id, gameRecs) : '';
 
                 studentMetricRows.forEach((mRow, mIdx) => {
                     const topBorder = mIdx === 0 ? 'block-divider-top' : '';
@@ -1213,19 +1299,19 @@
                     html += `<td class="${topBorder} bg-slate-900 text-slate-300 font-bold text-left px-2 py-0.5">${mRow.label}</td>`;
 
                     groupStats.forEach(g => {
-                        const bTriplet = getStudentSlotTriplet(g, 'B', sIdx, mRow.field);
-                        const gTriplet = getStudentSlotTriplet(g, 'G', sIdx, mRow.field);
+                        const bTriplet = getStudentSlotTripletBySub(g, 'B', sIdx, mRow.field);
+                        const gTriplet = getStudentSlotTripletBySub(g, 'G', sIdx, mRow.field);
 
                         bTriplet.forEach((v, i) => {
                             const clickableAttr = (g.stdPrefix && mRow.field === 'stuCode' && v)
-                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v}"`
+                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v} (Sub_ID ${SUB_IDS[i]})"`
                                 : '';
                             const cursorCls = (g.stdPrefix && mRow.field === 'stuCode' && v) ? 'cursor-pointer hover:underline' : '';
                             html += `<td ${clickableAttr} class="${topBorder} ${i === 0 ? 'group-divider-left' : ''} ${mRow.cls} ${cursorCls}">${v}</td>`;
                         });
-                        gTriplet.forEach((v) => {
+                        gTriplet.forEach((v, i) => {
                             const clickableAttr = (g.stdPrefix && mRow.field === 'stuCode' && v)
-                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v}"`
+                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v} (Sub_ID ${SUB_IDS[i]})"`
                                 : '';
                             const cursorCls = (g.stdPrefix && mRow.field === 'stuCode' && v) ? 'cursor-pointer hover:underline' : '';
                             html += `<td ${clickableAttr} class="${topBorder} ${mRow.cls} ${cursorCls}">${v}</td>`;
@@ -1237,15 +1323,15 @@
                         html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="6">${memberText}</td>`;
                     }
 
-                    let mVal = '';
-                    if (rankedMember) {
-                        if (mRow.field === 'stuCode') mVal = rankedMember.id;
-                        else if (mRow.field === 'stuName') mVal = lookupStudentInitialsByCode(rankedMember.id, gameRecs);
-                        else mVal = rankedMember[mRow.field] || '';
-                    }
-                    html += `<td class="${topBorder} ${mRow.cls}">${mVal}</td>
-                             <td class="${topBorder} ${mRow.cls}"></td>
-                             <td class="${topBorder} ${mRow.cls}"></td>`;
+                    SUB_IDS.forEach((_, subIdx) => {
+                        let mVal = '';
+                        if (rankedMember) {
+                            if (mRow.field === 'stuCode') mVal = rankedMember.id;
+                            else if (mRow.field === 'stuName') mVal = memberInitials;
+                            else mVal = (rankedMember.subStats[subIdx] && rankedMember.subStats[subIdx][mRow.field]) || '';
+                        }
+                        html += `<td class="${topBorder} ${mRow.cls}">${mVal}</td>`;
+                    });
 
                     html += `</tr>`;
                 });
@@ -1257,7 +1343,8 @@
                 { label: 'Least Time:', field: 'leastTime' },
                 { label: 'Avg Score:', field: 'avgScore' }
             ];
-            const overallAll = computeCohortMetrics(gameRecs, 150);
+            const overallBySub = SUB_IDS.map(subId => computeSubIdMetrics(gameRecs, 150, subId));
+
             overallMetricRows.forEach((mRow, mIdx) => {
                 const topBorder = mIdx === 0 ? 'block-divider-top' : '';
                 html += `<tr class="bg-indigo-950/90 text-amber-100 font-extrabold">`;
@@ -1270,8 +1357,8 @@
                 html += `<td class="${topBorder} bg-indigo-900/90 text-amber-200 font-bold text-left px-2 py-0.5">${mRow.label}</td>`;
 
                 groupStats.forEach(g => {
-                    const bTriplet = getSummaryTriplet(g.boys, mRow.field);
-                    const gTriplet = getSummaryTriplet(g.girls, mRow.field);
+                    const bTriplet = getTripletForCohortBySub(g.boysBySub, mRow.field);
+                    const gTriplet = getTripletForCohortBySub(g.girlsBySub, mRow.field);
 
                     bTriplet.forEach((v, i) => {
                         html += `<td class="${topBorder} ${i === 0 ? 'group-divider-left' : ''} text-amber-200">${v}</td>`;
@@ -1285,10 +1372,10 @@
                     html += `<td class="${topBorder} group-divider-left bg-indigo-900 text-yellow-300 font-extrabold text-left px-2 py-1" colspan="3" rowspan="4">Overall Consolidated Data</td>`;
                 }
 
-                const oTriplet = getSummaryTriplet(overallAll, mRow.field);
-                html += `<td class="${topBorder} text-yellow-300">${oTriplet[0]}</td>
-                         <td class="${topBorder} text-yellow-300">${oTriplet[1]}</td>
-                         <td class="${topBorder} text-yellow-300">${oTriplet[2]}</td>`;
+                const oTriplet = getTripletForCohortBySub(overallBySub, mRow.field);
+                oTriplet.forEach((v) => {
+                    html += `<td class="${topBorder} text-yellow-300">${v}</td>`;
+                });
 
                 html += `</tr>`;
             });
@@ -1377,75 +1464,6 @@
             const cleanHome = String(homeId).trim().toUpperCase();
             if (exactOnly) return cleanSheet === cleanHome;
             return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_");
-        }
-
-        function computeCohortMetrics(recs, rollCount) {
-            if (!recs.length) {
-                return {
-                    subs: '',
-                    users: '',
-                    absentees: '',
-                    topScore: '',
-                    leastTime: '',
-                    avgScore: '',
-                    top3: [null, null, null]
-                };
-            }
-
-            const uniqueIds = new Set(recs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean));
-            const users = uniqueIds.size;
-            const absentees = Math.max(0, rollCount - users);
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-
-            const sortedRecs = [...recs].sort((a, b) => {
-                const sDiff = parseScoreValue(b.score) - parseScoreValue(a.score);
-                if (sDiff !== 0) return sDiff;
-                const tA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
-                const tB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
-                return tA - tB;
-            });
-
-            const top3 = [0, 1, 2].map(i => {
-                const r = sortedRecs[i];
-                if (!r) return null;
-                const t = parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time);
-                return {
-                    subs: '1',
-                    topScore: `${Math.round(parseScoreValue(r.score))}%`,
-                    leastTime: formatCompactTime(t),
-                    avgScore: `${Math.round(parseScoreValue(r.score))}%`
-                };
-            });
-
-            return {
-                subs: String(recs.length),
-                users: String(users),
-                absentees: String(absentees),
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`,
-                top3
-            };
-        }
-
-        function computeStudentStatsForCode(gameRecs, studentCode) {
-            const recs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
-            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-            return {
-                subs: String(recs.length),
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`
-            };
         }
 
         function updateAllHomepageTables() {

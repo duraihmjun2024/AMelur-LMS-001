@@ -102,7 +102,7 @@
                     <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
                         <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student Entry Point (All Games Master Table)
                     </h2>
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Click a ready game to expand/collapse</span>
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked tables</span>
                 </div>
                 <div id="studentEntryGridsContainer" class="space-y-3"></div>
             </section>
@@ -110,7 +110,7 @@
             <!-- 4. GAME DASHBOARD MATRIX -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-2">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900 text-slate-100 px-3 py-2 rounded-lg border border-slate-700">
-                    <span class="text-xs font-bold">Enter any Game Code(shaded) found in the above Game Table to get the status of that game:</span>
+                    <span class="text-xs font-bold">Enter any Game Code found in the above Game Table to get the status of that game:</span>
                     <input type="text" id="gameMatrixCodeInput" value="E03" onchange="setGameMatrixCode(this.value)" onkeyup="if(event.key==='Enter') setGameMatrixCode(this.value)" class="bg-slate-800 text-amber-300 border-2 border-indigo-400 rounded px-3 py-1 text-xs font-extrabold w-24 text-center uppercase focus:outline-none focus:border-amber-400">
                 </div>
                 <div class="overflow-x-auto rounded-lg border-2 border-slate-600 bg-slate-950">
@@ -349,7 +349,7 @@
         let isClassExpanded = false;
         let currentUserStudentId = "1B01";
         let currentGameCode = "E03";
-        let expandedGameCodes = new Set(["E02"]);
+        let expandedGameCodes = new Set(["E03"]);
         let expandedSubmissionClasses = new Set(["1"]);
 
         const READY_GAMES = ["E02", "E03", "M03"];
@@ -419,6 +419,39 @@
         function formatScoreDisplay(scoreStr) {
             if (!scoreStr) return "0/10-0%";
             return String(scoreStr);
+        }
+
+        function getStudentInitials(fullName) {
+            if (!fullName) return '';
+            const cleaned = String(fullName).trim();
+            if (!cleaned) return '';
+            const parts = cleaned.split(/[\s.]+/).filter(Boolean);
+            if (parts.length >= 2) {
+                return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+            }
+            return cleaned.charAt(0).toUpperCase();
+        }
+
+        function lookupStudentInitialsByCode(studentCode, gameRecs) {
+            const target = String(studentCode || '').trim().toUpperCase();
+            if (!target) return '';
+
+            // 1. Check matching records in the active game's submissions first
+            const gameRec = (gameRecs || []).find(r => matchStudentId(r.studentId, target, false) && r.name);
+            if (gameRec && gameRec.name) return getStudentInitials(gameRec.name);
+
+            // 2. Check all game records
+            const anyGameRec = gameRecordsData.find(r => matchStudentId(r.studentId, target, false) && r.name);
+            if (anyGameRec && anyGameRec.name) return getStudentInitials(anyGameRec.name);
+
+            // 3. Check registered user records
+            const userRec = userRecordsData.find(u => matchStudentId(u.studentId || u.studentCode, target, false) && (u.name || u.firstName));
+            if (userRec) {
+                const combined = userRec.lastName ? `${userRec.firstName || userRec.name || ''} ${userRec.lastName}` : (userRec.name || userRec.firstName || '');
+                return getStudentInitials(combined);
+            }
+
+            return '';
         }
 
         function sortLeaderboardData(records) {
@@ -496,6 +529,7 @@
             const inputEl = document.getElementById('gameMatrixCodeInput');
             if (inputEl) inputEl.value = cleaned;
             renderGameDashboardMatrix();
+            renderGameStudentSubmissionMatrix();
         }
 
         function filterLeaderboardsByGame() {
@@ -508,6 +542,7 @@
             renderOverallLeaderboard();
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
             renderGameDashboardMatrix();
+            renderGameStudentSubmissionMatrix();
         }
 
         function toggleSubmissionClass(std) {
@@ -897,30 +932,6 @@
             document.getElementById('studentModal').classList.add('hidden');
         }
 
-        function getStudentMetricsForGame(studentId, gCode) {
-            const recs = gameRecordsData.filter(r => matchStudentId(r.studentId, studentId) && (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
-            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
-            
-            const subs = recs.length;
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxScore = Math.max(...scores);
-            const topScoreStr = maxScore > 0 ? `${Math.round(maxScore)}%` : '';
-            
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            let leastTimeStr = '';
-            if (times.length > 0) {
-                const minT = Math.min(...times);
-                const mins = Math.floor(minT / 60);
-                const secs = minT % 60;
-                leastTimeStr = mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
-            }
-            
-            const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const avgScoreStr = avgScore > 0 ? `${avgScore}%` : '';
-            
-            return { subs: subs, topScore: topScoreStr, leastTime: leastTimeStr, avgScore: avgScoreStr };
-        }
-
         function getAllAvailableGames() {
             const masterGames = [
                 "T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09",
@@ -935,372 +946,27 @@
             return [...masterGames, ...extraGames];
         }
 
-        function getRedToGreenStyle(count, maxCount) {
-            if (!count || count <= 0) return "";
-            const ratio = Math.min(1, Math.max(0, count / Math.max(1, maxCount)));
-            const hue = Math.round(ratio * 120);
-            return `background-color: hsl(${hue}, 85%, 78%); color: #0f172a; border-color: hsl(${hue}, 65%, 45%);`;
-        }
-
-        function getCurrentWeekStart() {
-            const now = new Date();
-            const day = now.getDay();
-            const diffToMonday = day === 0 ? -6 : 1 - day;
-            return new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday, 0, 0, 0, 0);
-        }
-
-        function getWeeklyTrialMilestones(recs) {
-            const weekStart = getCurrentWeekStart();
-            const countsByStudent = {};
-
-            recs.forEach(r => {
-                if (!r.studentId) return;
-                const sid = String(r.studentId).trim().toUpperCase();
-                let inThisWeek = true;
-                if (r.submittedAt) {
-                    const parsedDate = new Date(r.submittedAt);
-                    if (!isNaN(parsedDate.getTime())) {
-                        inThisWeek = parsedDate >= weekStart;
-                    }
-                }
-                if (inThisWeek) {
-                    countsByStudent[sid] = (countsByStudent[sid] || 0) + 1;
-                }
-            });
-
-            const values = Object.values(countsByStudent);
-            return {
-                finished3: values.filter(c => c >= 3).length,
-                finished6: values.filter(c => c >= 6).length,
-                finished9: values.filter(c => c >= 9).length
-            };
-        }
-
-        function toggleGameGridExpansion(gCode) {
+        function toggleGameGridExpansion(gCode, forceState = null) {
             if (!READY_GAMES.includes(gCode)) {
                 alert("Game not yet ready!");
+                renderStudentEntryGrid();
                 return;
             }
-            if (expandedGameCodes.has(gCode)) {
-                expandedGameCodes.delete(gCode);
-            } else {
+            const shouldExpand = forceState !== null ? Boolean(forceState) : !expandedGameCodes.has(gCode);
+            if (shouldExpand) {
                 expandedGameCodes.add(gCode);
+                currentGameCode = gCode;
+                const matrixCodeInput = document.getElementById('gameMatrixCodeInput');
+                if (matrixCodeInput) matrixCodeInput.value = gCode;
+            } else {
+                expandedGameCodes.delete(gCode);
             }
             renderStudentEntryGrid();
+            renderGameDashboardMatrix();
         }
 
-        function buildClasswiseGameSummaryTableHtml(gCode) {
-            const recs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === gCode.toUpperCase());
-            const stdRoll = 30;
-            const standards = ['5', '4', '3', '2', '1'];
-
-            function summarizeGroup(label, groupRecs, rollCount) {
-                const milestones = getWeeklyTrialMilestones(groupRecs);
-                const subs = groupRecs.length;
-                const uniqueStudents = [...new Set(groupRecs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean))];
-                const finished = uniqueStudents.length;
-                const pct = rollCount > 0 ? `${Math.round((finished / rollCount) * 100)}%` : '0%';
-
-                if (!subs) {
-                    return {
-                        label,
-                        roll: rollCount,
-                        finished,
-                        pct,
-                        subs,
-                        wk3: 0,
-                        wk6: 0,
-                        wk9: 0,
-                        top: '---',
-                        best: '---',
-                        avg: '---'
-                    };
-                }
-
-                const sortedByScore = [...groupRecs].sort((a, b) => parseScoreValue(b.score) - parseScoreValue(a.score));
-                const topRec = sortedByScore[0];
-                const topTimeStr = formatTimeDisplay(topRec.level1Time !== '00:00:00' ? topRec.level1Time : topRec.level2Time);
-                const top = `${String(topRec.studentId || '').substring(0, 4)}, ${formatScoreDisplay(topRec.score)}, ${topTimeStr}`;
-
-                const timedRecs = groupRecs.filter(r => (parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)) > 0);
-                const sortedByTime = [...timedRecs].sort((a, b) => {
-                    return (parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time)) - (parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time));
-                });
-                const bestRec = sortedByTime[0] || topRec;
-                const bestTimeStr = formatTimeDisplay(bestRec.level1Time !== '00:00:00' ? bestRec.level1Time : bestRec.level2Time);
-                const best = `${String(bestRec.studentId || '').substring(0, 4)}, ${formatScoreDisplay(bestRec.score)}, ${bestTimeStr}`;
-
-                const scores = groupRecs.map(r => parseScoreValue(r.score));
-                const avgScorePct = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-                const times = timedRecs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time));
-                const avgTimeSecs = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
-                const avg = `${avgScorePct}%, ${formatSecondsToHHMMSS(avgTimeSecs)}`;
-
-                return {
-                    label,
-                    roll: rollCount,
-                    finished,
-                    pct,
-                    subs,
-                    wk3: milestones.finished3,
-                    wk6: milestones.finished6,
-                    wk9: milestones.finished9,
-                    top,
-                    best,
-                    avg
-                };
-            }
-
-            const allRow = summarizeGroup('All Stds', recs, stdRoll * standards.length);
-            const stdRows = standards.map(std => {
-                const stdRecs = recs.filter(r => r.studentId && String(r.studentId).trim().startsWith(std));
-                return summarizeGroup(`Std ${std}`, stdRecs, stdRoll);
-            });
-
-            const rowsToRender = [allRow, ...stdRows];
-            let bodyRowsHtml = '';
-
-            rowsToRender.forEach((row, idx) => {
-                const isAll = idx === 0;
-                bodyRowsHtml += `<tr class="${isAll ? 'bg-slate-800/90 text-white font-bold' : 'bg-slate-900/80 text-slate-200'}">
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold ${isAll ? 'text-white' : 'text-slate-100'}">${row.label}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold">${row.roll}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold text-emerald-400">${row.finished}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold">${row.pct}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold text-sky-400">${row.subs}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold bg-emerald-950/70 text-emerald-200">${row.wk3}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold bg-emerald-950/70 text-emerald-200">${row.wk6}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-bold bg-emerald-950/70 text-emerald-200">${row.wk9}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-mono text-slate-100">${row.top}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-mono text-slate-100">${row.best}</td>
-                    <td class="border border-slate-600 px-2 py-1.5 font-mono text-slate-100">${row.avg}</td>
-                </tr>`;
-            });
-
-            return `
-                <div class="space-y-1.5 mt-2">
-                    <div class="text-xs font-bold text-slate-800">Table-2: Classwise Game Summary</div>
-                    <div class="overflow-x-auto rounded-lg border border-slate-700 bg-slate-900">
-                        <table aria-label="Table-2" class="w-full border-collapse text-center text-xs">
-                            <thead>
-                                <tr class="bg-slate-800 text-slate-100 font-bold">
-                                    <th class="border border-slate-600 px-2 py-2">Standard</th>
-                                    <th class="border border-slate-600 px-2 py-2">Roll</th>
-                                    <th class="border border-slate-600 px-2 py-2">Finished</th>
-                                    <th class="border border-slate-600 px-2 py-2">%</th>
-                                    <th class="border border-slate-600 px-2 py-2">Subs</th>
-                                    <th class="border border-slate-600 px-2 py-2 bg-emerald-900 text-emerald-200">Wk 3T</th>
-                                    <th class="border border-slate-600 px-2 py-2 bg-emerald-900 text-emerald-200">Wk 6T</th>
-                                    <th class="border border-slate-600 px-2 py-2 bg-emerald-900 text-emerald-200">Wk 9T</th>
-                                    <th class="border border-slate-600 px-2 py-2">Top (ID, Score, Time)</th>
-                                    <th class="border border-slate-600 px-2 py-2">Best (ID, Score, Time)</th>
-                                    <th class="border border-slate-600 px-2 py-2">Avg (Score, Time)</th>
-                                </tr>
-                            </thead>
-                            <tbody>${bodyRowsHtml}</tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderStudentEntryGrid() {
-            const container = document.getElementById('studentEntryGridsContainer');
-            if (!container) return;
-
-            const availableGames = getAllAvailableGames();
-            const gameCounts = {};
-            availableGames.forEach(g => {
-                gameCounts[g] = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === g).length;
-            });
-            const maxSubmissions = Math.max(1, ...Object.values(gameCounts));
-
-            const standards = [1, 2, 3, 4, 5];
-            const subRowLabels = [
-                { label: "Submissions", key: "subs", cls: "bg-slate-50 text-indigo-700 font-bold" },
-                { label: "Top Score", key: "topScore", cls: "bg-slate-50 text-emerald-700 font-bold" },
-                { label: "Least Time", key: "leastTime", cls: "bg-slate-50 text-slate-700 font-mono" },
-                { label: "Avg Score", key: "avgScore", cls: "bg-slate-50 text-purple-700 font-bold" }
-            ];
-
-            function buildSingleGameGridHtml(gCode) {
-                let rowsHtml = '';
-                standards.forEach(std => {
-                    rowsHtml += `<tr><td class="w-24 font-bold bg-slate-200 text-xs">Std ${std}</td>`;
-                    for(let c=1; c<=15; c++) {
-                        const code = `${std}B${c < 10 ? '0'+c : c}`;
-                        rowsHtml += `<td class="cell-hover bg-boy-blue font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to login &amp; play ${gCode}">${code}</td>`;
-                    }
-                    for(let c=1; c<=15; c++) {
-                        const code = `${std}G${c < 10 ? '0'+c : c}`;
-                        rowsHtml += `<td class="cell-hover bg-girl-pink font-bold text-xs" onclick="openStudentRegistration('${code}', '${gCode}')" title="Click to login &amp; play ${gCode}">${code}</td>`;
-                    }
-                    rowsHtml += `</tr>`;
-
-                    subRowLabels.forEach(sRow => {
-                        rowsHtml += `<tr><td class="w-24 font-bold bg-slate-100 text-[10px] text-slate-700">${sRow.label}</td>`;
-                        for(let c=1; c<=15; c++) {
-                            const code = `${std}B${c < 10 ? '0'+c : c}`;
-                            const metrics = getStudentMetricsForGame(code, gCode);
-                            const val = metrics[sRow.key] !== undefined ? metrics[sRow.key] : '';
-                            rowsHtml += `<td class="${sRow.cls} text-[10px]">${val}</td>`;
-                        }
-                        for(let c=1; c<=15; c++) {
-                            const code = `${std}G${c < 10 ? '0'+c : c}`;
-                            const metrics = getStudentMetricsForGame(code, gCode);
-                            const val = metrics[sRow.key] !== undefined ? metrics[sRow.key] : '';
-                            rowsHtml += `<td class="${sRow.cls} text-[10px]">${val}</td>`;
-                        }
-                        rowsHtml += `</tr>`;
-                    });
-                });
-                return `<div class="space-y-1.5 mt-2"><div class="text-xs font-bold text-slate-800">Table-3: Student Entry Grid (${gCode})</div><div class="overflow-x-auto"><table aria-label="Table-3" class="w-full grid-border border-collapse bg-white"><tbody>${rowsHtml}</tbody></table></div></div>`;
-            }
-
-            let html = `<div class="border border-indigo-200 rounded-lg overflow-hidden bg-slate-50 p-3 space-y-3">
-                <div class="text-[11px] font-bold text-slate-700"><span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-1</span> All Game Codes (Larger font = ready to play; Red→Green gradient only when submissions &gt; 0):</div>
-                <div class="overflow-x-auto">
-                    <table id="table-1" aria-label="Table-1" class="w-full grid-border border-collapse bg-white">
-                        <tbody>`;
-
-            const chunkSize = 9;
-            for (let i = 0; i < availableGames.length; i += chunkSize) {
-                const rowCodes = availableGames.slice(i, i + chunkSize);
-                html += `<tr>`;
-                rowCodes.forEach(gCode => {
-                    const isReady = READY_GAMES.includes(gCode);
-                    const count = gameCounts[gCode] || 0;
-                    const isExpanded = expandedGameCodes.has(gCode);
-
-                    let bgClass = 'bg-slate-100 hover:bg-slate-200 text-slate-600 opacity-80';
-                    let inlineStyle = '';
-
-                    if (count > 0) {
-                        inlineStyle = getRedToGreenStyle(count, maxSubmissions);
-                        bgClass = isExpanded ? 'ring-2 ring-slate-900 font-extrabold' : 'font-bold';
-                    } else if (isReady) {
-                        bgClass = isExpanded ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold';
-                    }
-
-                    const sizeClass = isReady ? 'text-base py-3 px-2 font-extrabold' : 'text-xs py-2 px-1 font-semibold';
-                    const countSizeClass = isReady ? 'text-xs' : 'text-[10px]';
-
-                    html += `<td onclick="toggleGameGridExpansion('${gCode}')" style="${inlineStyle}" class="cell-hover ${bgClass} ${sizeClass} cursor-pointer transition-all" title="${isReady ? 'Ready: Click to expand/collapse ' + gCode : 'Not yet ready: ' + gCode}">
-                        ${gCode} <span class="${countSizeClass} opacity-85">(${count})</span>
-                    </td>`;
-                });
-                for (let empty = rowCodes.length; empty < chunkSize; empty++) {
-                    html += `<td class="bg-slate-50"></td>`;
-                }
-                html += `</tr>`;
-            }
-
-            html += `       </tbody>
-                    </table>
-                </div>`;
-
-            expandedGameCodes.forEach(gCode => {
-                const count = gameCounts[gCode] || 0;
-
-                html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-3 shadow-sm mt-3">
-                    <div class="flex items-center justify-between px-2.5 py-1 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
-                        <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Game Code: ${gCode} (${count} Submissions)</span>
-                        <button type="button" onclick="toggleGameGridExpansion('${gCode}')" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Close Grid</button>
-                    </div>
-
-                    ${buildClasswiseGameSummaryTableHtml(gCode)}
-
-                    ${buildSingleGameGridHtml(gCode)}
-                </div>`;
-            });
-
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        function matchStudentId(sheetId, homeId, exactOnly = false) {
-            if (!sheetId || !homeId) return false;
-            const cleanSheet = String(sheetId).trim().toUpperCase();
-            const cleanHome = String(homeId).trim().toUpperCase();
-            if (exactOnly) return cleanSheet === cleanHome;
-            return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_");
-        }
-
-        function computeCohortMetrics(recs, rollCount) {
-            if (!recs.length) {
-                return {
-                    subs: '',
-                    users: '',
-                    absentees: '',
-                    topScore: '',
-                    leastTime: '',
-                    avgScore: '',
-                    top3: [null, null, null]
-                };
-            }
-
-            const uniqueIds = new Set(recs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean));
-            const users = uniqueIds.size;
-            const absentees = Math.max(0, rollCount - users);
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-
-            const sortedRecs = [...recs].sort((a, b) => {
-                const sDiff = parseScoreValue(b.score) - parseScoreValue(a.score);
-                if (sDiff !== 0) return sDiff;
-                const tA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
-                const tB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
-                return tA - tB;
-            });
-
-            const top3 = [0, 1, 2].map(i => {
-                const r = sortedRecs[i];
-                if (!r) return null;
-                const t = parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time);
-                return {
-                    subs: '1',
-                    topScore: `${Math.round(parseScoreValue(r.score))}%`,
-                    leastTime: formatCompactTime(t),
-                    avgScore: `${Math.round(parseScoreValue(r.score))}%`
-                };
-            });
-
-            return {
-                subs: String(recs.length),
-                users: String(users),
-                absentees: String(absentees),
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`,
-                top3
-            };
-        }
-
-        function computeStudentStatsForCode(gameRecs, studentCode) {
-            const recs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
-            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-            return {
-                subs: String(recs.length),
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`
-            };
-        }
-
-        function renderGameDashboardMatrix() {
-            const tbody = document.getElementById('gameDashboardMatrixBody');
-            if (!tbody) return;
-
-            const matrixInputVal = document.getElementById('gameMatrixCodeInput')?.value?.trim().toUpperCase();
-            const activeGame = matrixInputVal || ((currentGameCode && currentGameCode !== 'ALL') ? currentGameCode.toUpperCase() : 'E03');
+        function buildGameDashboardMatrixHtml(activeGameCode) {
+            const activeGame = String(activeGameCode || 'E03').trim().toUpperCase();
             const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
 
             const studentRecsAll = gameRecs.filter(r => /^[1-5][BG]\d+/i.test(String(r.studentId || '').trim()));
@@ -1417,7 +1083,7 @@
 
             // ROW 3: Table4 Label Row below Boys/Girls
             html += `<tr class="bg-amber-950/80 text-amber-200 font-extrabold text-[10px]">`;
-            groupStats.forEach((g) => {
+            groupStats.forEach(() => {
                 html += `<th class="group-divider-left px-1 py-0.5 text-amber-300" colspan="3">Table4</th>
                          <th class="px-1 py-0.5 text-amber-300" colspan="3">Table4</th>`;
             });
@@ -1462,10 +1128,20 @@
                 const pad = slotNum < 10 ? `0${slotNum}` : `${slotNum}`;
                 if (group.stdPrefix) {
                     const code = `${group.stdPrefix}${gender}${pad}`;
+                    if (metricField === 'stuCode') {
+                        return [code, '', ''];
+                    }
+                    if (metricField === 'stuName') {
+                        const initials = lookupStudentInitialsByCode(code, gameRecs);
+                        return [initials, '', ''];
+                    }
                     const st = computeStudentStatsForCode(gameRecs, code);
                     const val = st[metricField] || '';
                     return [val, '', ''];
                 } else {
+                    if (metricField === 'stuCode' || metricField === 'stuName') {
+                        return ['', '', ''];
+                    }
                     const slotRecs = [];
                     for (let s = 1; s <= 5; s++) {
                         const code = `${s}${gender}${pad}`;
@@ -1484,13 +1160,15 @@
             }
 
             const studentMetricRows = [
+                { label: 'Stu_Code:', field: 'stuCode', cls: 'text-amber-300 font-bold' },
+                { label: 'Stu_Name:', field: 'stuName', cls: 'text-yellow-200 font-extrabold' },
                 { label: 'Submission:', field: 'subs', cls: 'text-sky-300 font-bold' },
                 { label: 'Top Score:', field: 'topScore', cls: 'text-emerald-300 font-bold' },
                 { label: 'Least Time:', field: 'leastTime', cls: 'text-slate-200 font-mono' },
                 { label: 'Avg Score:', field: 'avgScore', cls: 'text-purple-300 font-bold' }
             ];
 
-            // 15 Student Blocks (Student-01 .. Student-15)
+            // 15 Student Blocks (Student-01 .. Student-15), each with 6 rows (Stu_Code, Stu_Name, Submission, Top Score, Least Time, Avg Score)
             for (let sIdx = 1; sIdx <= 15; sIdx++) {
                 const sNum = sIdx < 10 ? `0${sIdx}` : `${sIdx}`;
                 const rankedMember = rankedMembers[sIdx - 1] || null;
@@ -1500,7 +1178,7 @@
                     html += `<tr class="bg-slate-950 hover:bg-slate-900">`;
 
                     if (mIdx === 0) {
-                        html += `<td class="${topBorder} bg-slate-800 text-slate-100 font-extrabold px-1 py-1 w-7" rowspan="4">
+                        html += `<td class="${topBorder} bg-slate-800 text-slate-100 font-extrabold px-1 py-1 w-7" rowspan="6">
                             <span class="vertical-student-label inline-block">Student-${sNum}</span>
                         </td>`;
                     }
@@ -1511,19 +1189,32 @@
                         const gTriplet = getStudentSlotTriplet(g, 'G', sIdx, mRow.field);
 
                         bTriplet.forEach((v, i) => {
-                            html += `<td class="${topBorder} ${i === 0 ? 'group-divider-left' : ''} ${mRow.cls}">${v}</td>`;
+                            const clickableAttr = (g.stdPrefix && mRow.field === 'stuCode' && v)
+                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v}"`
+                                : '';
+                            const cursorCls = (g.stdPrefix && mRow.field === 'stuCode' && v) ? 'cursor-pointer hover:underline' : '';
+                            html += `<td ${clickableAttr} class="${topBorder} ${i === 0 ? 'group-divider-left' : ''} ${mRow.cls} ${cursorCls}">${v}</td>`;
                         });
                         gTriplet.forEach((v) => {
-                            html += `<td class="${topBorder} ${mRow.cls}">${v}</td>`;
+                            const clickableAttr = (g.stdPrefix && mRow.field === 'stuCode' && v)
+                                ? `onclick="openStudentRegistration('${v}', '${activeGame}')" title="Click to login & play ${activeGame} as ${v}"`
+                                : '';
+                            const cursorCls = (g.stdPrefix && mRow.field === 'stuCode' && v) ? 'cursor-pointer hover:underline' : '';
+                            html += `<td ${clickableAttr} class="${topBorder} ${mRow.cls} ${cursorCls}">${v}</td>`;
                         });
                     });
 
                     if (mIdx === 0) {
                         const memberText = rankedMember ? `Rank-${sIdx}: Member ID: ${rankedMember.id}` : `Rank-${sIdx}: Member ID:`;
-                        html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="4">${memberText}</td>`;
+                        html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="6">${memberText}</td>`;
                     }
 
-                    const mVal = rankedMember ? (rankedMember[mRow.field] || '') : '';
+                    let mVal = '';
+                    if (rankedMember) {
+                        if (mRow.field === 'stuCode') mVal = rankedMember.id;
+                        else if (mRow.field === 'stuName') mVal = lookupStudentInitialsByCode(rankedMember.id, gameRecs);
+                        else mVal = rankedMember[mRow.field] || '';
+                    }
                     html += `<td class="${topBorder} ${mRow.cls}">${mVal}</td>
                              <td class="${topBorder} ${mRow.cls}"></td>
                              <td class="${topBorder} ${mRow.cls}"></td>`;
@@ -1533,8 +1224,14 @@
             }
 
             // LAST BLOCK: Overall Consolidated Data
+            const overallMetricRows = [
+                { label: 'Submission:', field: 'subs' },
+                { label: 'Top Score:', field: 'topScore' },
+                { label: 'Least Time:', field: 'leastTime' },
+                { label: 'Avg Score:', field: 'avgScore' }
+            ];
             const overallAll = computeCohortMetrics(gameRecs, 150);
-            studentMetricRows.forEach((mRow, mIdx) => {
+            overallMetricRows.forEach((mRow, mIdx) => {
                 const topBorder = mIdx === 0 ? 'block-divider-top' : '';
                 html += `<tr class="bg-indigo-950/90 text-amber-100 font-extrabold">`;
 
@@ -1546,9 +1243,8 @@
                 html += `<td class="${topBorder} bg-indigo-900/90 text-amber-200 font-bold text-left px-2 py-0.5">${mRow.label}</td>`;
 
                 groupStats.forEach(g => {
-                    const bKey = mRow.field === 'subs' ? 'subs' : mRow.field;
-                    const bTriplet = getSummaryTriplet(g.boys, bKey);
-                    const gTriplet = getSummaryTriplet(g.girls, bKey);
+                    const bTriplet = getSummaryTriplet(g.boys, mRow.field);
+                    const gTriplet = getSummaryTriplet(g.girls, mRow.field);
 
                     bTriplet.forEach((v, i) => {
                         html += `<td class="${topBorder} ${i === 0 ? 'group-divider-left' : ''} text-amber-200">${v}</td>`;
@@ -1562,8 +1258,7 @@
                     html += `<td class="${topBorder} group-divider-left bg-indigo-900 text-yellow-300 font-extrabold text-left px-2 py-1" colspan="3" rowspan="4">Overall Consolidated Data</td>`;
                 }
 
-                const oKey = mRow.field === 'subs' ? 'subs' : mRow.field;
-                const oTriplet = getSummaryTriplet(overallAll, oKey);
+                const oTriplet = getSummaryTriplet(overallAll, mRow.field);
                 html += `<td class="${topBorder} text-yellow-300">${oTriplet[0]}</td>
                          <td class="${topBorder} text-yellow-300">${oTriplet[1]}</td>
                          <td class="${topBorder} text-yellow-300">${oTriplet[2]}</td>`;
@@ -1571,7 +1266,170 @@
                 html += `</tr>`;
             });
 
-            tbody.innerHTML = html;
+            return html;
+        }
+
+        function renderStudentEntryGrid() {
+            const container = document.getElementById('studentEntryGridsContainer');
+            if (!container) return;
+
+            const availableGames = getAllAvailableGames();
+            const gameCounts = {};
+            availableGames.forEach(g => {
+                gameCounts[g] = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === g).length;
+            });
+
+            let html = `<div class="border border-indigo-200 rounded-lg overflow-hidden bg-slate-50 p-3 space-y-3">
+                <div class="text-[11px] font-bold text-slate-700">
+                    <span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-1</span>
+                    All Game Codes (Use the checkbox on the right of available Game Codes to expand or collapse the linked table):
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="table-1" aria-label="Table-1" class="w-full grid-border border-collapse bg-white">
+                        <tbody>`;
+
+            const chunkSize = 9;
+            for (let i = 0; i < availableGames.length; i += chunkSize) {
+                const rowCodes = availableGames.slice(i, i + chunkSize);
+                html += `<tr>`;
+                rowCodes.forEach(gCode => {
+                    const isReady = READY_GAMES.includes(gCode);
+                    const count = gameCounts[gCode] || 0;
+                    const isExpanded = expandedGameCodes.has(gCode);
+
+                    const cellBgClass = isReady
+                        ? 'bg-white text-slate-900 font-extrabold'
+                        : 'bg-white text-slate-500 font-semibold';
+                    const sizeClass = isReady ? 'text-sm py-2.5 px-2' : 'text-xs py-2 px-1.5';
+                    const countSizeClass = isReady ? 'text-xs text-slate-600' : 'text-[10px] text-slate-400';
+
+                    const checkboxHtml = isReady
+                        ? `<input type="checkbox" ${isExpanded ? 'checked' : ''} onchange="toggleGameGridExpansion('${gCode}', this.checked)" aria-label="Expand or collapse ${gCode}" title="Check to expand/collapse ${gCode} linked table" class="w-3.5 h-3.5 accent-indigo-600 cursor-pointer ml-1.5 align-middle">`
+                        : '';
+
+                    html += `<td class="${cellBgClass} ${sizeClass} transition-all" title="${isReady ? 'Available Game: ' + gCode : 'Not yet available: ' + gCode}">
+                        <div class="inline-flex items-center justify-center gap-1">
+                            <span onclick="${isReady ? `toggleGameGridExpansion('${gCode}')` : `alert('Game not yet ready!')`}" class="${isReady ? 'cursor-pointer hover:text-indigo-700' : 'cursor-not-allowed'}">
+                                ${gCode} <span class="${countSizeClass}">(${count})</span>
+                            </span>
+                            ${checkboxHtml}
+                        </div>
+                    </td>`;
+                });
+                for (let empty = rowCodes.length; empty < chunkSize; empty++) {
+                    html += `<td class="bg-white"></td>`;
+                }
+                html += `</tr>`;
+            }
+
+            html += `       </tbody>
+                    </table>
+                </div>`;
+
+            expandedGameCodes.forEach(gCode => {
+                const count = gameCounts[gCode] || 0;
+
+                html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-2 shadow-sm mt-3">
+                    <div class="flex items-center justify-between px-2.5 py-1.5 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
+                        <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Linked Game Dashboard: ${gCode} (${count} Submissions)</span>
+                        <button type="button" onclick="toggleGameGridExpansion('${gCode}', false)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Collapse</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg border-2 border-slate-600 bg-slate-950">
+                        <table aria-label="Linked Game Dashboard ${gCode}" class="w-full matrix-table border-collapse text-[11px] text-slate-100">
+                            <tbody>${buildGameDashboardMatrixHtml(gCode)}</tbody>
+                        </table>
+                    </div>
+                </div>`;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function matchStudentId(sheetId, homeId, exactOnly = false) {
+            if (!sheetId || !homeId) return false;
+            const cleanSheet = String(sheetId).trim().toUpperCase();
+            const cleanHome = String(homeId).trim().toUpperCase();
+            if (exactOnly) return cleanSheet === cleanHome;
+            return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_");
+        }
+
+        function computeCohortMetrics(recs, rollCount) {
+            if (!recs.length) {
+                return {
+                    subs: '',
+                    users: '',
+                    absentees: '',
+                    topScore: '',
+                    leastTime: '',
+                    avgScore: '',
+                    top3: [null, null, null]
+                };
+            }
+
+            const uniqueIds = new Set(recs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean));
+            const users = uniqueIds.size;
+            const absentees = Math.max(0, rollCount - users);
+            const scores = recs.map(r => parseScoreValue(r.score));
+            const maxPct = Math.round(Math.max(...scores));
+            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const minTime = times.length ? Math.min(...times) : 0;
+
+            const sortedRecs = [...recs].sort((a, b) => {
+                const sDiff = parseScoreValue(b.score) - parseScoreValue(a.score);
+                if (sDiff !== 0) return sDiff;
+                const tA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
+                const tB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
+                return tA - tB;
+            });
+
+            const top3 = [0, 1, 2].map(i => {
+                const r = sortedRecs[i];
+                if (!r) return null;
+                const t = parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time);
+                return {
+                    subs: '1',
+                    topScore: `${Math.round(parseScoreValue(r.score))}%`,
+                    leastTime: formatCompactTime(t),
+                    avgScore: `${Math.round(parseScoreValue(r.score))}%`
+                };
+            });
+
+            return {
+                subs: String(recs.length),
+                users: String(users),
+                absentees: String(absentees),
+                topScore: `${maxPct}%`,
+                leastTime: formatCompactTime(minTime),
+                avgScore: `${avgPct}%`,
+                top3
+            };
+        }
+
+        function computeStudentStatsForCode(gameRecs, studentCode) {
+            const recs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
+            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
+            const scores = recs.map(r => parseScoreValue(r.score));
+            const maxPct = Math.round(Math.max(...scores));
+            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
+            const minTime = times.length ? Math.min(...times) : 0;
+            return {
+                subs: String(recs.length),
+                topScore: `${maxPct}%`,
+                leastTime: formatCompactTime(minTime),
+                avgScore: `${avgPct}%`
+            };
+        }
+
+        function renderGameDashboardMatrix() {
+            const tbody = document.getElementById('gameDashboardMatrixBody');
+            if (!tbody) return;
+
+            const matrixInputVal = document.getElementById('gameMatrixCodeInput')?.value?.trim().toUpperCase();
+            const activeGame = matrixInputVal || ((currentGameCode && currentGameCode !== 'ALL') ? currentGameCode.toUpperCase() : 'E03');
+            tbody.innerHTML = buildGameDashboardMatrixHtml(activeGame);
         }
 
         function updateAllHomepageTables() {

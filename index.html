@@ -46,6 +46,22 @@
         .matrix-table .block-divider-top {
             border-top: 2px solid #94a3b8;
         }
+        .sub-matrix-table th, .sub-matrix-table td {
+            border: 1px solid #cbd5e1;
+            padding: 4px 5px;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            font-size: 0.72rem;
+        }
+        .sub-matrix-table .sticky-game-col {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+        .sub-matrix-table .class-boundary {
+            border-left: 2px solid #64748b;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between select-none">
@@ -100,6 +116,34 @@
                 <div class="overflow-x-auto rounded-lg border-2 border-slate-600 bg-slate-950">
                     <table id="gameDashboardMatrixTable" aria-label="Game Dashboard" class="w-full matrix-table border-collapse text-[11px] text-slate-100">
                         <tbody id="gameDashboardMatrixBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4B. GAME X STUDENT SUBMISSION COUNTS (CLASSWISE EXPANDABLE) -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 bg-slate-900 text-white px-3 py-2.5 rounded-lg border border-slate-700">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-emerald-400 text-sm"></i> Submissions by Game &amp; Student Code
+                        </h2>
+                        <span class="text-[11px] text-slate-300">(Click a Standard to expand/collapse student codes)</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5" id="submissionMatrixClassButtons">
+                        <button type="button" onclick="toggleSubmissionClass('1')" id="subClassBtn1" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
+                        <button type="button" onclick="toggleSubmissionClass('2')" id="subClassBtn2" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
+                        <button type="button" onclick="toggleSubmissionClass('3')" id="subClassBtn3" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
+                        <button type="button" onclick="toggleSubmissionClass('4')" id="subClassBtn4" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
+                        <button type="button" onclick="toggleSubmissionClass('5')" id="subClassBtn5" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
+                        <button type="button" onclick="setAllSubmissionClasses(true)" class="px-2.5 py-1 rounded text-[11px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400">Expand All</button>
+                        <button type="button" onclick="setAllSubmissionClasses(false)" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-500">Collapse All</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border border-slate-300 bg-white">
+                    <table id="gameStudentSubmissionMatrixTable" aria-label="Submissions by Game and Student Code" class="w-full sub-matrix-table border-collapse">
+                        <thead id="gameStudentSubmissionMatrixHead"></thead>
+                        <tbody id="gameStudentSubmissionMatrixBody"></tbody>
                     </table>
                 </div>
             </section>
@@ -306,6 +350,7 @@
         let currentUserStudentId = "1B01";
         let currentGameCode = "E03";
         let expandedGameCodes = new Set(["E02"]);
+        let expandedSubmissionClasses = new Set(["1"]);
 
         const READY_GAMES = ["E02", "E03", "M03"];
 
@@ -463,6 +508,194 @@
             renderOverallLeaderboard();
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
             renderGameDashboardMatrix();
+        }
+
+        function toggleSubmissionClass(std) {
+            const key = String(std);
+            if (expandedSubmissionClasses.has(key)) {
+                expandedSubmissionClasses.delete(key);
+            } else {
+                expandedSubmissionClasses.add(key);
+            }
+            renderGameStudentSubmissionMatrix();
+        }
+
+        function setAllSubmissionClasses(expand) {
+            if (expand) {
+                expandedSubmissionClasses = new Set(['1', '2', '3', '4', '5']);
+            } else {
+                expandedSubmissionClasses.clear();
+            }
+            renderGameStudentSubmissionMatrix();
+        }
+
+        function getClassStudentCodes(std) {
+            const codes = [];
+            for (let c = 1; c <= 15; c++) {
+                codes.push(`${std}B${c < 10 ? '0' + c : c}`);
+            }
+            for (let c = 1; c <= 15; c++) {
+                codes.push(`${std}G${c < 10 ? '0' + c : c}`);
+            }
+            return codes;
+        }
+
+        function renderGameStudentSubmissionMatrix() {
+            const thead = document.getElementById('gameStudentSubmissionMatrixHead');
+            const tbody = document.getElementById('gameStudentSubmissionMatrixBody');
+            if (!thead || !tbody) return;
+
+            const standards = ['1', '2', '3', '4', '5'];
+            standards.forEach(std => {
+                const btn = document.getElementById(`subClassBtn${std}`);
+                if (btn) {
+                    const isOpen = expandedSubmissionClasses.has(std);
+                    btn.innerHTML = `${isOpen ? '▾' : '▸'} Std ${std}`;
+                    btn.className = isOpen
+                        ? 'px-2.5 py-1 rounded text-[11px] font-bold border transition bg-emerald-600 text-white border-emerald-400'
+                        : 'px-2.5 py-1 rounded text-[11px] font-bold border transition bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-600';
+                }
+            });
+
+            const availableGames = getAllAvailableGames();
+            const classStudentCodesMap = {};
+            standards.forEach(std => {
+                classStudentCodesMap[std] = getClassStudentCodes(std);
+            });
+
+            // Pre-index submission counts per gameCode and normalized student prefix
+            const gameStudentCounts = {};
+            availableGames.forEach(g => {
+                gameStudentCounts[g] = {};
+            });
+
+            gameRecordsData.forEach(r => {
+                const gCode = String(r.gameCode || '').trim().toUpperCase();
+                if (!gameStudentCounts[gCode]) return;
+                const rawSid = String(r.studentId || '').trim().toUpperCase();
+                if (!rawSid) return;
+                const baseCode = rawSid.split('_')[0];
+                gameStudentCounts[gCode][baseCode] = (gameStudentCounts[gCode][baseCode] || 0) + 1;
+            });
+
+            // Build top class header row & second student code header row
+            let topHeaderHtml = `<tr class="bg-slate-800 text-white font-bold">
+                <th class="sticky-game-col bg-slate-900 text-amber-300 px-2 py-2" rowspan="2">Game Code</th>`;
+            let subHeaderHtml = `<tr class="bg-slate-100 text-slate-800 font-bold text-[10px]">`;
+
+            standards.forEach(std => {
+                const isOpen = expandedSubmissionClasses.has(std);
+                const codes = classStudentCodesMap[std];
+                const colSpan = isOpen ? codes.length + 1 : 2;
+                topHeaderHtml += `<th colspan="${colSpan}" onclick="toggleSubmissionClass('${std}')" class="class-boundary px-2 py-1.5 cursor-pointer hover:bg-slate-700 select-none" title="Click to ${isOpen ? 'collapse' : 'expand'} Standard ${std} student codes">
+                    <span class="text-yellow-300 mr-1">${isOpen ? '▾' : '▸'}</span>Std ${std} <span class="text-[10px] font-normal text-slate-300">(${isOpen ? '30 codes + Tot' : 'Click to expand'})</span>
+                </th>`;
+
+                if (isOpen) {
+                    codes.forEach((code, idx) => {
+                        const isBoy = code.includes('B');
+                        const genderCls = isBoy ? 'bg-sky-100 text-sky-900' : 'bg-pink-100 text-pink-900';
+                        subHeaderHtml += `<th class="${idx === 0 ? 'class-boundary' : ''} ${genderCls} px-1 py-1">${code}</th>`;
+                    });
+                    subHeaderHtml += `<th class="bg-indigo-100 text-indigo-900 font-extrabold px-1.5 py-1">Std ${std} Tot</th>`;
+                } else {
+                    subHeaderHtml += `<th class="class-boundary bg-slate-200 text-slate-700 px-2 py-1" onclick="toggleSubmissionClass('${std}')" title="Click to expand Std ${std}">Std ${std} (▸)</th>`;
+                    subHeaderHtml += `<th class="bg-indigo-100 text-indigo-900 font-extrabold px-1.5 py-1">Std ${std} Tot</th>`;
+                }
+            });
+
+            topHeaderHtml += `<th class="class-boundary bg-emerald-900 text-emerald-200 px-2.5 py-2" rowspan="2">All Stds<br>Total</th></tr>`;
+            subHeaderHtml += `</tr>`;
+
+            thead.innerHTML = topHeaderHtml + subHeaderHtml;
+
+            // Build rows per available game code
+            let bodyHtml = '';
+            const classColumnTotals = {};
+            standards.forEach(std => {
+                classColumnTotals[std] = {};
+                classStudentCodesMap[std].forEach(code => {
+                    classColumnTotals[std][code] = 0;
+                });
+                classColumnTotals[std]._classTotal = 0;
+            });
+            let grandTotalSubmissions = 0;
+
+            availableGames.forEach(gCode => {
+                const isReady = READY_GAMES.includes(gCode);
+                const isSelectedGame = currentGameCode && currentGameCode.toUpperCase() === gCode;
+                const rowCounts = gameStudentCounts[gCode] || {};
+
+                let rowGrandTotal = 0;
+                let cellsHtml = '';
+
+                standards.forEach(std => {
+                    const isOpen = expandedSubmissionClasses.has(std);
+                    const codes = classStudentCodesMap[std];
+                    let stdSum = 0;
+
+                    codes.forEach(code => {
+                        const cnt = rowCounts[code] || 0;
+                        stdSum += cnt;
+                        classColumnTotals[std][code] += cnt;
+                    });
+
+                    classColumnTotals[std]._classTotal += stdSum;
+                    rowGrandTotal += stdSum;
+
+                    if (isOpen) {
+                        codes.forEach((code, idx) => {
+                            const cnt = rowCounts[code] || 0;
+                            const activeCellCls = cnt > 0
+                                ? 'bg-emerald-100 text-emerald-900 font-extrabold hover:bg-emerald-200 cursor-pointer'
+                                : 'text-slate-300 hover:bg-slate-50 cursor-pointer';
+                            cellsHtml += `<td onclick="openStudentRegistration('${code}', '${gCode}')" class="${idx === 0 ? 'class-boundary' : ''} ${activeCellCls}" title="${gCode} • ${code}: ${cnt} submission(s) — Click to open">${cnt > 0 ? cnt : '·'}</td>`;
+                        });
+                        cellsHtml += `<td class="bg-indigo-50/80 text-indigo-900 font-extrabold">${stdSum > 0 ? stdSum : '0'}</td>`;
+                    } else {
+                        const collapsedCls = stdSum > 0
+                            ? 'bg-emerald-50 text-emerald-800 font-bold cursor-pointer hover:bg-emerald-100'
+                            : 'text-slate-400 cursor-pointer hover:bg-slate-50';
+                        cellsHtml += `<td onclick="toggleSubmissionClass('${std}')" class="class-boundary ${collapsedCls}" title="Click to expand Standard ${std}">${stdSum > 0 ? stdSum + ' subs' : '0'}</td>`;
+                        cellsHtml += `<td class="bg-indigo-50/80 text-indigo-900 font-extrabold">${stdSum > 0 ? stdSum : '0'}</td>`;
+                    }
+                });
+
+                grandTotalSubmissions += rowGrandTotal;
+
+                const gameBadgeCls = isSelectedGame
+                    ? 'bg-amber-200 text-slate-950 font-extrabold'
+                    : (isReady ? 'bg-emerald-50 text-emerald-900 font-extrabold' : 'bg-slate-50 text-slate-700 font-bold');
+
+                bodyHtml += `<tr class="${isReady ? 'bg-white' : 'bg-slate-50/50'} hover:bg-amber-50/40">
+                    <td onclick="setGameMatrixCode('${gCode}')" class="sticky-game-col ${gameBadgeCls} px-2 py-1 cursor-pointer" title="Click to select ${gCode} in Game Dashboard">${gCode}${isReady ? ' ★' : ''}</td>
+                    ${cellsHtml}
+                    <td class="class-boundary ${rowGrandTotal > 0 ? 'bg-emerald-100 text-emerald-950' : 'bg-slate-100 text-slate-500'} font-extrabold">${rowGrandTotal}</td>
+                </tr>`;
+            });
+
+            // Footer / Total row across all games
+            let totalRowCells = `<td class="sticky-game-col bg-slate-800 text-yellow-300 font-extrabold px-2 py-1.5">Total</td>`;
+            standards.forEach(std => {
+                const isOpen = expandedSubmissionClasses.has(std);
+                const codes = classStudentCodesMap[std];
+                const stdTot = classColumnTotals[std]._classTotal;
+
+                if (isOpen) {
+                    codes.forEach((code, idx) => {
+                        const cTot = classColumnTotals[std][code] || 0;
+                        totalRowCells += `<td class="${idx === 0 ? 'class-boundary' : ''} bg-slate-800 text-sky-200 font-bold">${cTot > 0 ? cTot : '0'}</td>`;
+                    });
+                    totalRowCells += `<td class="bg-indigo-900 text-yellow-300 font-extrabold">${stdTot}</td>`;
+                } else {
+                    totalRowCells += `<td class="class-boundary bg-slate-800 text-slate-200 font-bold">${stdTot}</td>`;
+                    totalRowCells += `<td class="bg-indigo-900 text-yellow-300 font-extrabold">${stdTot}</td>`;
+                }
+            });
+            totalRowCells += `<td class="class-boundary bg-emerald-800 text-white font-extrabold">${grandTotalSubmissions}</td>`;
+
+            bodyHtml += `<tr class="border-t-2 border-slate-400">${totalRowCells}</tr>`;
+            tbody.innerHTML = bodyHtml;
         }
 
         function renderOverallLeaderboard() {
@@ -1343,9 +1576,10 @@
 
         function updateAllHomepageTables() {
             renderStudentEntryGrid();
+            renderGameDashboardMatrix();
+            renderGameStudentSubmissionMatrix();
             renderOverallLeaderboard();
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
-            renderGameDashboardMatrix();
         }
 
         function handleRegistrationSubmit(e) {
@@ -1404,4 +1638,3 @@
     </script>
 </body>
 </html>
-```[cite: 3, 4, 5, 6, 7, 8, 9]

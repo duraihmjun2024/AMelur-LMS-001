@@ -187,7 +187,6 @@ button {
 button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 .btn-green { background: #22c55e; }
 .btn-blue { background: #3b82f6; }
-.btn-purple { background: #8b5cf6; }
 .btn-orange { background: #f59e0b; }
 .btn-red { background: #ef4444; }
 
@@ -284,11 +283,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     display: flex;
     gap: 6px;
     justify-content: center;
-    flex-wrap: wrap;
     margin-top: 6px;
 }
 .stt-user-speech { font-size: 0.85rem; color: #facc15; margin-top: 4px; font-weight: 500; min-height: 20px; }
-.stt-whole-speech { font-size: 0.82rem; color: #c4b5fd; margin-top: 2px; min-height: 18px; }
 .stt-status { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
 .box-timer { font-size: 0.8rem; color: #ef4444; font-weight: bold; margin-top: 2px; }
 </style>
@@ -361,8 +358,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <p style="color: #94a3b8; font-size: 0.95rem;">Mics unlock sequentially. Previous mics lock automatically.</p>
     <div class="stt-grid" id="sttGrid"></div>
 
-    <h2>Level 3: Speak Syllable Spellings &amp; Whole Words (TTS &amp; STT)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Listen in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
+    <h2>Level 3: Speak Syllable Spellings (TTS &amp; STT)</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Listen with TTS, then speak each syllable spelling clearly as mics unlock in order.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 </div>
 
@@ -370,7 +367,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 "use strict";
 
 const sheetAppScriptUrl = "https://script.google.com/macros/s/AKfycbydKddCA-uZwXlnt9yvRMS6HgFwSXgT3RiphSojuQ3PyERaURSBhjCh-bFdHX54Hf0x/exec";
-const INDIC_ENGLISH_LOCALE = "en-IN";
 const targetWords = ["Days", "Seven", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Week"];
 const syllableSpellings = [
     "Da-ys",
@@ -409,26 +405,8 @@ let sessionTrials = [];
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
-let wholeRecognition = null;
 let draggedCard = null;
 let boxTimerInterval = null;
-
-function createIndianEnglishRecognizer() {
-    const rec = new SpeechRecognition();
-    rec.lang = INDIC_ENGLISH_LOCALE;
-    rec.interimResults = false;
-    return rec;
-}
-
-function selectIndianEnglishVoice(synth) {
-    if (!synth || typeof synth.getVoices !== "function") return null;
-    const voices = synth.getVoices() || [];
-    return (
-        voices.find(v => v.lang && v.lang.toLowerCase() === "en-in") ||
-        voices.find(v => v.lang && v.lang.toLowerCase().startsWith("en-in")) ||
-        null
-    );
-}
 
 function cleanSttTranscript(rawText) {
     return rawText
@@ -437,20 +415,10 @@ function cleanSttTranscript(rawText) {
         .replace(/\bseven\b/gi, "Seven");
 }
 
-// Keep letters joined without gaps inside each part, pause only at "-", then say whole word
-function formatSyllablesForTTS(syllableText, wholeWord) {
-    const partsWithNoGap = syllableText
-        .split("-")
-        .map(part => part.replace(/[^a-zA-Z]/g, ""))
-        .filter(Boolean);
-
-    const partsJoinedWithPause = partsWithNoGap.join(" ... ");
-    return wholeWord ? `${partsJoinedWithPause} ... ${wholeWord}` : partsJoinedWithPause;
-}
-
-function speakSyllableSpelling(syllableText, wholeWord) {
-    const syllableSpeech = formatSyllablesForTTS(syllableText, wholeWord);
-    speakText(syllableSpeech);
+function speakSyllableSpelling(syllableText) {
+    // Speak syllable parts gently so TTS pronounces each syllable clearly
+    const spokenParts = syllableText.replace(/-/g, ", ");
+    speakText(spokenParts);
 }
 
 function matchesSyllableSpelling(spokenText, syllableText) {
@@ -461,12 +429,15 @@ function matchesSyllableSpelling(spokenText, syllableText) {
 
     const joinedTarget = syllableText.toLowerCase().replace(/-/g, "");
     const parts = syllableText.toLowerCase().split("-").filter(Boolean);
+
+    // Compact spoken string with spaces/hyphens removed (e.g. "da ys" -> "days", "wed nes day" -> "wednesday")
     const compactSpoken = cleanSpoken.replace(/[\s-]+/g, "");
 
     if (compactSpoken.includes(joinedTarget)) {
         return true;
     }
 
+    // Check if all syllable parts appear in order
     let searchFrom = 0;
     for (const part of parts) {
         const idx = compactSpoken.indexOf(part, searchFrom);
@@ -490,10 +461,6 @@ window.addEventListener("DOMContentLoaded", () => {
     if(params.get("name")) document.getElementById("userName").value = params.get("name");
     if(params.get("school")) document.getElementById("userSchool").value = params.get("school");
     if(params.get("whatsapp")) document.getElementById("userWhatsapp").value = params.get("whatsapp");
-
-    if ("speechSynthesis" in window && typeof window.speechSynthesis.getVoices === "function") {
-        window.speechSynthesis.getVoices();
-    }
 
     currentTrialNum = 1;
     document.getElementById("trialDisplay").value = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
@@ -550,7 +517,9 @@ function testToolbarMic() {
     }
     try {
         if (recognition) recognition.abort();
-        recognition = createIndianEnglishRecognizer();
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
 
         micBtn.textContent = "🎙️ Listening...";
         micBtn.className = "toolbar-btn btn-red";
@@ -668,21 +637,18 @@ function initGame() {
     spellingGrid.innerHTML = "";
     syllableSpellings.forEach((syllable, index) => {
         const serialNum = index + 1;
-        const wholeWord = targetWords[index];
         const card = document.createElement("div");
         card.className = "stt-card";
         card.id = `spell-card-${serialNum}`;
-        card.addEventListener("click", () => speakSyllableSpelling(syllable, wholeWord));
+        card.addEventListener("click", () => speakSyllableSpelling(syllable));
         card.innerHTML = `
             <div class="stt-serial">Spelling #${serialNum}</div>
             <div class="spelling-label">${syllable}</div>
             <div class="card-btn-row">
-                <button class="btn-blue" id="listen-spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakSyllableSpelling('${syllable}', '${wholeWord}')">🔊 Listen</button>
+                <button class="btn-blue" id="listen-spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakSyllableSpelling('${syllable}')">🔊 Listen</button>
                 <button class="btn-green" id="spell-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); testSyllableBox('${syllable}', ${serialNum})" disabled>🎙️ Speak</button>
-                <button class="btn-purple" id="whole-btn-${serialNum}" style="padding:6px 10px; font-size:12px;" onclick="event.stopPropagation(); speakWholeWordSTT('${wholeWord}', ${serialNum})">🗣️ Whole Word</button>
             </div>
             <div class="stt-user-speech" id="spell-speech-${serialNum}">You said: --</div>
-            <div class="stt-whole-speech" id="whole-speech-${serialNum}">Whole word: --</div>
             <div class="stt-status" id="spell-status-${serialNum}">Locked</div>
             <div class="box-timer" id="spell-timer-${serialNum}"></div>
         `;
@@ -859,7 +825,9 @@ function testSpeechBox(targetWord, serialNum) {
 
     try {
         if (recognition) recognition.abort();
-        recognition = createIndianEnglishRecognizer();
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
 
         recognition.onresult = (event) => {
             const spoken = cleanSttTranscript(event.results[0][0].transcript);
@@ -930,7 +898,9 @@ function testSyllableBox(syllableText, serialNum) {
 
     try {
         if (recognition) recognition.abort();
-        recognition = createIndianEnglishRecognizer();
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
 
         recognition.onresult = (event) => {
             const spoken = cleanSttTranscript(event.results[0][0].transcript);
@@ -962,77 +932,6 @@ function testSyllableBox(syllableText, serialNum) {
         timerDiv.textContent = `⏱️ ${timeLeft}s`;
         if (timeLeft <= 0) { finalizeSpellBox(); }
     }, 1000);
-}
-
-function speakWholeWordSTT(wholeWord, serialNum) {
-    if (!SpeechRecognition) {
-        alert("Speech Recognition not supported on this browser.");
-        return;
-    }
-
-    const wholeBtn = document.getElementById(`whole-btn-${serialNum}`);
-    const wholeSpeechDiv = document.getElementById(`whole-speech-${serialNum}`);
-    const statusDiv = document.getElementById(`spell-status-${serialNum}`);
-
-    if (wholeBtn) {
-        wholeBtn.disabled = true;
-        wholeBtn.textContent = "🎙️ Listening...";
-    }
-    if (wholeSpeechDiv) wholeSpeechDiv.textContent = "Whole word: Listening...";
-    document.getElementById("userSaidDisplay").textContent = `You said: Say "${wholeWord}"...`;
-
-    let done = false;
-    const finishWholeMic = () => {
-        if (done) return;
-        done = true;
-        if (wholeRecognition) try { wholeRecognition.abort(); } catch (e) {}
-        if (wholeBtn) {
-            wholeBtn.disabled = false;
-            wholeBtn.textContent = "🗣️ Whole Word";
-        }
-    };
-
-    try {
-        if (wholeRecognition) wholeRecognition.abort();
-        wholeRecognition = createIndianEnglishRecognizer();
-
-        wholeRecognition.onresult = (event) => {
-            const spoken = cleanSttTranscript(event.results[0][0].transcript);
-            document.getElementById("userSaidDisplay").textContent = `You said: "${spoken}"`;
-            if (wholeSpeechDiv) wholeSpeechDiv.textContent = `Whole word: "${spoken}"`;
-
-            const targetLower = wholeWord.toLowerCase();
-            const isWholeMatch = new RegExp(`\\b${targetLower}\\b`, "i").test(spoken) ||
-                                 spoken.toLowerCase().includes(targetLower);
-
-            if (isWholeMatch && statusDiv) {
-                statusDiv.textContent = `✓ Whole word: "${spoken}"`;
-                statusDiv.style.color = "#22c55e";
-            } else if (statusDiv) {
-                statusDiv.textContent = `Whole heard: "${spoken}"`;
-                statusDiv.style.color = "#c4b5fd";
-            }
-            finishWholeMic();
-        };
-
-        wholeRecognition.onerror = () => {
-            if (wholeSpeechDiv) wholeSpeechDiv.textContent = "Whole word: --";
-            finishWholeMic();
-        };
-
-        wholeRecognition.onend = () => {
-            if (wholeSpeechDiv && wholeSpeechDiv.textContent === "Whole word: Listening...") {
-                wholeSpeechDiv.textContent = "Whole word: --";
-            }
-            finishWholeMic();
-        };
-
-        wholeRecognition.start();
-        setTimeout(finishWholeMic, 5000);
-    } catch (e) {
-        if (wholeSpeechDiv) wholeSpeechDiv.textContent = "Whole word: --";
-        finishWholeMic();
-    }
 }
 
 function submitData() {
@@ -1152,7 +1051,6 @@ function resetSameUser() {
     clearInterval(timerInterval);
     if (boxTimerInterval) clearInterval(boxTimerInterval);
     if (recognition) try { recognition.abort(); } catch(e){}
-    if (wholeRecognition) try { wholeRecognition.abort(); } catch(e){}
     
     secondsElapsed = 0;
     level1Seconds = 0;
@@ -1189,7 +1087,7 @@ function speakText(text, onComplete) {
         finished = true;
         if (typeof onComplete === "function") onComplete();
     };
-    const watchdog = setTimeout(finish, 6000);
+    const watchdog = setTimeout(finish, 5000);
     const safeFinish = () => { clearTimeout(watchdog); finish(); };
 
     if (!("speechSynthesis" in window)) { safeFinish(); return; }
@@ -1198,10 +1096,8 @@ function speakText(text, onComplete) {
         const synth = window.speechSynthesis;
         synth.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = INDIC_ENGLISH_LOCALE;
-        const indianVoice = selectIndianEnglishVoice(synth);
-        if (indianVoice) utterance.voice = indianVoice;
-        utterance.rate = 0.85;
+        utterance.lang = "en-IN";
+        utterance.rate = 0.9;
         utterance.volume = 1.0;
         activeUtterance = utterance;
         utterance.onend = safeFinish;

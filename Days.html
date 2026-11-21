@@ -456,7 +456,7 @@ function speakLettersWithReducedGap(letters) {
     const synth = window.speechSynthesis;
     const currentId = ++ttsId;
     const indianVoice = selectIndianEnglishVoice(synth);
-    const INTER_LETTER_GAP_MS = 60; // Reduced by a further 50% from the previous 120 ms gap.
+    // No added JavaScript delay between letters; each letter remains a separate TTS utterance.
 
     let letterIndex = 0;
     let letterWatchdog = null;
@@ -481,7 +481,8 @@ function speakLettersWithReducedGap(letters) {
             clearTimeout(letterWatchdog);
             letterIndex++;
             if (letterIndex < letters.length) {
-                setTimeout(speakNextLetter, INTER_LETTER_GAP_MS);
+                // Start the next letter immediately after the previous utterance ends.
+                speakNextLetter();
             } else {
                 activeUtterance = null;
             }

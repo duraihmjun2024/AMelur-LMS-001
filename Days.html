@@ -438,70 +438,28 @@ function cleanSttTranscript(rawText) {
 }
 
 function spellOutEveryLetterForTTS(syllableText) {
-    const lettersOnly = syllableText.replace(/[^a-zA-Z]/g, "").split("");
-    return lettersOnly.join(", ");
+    // Use spoken letter names in ONE utterance. This avoids the pauses
+    // caused by commas or by starting a new TTS utterance for each letter.
+    const letterNames = {
+        A: "ay", B: "bee", C: "see", D: "dee", E: "ee",
+        F: "eff", G: "jee", H: "aitch", I: "eye", J: "jay",
+        K: "kay", L: "ell", M: "em", N: "en", O: "oh",
+        P: "pee", Q: "cue", R: "ar", S: "ess", T: "tee",
+        U: "you", V: "vee", W: "double you", X: "ex",
+        Y: "why", Z: "zed"
+    };
+    return syllableText
+        .replace(/[^a-zA-Z]/g, "")
+        .toUpperCase()
+        .split("")
+        .map(letter => letterNames[letter] || letter)
+        .join(" ");
 }
 
 function speakSyllableSpelling(syllableText) {
-    // Speak each letter separately, with a shorter pause between letters.
-    // The previous comma-separated utterance created a longer punctuation pause.
-    const letters = syllableText.replace(/[^a-zA-Z]/g, "").toUpperCase().split("");
-    speakLettersWithReducedGap(letters);
-}
-
-function speakLettersWithReducedGap(letters) {
-    stopSmartTTS();
-    if (!("speechSynthesis" in window) || !letters.length) return;
-
-    const synth = window.speechSynthesis;
-    const currentId = ++ttsId;
-    const indianVoice = selectIndianEnglishVoice(synth);
-    // No added JavaScript delay between letters; each letter remains a separate TTS utterance.
-
-    let letterIndex = 0;
-    let letterWatchdog = null;
-
-    function speakNextLetter() {
-        if (currentId !== ttsId || letterIndex >= letters.length) {
-            activeUtterance = null;
-            return;
-        }
-
-        const utterance = new SpeechSynthesisUtterance(letters[letterIndex]);
-        utterance.lang = INDIC_ENGLISH_LOCALE;
-        if (indianVoice) utterance.voice = indianVoice;
-        utterance.rate = 1.0;
-        utterance.volume = 1.0;
-        activeUtterance = utterance;
-
-        let advanced = false;
-        const advance = () => {
-            if (advanced || currentId !== ttsId) return;
-            advanced = true;
-            clearTimeout(letterWatchdog);
-            letterIndex++;
-            if (letterIndex < letters.length) {
-                // Start the next letter immediately after the previous utterance ends.
-                speakNextLetter();
-            } else {
-                activeUtterance = null;
-            }
-        };
-
-        utterance.onend = advance;
-        utterance.onerror = advance;
-
-        // Prevent a browser/device TTS issue from stopping the remaining letters.
-        letterWatchdog = setTimeout(advance, 1250);
-
-        try {
-            synth.speak(utterance);
-        } catch (error) {
-            advance();
-        }
-    }
-
-    speakNextLetter();
+    const spelledLetters = spellOutEveryLetterForTTS(syllableText);
+    // Normal speed for Level 3 spelling dictation; single continuous utterance.
+    speakText(spelledLetters, null, 1.0);
 }
 
 function matchesSyllableSpelling(spokenText, syllableText) {
@@ -1231,7 +1189,7 @@ function resetSameUser() {
     initGame();
 }
 
-function speakText(text, onComplete) {
+function speakText(text, onComplete, speechRate = 0.85) {
     stopSmartTTS();
     const currentId = ++ttsId;
     let finished = false;
@@ -1252,7 +1210,7 @@ function speakText(text, onComplete) {
         utterance.lang = INDIC_ENGLISH_LOCALE;
         const indianVoice = selectIndianEnglishVoice(synth);
         if (indianVoice) utterance.voice = indianVoice;
-        utterance.rate = 0.85;
+        utterance.rate = speechRate;
         utterance.volume = 1.0;
         activeUtterance = utterance;
         utterance.onend = safeFinish;

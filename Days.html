@@ -192,6 +192,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 .btn-orange { background: #f59e0b; }
 .btn-red { background: #ef4444; }
 .btn-slate { background: #475569; }
+.btn-teal { background: #0d9488; }
 
 .source-pool {
     display: flex;
@@ -309,7 +310,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 }
 .hw-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
     gap: 16px;
 }
 @media (max-width: 480px) {
@@ -369,7 +370,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     overflow: hidden;
     position: relative;
     width: 100%;
-    height: 155px;
+    height: 175px;
     touch-action: none;
 }
 .hw-canvas {
@@ -395,6 +396,60 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     font-size: 0.85rem;
     font-weight: 600;
     color: #94a3b8;
+}
+
+/* Full-Screen Word Zoom Modal */
+.hw-zoom-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.94);
+    z-index: 2500;
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+}
+.hw-zoom-modal.open {
+    display: flex;
+}
+.hw-zoom-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #1e293b;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #38bdf8;
+}
+.hw-zoom-canvas-wrap {
+    flex: 1;
+    min-height: 240px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 3px solid #38bdf8;
+    overflow: hidden;
+    position: relative;
+    touch-action: none;
+}
+.hw-zoom-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+}
+.hw-zoom-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #1e293b;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #334155;
 }
 </style>
 </head>
@@ -470,8 +525,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <p style="color: #94a3b8; font-size: 0.95rem;">Listen to every letter in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 
-    <h2>Level 4: Connect Dots on 4 Lines — Handwriting Evaluation (10 Points)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Connect all dots for every letter neatly on the 4 lines. Click <strong>✅ Done</strong> to verify dot connections and earn <strong>+1 point</strong> per word.</p>
+    <h2>Level 4: Connect Numbered Dots Along Arrows on 4 Lines (10 Points)</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Follow the numbered dots (1, 2, 3...) and arrows on the 4 lines. Use <strong>🔍 Zoom</strong> for full-screen writing, then click <strong>✅ Done</strong> to earn <strong>+1 point</strong> per accurate word.</p>
     <div class="hw-toolbar">
         <div style="font-size: 0.95rem; color: #e2e8f0; display:flex; gap:16px; flex-wrap:wrap;">
             <span>Evaluated: <strong id="hwProgressText" style="color: #38bdf8;">0 / 10 Words</strong></span>
@@ -482,6 +537,29 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
         </div>
     </div>
     <div class="hw-grid" id="handwritingGrid"></div>
+</div>
+
+<!-- Full-Screen Word Zoom Modal -->
+<div class="hw-zoom-modal" id="hwZoomModal" role="dialog" aria-modal="true" aria-labelledby="hwZoomTitle">
+    <div class="hw-zoom-topbar">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span id="hwZoomTitle" style="font-size:1.25rem; font-weight:700; color:#38bdf8;">Word #1: Days</span>
+            <span id="hwZoomDots" style="font-size:0.95rem; font-weight:700; color:#facc15;">Dots: 0 / 0</span>
+            <span id="hwZoomStatus" style="font-size:0.95rem; font-weight:600; color:#94a3b8;">Ready</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn-blue hw-btn-sm" id="hwZoomListenBtn">🔊 Listen</button>
+            <button class="btn-orange hw-btn-sm" id="hwZoomClearBtn">🧹 Clear</button>
+            <button class="btn-red hw-btn-sm" onclick="closeHwZoomModal()">✕ Close Zoom</button>
+        </div>
+    </div>
+    <div class="hw-zoom-canvas-wrap">
+        <canvas class="hw-zoom-canvas" id="hwZoomCanvas"></canvas>
+    </div>
+    <div class="hw-zoom-footer">
+        <span style="color:#94a3b8; font-size:0.9rem;">Follow numbered dots in arrow direction on the 4 lines, then click Done.</span>
+        <button class="btn-green" id="hwZoomDoneBtn" style="padding:10px 20px; font-size:15px;">✅ Done &amp; Evaluate</button>
+    </div>
 </div>
 
 <script>
@@ -528,6 +606,7 @@ let level3Completed = false;
 
 // Handwriting state per word (1..10)
 let hwStates = {};
+let activeZoomSerial = null;
 
 // Stores { score, maxScore, scoreStr, secs, timeStr } for trials 1, 2, 3
 let sessionTrials = [];
@@ -633,13 +712,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
     currentTrialNum = 1;
     document.getElementById("trialDisplay").value = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
+    setupZoomModalEvents();
     initGame();
 });
 
 window.addEventListener("resize", () => {
     targetWords.forEach((word, idx) => {
-        redrawHwCanvas(idx + 1, word);
+        redrawHwCanvas(idx + 1, word, true);
     });
+    if (activeZoomSerial !== null) {
+        redrawZoomCanvas(activeZoomSerial, targetWords[activeZoomSerial - 1]);
+    }
 });
 
 function updateSessionTrackerUI() {
@@ -742,6 +825,7 @@ async function listen3RoundsSequence() {
 }
 
 function initGame() {
+    closeHwZoomModal();
     const sourcePool = document.getElementById("sourcePool");
     const dropZonesGrid = document.getElementById("dropZonesGrid");
     sourcePool.innerHTML = "";
@@ -841,14 +925,13 @@ function initGame() {
     updateScoreDisplay();
 }
 
-/* ==================== LEVEL 4: 4-LINE DOT-TRACE HANDWRITING & SCORING ==================== */
+/* ==================== LEVEL 4: NUMBERED DOTS, ARROWS, ZOOM & SCORING ==================== */
 // 4-line vertical coordinate system:
 // y = 0.0 -> Line 1 (Red Top Ascender Line)
 // y = 0.5 -> Line 2 (Blue Midline / x-height top)
 // y = 1.0 -> Line 3 (Blue Baseline)
 // y = 1.45 -> Line 4 (Red Bottom Descender Line)
 const LETTER_DOT_STROKES = {
-    // Uppercase letters (span y = 0.0 to y = 1.0)
     'D': [
         [[0.15, 0.0], [0.15, 0.25], [0.15, 0.5], [0.15, 0.75], [0.15, 1.0]],
         [[0.15, 0.0], [0.48, 0.06], [0.75, 0.25], [0.85, 0.5], [0.75, 0.75], [0.48, 0.94], [0.15, 1.0]]
@@ -877,8 +960,6 @@ const LETTER_DOT_STROKES = {
         [[0.5, 0.35], [0.61, 0.65], [0.72, 1.0]],
         [[0.72, 1.0], [0.83, 0.5], [0.94, 0.0]]
     ],
-
-    // Lowercase letters (x-height between y = 0.5 and y = 1.0; ascenders y = 0.0; descenders y = 1.45)
     'a': [
         [[0.78, 0.62], [0.52, 0.5], [0.24, 0.6], [0.18, 0.75], [0.24, 0.92], [0.52, 1.0], [0.78, 0.88]],
         [[0.78, 0.5], [0.78, 0.75], [0.78, 1.0]]
@@ -944,25 +1025,26 @@ function buildWordDots(word, canvasWidth, canvasHeight) {
     const line1To3Span = yBase - yTop;
     const line3To4Span = yBottom - yBase;
 
-    const leftMargin = 38;
+    const leftMargin = 34;
     const rightMargin = 20;
-    const usableWidth = Math.max(canvasWidth - leftMargin - rightMargin, 220);
+    const usableWidth = Math.max(canvasWidth - leftMargin - rightMargin, 240);
 
-    // Give each letter proportional slot width
     const charCount = word.length;
-    const maxSlot = 48;
+    const maxSlot = Math.max(52, Math.min(82, usableWidth / Math.max(charCount, 1)));
     const slotWidth = Math.min(maxSlot, usableWidth / Math.max(charCount, 1));
     const totalWordWidth = slotWidth * charCount;
-    const startX = leftMargin + Math.max(0, (usableWidth - totalWordWidth) * 0.15);
+    const startX = leftMargin + Math.max(0, (usableWidth - totalWordWidth) * 0.12);
 
     const dots = [];
     const guideSegments = [];
+    const arrows = [];
+    let serialCounter = 1;
 
     for (let c = 0; c < charCount; c++) {
         const ch = word[c];
         const strokes = LETTER_DOT_STROKES[ch] || LETTER_DOT_STROKES['o'];
         const charLeft = startX + c * slotWidth;
-        const charDrawWidth = slotWidth * 0.82;
+        const charDrawWidth = slotWidth * 0.80;
 
         strokes.forEach(stroke => {
             const mappedPts = stroke.map(([nx, ny]) => {
@@ -979,24 +1061,46 @@ function buildWordDots(word, canvasWidth, canvasHeight) {
 
             guideSegments.push(mappedPts);
 
+            const strokeDotIndices = [];
             mappedPts.forEach(pt => {
-                // Avoid duplicate overlapping junction dots inside the same letter
                 const alreadyExists = dots.some(
-                    d => d.charIdx === c && Math.hypot(d.x - pt.x, d.y - pt.y) < 5
+                    d => d.charIdx === c && Math.hypot(d.x - pt.x, d.y - pt.y) < 6
                 );
                 if (!alreadyExists) {
+                    const dotIdx = dots.length;
                     dots.push({
+                        serial: serialCounter++,
                         x: pt.x,
                         y: pt.y,
                         charIdx: c,
-                        connected: false
+                        connected: false,
+                        hitOrder: null
                     });
+                    strokeDotIndices.push(dotIdx);
                 }
             });
+
+            // Build directional arrows between consecutive dots in this stroke
+            for (let k = 0; k < strokeDotIndices.length - 1; k++) {
+                const dA = dots[strokeDotIndices[k]];
+                const dB = dots[strokeDotIndices[k + 1]];
+                const dx = dB.x - dA.x;
+                const dy = dB.y - dA.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist > 8) {
+                    arrows.push({
+                        x: dA.x + dx * 0.52,
+                        y: dA.y + dy * 0.52,
+                        angle: Math.atan2(dy, dx),
+                        fromSerial: dA.serial,
+                        toSerial: dB.serial
+                    });
+                }
+            }
         });
     }
 
-    return { dots, guideSegments, yTop, yMid, yBase, yBottom };
+    return { dots, guideSegments, arrows, yTop, yMid, yBase, yBottom };
 }
 
 function initHandwritingLevel4() {
@@ -1012,11 +1116,13 @@ function initHandwritingLevel4() {
             currentStroke: null,
             dots: [],
             guideSegments: [],
+            arrows: [],
             layoutMetrics: null,
             evaluated: false,
             passed: false,
             totalInkPoints: 0,
-            onDotInkPoints: 0
+            onDotInkPoints: 0,
+            hitSequenceCount: 0
         };
 
         const card = document.createElement("div");
@@ -1035,6 +1141,7 @@ function initHandwritingLevel4() {
             <div class="hw-controls">
                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
                     <button class="btn-blue hw-btn-sm" onclick="speakText('${word}')">🔊 Listen</button>
+                    <button class="btn-teal hw-btn-sm" id="hw-zoom-btn-${serialNum}" onclick="openHwZoomModal(${serialNum}, '${word}')">🔍 Zoom</button>
                     <button class="btn-orange hw-btn-sm" id="hw-clear-btn-${serialNum}" onclick="clearHwCanvas(${serialNum}, '${word}')">🧹 Clear</button>
                 </div>
                 <button class="btn-green hw-btn-sm" id="hw-done-btn-${serialNum}" onclick="evaluateHwWord(${serialNum}, '${word}')">✅ Done</button>
@@ -1042,17 +1149,16 @@ function initHandwritingLevel4() {
         `;
         hwGrid.appendChild(card);
 
-        setupHwCanvasEvents(serialNum, word);
+        setupCanvasPointerHandlers(`hw-canvas-${serialNum}`, serialNum, word, false);
         redrawHwCanvas(serialNum, word, true);
     });
 }
 
 function checkDotHits(serialNum, px, py, canvasWidth) {
     const state = hwStates[serialNum];
-    if (!state || !state.dots.length) return;
+    if (!state || !state.dots.length || state.evaluated) return;
 
-    // Hit radius scaled nicely for finger/stylus/mouse
-    const hitRadius = Math.max(13, canvasWidth * 0.032);
+    const hitRadius = Math.max(14, canvasWidth * 0.032);
     let hitAny = false;
 
     for (let i = 0; i < state.dots.length; i++) {
@@ -1062,6 +1168,7 @@ function checkDotHits(serialNum, px, py, canvasWidth) {
             hitAny = true;
             if (!dot.connected) {
                 dot.connected = true;
+                dot.hitOrder = ++state.hitSequenceCount;
             }
         }
     }
@@ -1069,15 +1176,24 @@ function checkDotHits(serialNum, px, py, canvasWidth) {
     state.totalInkPoints += 1;
     if (hitAny) state.onDotInkPoints += 1;
 
+    syncDotCounterUI(serialNum);
+}
+
+function syncDotCounterUI(serialNum) {
+    const state = hwStates[serialNum];
+    if (!state) return;
     const connectedCount = state.dots.filter(d => d.connected).length;
-    const dotCounterEl = document.getElementById(`hw-dots-${serialNum}`);
-    if (dotCounterEl) {
-        dotCounterEl.textContent = `Dots: ${connectedCount} / ${state.dots.length}`;
+    const text = `Dots: ${connectedCount} / ${state.dots.length}`;
+    const cardCounter = document.getElementById(`hw-dots-${serialNum}`);
+    if (cardCounter) cardCounter.textContent = text;
+    if (activeZoomSerial === serialNum) {
+        const zoomCounter = document.getElementById("hwZoomDots");
+        if (zoomCounter) zoomCounter.textContent = text;
     }
 }
 
-function setupHwCanvasEvents(serialNum, word) {
-    const canvas = document.getElementById(`hw-canvas-${serialNum}`);
+function setupCanvasPointerHandlers(canvasId, serialNum, word, isZoom) {
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
     const getCanvasPos = (e) => {
@@ -1103,7 +1219,12 @@ function setupHwCanvasEvents(serialNum, word) {
         state.strokes.push(state.currentStroke);
 
         checkDotHits(serialNum, pos.x, pos.y, pos.width);
-        redrawHwCanvas(serialNum, word, false);
+        if (isZoom) {
+            redrawZoomCanvas(serialNum, word);
+            redrawHwCanvas(serialNum, word, false);
+        } else {
+            redrawHwCanvas(serialNum, word, false);
+        }
     });
 
     canvas.addEventListener("pointermove", (e) => {
@@ -1116,7 +1237,6 @@ function setupHwCanvasEvents(serialNum, word) {
         const prevX = prev.nx * pos.width;
         const prevY = prev.ny * pos.height;
 
-        // Interpolate intermediate points for fast stylus/finger strokes so dots aren't skipped
         const dist = Math.hypot(pos.x - prevX, pos.y - prevY);
         const steps = Math.max(1, Math.ceil(dist / 4));
         for (let s = 1; s <= steps; s++) {
@@ -1126,7 +1246,12 @@ function setupHwCanvasEvents(serialNum, word) {
         }
 
         state.currentStroke.push({ nx: pos.x / pos.width, ny: pos.y / pos.height });
-        redrawHwCanvas(serialNum, word, false);
+        if (isZoom) {
+            redrawZoomCanvas(serialNum, word);
+            redrawHwCanvas(serialNum, word, false);
+        } else {
+            redrawHwCanvas(serialNum, word, false);
+        }
     });
 
     const endStroke = (e) => {
@@ -1142,48 +1267,7 @@ function setupHwCanvasEvents(serialNum, word) {
     canvas.addEventListener("pointercancel", endStroke);
 }
 
-function redrawHwCanvas(serialNum, word, rebuildDots = true) {
-    const canvas = document.getElementById(`hw-canvas-${serialNum}`);
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const width = Math.max(rect.width || 380, 260);
-    const height = Math.max(rect.height || 155, 130);
-
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-
-    const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
-
-    const state = hwStates[serialNum];
-    if (!state) return;
-
-    // Preserve previous connected statuses if rebuilding on resize
-    const prevConnected = state.dots.map(d => d.connected);
-    if (rebuildDots || !state.layoutMetrics || state.layoutMetrics.width !== width) {
-        const built = buildWordDots(word, width, height);
-        built.dots.forEach((d, idx) => {
-            if (prevConnected[idx]) d.connected = true;
-        });
-        state.dots = built.dots;
-        state.guideSegments = built.guideSegments;
-        state.layoutMetrics = {
-            width,
-            height,
-            yTop: built.yTop,
-            yMid: built.yMid,
-            yBase: built.yBase,
-            yBottom: built.yBottom
-        };
-
-        const connectedCount = state.dots.filter(d => d.connected).length;
-        const dotCounterEl = document.getElementById(`hw-dots-${serialNum}`);
-        if (dotCounterEl) {
-            dotCounterEl.textContent = `Dots: ${connectedCount} / ${state.dots.length}`;
-        }
-    }
-
+function drawFourLinesAndGuides(ctx, width, height, state, isLarge) {
     const { yTop, yMid, yBase, yBottom } = state.layoutMetrics;
 
     // White 4-line notebook background
@@ -1192,7 +1276,7 @@ function redrawHwCanvas(serialNum, word, rebuildDots = true) {
 
     // Left vertical red margin line
     ctx.strokeStyle = "rgba(239, 68, 68, 0.35)";
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = isLarge ? 2 : 1.5;
     ctx.beginPath();
     ctx.moveTo(26, 0);
     ctx.lineTo(26, height);
@@ -1200,7 +1284,7 @@ function redrawHwCanvas(serialNum, word, rebuildDots = true) {
 
     // Line 1: Top Red Line
     ctx.strokeStyle = "#ef4444";
-    ctx.lineWidth = 1.6;
+    ctx.lineWidth = isLarge ? 2.2 : 1.6;
     ctx.setLineDash([]);
     ctx.beginPath();
     ctx.moveTo(0, yTop);
@@ -1209,8 +1293,8 @@ function redrawHwCanvas(serialNum, word, rebuildDots = true) {
 
     // Line 2: Middle Blue Line (dashed)
     ctx.strokeStyle = "#3b82f6";
-    ctx.lineWidth = 1.3;
-    ctx.setLineDash([6, 4]);
+    ctx.lineWidth = isLarge ? 1.8 : 1.3;
+    ctx.setLineDash([7, 5]);
     ctx.beginPath();
     ctx.moveTo(0, yMid);
     ctx.lineTo(width, yMid);
@@ -1218,7 +1302,7 @@ function redrawHwCanvas(serialNum, word, rebuildDots = true) {
 
     // Line 3: Baseline Blue Line
     ctx.strokeStyle = "#2563eb";
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = isLarge ? 2.4 : 1.8;
     ctx.setLineDash([]);
     ctx.beginPath();
     ctx.moveTo(0, yBase);
@@ -1227,18 +1311,18 @@ function redrawHwCanvas(serialNum, word, rebuildDots = true) {
 
     // Line 4: Bottom Red Line
     ctx.strokeStyle = "#ef4444";
-    ctx.lineWidth = 1.6;
+    ctx.lineWidth = isLarge ? 2.2 : 1.6;
     ctx.setLineDash([]);
     ctx.beginPath();
     ctx.moveTo(0, yBottom);
     ctx.lineTo(width, yBottom);
     ctx.stroke();
 
-    // Light dotted skeleton lines connecting dots so student sees letter shape
+    // Faint path lines connecting dots in sequence
     ctx.save();
-    ctx.strokeStyle = "rgba(100, 116, 139, 0.35)";
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([3, 4]);
+    ctx.strokeStyle = "rgba(100, 116, 139, 0.32)";
+    ctx.lineWidth = isLarge ? 2 : 1.4;
+    ctx.setLineDash([4, 4]);
     state.guideSegments.forEach(seg => {
         if (seg.length < 2) return;
         ctx.beginPath();
@@ -1250,11 +1334,31 @@ function redrawHwCanvas(serialNum, word, rebuildDots = true) {
     });
     ctx.restore();
 
-    // Draw student's handwriting strokes
+    // Directional arrows showing writing flow along each stroke
+    const arrowSize = isLarge ? 7.5 : 5.2;
+    ctx.save();
+    ctx.fillStyle = "#0284c7";
+    ctx.setLineDash([]);
+    state.arrows.forEach(arr => {
+        ctx.save();
+        ctx.translate(arr.x, arr.y);
+        ctx.rotate(arr.angle);
+        ctx.beginPath();
+        ctx.moveTo(arrowSize, 0);
+        ctx.lineTo(-arrowSize * 0.75, -arrowSize * 0.65);
+        ctx.lineTo(-arrowSize * 0.45, 0);
+        ctx.lineTo(-arrowSize * 0.75, arrowSize * 0.65);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    });
+    ctx.restore();
+
+    // Student's handwriting strokes
     if (state.strokes.length > 0) {
         ctx.save();
         ctx.strokeStyle = "#1e3a8a";
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = isLarge ? 5.2 : 3.5;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.setLineDash([]);
@@ -1275,16 +1379,250 @@ function redrawHwCanvas(serialNum, word, rebuildDots = true) {
         ctx.restore();
     }
 
-    // Draw every dot for every letter (Red/Amber = unconnected, Green = connected)
+    // Numbered dots for every letter
+    const dotRadius = isLarge ? 11 : 7.5;
+    const fontSize = isLarge ? 11 : 8.5;
+    ctx.save();
+    ctx.setLineDash([]);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `bold ${fontSize}px system-ui, sans-serif`;
+
     state.dots.forEach(dot => {
         ctx.beginPath();
-        ctx.arc(dot.x, dot.y, dot.connected ? 4.2 : 3.8, 0, Math.PI * 2);
+        ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
         ctx.fillStyle = dot.connected ? "#16a34a" : "#dc2626";
         ctx.fill();
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.5;
         ctx.strokeStyle = "#ffffff";
         ctx.stroke();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(String(dot.serial), dot.x, dot.y + 0.3);
     });
+    ctx.restore();
+}
+
+function redrawHwCanvas(serialNum, word, rebuildDots = true) {
+    const canvas = document.getElementById(`hw-canvas-${serialNum}`);
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(rect.width || 400, 260);
+    const height = Math.max(rect.height || 175, 140);
+
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    const state = hwStates[serialNum];
+    if (!state) return;
+
+    const prevConnected = state.dots.map(d => ({ connected: d.connected, hitOrder: d.hitOrder }));
+    if (rebuildDots || !state.layoutMetrics || state.layoutMetrics.width !== width || state.layoutMetrics.height !== height) {
+        const built = buildWordDots(word, width, height);
+        built.dots.forEach((d, idx) => {
+            if (prevConnected[idx] && prevConnected[idx].connected) {
+                d.connected = true;
+                d.hitOrder = prevConnected[idx].hitOrder;
+            }
+        });
+        state.dots = built.dots;
+        state.guideSegments = built.guideSegments;
+        state.arrows = built.arrows;
+        state.layoutMetrics = {
+            width,
+            height,
+            yTop: built.yTop,
+            yMid: built.yMid,
+            yBase: built.yBase,
+            yBottom: built.yBottom
+        };
+        syncDotCounterUI(serialNum);
+    }
+
+    drawFourLinesAndGuides(ctx, width, height, state, false);
+}
+
+function redrawZoomCanvas(serialNum, word) {
+    const canvas = document.getElementById("hwZoomCanvas");
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(rect.width || 600, 300);
+    const height = Math.max(rect.height || 320, 220);
+
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    const state = hwStates[serialNum];
+    if (!state) return;
+
+    // Build a view-scaled copy of dots/guides/arrows for the full-screen zoom canvas while keeping connected state synced
+    const built = buildWordDots(word, width, height);
+    built.dots.forEach((d, idx) => {
+        if (state.dots[idx] && state.dots[idx].connected) {
+            d.connected = true;
+            d.hitOrder = state.dots[idx].hitOrder;
+        }
+    });
+
+    const zoomViewState = {
+        ...state,
+        dots: built.dots,
+        guideSegments: built.guideSegments,
+        arrows: built.arrows,
+        layoutMetrics: {
+            width,
+            height,
+            yTop: built.yTop,
+            yMid: built.yMid,
+            yBase: built.yBase,
+            yBottom: built.yBottom
+        }
+    };
+
+    // Intercept hit testing in zoom canvas using zoom coordinates
+    canvas._zoomBuilt = built;
+    drawFourLinesAndGuides(ctx, width, height, zoomViewState, true);
+}
+
+let zoomPointerActive = false;
+let zoomCurrentStroke = null;
+
+function setupZoomModalEvents() {
+    const canvas = document.getElementById("hwZoomCanvas");
+    if (!canvas) return;
+
+    const getPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top, width: rect.width, height: rect.height };
+    };
+
+    const checkZoomDotHits = (serialNum, px, py, width) => {
+        const state = hwStates[serialNum];
+        const built = canvas._zoomBuilt;
+        if (!state || !built || state.evaluated) return;
+
+        const hitRadius = Math.max(20, width * 0.032);
+        let hitAny = false;
+
+        built.dots.forEach((zDot, idx) => {
+            if (Math.hypot(px - zDot.x, py - zDot.y) <= hitRadius) {
+                hitAny = true;
+                if (!zDot.connected) {
+                    zDot.connected = true;
+                    const order = ++state.hitSequenceCount;
+                    zDot.hitOrder = order;
+                    if (state.dots[idx]) {
+                        state.dots[idx].connected = true;
+                        state.dots[idx].hitOrder = order;
+                    }
+                }
+            }
+        });
+
+        state.totalInkPoints += 1;
+        if (hitAny) state.onDotInkPoints += 1;
+        syncDotCounterUI(serialNum);
+    };
+
+    canvas.addEventListener("pointerdown", (e) => {
+        if (activeZoomSerial === null) return;
+        const state = hwStates[activeZoomSerial];
+        const card = document.getElementById(`hw-card-${activeZoomSerial}`);
+        if (!state || state.evaluated || (card && card.classList.contains("hw-locked"))) return;
+
+        e.preventDefault();
+        canvas.setPointerCapture(e.pointerId);
+        zoomPointerActive = true;
+        const pos = getPos(e);
+        zoomCurrentStroke = [{ nx: pos.x / pos.width, ny: pos.y / pos.height }];
+        state.strokes.push(zoomCurrentStroke);
+
+        checkZoomDotHits(activeZoomSerial, pos.x, pos.y, pos.width);
+        redrawZoomCanvas(activeZoomSerial, targetWords[activeZoomSerial - 1]);
+        redrawHwCanvas(activeZoomSerial, targetWords[activeZoomSerial - 1], false);
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+        if (!zoomPointerActive || activeZoomSerial === null || !zoomCurrentStroke) return;
+        const state = hwStates[activeZoomSerial];
+        if (!state || state.evaluated) return;
+
+        e.preventDefault();
+        const pos = getPos(e);
+        const prev = zoomCurrentStroke[zoomCurrentStroke.length - 1];
+        const prevX = prev.nx * pos.width;
+        const prevY = prev.ny * pos.height;
+
+        const dist = Math.hypot(pos.x - prevX, pos.y - prevY);
+        const steps = Math.max(1, Math.ceil(dist / 5));
+        for (let s = 1; s <= steps; s++) {
+            const ix = prevX + ((pos.x - prevX) * s) / steps;
+            const iy = prevY + ((pos.y - prevY) * s) / steps;
+            checkZoomDotHits(activeZoomSerial, ix, iy, pos.width);
+        }
+
+        zoomCurrentStroke.push({ nx: pos.x / pos.width, ny: pos.y / pos.height });
+        redrawZoomCanvas(activeZoomSerial, targetWords[activeZoomSerial - 1]);
+        redrawHwCanvas(activeZoomSerial, targetWords[activeZoomSerial - 1], false);
+    });
+
+    const finishZoomStroke = (e) => {
+        zoomPointerActive = false;
+        zoomCurrentStroke = null;
+        if (e && e.pointerId !== undefined) {
+            try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+    };
+
+    canvas.addEventListener("pointerup", finishZoomStroke);
+    canvas.addEventListener("pointercancel", finishZoomStroke);
+}
+
+function openHwZoomModal(serialNum, word) {
+    const card = document.getElementById(`hw-card-${serialNum}`);
+    if (card && card.classList.contains("hw-locked")) return;
+
+    activeZoomSerial = serialNum;
+    const modal = document.getElementById("hwZoomModal");
+    modal.classList.add("open");
+
+    document.getElementById("hwZoomTitle").textContent = `Word #${serialNum}: ${word}`;
+    syncDotCounterUI(serialNum);
+
+    const statusText = document.getElementById(`hw-status-${serialNum}`)?.textContent || "Ready";
+    document.getElementById("hwZoomStatus").textContent = statusText;
+
+    document.getElementById("hwZoomListenBtn").onclick = () => speakText(word);
+    document.getElementById("hwZoomClearBtn").onclick = () => {
+        clearHwCanvas(serialNum, word);
+        document.getElementById("hwZoomStatus").textContent = "Cleared";
+    };
+    document.getElementById("hwZoomDoneBtn").onclick = () => {
+        evaluateHwWord(serialNum, word);
+        const updatedStatus = document.getElementById(`hw-status-${serialNum}`)?.textContent || "";
+        document.getElementById("hwZoomStatus").textContent = updatedStatus;
+        setTimeout(() => closeHwZoomModal(), 650);
+    };
+
+    requestAnimationFrame(() => {
+        redrawZoomCanvas(serialNum, word);
+    });
+}
+
+function closeHwZoomModal() {
+    activeZoomSerial = null;
+    zoomPointerActive = false;
+    zoomCurrentStroke = null;
+    const modal = document.getElementById("hwZoomModal");
+    if (modal) modal.classList.remove("open");
 }
 
 function clearHwCanvas(serialNum, word) {
@@ -1294,12 +1632,16 @@ function clearHwCanvas(serialNum, word) {
     state.currentStroke = null;
     state.totalInkPoints = 0;
     state.onDotInkPoints = 0;
-    state.dots.forEach(d => { d.connected = false; });
+    state.hitSequenceCount = 0;
+    state.dots.forEach(d => {
+        d.connected = false;
+        d.hitOrder = null;
+    });
     redrawHwCanvas(serialNum, word, false);
-    const dotCounterEl = document.getElementById(`hw-dots-${serialNum}`);
-    if (dotCounterEl) {
-        dotCounterEl.textContent = `Dots: 0 / ${state.dots.length}`;
+    if (activeZoomSerial === serialNum) {
+        redrawZoomCanvas(serialNum, word);
     }
+    syncDotCounterUI(serialNum);
 }
 
 function unlockLevel4() {
@@ -1310,7 +1652,7 @@ function unlockLevel4() {
     const firstStatus = document.getElementById("hw-status-1");
     if (firstCard) firstCard.classList.remove("hw-locked");
     if (firstStatus) {
-        firstStatus.textContent = "Connect Dots & Click Done";
+        firstStatus.textContent = "Follow Dots & Arrows";
         firstStatus.style.color = "#facc15";
     }
     targetWords.forEach((word, idx) => redrawHwCanvas(idx + 1, word, true));
@@ -1330,25 +1672,52 @@ function unlockAllHwCards() {
     });
 }
 
+function computeDirectionScore(dots) {
+    // Check whether connected dots within each letter follow ascending serial order along strokes
+    const connected = dots
+        .filter(d => d.connected && d.hitOrder !== null)
+        .sort((a, b) => a.hitOrder - b.hitOrder);
+
+    if (connected.length < 2) return 0;
+
+    let forwardTransitions = 0;
+    let totalSameCharTransitions = 0;
+
+    for (let i = 0; i < connected.length - 1; i++) {
+        const curr = connected[i];
+        const next = connected[i + 1];
+        if (curr.charIdx === next.charIdx) {
+            totalSameCharTransitions++;
+            if (next.serial > curr.serial) {
+                forwardTransitions++;
+            }
+        }
+    }
+
+    if (totalSameCharTransitions === 0) return 1;
+    return forwardTransitions / totalSameCharTransitions;
+}
+
 function evaluateHwWord(serialNum, word) {
     const state = hwStates[serialNum];
     if (!state || state.evaluated) return;
 
     if (state.totalInkPoints === 0) {
-        alert(`Please connect the dots for "${word}" on the 4 lines before clicking Done!`);
+        alert(`Please connect the numbered dots for "${word}" along the arrows before clicking Done!`);
         return;
     }
 
     const totalDots = state.dots.length;
     const connectedDots = state.dots.filter(d => d.connected).length;
-    const dotAccuracy = totalDots > 0 ? connectedDots / totalDots : 0;
-    const precision = state.totalInkPoints > 0 ? state.onDotInkPoints / state.totalInkPoints : 0;
+    const dotCoverage = totalDots > 0 ? connectedDots / totalDots : 0;
+    const strokePrecision = state.totalInkPoints > 0 ? state.onDotInkPoints / state.totalInkPoints : 0;
+    const directionAccuracy = computeDirectionScore(state.dots);
 
-    // Require at least 75% of letter dots connected and reasonable stroke accuracy (not scribbling everywhere)
-    const isRightConnection = dotAccuracy >= 0.75 && precision >= 0.30;
+    // Accurate writing requires >=75% dots connected, >=30% stroke precision, and >=55% forward arrow/serial order
+    const isAccurate = dotCoverage >= 0.75 && strokePrecision >= 0.30 && directionAccuracy >= 0.55;
 
     state.evaluated = true;
-    state.passed = isRightConnection;
+    state.passed = isAccurate;
     evaluatedL4Words.add(serialNum);
 
     const card = document.getElementById(`hw-card-${serialNum}`);
@@ -1359,19 +1728,20 @@ function evaluateHwWord(serialNum, word) {
     if (doneBtn) doneBtn.disabled = true;
     if (clearBtn) clearBtn.disabled = true;
 
-    const pctConnected = Math.round(dotAccuracy * 100);
+    const pctDots = Math.round(dotCoverage * 100);
+    const pctDir = Math.round(directionAccuracy * 100);
 
-    if (isRightConnection) {
+    if (isAccurate) {
         level4Score += 1;
         if (card) card.classList.add("hw-done-pass");
         if (status) {
-            status.textContent = `✓ Correct (${pctConnected}% dots) (+1)`;
+            status.textContent = `✓ Accurate (${pctDots}% dots, ${pctDir}% dir) (+1)`;
             status.style.color = "#22c55e";
         }
     } else {
         if (card) card.classList.add("hw-done-fail");
         if (status) {
-            status.textContent = `✗ Incomplete (${pctConnected}% dots) (+0)`;
+            status.textContent = `✗ Check direction/dots (${pctDots}% dots, ${pctDir}% dir) (+0)`;
             status.style.color = "#ef4444";
         }
     }
@@ -1384,14 +1754,13 @@ function evaluateHwWord(serialNum, word) {
         level4Seconds = secondsElapsed;
     }
 
-    // Unlock next word's 4-line sheet sequentially
     const nextSerial = serialNum + 1;
     if (nextSerial <= 10) {
         const nextCard = document.getElementById(`hw-card-${nextSerial}`);
         const nextStatus = document.getElementById(`hw-status-${nextSerial}`);
         if (nextCard) nextCard.classList.remove("hw-locked");
         if (nextStatus && !evaluatedL4Words.has(nextSerial)) {
-            nextStatus.textContent = "Connect Dots & Click Done";
+            nextStatus.textContent = "Follow Dots & Arrows";
             nextStatus.style.color = "#facc15";
         }
         redrawHwCanvas(nextSerial, targetWords[nextSerial - 1], true);

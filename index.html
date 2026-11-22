@@ -146,6 +146,7 @@
                         <select id="overallGameSelect" onchange="filterLeaderboardsByGame()" class="bg-indigo-800 text-yellow-300 font-bold border border-indigo-600 rounded px-2 py-1 text-xs">
                             <option value="E02">Game: E02</option>
                             <option value="E03">Game: E03</option>
+                            <option value="E04">Game: E04</option>
                             <option value="ALL">All Games</option>
                         </select>
                     </div>
@@ -202,6 +203,7 @@
                         <select id="classGameSelect" onchange="filterLeaderboardsByGame()" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
                             <option value="E02">Game: E02</option>
                             <option value="E03">Game: E03</option>
+                            <option value="E04">Game: E04</option>
                             <option value="ALL">All Games</option>
                         </select>
                         <select id="classSelectLeaderboard" onchange="loadClassLeaderboard(this.value)" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
@@ -336,20 +338,21 @@
         let isOverallExpanded = false;
         let isClassExpanded = false;
         let currentUserStudentId = "1B01";
-        let currentGameCode = "E03";
-        let expandedGameCodes = new Set(["E03"]);
+        let currentGameCode = "E04";
+        let expandedGameCodes = new Set(["E04"]);
         let expandedSubmissionClasses = new Set(["1"]);
         let isUnavailableGamesExpanded = false;
         let dashboardExpandedStandardsByGame = {
+            E04: new Set(["5", "4", "3", "2", "1"]),
             E03: new Set(["5", "4", "3", "2", "1"])
         };
 
-        const READY_GAMES = ["E02", "E03", "M03"];
+        const READY_GAMES = ["E02", "E03", "E04", "M03"];
         const SUB_IDS = ["1", "2", "3"];
         const DASHBOARD_STANDARDS = ["5", "4", "3", "2", "1"];
 
         function getDashboardStandardSet(gCode) {
-            const key = String(gCode || 'E03').trim().toUpperCase();
+            const key = String(gCode || 'E04').trim().toUpperCase();
             if (!dashboardExpandedStandardsByGame[key]) {
                 dashboardExpandedStandardsByGame[key] = new Set(["5", "4", "3", "2", "1"]);
             }
@@ -357,7 +360,7 @@
         }
 
         function toggleDashboardStandard(gCode, std) {
-            const key = String(gCode || 'E03').trim().toUpperCase();
+            const key = String(gCode || 'E04').trim().toUpperCase();
             const stdKey = String(std);
             const set = getDashboardStandardSet(key);
             if (set.has(stdKey)) {
@@ -369,7 +372,7 @@
         }
 
         function setAllDashboardStandards(gCode, expand) {
-            const key = String(gCode || 'E03').trim().toUpperCase();
+            const key = String(gCode || 'E04').trim().toUpperCase();
             dashboardExpandedStandardsByGame[key] = expand ? new Set(["5", "4", "3", "2", "1"]) : new Set();
             renderStudentEntryGrid();
         }
@@ -524,7 +527,7 @@
                         currentGameCode = data.latestGameCode || gameRecordsData[0].gameCode;
                     } else if (data.latestStudentId) {
                         currentUserStudentId = data.latestStudentId;
-                        currentGameCode = data.latestGameCode || "E03";
+                        currentGameCode = data.latestGameCode || "E04";
                     }
 
                     const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
@@ -544,6 +547,7 @@
 
         function populateGameSelectors() {
             const activeGames = [...new Set(gameRecordsData.map(r => r.gameCode).filter(Boolean))];
+            if (!activeGames.includes("E04")) activeGames.unshift("E04");
             if (!activeGames.includes("E03")) activeGames.unshift("E03");
             if (!activeGames.includes("E02")) activeGames.unshift("E02");
 
@@ -563,7 +567,7 @@
         }
 
         function setGameMatrixCode(code) {
-            const cleaned = (code || 'E03').trim().toUpperCase();
+            const cleaned = (code || 'E04').trim().toUpperCase();
             currentGameCode = cleaned;
             renderStudentEntryGrid();
             renderGameStudentSubmissionMatrix();
@@ -1028,10 +1032,10 @@
         function getAllAvailableGames() {
             const masterGames = [
                 "T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09",
-                "E01", "E03", "E05", "E07", "E09", "E11", "E13", "E15", "E17",
+                "E01", "E03", "E04", "E05", "E07", "E09", "E11", "E13", "E15", "E17",
                 "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09",
                 "S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09",
-                "E02", "E04", "E06", "E08", "E10", "E12", "E14", "E16", "E18",
+                "E02", "E06", "E08", "E10", "E12", "E14", "E16", "E18",
                 "G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"
             ];
             const sheetGames = [...new Set(gameRecordsData.map(r => (r.gameCode || '').trim().toUpperCase()).filter(Boolean))];
@@ -1103,7 +1107,7 @@
         }
 
         function buildGameDashboardMatrixHtml(activeGameCode) {
-            const activeGame = String(activeGameCode || 'E03').trim().toUpperCase();
+            const activeGame = String(activeGameCode || 'E04').trim().toUpperCase();
             const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
             const expandedStds = getDashboardStandardSet(activeGame);
 
@@ -1669,8 +1673,8 @@
                 let targetGameFile = 'Days.html';
                 if (currentGameCode === 'M03') {
                     targetGameFile = 'SkipCounter.html';
-                } else if (currentGameCode === 'E03') {
-                    targetGameFile = 'Keyboard.html';
+                } else if (currentGameCode === 'E04') {
+                    targetGameFile = 'Months.html';
                 }
 
                 const queryParams = `gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;

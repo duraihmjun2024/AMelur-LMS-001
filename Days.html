@@ -173,6 +173,7 @@ input[type="text"], input[type="number"], select {
 .btn-group {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
 button {
     font-size: 16px;
@@ -190,6 +191,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 .btn-purple { background: #8b5cf6; }
 .btn-orange { background: #f59e0b; }
 .btn-red { background: #ef4444; }
+.btn-slate { background: #475569; }
 
 .source-pool {
     display: flex;
@@ -291,6 +293,101 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 .stt-whole-speech { font-size: 0.82rem; color: #c4b5fd; margin-top: 2px; min-height: 18px; }
 .stt-status { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
 .box-timer { font-size: 0.8rem; color: #ef4444; font-weight: bold; margin-top: 2px; }
+
+/* Level 4: 4-Line Handwriting Styles */
+.hw-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #0f172a;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    margin-bottom: 14px;
+}
+.hw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 16px;
+}
+@media (max-width: 480px) {
+    .hw-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.hw-card {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.hw-card.hw-locked {
+    opacity: 0.45;
+    pointer-events: none;
+}
+.hw-card.hw-done {
+    border-color: #22c55e;
+}
+.hw-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.hw-title {
+    font-weight: 700;
+    color: #38bdf8;
+    font-size: 1.05rem;
+}
+.hw-word-badge {
+    background: #1e293b;
+    color: #facc15;
+    border: 1px solid #475569;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.hw-canvas-wrap {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 2px solid #94a3b8;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 150px;
+    touch-action: none;
+}
+.hw-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+}
+.hw-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.hw-btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+}
+.hw-status {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+}
 </style>
 </head>
 <body>
@@ -364,6 +461,19 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <h2>Level 3: Speak Syllable Spellings &amp; Whole Words (TTS &amp; STT)</h2>
     <p style="color: #94a3b8; font-size: 0.95rem;">Listen to every letter in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
+
+    <h2>Level 4: 4-Line Handwriting Practice (Level 1 Words)</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Write each of the 10 words neatly on the 4-line notebook sheet using mouse or touch. Click <strong>✅ Done</strong> to complete each word.</p>
+    <div class="hw-toolbar">
+        <div style="font-size: 0.95rem; color: #e2e8f0;">
+            Completed: <strong id="hwProgressText" style="color: #22c55e;">0 / 10 Words</strong>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-purple hw-btn-sm" id="toggleAllGuidesBtn" onclick="toggleAllHwGuides()">👁️ Hide Tracing Guides</button>
+            <button class="btn-slate hw-btn-sm" id="unlockAllHwBtn" onclick="unlockAllHwCards()">🔓 Unlock All Sheets</button>
+        </div>
+    </div>
+    <div class="hw-grid" id="handwritingGrid"></div>
 </div>
 
 <script>
@@ -397,12 +507,19 @@ let activeUtterance = null;
 let level1Score = 0;
 let level2Score = 0;
 let level3CompletedCount = 0;
+let level4CompletedCount = 0;
 let verifiedL2Words = new Set();
 let verifiedL3Words = new Set();
+let verifiedL4Words = new Set();
 let currentTrialNum = 1;
 const MAX_TRIALS = 3;
 let level1Completed = false;
 let level2Completed = false;
+let level3Completed = false;
+
+// Handwriting state per word (1..10)
+let hwStates = {};
+let showGlobalGuides = true;
 
 // Stores { score, maxScore, scoreStr, secs, timeStr } for trials 1, 2, 3
 let sessionTrials = [];
@@ -438,8 +555,6 @@ function cleanSttTranscript(rawText) {
 }
 
 function spellOutEveryLetterForTTS(syllableText) {
-    // No comma pause between letters. Keep a pause only at each hyphen,
-    // so syllables remain separated as in the original spelling.
     const letterNames = {
         A: "ay", B: "bee", C: "see", D: "dee", E: "e",
         F: "eff", G: "jee", H: "aitch", I: "eye", J: "jay",
@@ -463,7 +578,6 @@ function spellOutEveryLetterForTTS(syllableText) {
 
 function speakSyllableSpelling(syllableText) {
     const spelledLetters = spellOutEveryLetterForTTS(syllableText);
-    // Normal speed for Level 3 spelling dictation; single continuous utterance.
     speakText(spelledLetters, null, 1.0);
 }
 
@@ -512,6 +626,12 @@ window.addEventListener("DOMContentLoaded", () => {
     currentTrialNum = 1;
     document.getElementById("trialDisplay").value = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
     initGame();
+});
+
+window.addEventListener("resize", () => {
+    targetWords.forEach((word, idx) => {
+        redrawHwCanvas(idx + 1, word);
+    });
 });
 
 function updateSessionTrackerUI() {
@@ -620,8 +740,12 @@ function initGame() {
     dropZonesGrid.innerHTML = "";
     verifiedL2Words.clear();
     verifiedL3Words.clear();
+    verifiedL4Words.clear();
     level3CompletedCount = 0;
+    level4CompletedCount = 0;
     level2Completed = false;
+    level3Completed = false;
+    hwStates = {};
     if (boxTimerInterval) clearInterval(boxTimerInterval);
 
     for (let i = 1; i <= 10; i++) {
@@ -703,9 +827,298 @@ function initGame() {
         spellingGrid.appendChild(card);
     });
 
+    initHandwritingLevel4();
+
     document.getElementById("scoreDisplay").style.display = "none";
     updateScoreDisplay();
 }
+
+/* ==================== LEVEL 4: 4-LINE HANDWRITING ==================== */
+function initHandwritingLevel4() {
+    const hwGrid = document.getElementById("handwritingGrid");
+    hwGrid.innerHTML = "";
+    document.getElementById("hwProgressText").textContent = "0 / 10 Words";
+
+    targetWords.forEach((word, index) => {
+        const serialNum = index + 1;
+        hwStates[serialNum] = {
+            strokes: [],
+            currentStroke: null,
+            showGuide: showGlobalGuides,
+            hasInk: false
+        };
+
+        const card = document.createElement("div");
+        card.className = "hw-card hw-locked";
+        card.id = `hw-card-${serialNum}`;
+        card.innerHTML = `
+            <div class="hw-header">
+                <span class="hw-title">Word #${serialNum}</span>
+                <span class="hw-word-badge">${word}</span>
+                <span class="hw-status" id="hw-status-${serialNum}">Locked</span>
+            </div>
+            <div class="hw-canvas-wrap">
+                <canvas class="hw-canvas" id="hw-canvas-${serialNum}"></canvas>
+            </div>
+            <div class="hw-controls">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="btn-blue hw-btn-sm" onclick="speakText('${word}')">🔊 Listen</button>
+                    <button class="btn-purple hw-btn-sm" id="hw-guide-btn-${serialNum}" onclick="toggleSingleHwGuide(${serialNum}, '${word}')">👁️ Guide</button>
+                    <button class="btn-orange hw-btn-sm" onclick="clearHwCanvas(${serialNum}, '${word}')">🧹 Clear</button>
+                </div>
+                <button class="btn-green hw-btn-sm" id="hw-done-btn-${serialNum}" onclick="completeHwWord(${serialNum})">✅ Done</button>
+            </div>
+        `;
+        hwGrid.appendChild(card);
+
+        setupHwCanvasEvents(serialNum, word);
+        redrawHwCanvas(serialNum, word);
+    });
+}
+
+function setupHwCanvasEvents(serialNum, word) {
+    const canvas = document.getElementById(`hw-canvas-${serialNum}`);
+    if (!canvas) return;
+
+    const getNormalizedPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left) / rect.width,
+            y: (e.clientY - rect.top) / rect.height
+        };
+    };
+
+    canvas.addEventListener("pointerdown", (e) => {
+        const card = document.getElementById(`hw-card-${serialNum}`);
+        if (card && card.classList.contains("hw-locked")) return;
+        e.preventDefault();
+        canvas.setPointerCapture(e.pointerId);
+        const pos = getNormalizedPos(e);
+        const state = hwStates[serialNum];
+        state.currentStroke = [pos];
+        state.strokes.push(state.currentStroke);
+        state.hasInk = true;
+        redrawHwCanvas(serialNum, word);
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+        const state = hwStates[serialNum];
+        if (!state || !state.currentStroke) return;
+        e.preventDefault();
+        const pos = getNormalizedPos(e);
+        state.currentStroke.push(pos);
+        redrawHwCanvas(serialNum, word);
+    });
+
+    const endStroke = (e) => {
+        const state = hwStates[serialNum];
+        if (!state || !state.currentStroke) return;
+        state.currentStroke = null;
+        if (e && e.pointerId !== undefined) {
+            try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+    };
+
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
+}
+
+function redrawHwCanvas(serialNum, word) {
+    const canvas = document.getElementById(`hw-canvas-${serialNum}`);
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(rect.width || 360, 260);
+    const height = Math.max(rect.height || 150, 120);
+
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    // White notebook paper background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+
+    // Classic 4-line ruling geometry (Ascender, Midline, Baseline, Descender)
+    const yTop = height * 0.22;      // Line 1: Red top line
+    const yMid = height * 0.44;      // Line 2: Blue/Grey midline
+    const yBase = height * 0.68;     // Line 3: Blue baseline
+    const yBottom = height * 0.88;   // Line 4: Red bottom descender line
+
+    // Left vertical red margin line
+    ctx.strokeStyle = "rgba(239, 68, 68, 0.35)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(26, 0);
+    ctx.lineTo(26, height);
+    ctx.stroke();
+
+    // Line 1: Top Red Line
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(0, yTop);
+    ctx.lineTo(width, yTop);
+    ctx.stroke();
+
+    // Line 2: Middle Blue Line (dashed for clear x-height visual cue)
+    ctx.strokeStyle = "#3b82f6";
+    ctx.lineWidth = 1.3;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(0, yMid);
+    ctx.lineTo(width, yMid);
+    ctx.stroke();
+
+    // Line 3: Baseline Blue Line
+    ctx.strokeStyle = "#2563eb";
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(0, yBase);
+    ctx.lineTo(width, yBase);
+    ctx.stroke();
+
+    // Line 4: Bottom Red Line
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(0, yBottom);
+    ctx.lineTo(width, yBottom);
+    ctx.stroke();
+
+    // Optional faint tracing guide aligned between top/mid and baseline
+    const state = hwStates[serialNum];
+    if (state && state.showGuide) {
+        ctx.save();
+        ctx.font = "italic 54px 'Comic Sans MS', 'Segoe Print', Georgia, serif";
+        ctx.fillStyle = "rgba(148, 163, 184, 0.42)";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillText(word, 42, yBase - 1);
+        ctx.restore();
+    }
+
+    // Draw student's handwriting strokes in dark blue fountain-pen ink
+    if (state && state.strokes.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = "#1e3a8a";
+        ctx.lineWidth = 3.2;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.setLineDash([]);
+
+        state.strokes.forEach(stroke => {
+            if (stroke.length === 0) return;
+            ctx.beginPath();
+            ctx.moveTo(stroke[0].x * width, stroke[0].y * height);
+            if (stroke.length === 1) {
+                ctx.lineTo(stroke[0].x * width + 0.5, stroke[0].y * height + 0.5);
+            } else {
+                for (let i = 1; i < stroke.length; i++) {
+                    ctx.lineTo(stroke[i].x * width, stroke[i].y * height);
+                }
+            }
+            ctx.stroke();
+        });
+        ctx.restore();
+    }
+}
+
+function clearHwCanvas(serialNum, word) {
+    const state = hwStates[serialNum];
+    if (!state) return;
+    state.strokes = [];
+    state.currentStroke = null;
+    state.hasInk = false;
+    redrawHwCanvas(serialNum, word);
+}
+
+function toggleSingleHwGuide(serialNum, word) {
+    const state = hwStates[serialNum];
+    if (!state) return;
+    state.showGuide = !state.showGuide;
+    redrawHwCanvas(serialNum, word);
+}
+
+function toggleAllHwGuides() {
+    showGlobalGuides = !showGlobalGuides;
+    const btn = document.getElementById("toggleAllGuidesBtn");
+    btn.textContent = showGlobalGuides ? "👁️ Hide Tracing Guides" : "👁️ Show Tracing Guides";
+    targetWords.forEach((word, idx) => {
+        const serialNum = idx + 1;
+        if (hwStates[serialNum]) {
+            hwStates[serialNum].showGuide = showGlobalGuides;
+            redrawHwCanvas(serialNum, word);
+        }
+    });
+}
+
+function unlockLevel4() {
+    if (level3Completed) return;
+    level3Completed = true;
+    const firstCard = document.getElementById("hw-card-1");
+    const firstStatus = document.getElementById("hw-status-1");
+    if (firstCard) firstCard.classList.remove("hw-locked");
+    if (firstStatus) {
+        firstStatus.textContent = "Write & Click Done";
+        firstStatus.style.color = "#facc15";
+    }
+    targetWords.forEach((word, idx) => redrawHwCanvas(idx + 1, word));
+}
+
+function unlockAllHwCards() {
+    targetWords.forEach((word, idx) => {
+        const serialNum = idx + 1;
+        const card = document.getElementById(`hw-card-${serialNum}`);
+        const status = document.getElementById(`hw-status-${serialNum}`);
+        if (card) card.classList.remove("hw-locked");
+        if (status && !verifiedL4Words.has(serialNum)) {
+            status.textContent = "Ready";
+            status.style.color = "#facc15";
+        }
+        redrawHwCanvas(serialNum, word);
+    });
+}
+
+function completeHwWord(serialNum) {
+    const state = hwStates[serialNum];
+    if (!state || !state.hasInk) {
+        alert(`Please write "${targetWords[serialNum - 1]}" on the 4 lines before clicking Done!`);
+        return;
+    }
+
+    const card = document.getElementById(`hw-card-${serialNum}`);
+    const status = document.getElementById(`hw-status-${serialNum}`);
+    if (card) card.classList.add("hw-done");
+    if (status) {
+        status.textContent = "✓ Written";
+        status.style.color = "#22c55e";
+    }
+
+    if (!verifiedL4Words.has(serialNum)) {
+        verifiedL4Words.add(serialNum);
+        level4CompletedCount = verifiedL4Words.size;
+        document.getElementById("hwProgressText").textContent = `${level4CompletedCount} / 10 Words`;
+    }
+
+    // Unlock next word's 4-line sheet sequentially
+    const nextSerial = serialNum + 1;
+    if (nextSerial <= 10) {
+        const nextCard = document.getElementById(`hw-card-${nextSerial}`);
+        const nextStatus = document.getElementById(`hw-status-${nextSerial}`);
+        if (nextCard) nextCard.classList.remove("hw-locked");
+        if (nextStatus && !verifiedL4Words.has(nextSerial)) {
+            nextStatus.textContent = "Write & Click Done";
+            nextStatus.style.color = "#facc15";
+        }
+        redrawHwCanvas(nextSerial, targetWords[nextSerial - 1]);
+    }
+}
+/* ====================================================================== */
 
 function unlockNextDropSlot(currentSlotIndex) {
     if (currentSlotIndex < 10) {
@@ -780,10 +1193,13 @@ function startGame() {
     level1Score = 0;
     level2Score = 0;
     level3CompletedCount = 0;
+    level4CompletedCount = 0;
     verifiedL2Words.clear();
     verifiedL3Words.clear();
+    verifiedL4Words.clear();
     level1Completed = false;
     level2Completed = false;
+    level3Completed = false;
 
     shuffleSourcePool();
 
@@ -838,6 +1254,8 @@ function advanceToNextSyllableMic(currentSerial) {
             nextStatus.textContent = "Pending";
             nextStatus.style.color = "#94a3b8";
         }
+    } else {
+        unlockLevel4();
     }
 }
 
@@ -1072,7 +1490,6 @@ function submitData() {
     const totalTrialTimeStr = formatSecondsToHHMMSS(totalTrialSecs);
     const scoreStr = `${finalScore}/20-${percentage}%`;
 
-    // Record this trial in sessionTrials
     sessionTrials[currentTrialNum - 1] = {
         score: finalScore,
         maxScore: 20,
@@ -1099,6 +1516,7 @@ function submitData() {
     params.append("level2Score", `${level2Score}/10-${Math.round((level2Score/10)*100)}%`);
     params.append("level2Time", level2TimeStr);
     params.append("level3Syllables", `${level3CompletedCount}/10`);
+    params.append("level4Handwriting", `${level4CompletedCount}/10`);
     params.append("score", scoreStr);
     params.append("trialId", String(currentTrialNum));
 
@@ -1122,7 +1540,6 @@ function handlePostTrialFlow(studentIdInput, nameInput, scoreStr, totalTrialTime
         document.getElementById("trialDisplay").value = `Trial ${currentTrialNum} of ${MAX_TRIALS}`;
         resetSameUser();
     } else {
-        // All 3 trials completed -> compute cumulative totals & send SessionSummary
         const totalScore = sessionTrials.reduce((acc, t) => acc + (t ? t.score : 0), 0);
         const totalSecs = sessionTrials.reduce((acc, t) => acc + (t ? t.secs : 0), 0);
         const totalPct = Math.round((totalScore / 60) * 100);
@@ -1175,10 +1592,13 @@ function resetSameUser() {
     level1Score = 0;
     level2Score = 0;
     level3CompletedCount = 0;
+    level4CompletedCount = 0;
     verifiedL2Words.clear();
     verifiedL3Words.clear();
+    verifiedL4Words.clear();
     level1Completed = false;
     level2Completed = false;
+    level3Completed = false;
 
     document.getElementById("timer").textContent = "00:00:00";
     document.getElementById("scoreDisplay").textContent = "Score: 0/20-0%";

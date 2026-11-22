@@ -294,7 +294,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 .stt-status { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
 .box-timer { font-size: 0.8rem; color: #ef4444; font-weight: bold; margin-top: 2px; }
 
-/* Level 4: 4-Line Handwriting Styles */
+/* Level 4: 4-Line Dot-Trace Handwriting Styles */
 .hw-toolbar {
     display: flex;
     align-items: center;
@@ -309,7 +309,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 }
 .hw-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 16px;
 }
 @media (max-width: 480px) {
@@ -330,8 +330,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     opacity: 0.45;
     pointer-events: none;
 }
-.hw-card.hw-done {
-    border-color: #22c55e;
+.hw-card.hw-done-pass {
+    border: 2px solid #22c55e;
+}
+.hw-card.hw-done-fail {
+    border: 2px solid #ef4444;
 }
 .hw-header {
     display: flex;
@@ -354,6 +357,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     font-weight: 700;
     letter-spacing: 0.5px;
 }
+.hw-dot-counter {
+    font-size: 0.82rem;
+    color: #38bdf8;
+    font-weight: 600;
+}
 .hw-canvas-wrap {
     background: #ffffff;
     border-radius: 8px;
@@ -361,7 +369,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     overflow: hidden;
     position: relative;
     width: 100%;
-    height: 150px;
+    height: 155px;
     touch-action: none;
 }
 .hw-canvas {
@@ -432,13 +440,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
         <div>Trial 1<strong id="t1Summary">--</strong></div>
         <div>Trial 2<strong id="t2Summary">--</strong></div>
         <div>Trial 3<strong id="t3Summary">--</strong></div>
-        <div>Session Total<strong id="totalSessionSummary" style="color:#22c55e;">0/60 (0%)</strong></div>
+        <div>Session Total<strong id="totalSessionSummary" style="color:#22c55e;">0/90 (0%)</strong></div>
     </div>
 
     <div class="game-bar">
         <div class="stats-display">
             <div class="timer-display" id="timer">00:00:00</div>
-            <div class="score-display" id="scoreDisplay">Score: 0/20-0%</div>
+            <div class="score-display" id="scoreDisplay">Score: 0/30-0%</div>
         </div>
         <div class="btn-group">
             <button class="btn-blink btn-green" id="listenBtn" onclick="listen3RoundsSequence()">🎧 Listen (3 Rounds)</button>
@@ -448,13 +456,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
         </div>
     </div>
 
-    <h2>Level 1: Listen &amp; Sort Days of the Week</h2>
+    <h2>Level 1: Listen &amp; Sort Days of the Week (10 Points)</h2>
     <p style="color: #94a3b8; font-size: 0.95rem;">Drop icons into slots sequentially (Slot 1 must be filled before Slot 2 unlocks).</p>
     
     <div class="source-pool" id="sourcePool"></div>
     <div class="drop-zones-grid" id="dropZonesGrid"></div>
 
-    <h2>Level 2: Speak All 10 Words</h2>
+    <h2>Level 2: Speak All 10 Words (10 Points)</h2>
     <p style="color: #94a3b8; font-size: 0.95rem;">Mics unlock sequentially. Previous mics lock automatically.</p>
     <div class="stt-grid" id="sttGrid"></div>
 
@@ -462,14 +470,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     <p style="color: #94a3b8; font-size: 0.95rem;">Listen to every letter in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 
-    <h2>Level 4: 4-Line Handwriting Practice (Level 1 Words)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Write each of the 10 words neatly on the 4-line notebook sheet using mouse or touch. Click <strong>✅ Done</strong> to complete each word.</p>
+    <h2>Level 4: Connect Dots on 4 Lines — Handwriting Evaluation (10 Points)</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Connect all dots for every letter neatly on the 4 lines. Click <strong>✅ Done</strong> to verify dot connections and earn <strong>+1 point</strong> per word.</p>
     <div class="hw-toolbar">
-        <div style="font-size: 0.95rem; color: #e2e8f0;">
-            Completed: <strong id="hwProgressText" style="color: #22c55e;">0 / 10 Words</strong>
+        <div style="font-size: 0.95rem; color: #e2e8f0; display:flex; gap:16px; flex-wrap:wrap;">
+            <span>Evaluated: <strong id="hwProgressText" style="color: #38bdf8;">0 / 10 Words</strong></span>
+            <span>Level 4 Score: <strong id="hwScoreText" style="color: #22c55e;">0 / 10 Points</strong></span>
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn-purple hw-btn-sm" id="toggleAllGuidesBtn" onclick="toggleAllHwGuides()">👁️ Hide Tracing Guides</button>
             <button class="btn-slate hw-btn-sm" id="unlockAllHwBtn" onclick="unlockAllHwCards()">🔓 Unlock All Sheets</button>
         </div>
     </div>
@@ -499,6 +507,7 @@ let timerInterval = null;
 let secondsElapsed = 0;
 let level1Seconds = 0;
 let level2Seconds = 0;
+let level4Seconds = 0;
 let gameActive = false;
 let ttsId = 0;
 let isToolbarSpeaking = false;
@@ -507,10 +516,10 @@ let activeUtterance = null;
 let level1Score = 0;
 let level2Score = 0;
 let level3CompletedCount = 0;
-let level4CompletedCount = 0;
+let level4Score = 0;
 let verifiedL2Words = new Set();
 let verifiedL3Words = new Set();
-let verifiedL4Words = new Set();
+let evaluatedL4Words = new Set();
 let currentTrialNum = 1;
 const MAX_TRIALS = 3;
 let level1Completed = false;
@@ -519,7 +528,6 @@ let level3Completed = false;
 
 // Handwriting state per word (1..10)
 let hwStates = {};
-let showGlobalGuides = true;
 
 // Stores { score, maxScore, scoreStr, secs, timeStr } for trials 1, 2, 3
 let sessionTrials = [];
@@ -652,7 +660,7 @@ function updateSessionTrackerUI() {
         }
     }
 
-    const totalPossible = MAX_TRIALS * 20;
+    const totalPossible = MAX_TRIALS * 30;
     const totalPct = totalPossible > 0 ? Math.round((cumScore / totalPossible) * 100) : 0;
     document.getElementById("totalSessionSummary").textContent = `${cumScore}/${totalPossible}-${totalPct}% | ${formatSecondsToHHMMSS(cumSecs)}`;
 }
@@ -740,9 +748,9 @@ function initGame() {
     dropZonesGrid.innerHTML = "";
     verifiedL2Words.clear();
     verifiedL3Words.clear();
-    verifiedL4Words.clear();
+    evaluatedL4Words.clear();
     level3CompletedCount = 0;
-    level4CompletedCount = 0;
+    level4Score = 0;
     level2Completed = false;
     level3Completed = false;
     hwStates = {};
@@ -833,19 +841,182 @@ function initGame() {
     updateScoreDisplay();
 }
 
-/* ==================== LEVEL 4: 4-LINE HANDWRITING ==================== */
+/* ==================== LEVEL 4: 4-LINE DOT-TRACE HANDWRITING & SCORING ==================== */
+// 4-line vertical coordinate system:
+// y = 0.0 -> Line 1 (Red Top Ascender Line)
+// y = 0.5 -> Line 2 (Blue Midline / x-height top)
+// y = 1.0 -> Line 3 (Blue Baseline)
+// y = 1.45 -> Line 4 (Red Bottom Descender Line)
+const LETTER_DOT_STROKES = {
+    // Uppercase letters (span y = 0.0 to y = 1.0)
+    'D': [
+        [[0.15, 0.0], [0.15, 0.25], [0.15, 0.5], [0.15, 0.75], [0.15, 1.0]],
+        [[0.15, 0.0], [0.48, 0.06], [0.75, 0.25], [0.85, 0.5], [0.75, 0.75], [0.48, 0.94], [0.15, 1.0]]
+    ],
+    'F': [
+        [[0.2, 0.0], [0.2, 0.25], [0.2, 0.5], [0.2, 0.75], [0.2, 1.0]],
+        [[0.2, 0.0], [0.52, 0.0], [0.85, 0.0]],
+        [[0.2, 0.5], [0.5, 0.5], [0.75, 0.5]]
+    ],
+    'M': [
+        [[0.1, 1.0], [0.1, 0.75], [0.1, 0.5], [0.1, 0.25], [0.1, 0.0]],
+        [[0.1, 0.0], [0.3, 0.25], [0.5, 0.5]],
+        [[0.5, 0.5], [0.7, 0.25], [0.9, 0.0]],
+        [[0.9, 0.0], [0.9, 0.25], [0.9, 0.5], [0.9, 0.75], [0.9, 1.0]]
+    ],
+    'S': [
+        [[0.82, 0.14], [0.55, 0.0], [0.24, 0.1], [0.2, 0.32], [0.5, 0.5], [0.8, 0.68], [0.76, 0.9], [0.45, 1.0], [0.18, 0.86]]
+    ],
+    'T': [
+        [[0.1, 0.0], [0.37, 0.0], [0.63, 0.0], [0.9, 0.0]],
+        [[0.5, 0.0], [0.5, 0.25], [0.5, 0.5], [0.5, 0.75], [0.5, 1.0]]
+    ],
+    'W': [
+        [[0.06, 0.0], [0.17, 0.5], [0.28, 1.0]],
+        [[0.28, 1.0], [0.39, 0.65], [0.5, 0.35]],
+        [[0.5, 0.35], [0.61, 0.65], [0.72, 1.0]],
+        [[0.72, 1.0], [0.83, 0.5], [0.94, 0.0]]
+    ],
+
+    // Lowercase letters (x-height between y = 0.5 and y = 1.0; ascenders y = 0.0; descenders y = 1.45)
+    'a': [
+        [[0.78, 0.62], [0.52, 0.5], [0.24, 0.6], [0.18, 0.75], [0.24, 0.92], [0.52, 1.0], [0.78, 0.88]],
+        [[0.78, 0.5], [0.78, 0.75], [0.78, 1.0]]
+    ],
+    'd': [
+        [[0.78, 0.62], [0.52, 0.5], [0.24, 0.6], [0.18, 0.75], [0.24, 0.92], [0.52, 1.0], [0.78, 0.88]],
+        [[0.78, 0.0], [0.78, 0.25], [0.78, 0.5], [0.78, 0.75], [0.78, 1.0]]
+    ],
+    'e': [
+        [[0.2, 0.74], [0.52, 0.74], [0.82, 0.74], [0.74, 0.56], [0.5, 0.5], [0.24, 0.58], [0.18, 0.75], [0.26, 0.93], [0.54, 1.0], [0.8, 0.92]]
+    ],
+    'h': [
+        [[0.2, 0.0], [0.2, 0.25], [0.2, 0.5], [0.2, 0.75], [0.2, 1.0]],
+        [[0.2, 0.65], [0.42, 0.52], [0.68, 0.52], [0.8, 0.72], [0.8, 1.0]]
+    ],
+    'i': [
+        [[0.5, 0.5], [0.5, 0.75], [0.5, 1.0]],
+        [[0.5, 0.3]]
+    ],
+    'k': [
+        [[0.2, 0.0], [0.2, 0.25], [0.2, 0.5], [0.2, 0.75], [0.2, 1.0]],
+        [[0.78, 0.5], [0.48, 0.64], [0.22, 0.76]],
+        [[0.42, 0.68], [0.62, 0.84], [0.82, 1.0]]
+    ],
+    'n': [
+        [[0.2, 0.5], [0.2, 0.75], [0.2, 1.0]],
+        [[0.2, 0.65], [0.42, 0.52], [0.68, 0.52], [0.8, 0.72], [0.8, 1.0]]
+    ],
+    'o': [
+        [[0.5, 0.5], [0.25, 0.58], [0.18, 0.75], [0.25, 0.92], [0.5, 1.0], [0.75, 0.92], [0.82, 0.75], [0.75, 0.58], [0.5, 0.5]]
+    ],
+    'r': [
+        [[0.24, 0.5], [0.24, 0.75], [0.24, 1.0]],
+        [[0.24, 0.66], [0.45, 0.53], [0.74, 0.54]]
+    ],
+    's': [
+        [[0.76, 0.58], [0.5, 0.5], [0.24, 0.57], [0.26, 0.72], [0.52, 0.76], [0.76, 0.83], [0.72, 0.96], [0.48, 1.0], [0.22, 0.93]]
+    ],
+    't': [
+        [[0.48, 0.16], [0.48, 0.42], [0.48, 0.68], [0.48, 0.92], [0.68, 1.0]],
+        [[0.22, 0.5], [0.48, 0.5], [0.76, 0.5]]
+    ],
+    'u': [
+        [[0.2, 0.5], [0.2, 0.76], [0.32, 0.96], [0.56, 1.0], [0.78, 0.86]],
+        [[0.78, 0.5], [0.78, 0.75], [0.78, 1.0]]
+    ],
+    'v': [
+        [[0.18, 0.5], [0.34, 0.75], [0.5, 1.0]],
+        [[0.5, 1.0], [0.66, 0.75], [0.82, 0.5]]
+    ],
+    'y': [
+        [[0.2, 0.5], [0.35, 0.75], [0.5, 1.0]],
+        [[0.8, 0.5], [0.65, 0.75], [0.5, 1.0], [0.36, 1.24], [0.2, 1.45]]
+    ]
+};
+
+function buildWordDots(word, canvasWidth, canvasHeight) {
+    const yTop = canvasHeight * 0.20;     // Line 1 (Red top)
+    const yMid = canvasHeight * 0.43;     // Line 2 (Blue midline)
+    const yBase = canvasHeight * 0.67;    // Line 3 (Blue baseline)
+    const yBottom = canvasHeight * 0.89;  // Line 4 (Red bottom descender)
+
+    const line1To3Span = yBase - yTop;
+    const line3To4Span = yBottom - yBase;
+
+    const leftMargin = 38;
+    const rightMargin = 20;
+    const usableWidth = Math.max(canvasWidth - leftMargin - rightMargin, 220);
+
+    // Give each letter proportional slot width
+    const charCount = word.length;
+    const maxSlot = 48;
+    const slotWidth = Math.min(maxSlot, usableWidth / Math.max(charCount, 1));
+    const totalWordWidth = slotWidth * charCount;
+    const startX = leftMargin + Math.max(0, (usableWidth - totalWordWidth) * 0.15);
+
+    const dots = [];
+    const guideSegments = [];
+
+    for (let c = 0; c < charCount; c++) {
+        const ch = word[c];
+        const strokes = LETTER_DOT_STROKES[ch] || LETTER_DOT_STROKES['o'];
+        const charLeft = startX + c * slotWidth;
+        const charDrawWidth = slotWidth * 0.82;
+
+        strokes.forEach(stroke => {
+            const mappedPts = stroke.map(([nx, ny]) => {
+                const px = charLeft + nx * charDrawWidth;
+                let py;
+                if (ny <= 1.0) {
+                    py = yTop + ny * line1To3Span;
+                } else {
+                    const descRatio = (ny - 1.0) / 0.45;
+                    py = yBase + descRatio * line3To4Span;
+                }
+                return { x: px, y: py };
+            });
+
+            guideSegments.push(mappedPts);
+
+            mappedPts.forEach(pt => {
+                // Avoid duplicate overlapping junction dots inside the same letter
+                const alreadyExists = dots.some(
+                    d => d.charIdx === c && Math.hypot(d.x - pt.x, d.y - pt.y) < 5
+                );
+                if (!alreadyExists) {
+                    dots.push({
+                        x: pt.x,
+                        y: pt.y,
+                        charIdx: c,
+                        connected: false
+                    });
+                }
+            });
+        });
+    }
+
+    return { dots, guideSegments, yTop, yMid, yBase, yBottom };
+}
+
 function initHandwritingLevel4() {
     const hwGrid = document.getElementById("handwritingGrid");
     hwGrid.innerHTML = "";
     document.getElementById("hwProgressText").textContent = "0 / 10 Words";
+    document.getElementById("hwScoreText").textContent = "0 / 10 Points";
 
     targetWords.forEach((word, index) => {
         const serialNum = index + 1;
         hwStates[serialNum] = {
             strokes: [],
             currentStroke: null,
-            showGuide: showGlobalGuides,
-            hasInk: false
+            dots: [],
+            guideSegments: [],
+            layoutMetrics: null,
+            evaluated: false,
+            passed: false,
+            totalInkPoints: 0,
+            onDotInkPoints: 0
         };
 
         const card = document.createElement("div");
@@ -855,6 +1026,7 @@ function initHandwritingLevel4() {
             <div class="hw-header">
                 <span class="hw-title">Word #${serialNum}</span>
                 <span class="hw-word-badge">${word}</span>
+                <span class="hw-dot-counter" id="hw-dots-${serialNum}">Dots: 0 / 0</span>
                 <span class="hw-status" id="hw-status-${serialNum}">Locked</span>
             </div>
             <div class="hw-canvas-wrap">
@@ -863,51 +1035,98 @@ function initHandwritingLevel4() {
             <div class="hw-controls">
                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
                     <button class="btn-blue hw-btn-sm" onclick="speakText('${word}')">🔊 Listen</button>
-                    <button class="btn-purple hw-btn-sm" id="hw-guide-btn-${serialNum}" onclick="toggleSingleHwGuide(${serialNum}, '${word}')">👁️ Guide</button>
-                    <button class="btn-orange hw-btn-sm" onclick="clearHwCanvas(${serialNum}, '${word}')">🧹 Clear</button>
+                    <button class="btn-orange hw-btn-sm" id="hw-clear-btn-${serialNum}" onclick="clearHwCanvas(${serialNum}, '${word}')">🧹 Clear</button>
                 </div>
-                <button class="btn-green hw-btn-sm" id="hw-done-btn-${serialNum}" onclick="completeHwWord(${serialNum})">✅ Done</button>
+                <button class="btn-green hw-btn-sm" id="hw-done-btn-${serialNum}" onclick="evaluateHwWord(${serialNum}, '${word}')">✅ Done</button>
             </div>
         `;
         hwGrid.appendChild(card);
 
         setupHwCanvasEvents(serialNum, word);
-        redrawHwCanvas(serialNum, word);
+        redrawHwCanvas(serialNum, word, true);
     });
+}
+
+function checkDotHits(serialNum, px, py, canvasWidth) {
+    const state = hwStates[serialNum];
+    if (!state || !state.dots.length) return;
+
+    // Hit radius scaled nicely for finger/stylus/mouse
+    const hitRadius = Math.max(13, canvasWidth * 0.032);
+    let hitAny = false;
+
+    for (let i = 0; i < state.dots.length; i++) {
+        const dot = state.dots[i];
+        const dist = Math.hypot(px - dot.x, py - dot.y);
+        if (dist <= hitRadius) {
+            hitAny = true;
+            if (!dot.connected) {
+                dot.connected = true;
+            }
+        }
+    }
+
+    state.totalInkPoints += 1;
+    if (hitAny) state.onDotInkPoints += 1;
+
+    const connectedCount = state.dots.filter(d => d.connected).length;
+    const dotCounterEl = document.getElementById(`hw-dots-${serialNum}`);
+    if (dotCounterEl) {
+        dotCounterEl.textContent = `Dots: ${connectedCount} / ${state.dots.length}`;
+    }
 }
 
 function setupHwCanvasEvents(serialNum, word) {
     const canvas = document.getElementById(`hw-canvas-${serialNum}`);
     if (!canvas) return;
 
-    const getNormalizedPos = (e) => {
+    const getCanvasPos = (e) => {
         const rect = canvas.getBoundingClientRect();
         return {
-            x: (e.clientX - rect.left) / rect.width,
-            y: (e.clientY - rect.top) / rect.height
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+            width: rect.width,
+            height: rect.height
         };
     };
 
     canvas.addEventListener("pointerdown", (e) => {
         const card = document.getElementById(`hw-card-${serialNum}`);
-        if (card && card.classList.contains("hw-locked")) return;
+        const state = hwStates[serialNum];
+        if (!state || state.evaluated || (card && card.classList.contains("hw-locked"))) return;
+
         e.preventDefault();
         canvas.setPointerCapture(e.pointerId);
-        const pos = getNormalizedPos(e);
-        const state = hwStates[serialNum];
-        state.currentStroke = [pos];
+        const pos = getCanvasPos(e);
+
+        state.currentStroke = [{ nx: pos.x / pos.width, ny: pos.y / pos.height }];
         state.strokes.push(state.currentStroke);
-        state.hasInk = true;
-        redrawHwCanvas(serialNum, word);
+
+        checkDotHits(serialNum, pos.x, pos.y, pos.width);
+        redrawHwCanvas(serialNum, word, false);
     });
 
     canvas.addEventListener("pointermove", (e) => {
         const state = hwStates[serialNum];
-        if (!state || !state.currentStroke) return;
+        if (!state || !state.currentStroke || state.evaluated) return;
+
         e.preventDefault();
-        const pos = getNormalizedPos(e);
-        state.currentStroke.push(pos);
-        redrawHwCanvas(serialNum, word);
+        const pos = getCanvasPos(e);
+        const prev = state.currentStroke[state.currentStroke.length - 1];
+        const prevX = prev.nx * pos.width;
+        const prevY = prev.ny * pos.height;
+
+        // Interpolate intermediate points for fast stylus/finger strokes so dots aren't skipped
+        const dist = Math.hypot(pos.x - prevX, pos.y - prevY);
+        const steps = Math.max(1, Math.ceil(dist / 4));
+        for (let s = 1; s <= steps; s++) {
+            const ix = prevX + ((pos.x - prevX) * s) / steps;
+            const iy = prevY + ((pos.y - prevY) * s) / steps;
+            checkDotHits(serialNum, ix, iy, pos.width);
+        }
+
+        state.currentStroke.push({ nx: pos.x / pos.width, ny: pos.y / pos.height });
+        redrawHwCanvas(serialNum, word, false);
     });
 
     const endStroke = (e) => {
@@ -923,13 +1142,13 @@ function setupHwCanvasEvents(serialNum, word) {
     canvas.addEventListener("pointercancel", endStroke);
 }
 
-function redrawHwCanvas(serialNum, word) {
+function redrawHwCanvas(serialNum, word, rebuildDots = true) {
     const canvas = document.getElementById(`hw-canvas-${serialNum}`);
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    const width = Math.max(rect.width || 360, 260);
-    const height = Math.max(rect.height || 150, 120);
+    const width = Math.max(rect.width || 380, 260);
+    const height = Math.max(rect.height || 155, 130);
 
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
@@ -937,15 +1156,39 @@ function redrawHwCanvas(serialNum, word) {
     const ctx = canvas.getContext("2d");
     ctx.scale(dpr, dpr);
 
-    // White notebook paper background
+    const state = hwStates[serialNum];
+    if (!state) return;
+
+    // Preserve previous connected statuses if rebuilding on resize
+    const prevConnected = state.dots.map(d => d.connected);
+    if (rebuildDots || !state.layoutMetrics || state.layoutMetrics.width !== width) {
+        const built = buildWordDots(word, width, height);
+        built.dots.forEach((d, idx) => {
+            if (prevConnected[idx]) d.connected = true;
+        });
+        state.dots = built.dots;
+        state.guideSegments = built.guideSegments;
+        state.layoutMetrics = {
+            width,
+            height,
+            yTop: built.yTop,
+            yMid: built.yMid,
+            yBase: built.yBase,
+            yBottom: built.yBottom
+        };
+
+        const connectedCount = state.dots.filter(d => d.connected).length;
+        const dotCounterEl = document.getElementById(`hw-dots-${serialNum}`);
+        if (dotCounterEl) {
+            dotCounterEl.textContent = `Dots: ${connectedCount} / ${state.dots.length}`;
+        }
+    }
+
+    const { yTop, yMid, yBase, yBottom } = state.layoutMetrics;
+
+    // White 4-line notebook background
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, width, height);
-
-    // Classic 4-line ruling geometry (Ascender, Midline, Baseline, Descender)
-    const yTop = height * 0.22;      // Line 1: Red top line
-    const yMid = height * 0.44;      // Line 2: Blue/Grey midline
-    const yBase = height * 0.68;     // Line 3: Blue baseline
-    const yBottom = height * 0.88;   // Line 4: Red bottom descender line
 
     // Left vertical red margin line
     ctx.strokeStyle = "rgba(239, 68, 68, 0.35)";
@@ -964,7 +1207,7 @@ function redrawHwCanvas(serialNum, word) {
     ctx.lineTo(width, yTop);
     ctx.stroke();
 
-    // Line 2: Middle Blue Line (dashed for clear x-height visual cue)
+    // Line 2: Middle Blue Line (dashed)
     ctx.strokeStyle = "#3b82f6";
     ctx.lineWidth = 1.3;
     ctx.setLineDash([6, 4]);
@@ -991,22 +1234,27 @@ function redrawHwCanvas(serialNum, word) {
     ctx.lineTo(width, yBottom);
     ctx.stroke();
 
-    // Optional faint tracing guide aligned between top/mid and baseline
-    const state = hwStates[serialNum];
-    if (state && state.showGuide) {
-        ctx.save();
-        ctx.font = "italic 54px 'Comic Sans MS', 'Segoe Print', Georgia, serif";
-        ctx.fillStyle = "rgba(148, 163, 184, 0.42)";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillText(word, 42, yBase - 1);
-        ctx.restore();
-    }
+    // Light dotted skeleton lines connecting dots so student sees letter shape
+    ctx.save();
+    ctx.strokeStyle = "rgba(100, 116, 139, 0.35)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 4]);
+    state.guideSegments.forEach(seg => {
+        if (seg.length < 2) return;
+        ctx.beginPath();
+        ctx.moveTo(seg[0].x, seg[0].y);
+        for (let i = 1; i < seg.length; i++) {
+            ctx.lineTo(seg[i].x, seg[i].y);
+        }
+        ctx.stroke();
+    });
+    ctx.restore();
 
-    // Draw student's handwriting strokes in dark blue fountain-pen ink
-    if (state && state.strokes.length > 0) {
+    // Draw student's handwriting strokes
+    if (state.strokes.length > 0) {
         ctx.save();
         ctx.strokeStyle = "#1e3a8a";
-        ctx.lineWidth = 3.2;
+        ctx.lineWidth = 3.5;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.setLineDash([]);
@@ -1014,60 +1262,58 @@ function redrawHwCanvas(serialNum, word) {
         state.strokes.forEach(stroke => {
             if (stroke.length === 0) return;
             ctx.beginPath();
-            ctx.moveTo(stroke[0].x * width, stroke[0].y * height);
+            ctx.moveTo(stroke[0].nx * width, stroke[0].ny * height);
             if (stroke.length === 1) {
-                ctx.lineTo(stroke[0].x * width + 0.5, stroke[0].y * height + 0.5);
+                ctx.lineTo(stroke[0].nx * width + 0.5, stroke[0].ny * height + 0.5);
             } else {
                 for (let i = 1; i < stroke.length; i++) {
-                    ctx.lineTo(stroke[i].x * width, stroke[i].y * height);
+                    ctx.lineTo(stroke[i].nx * width, stroke[i].ny * height);
                 }
             }
             ctx.stroke();
         });
         ctx.restore();
     }
+
+    // Draw every dot for every letter (Red/Amber = unconnected, Green = connected)
+    state.dots.forEach(dot => {
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.connected ? 4.2 : 3.8, 0, Math.PI * 2);
+        ctx.fillStyle = dot.connected ? "#16a34a" : "#dc2626";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#ffffff";
+        ctx.stroke();
+    });
 }
 
 function clearHwCanvas(serialNum, word) {
     const state = hwStates[serialNum];
-    if (!state) return;
+    if (!state || state.evaluated) return;
     state.strokes = [];
     state.currentStroke = null;
-    state.hasInk = false;
-    redrawHwCanvas(serialNum, word);
-}
-
-function toggleSingleHwGuide(serialNum, word) {
-    const state = hwStates[serialNum];
-    if (!state) return;
-    state.showGuide = !state.showGuide;
-    redrawHwCanvas(serialNum, word);
-}
-
-function toggleAllHwGuides() {
-    showGlobalGuides = !showGlobalGuides;
-    const btn = document.getElementById("toggleAllGuidesBtn");
-    btn.textContent = showGlobalGuides ? "👁️ Hide Tracing Guides" : "👁️ Show Tracing Guides";
-    targetWords.forEach((word, idx) => {
-        const serialNum = idx + 1;
-        if (hwStates[serialNum]) {
-            hwStates[serialNum].showGuide = showGlobalGuides;
-            redrawHwCanvas(serialNum, word);
-        }
-    });
+    state.totalInkPoints = 0;
+    state.onDotInkPoints = 0;
+    state.dots.forEach(d => { d.connected = false; });
+    redrawHwCanvas(serialNum, word, false);
+    const dotCounterEl = document.getElementById(`hw-dots-${serialNum}`);
+    if (dotCounterEl) {
+        dotCounterEl.textContent = `Dots: 0 / ${state.dots.length}`;
+    }
 }
 
 function unlockLevel4() {
     if (level3Completed) return;
     level3Completed = true;
+    secondsElapsed = 0;
     const firstCard = document.getElementById("hw-card-1");
     const firstStatus = document.getElementById("hw-status-1");
     if (firstCard) firstCard.classList.remove("hw-locked");
     if (firstStatus) {
-        firstStatus.textContent = "Write & Click Done";
+        firstStatus.textContent = "Connect Dots & Click Done";
         firstStatus.style.color = "#facc15";
     }
-    targetWords.forEach((word, idx) => redrawHwCanvas(idx + 1, word));
+    targetWords.forEach((word, idx) => redrawHwCanvas(idx + 1, word, true));
 }
 
 function unlockAllHwCards() {
@@ -1076,33 +1322,66 @@ function unlockAllHwCards() {
         const card = document.getElementById(`hw-card-${serialNum}`);
         const status = document.getElementById(`hw-status-${serialNum}`);
         if (card) card.classList.remove("hw-locked");
-        if (status && !verifiedL4Words.has(serialNum)) {
+        if (status && !evaluatedL4Words.has(serialNum)) {
             status.textContent = "Ready";
             status.style.color = "#facc15";
         }
-        redrawHwCanvas(serialNum, word);
+        redrawHwCanvas(serialNum, word, true);
     });
 }
 
-function completeHwWord(serialNum) {
+function evaluateHwWord(serialNum, word) {
     const state = hwStates[serialNum];
-    if (!state || !state.hasInk) {
-        alert(`Please write "${targetWords[serialNum - 1]}" on the 4 lines before clicking Done!`);
+    if (!state || state.evaluated) return;
+
+    if (state.totalInkPoints === 0) {
+        alert(`Please connect the dots for "${word}" on the 4 lines before clicking Done!`);
         return;
     }
 
+    const totalDots = state.dots.length;
+    const connectedDots = state.dots.filter(d => d.connected).length;
+    const dotAccuracy = totalDots > 0 ? connectedDots / totalDots : 0;
+    const precision = state.totalInkPoints > 0 ? state.onDotInkPoints / state.totalInkPoints : 0;
+
+    // Require at least 75% of letter dots connected and reasonable stroke accuracy (not scribbling everywhere)
+    const isRightConnection = dotAccuracy >= 0.75 && precision >= 0.30;
+
+    state.evaluated = true;
+    state.passed = isRightConnection;
+    evaluatedL4Words.add(serialNum);
+
     const card = document.getElementById(`hw-card-${serialNum}`);
     const status = document.getElementById(`hw-status-${serialNum}`);
-    if (card) card.classList.add("hw-done");
-    if (status) {
-        status.textContent = "✓ Written";
-        status.style.color = "#22c55e";
+    const doneBtn = document.getElementById(`hw-done-btn-${serialNum}`);
+    const clearBtn = document.getElementById(`hw-clear-btn-${serialNum}`);
+
+    if (doneBtn) doneBtn.disabled = true;
+    if (clearBtn) clearBtn.disabled = true;
+
+    const pctConnected = Math.round(dotAccuracy * 100);
+
+    if (isRightConnection) {
+        level4Score += 1;
+        if (card) card.classList.add("hw-done-pass");
+        if (status) {
+            status.textContent = `✓ Correct (${pctConnected}% dots) (+1)`;
+            status.style.color = "#22c55e";
+        }
+    } else {
+        if (card) card.classList.add("hw-done-fail");
+        if (status) {
+            status.textContent = `✗ Incomplete (${pctConnected}% dots) (+0)`;
+            status.style.color = "#ef4444";
+        }
     }
 
-    if (!verifiedL4Words.has(serialNum)) {
-        verifiedL4Words.add(serialNum);
-        level4CompletedCount = verifiedL4Words.size;
-        document.getElementById("hwProgressText").textContent = `${level4CompletedCount} / 10 Words`;
+    document.getElementById("hwProgressText").textContent = `${evaluatedL4Words.size} / 10 Words`;
+    document.getElementById("hwScoreText").textContent = `${level4Score} / 10 Points`;
+    updateScoreDisplay();
+
+    if (evaluatedL4Words.size === 10 && level4Seconds === 0) {
+        level4Seconds = secondsElapsed;
     }
 
     // Unlock next word's 4-line sheet sequentially
@@ -1111,14 +1390,14 @@ function completeHwWord(serialNum) {
         const nextCard = document.getElementById(`hw-card-${nextSerial}`);
         const nextStatus = document.getElementById(`hw-status-${nextSerial}`);
         if (nextCard) nextCard.classList.remove("hw-locked");
-        if (nextStatus && !verifiedL4Words.has(nextSerial)) {
-            nextStatus.textContent = "Write & Click Done";
+        if (nextStatus && !evaluatedL4Words.has(nextSerial)) {
+            nextStatus.textContent = "Connect Dots & Click Done";
             nextStatus.style.color = "#facc15";
         }
-        redrawHwCanvas(nextSerial, targetWords[nextSerial - 1]);
+        redrawHwCanvas(nextSerial, targetWords[nextSerial - 1], true);
     }
 }
-/* ====================================================================== */
+/* ========================================================================================== */
 
 function unlockNextDropSlot(currentSlotIndex) {
     if (currentSlotIndex < 10) {
@@ -1179,9 +1458,9 @@ function unlockLevel3() {
 }
 
 function updateScoreDisplay() {
-    const totalScore = level1Score + level2Score;
-    const percentage = Math.round((totalScore / 20) * 100);
-    document.getElementById("scoreDisplay").textContent = `Score: ${totalScore}/20-${percentage}%`;
+    const totalScore = level1Score + level2Score + level4Score;
+    const percentage = Math.round((totalScore / 30) * 100);
+    document.getElementById("scoreDisplay").textContent = `Score: ${totalScore}/30-${percentage}%`;
 }
 
 function startGame() {
@@ -1190,13 +1469,14 @@ function startGame() {
     secondsElapsed = 0;
     level1Seconds = 0;
     level2Seconds = 0;
+    level4Seconds = 0;
     level1Score = 0;
     level2Score = 0;
     level3CompletedCount = 0;
-    level4CompletedCount = 0;
+    level4Score = 0;
     verifiedL2Words.clear();
     verifiedL3Words.clear();
-    verifiedL4Words.clear();
+    evaluatedL4Words.clear();
     level1Completed = false;
     level2Completed = false;
     level3Completed = false;
@@ -1470,8 +1750,8 @@ function speakWholeWordSTT(wholeWord, serialNum) {
 function submitData() {
     const studentIdInput = document.getElementById("studentId").value.trim() || "1B01";
     const nameInput = document.getElementById("userName").value.trim();
-    const finalScore = level1Score + level2Score;
-    const percentage = Math.round((finalScore / 20) * 100);
+    const finalScore = level1Score + level2Score + level4Score;
+    const percentage = Math.round((finalScore / 30) * 100);
 
     if (!nameInput) {
         alert("Missing user details before submitting!");
@@ -1483,16 +1763,18 @@ function submitData() {
     gameActive = false;
 
     if (level2Seconds === 0) level2Seconds = secondsElapsed;
+    if (level3Completed && level4Seconds === 0) level4Seconds = secondsElapsed;
 
-    const totalTrialSecs = level1Seconds + level2Seconds;
+    const totalTrialSecs = level1Seconds + level2Seconds + level4Seconds;
     const level1TimeStr = formatSecondsToHHMMSS(level1Seconds);
     const level2TimeStr = formatSecondsToHHMMSS(level2Seconds);
+    const level4TimeStr = formatSecondsToHHMMSS(level4Seconds);
     const totalTrialTimeStr = formatSecondsToHHMMSS(totalTrialSecs);
-    const scoreStr = `${finalScore}/20-${percentage}%`;
+    const scoreStr = `${finalScore}/30-${percentage}%`;
 
     sessionTrials[currentTrialNum - 1] = {
         score: finalScore,
-        maxScore: 20,
+        maxScore: 30,
         scoreStr: scoreStr,
         secs: totalTrialSecs,
         timeStr: totalTrialTimeStr
@@ -1516,7 +1798,8 @@ function submitData() {
     params.append("level2Score", `${level2Score}/10-${Math.round((level2Score/10)*100)}%`);
     params.append("level2Time", level2TimeStr);
     params.append("level3Syllables", `${level3CompletedCount}/10`);
-    params.append("level4Handwriting", `${level4CompletedCount}/10`);
+    params.append("level4Score", `${level4Score}/10-${Math.round((level4Score/10)*100)}%`);
+    params.append("level4Time", level4TimeStr);
     params.append("score", scoreStr);
     params.append("trialId", String(currentTrialNum));
 
@@ -1542,8 +1825,8 @@ function handlePostTrialFlow(studentIdInput, nameInput, scoreStr, totalTrialTime
     } else {
         const totalScore = sessionTrials.reduce((acc, t) => acc + (t ? t.score : 0), 0);
         const totalSecs = sessionTrials.reduce((acc, t) => acc + (t ? t.secs : 0), 0);
-        const totalPct = Math.round((totalScore / 60) * 100);
-        const cumulativeScoreStr = `${totalScore}/60-${totalPct}%`;
+        const totalPct = Math.round((totalScore / 90) * 100);
+        const cumulativeScoreStr = `${totalScore}/90-${totalPct}%`;
         const cumulativeTimeStr = formatSecondsToHHMMSS(totalSecs);
 
         const summaryParams = new URLSearchParams();
@@ -1551,11 +1834,11 @@ function handlePostTrialFlow(studentIdInput, nameInput, scoreStr, totalTrialTime
         summaryParams.append("gameCode", "E02");
         summaryParams.append("studentId", studentIdInput);
         summaryParams.append("name", nameInput);
-        summaryParams.append("t1Score", sessionTrials[0] ? sessionTrials[0].scoreStr : "0/20-0%");
+        summaryParams.append("t1Score", sessionTrials[0] ? sessionTrials[0].scoreStr : "0/30-0%");
         summaryParams.append("t1Time", sessionTrials[0] ? sessionTrials[0].timeStr : "00:00:00");
-        summaryParams.append("t2Score", sessionTrials[1] ? sessionTrials[1].scoreStr : "0/20-0%");
+        summaryParams.append("t2Score", sessionTrials[1] ? sessionTrials[1].scoreStr : "0/30-0%");
         summaryParams.append("t2Time", sessionTrials[1] ? sessionTrials[1].timeStr : "00:00:00");
-        summaryParams.append("t3Score", sessionTrials[2] ? sessionTrials[2].scoreStr : "0/20-0%");
+        summaryParams.append("t3Score", sessionTrials[2] ? sessionTrials[2].scoreStr : "0/30-0%");
         summaryParams.append("t3Time", sessionTrials[2] ? sessionTrials[2].timeStr : "00:00:00");
         summaryParams.append("totalScore", cumulativeScoreStr);
         summaryParams.append("totalTime", cumulativeTimeStr);
@@ -1588,20 +1871,21 @@ function resetSameUser() {
     secondsElapsed = 0;
     level1Seconds = 0;
     level2Seconds = 0;
+    level4Seconds = 0;
     gameActive = false;
     level1Score = 0;
     level2Score = 0;
     level3CompletedCount = 0;
-    level4CompletedCount = 0;
+    level4Score = 0;
     verifiedL2Words.clear();
     verifiedL3Words.clear();
-    verifiedL4Words.clear();
+    evaluatedL4Words.clear();
     level1Completed = false;
     level2Completed = false;
     level3Completed = false;
 
     document.getElementById("timer").textContent = "00:00:00";
-    document.getElementById("scoreDisplay").textContent = "Score: 0/20-0%";
+    document.getElementById("scoreDisplay").textContent = "Score: 0/30-0%";
     document.getElementById("scoreDisplay").style.display = "none";
     document.getElementById("userSaidDisplay").textContent = "You said: ...";
 

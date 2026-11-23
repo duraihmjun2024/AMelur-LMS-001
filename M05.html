@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - அளவைகள் (4.1 - 4.4) | AMelur-LMS-001</title>
+  <title>Game M05 - அளவைகள் (4.1 - 4.5) | AMelur-LMS-001</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Noto Sans Tamil & Inter -->
@@ -374,6 +374,82 @@
       animation: shake 0.38s ease-in-out;
     }
 
+    /* Level 5 Sky-blue textbook header banner (matching 4.5 Match image) */
+    .textbook-header-l5 {
+      background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 65%, #f0f9ff 100%);
+      border-bottom: 3px dashed #ffffff;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.14);
+    }
+
+    .badge-l5 {
+      background: #ffffff;
+      border: 2px solid #0284c7;
+      border-radius: 10px 10px 10px 2px;
+      color: #0369a1;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.16);
+    }
+
+    /* Level 5 Matching nodes (Left Vegetables, Middle Grams, Right Iron Weights) */
+    .l5-node {
+      background: #ffffff;
+      border: 2.5px solid #cbd5e1;
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+    }
+    .l5-node:hover {
+      transform: translateY(-1px);
+      border-color: #38bdf8;
+    }
+    .l5-node.selected {
+      border-color: #ec4899 !important;
+      background-color: #fdf2f8;
+      box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.22);
+      transform: scale(1.03);
+    }
+    .l5-node.matched-left {
+      border-color: #ec4899;
+      background-color: #fffafd;
+    }
+    .l5-node.matched-mid {
+      border-color: #0284c7;
+      background-color: #f0f9ff;
+    }
+    .l5-node.matched-right {
+      border-color: #10b981;
+      background-color: #f0fdf4;
+    }
+    .l5-node.correct {
+      border-color: #16a34a !important;
+      background-color: #f0fdf4 !important;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
+    }
+    .l5-node.incorrect {
+      border-color: #dc2626 !important;
+      background-color: #fef2f2 !important;
+      animation: shake 0.38s ease-in-out;
+    }
+    .l5-veg-pill {
+      background: #ffffff;
+      border: 2px solid #2dd4bf;
+      border-radius: 9px;
+      box-shadow: 0 2px 4px rgba(20, 184, 166, 0.14);
+    }
+    .l5-gram-pill {
+      background: #ffffff;
+      border: 2px solid #f43f5e;
+      border-radius: 9px;
+      box-shadow: 0 2px 4px rgba(244, 63, 94, 0.12);
+    }
+    .l5-weight-box {
+      border: 2px solid #34d399;
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
     /* Numeric inputs for whole, numerator, denominator */
     .frac-input {
       font-family: 'Inter', sans-serif;
@@ -515,7 +591,7 @@
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/17</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/21</span>
         <button
           id="adminSkipBtn"
           onclick="openSkipLevelModal()"
@@ -628,7 +704,7 @@
       </div>
       <h2 class="text-xl font-extrabold text-slate-900">வாழ்த்துகள்! (Congratulations!)</h2>
       <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        நீங்கள் Level1-M05-4.1, Level2-M05-4.2, Level3-M05-4.3 மற்றும் Level4-M05-4.4 அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+        நீங்கள் Level1-M05-4.1 முதல் Level5-M05-4.5 வரை அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
@@ -638,6 +714,7 @@
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level2-M05-4.2:</span> <span class="font-bold text-purple-700" id="sumL2">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level3-M05-4.3:</span> <span class="font-bold text-emerald-700" id="sumL3">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level4-M05-4.4:</span> <span class="font-bold text-pink-700" id="sumL4">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level5-M05-4.5:</span> <span class="font-bold text-sky-700" id="sumL5">--</span></div>
         <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saving to Google Sheet...</span></div>
       </div>
@@ -703,10 +780,10 @@
 
       err.classList.add('hidden');
       input.value = '';
-      if (currentLevel < 4) {
+      if (currentLevel < 5) {
         sub.textContent = `Enter password to move from Level ${currentLevel} to Level ${currentLevel + 1}.`;
       } else {
-        sub.textContent = 'You are on the final level (Level4-M05-4.4). Enter password to open summary.';
+        sub.textContent = 'You are on the final level (Level5-M05-4.5). Enter password to open summary.';
       }
       modal.classList.remove('hidden');
       setTimeout(() => input.focus(), 50);
@@ -730,7 +807,7 @@
       closeSkipLevelModal();
       levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
 
-      if (currentLevel < 4) {
+      if (currentLevel < 5) {
         setupLevel(currentLevel + 1);
       } else {
         levelCompleted = true;
@@ -1002,8 +1079,103 @@
       `;
     }
 
+    // Level5-M05-4.5 Match Data (Vegetables in k.g. -> Gram label -> Iron weights)
+    const LEVEL5_MATCH_ITEMS = [
+      {
+        id: 'yam',
+        name: 'Elephant Yam',
+        whole: '1',
+        num: '',
+        den: '',
+        grams: 1000,
+        weights: ['1 k.g.']
+      },
+      {
+        id: 'chayote',
+        name: 'Chayote (Chow Chow)',
+        whole: '',
+        num: '1',
+        den: '4',
+        grams: 250,
+        weights: ['200 g.', '50 g.']
+      },
+      {
+        id: 'cabbage',
+        name: 'Cabbage',
+        whole: '',
+        num: '1',
+        den: '2',
+        grams: 500,
+        weights: ['500 g.']
+      },
+      {
+        id: 'cauliflower',
+        name: 'Cauliflower',
+        whole: '',
+        num: '3',
+        den: '4',
+        grams: 750,
+        weights: ['500 g.', '200 g.', '50 g.']
+      }
+    ];
+
+    function renderVegetableSVG(vegId) {
+      if (vegId === 'yam') {
+        return `
+          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Elephant Yam">
+            <ellipse cx="48" cy="36" rx="34" ry="24" fill="#854d0e" stroke="#422006" stroke-width="2.5" />
+            <ellipse cx="48" cy="31" rx="22" ry="12" fill="#a16207" />
+            <ellipse cx="48" cy="31" rx="11" ry="6" fill="#5c2d0c" />
+            <circle cx="28" cy="42" r="2.2" fill="#422006" />
+            <circle cx="67" cy="40" r="2.2" fill="#422006" />
+            <circle cx="48" cy="49" r="2" fill="#422006" />
+          </svg>
+        `;
+      }
+      if (vegId === 'chayote') {
+        return `
+          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Chayote">
+            <path d="M 18 35 C 18 19, 44 15, 68 21 C 80 24, 83 31, 82 36 C 81 43, 74 49, 60 51 C 38 54, 18 49, 18 35 Z" fill="#bef264" stroke="#4d7c0f" stroke-width="2.5" />
+            <path d="M 24 31 C 40 27, 58 28, 76 32" stroke="#84cc16" stroke-width="2" stroke-linecap="round" />
+            <path d="M 24 40 C 42 43, 58 42, 74 39" stroke="#84cc16" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        `;
+      }
+      if (vegId === 'cabbage') {
+        return `
+          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Cabbage">
+            <circle cx="48" cy="35" r="25" fill="#86efac" stroke="#15803d" stroke-width="2.5" />
+            <path d="M 32 22 C 42 15, 58 18, 64 30 C 56 38, 39 39, 31 31" stroke="#22c55e" stroke-width="2.2" fill="#bbf7d0" />
+            <path d="M 25 38 C 32 49, 55 54, 69 42" stroke="#16a34a" stroke-width="2.2" fill="none" />
+          </svg>
+        `;
+      }
+      return `
+        <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Cauliflower">
+          <path d="M 22 42 C 18 52, 34 60, 48 58 C 62 60, 78 52, 74 42" fill="#22c55e" stroke="#15803d" stroke-width="2.3" />
+          <circle cx="34" cy="33" r="13" fill="#fefce8" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="62" cy="33" r="13" fill="#fefce8" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="48" cy="24" r="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="48" cy="37" r="13" fill="#fef9c3" stroke="#cbd5e1" stroke-width="1.8" />
+        </svg>
+      `;
+    }
+
+    function renderHexWeightSVG(label) {
+      const isLarge = label.includes('1 k.g.') || label.includes('500');
+      const isMed = label.includes('200');
+      const sizeClass = isLarge ? 'w-14 h-12' : isMed ? 'w-12 h-10' : 'w-10 h-8';
+      return `
+        <svg class="${sizeClass} mx-auto block" viewBox="0 0 80 68" fill="none" aria-label="${label}">
+          <polygon points="22,6 58,6 75,34 58,62 22,62 5,34" fill="#334155" stroke="#0f172a" stroke-width="3" />
+          <polygon points="25,13 55,13 68,34 55,55 25,55 12,34" fill="#475569" stroke="#94a3b8" stroke-width="1.5" />
+          <text x="40" y="38" text-anchor="middle" fill="#f8fafc" font-family="Inter, sans-serif" font-weight="800" font-size="13">${label}</text>
+        </svg>
+      `;
+    }
+
     // Game & LMS Tracking State
-    let currentLevel = 1; // 1 = Level1-M05-4.1, 2 = Level2-M05-4.2, 3 = Level3-M05-4.3, 4 = Level4-M05-4.4
+    let currentLevel = 1; // 1 = 4.1, 2 = 4.2, 3 = 4.3, 4 = 4.4, 5 = 4.5
     let currentRows = [];
     let currentL4Story = LEVEL4_STORY_THEMES[0];
     let optionTiles = [];
@@ -1023,22 +1195,33 @@
       { whole: '', num: '', den: '', unit: '' },
       { whole: '', num: '', den: '', unit: '' }
     ];
+    // Level 4: 2nd column (right to vehicles) has ONLY the units dropdown; 3rd column has the blanks
     let l4TypedAnswers = [
-      { km: '', kmUnit: '', m: '', mUnit: '' },
-      { km: '', kmUnit: '', m: '', mUnit: '' },
-      { km: '', kmUnit: '', m: '', mUnit: '' }
+      { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+      { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+      { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' }
     ];
+
+    // Level 5 (4.5 Match) state: 3 columns (left vegetables -> middle grams -> right iron weights)
+    let l5LeftItems = [];
+    let l5MidItems = [];
+    let l5RightItems = [];
+    let l5LeftToMid = {};   // leftId -> midId
+    let l5MidToRight = {};  // midId -> rightId
+    let l5SelectedNode = null; // { col: 'left'|'mid'|'right', id: string }
+
     let selectedOptionId = null;
     let draggedOptionId = null;
     let levelCompleted = false;
     let isSubmittedToSheet = false;
 
-    // Score & Time tracking across 4 levels (4 + 4 + 6 + 3 = 17 total questions)
+    // Score & Time tracking across 5 levels (4 + 4 + 6 + 3 + 4 = 21 total questions)
     let levelStats = {
       1: { correct: 0, total: 4, seconds: 0 },
       2: { correct: 0, total: 4, seconds: 0 },
       3: { correct: 0, total: 6, seconds: 0 },
-      4: { correct: 0, total: 3, seconds: 0 }
+      4: { correct: 0, total: 3, seconds: 0 },
+      5: { correct: 0, total: 4, seconds: 0 }
     };
     let levelStartTime = Date.now();
     let timerInterval = null;
@@ -1088,7 +1271,8 @@
             levelStats[1].seconds +
             (currentLevel >= 2 ? levelStats[2].seconds : 0) +
             (currentLevel >= 3 ? levelStats[3].seconds : 0) +
-            (currentLevel >= 4 ? levelStats[4].seconds : 0);
+            (currentLevel >= 4 ? levelStats[4].seconds : 0) +
+            (currentLevel >= 5 ? levelStats[5].seconds : 0);
           document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(totalElapsed);
         }
       }, 1000);
@@ -1098,7 +1282,8 @@
       if (lvl === 1) return 'Level1-M05-4.1';
       if (lvl === 2) return 'Level2-M05-4.2';
       if (lvl === 3) return 'Level3-M05-4.3';
-      return 'Level4-M05-4.4';
+      if (lvl === 4) return 'Level4-M05-4.4';
+      return 'Level5-M05-4.5';
     }
 
     function updateHeaderDisplay() {
@@ -1107,13 +1292,14 @@
         lmsContext.studentId !== 'GUEST'
           ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
           : `${levelTag} • அளவைகள் (Practice Mode)`;
-      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/4)`;
+      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/5)`;
       const totCorrect =
         levelStats[1].correct +
         levelStats[2].correct +
         levelStats[3].correct +
-        levelStats[4].correct;
-      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/17`;
+        levelStats[4].correct +
+        levelStats[5].correct;
+      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/21`;
     }
 
     function shuffleArray(array) {
@@ -1168,10 +1354,13 @@
         { whole: '', num: '', den: '', unit: '' }
       ];
       l4TypedAnswers = [
-        { km: '', kmUnit: '', m: '', mUnit: '' },
-        { km: '', kmUnit: '', m: '', mUnit: '' },
-        { km: '', kmUnit: '', m: '', mUnit: '' }
+        { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+        { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+        { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' }
       ];
+      l5LeftToMid = {};
+      l5MidToRight = {};
+      l5SelectedNode = null;
       selectedOptionId = null;
 
       document.getElementById('nextLevelBtn').classList.add('hidden');
@@ -1246,8 +1435,8 @@
           ...item,
           borderColor: L3_BUCKET_COLORS[idx % L3_BUCKET_COLORS.length]
         }));
-      } else {
-        // Level4-M05-4.4: Word problem & Vehicle Distance Table (fill in the blanks for random questions)
+      } else if (currentLevel === 4) {
+        // Level4-M05-4.4: Word problem & Vehicle Distance Table
         headerEl.className = 'textbook-header-l4 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l4 px-3 py-1 text-base sm:text-xl tracking-tight';
         badgeEl.textContent = '4.4';
@@ -1255,7 +1444,7 @@
         hintEl.textContent = '1 k.m. = 1000 m. • ¼ k.m. = 250 m.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-pink-950 bg-white/85 px-3 py-1 rounded-full border border-pink-300';
         subHeaderEl.textContent =
-          'Level4-M05-4.4: Read the story and fill in the blanks with numbers and units (k.m. and m.) for each vehicle.';
+          'Level4-M05-4.4: Select the unit in the 2nd column and fill in the distance in k.m. and m. in the 3rd column.';
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12 flex flex-col gap-4';
@@ -1265,6 +1454,31 @@
         const baseBicycle = LEVEL4_VEHICLE_POOL[0];
         const otherVehicles = shuffleArray(LEVEL4_VEHICLE_POOL.slice(1)).slice(0, 2);
         currentRows = [baseBicycle, ...otherVehicles];
+      } else {
+        // Level5-M05-4.5: Match vegetables (k.g.) -> gram labels -> iron weights
+        headerEl.className = 'textbook-header-l5 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
+        badgeEl.className = 'badge-l5 px-3 py-1 text-base sm:text-xl tracking-tight';
+        badgeEl.textContent = '4.5';
+        titleEl.textContent = 'Match.';
+        hintEl.textContent = '1 k.g. = 1000 gram';
+        hintEl.className = 'text-xs sm:text-sm font-semibold text-sky-950 bg-white/85 px-3 py-1 rounded-full border border-sky-300';
+        subHeaderEl.textContent =
+          'Level5-M05-4.5: Tap a vegetable on the left, its matching gram box in the middle, and its matching weight on the right.';
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12';
+        optionTiles = [];
+
+        l5LeftItems = shuffleArray(LEVEL5_MATCH_ITEMS);
+        l5MidItems = shuffleArray(LEVEL5_MATCH_ITEMS);
+        if (l5MidItems.every((item, idx) => item.id === l5LeftItems[idx].id)) {
+          l5MidItems.reverse();
+        }
+        l5RightItems = shuffleArray(LEVEL5_MATCH_ITEMS);
+        if (l5RightItems.every((item, idx) => item.id === l5MidItems[idx].id)) {
+          l5RightItems.reverse();
+        }
+        currentRows = l5LeftItems;
       }
 
       updateHeaderDisplay();
@@ -1300,12 +1514,16 @@
           { whole: '', num: '', den: '', unit: '' },
           { whole: '', num: '', den: '', unit: '' }
         ];
-      } else {
+      } else if (currentLevel === 4) {
         l4TypedAnswers = [
-          { km: '', kmUnit: '', m: '', mUnit: '' },
-          { km: '', kmUnit: '', m: '', mUnit: '' },
-          { km: '', kmUnit: '', m: '', mUnit: '' }
+          { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+          { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+          { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' }
         ];
+      } else {
+        l5LeftToMid = {};
+        l5MidToRight = {};
+        l5SelectedNode = null;
       }
       hideFeedback();
       renderBoard();
@@ -1345,17 +1563,124 @@
     }
 
     function updateL4Answer(rowIndex, field, value) {
-      if (field === 'kmUnit' || field === 'mUnit') {
+      if (field === 'col2Unit' || field === 'kmUnit' || field === 'mUnit') {
         l4TypedAnswers[rowIndex][field] = value;
       } else {
         const maxLen = field === 'km' ? 2 : 3;
         const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
         l4TypedAnswers[rowIndex][field] = cleaned;
       }
+      const col2El = document.getElementById(`l4-col2-${rowIndex}`);
+      if (col2El) col2El.classList.remove('correct', 'incorrect');
       const cellEl = document.getElementById(`l4-cell-${rowIndex}`);
-      if (cellEl) {
-        cellEl.classList.remove('correct', 'incorrect');
+      if (cellEl) cellEl.classList.remove('correct', 'incorrect');
+    }
+
+    function handleL5NodeClick(col, id) {
+      if (levelCompleted || currentLevel !== 5) return;
+      hideFeedback();
+
+      if (!l5SelectedNode) {
+        l5SelectedNode = { col, id };
+        playSound('place');
+        renderBoard();
+        return;
       }
+
+      if (l5SelectedNode.col === col && l5SelectedNode.id === id) {
+        l5SelectedNode = null;
+        playSound('remove');
+        renderBoard();
+        return;
+      }
+
+      if (l5SelectedNode.col === col) {
+        l5SelectedNode = { col, id };
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      // Connect Left <-> Mid
+      if (
+        (l5SelectedNode.col === 'left' && col === 'mid') ||
+        (l5SelectedNode.col === 'mid' && col === 'left')
+      ) {
+        const leftId = l5SelectedNode.col === 'left' ? l5SelectedNode.id : id;
+        const midId = l5SelectedNode.col === 'mid' ? l5SelectedNode.id : id;
+        Object.keys(l5LeftToMid).forEach(k => {
+          if (l5LeftToMid[k] === midId) delete l5LeftToMid[k];
+        });
+        l5LeftToMid[leftId] = midId;
+        l5SelectedNode = null;
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      // Connect Mid <-> Right
+      if (
+        (l5SelectedNode.col === 'mid' && col === 'right') ||
+        (l5SelectedNode.col === 'right' && col === 'mid')
+      ) {
+        const midId = l5SelectedNode.col === 'mid' ? l5SelectedNode.id : id;
+        const rightId = l5SelectedNode.col === 'right' ? l5SelectedNode.id : id;
+        Object.keys(l5MidToRight).forEach(k => {
+          if (l5MidToRight[k] === rightId) delete l5MidToRight[k];
+        });
+        l5MidToRight[midId] = rightId;
+        l5SelectedNode = null;
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      l5SelectedNode = { col, id };
+      playSound('place');
+      showFeedback('First match the vegetable to its gram value in the middle column, then to the weight on the right.', 'info');
+      renderBoard();
+    }
+
+    function drawL5Lines() {
+      const board = document.getElementById('l5MatchBoard');
+      const svg = document.getElementById('l5MatchSvg');
+      if (!board || !svg) return;
+
+      const boardRect = board.getBoundingClientRect();
+      svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
+      svg.innerHTML = '';
+
+      function connectNodes(elA, elB, color) {
+        if (!elA || !elB) return;
+        const rA = elA.getBoundingClientRect();
+        const rB = elB.getBoundingClientRect();
+        const x1 = rA.right - boardRect.left;
+        const y1 = rA.top + rA.height / 2 - boardRect.top;
+        const x2 = rB.left - boardRect.left;
+        const y2 = rB.top + rB.height / 2 - boardRect.top;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', '3');
+        line.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(line);
+      }
+
+      Object.entries(l5LeftToMid).forEach(([leftId, midId]) => {
+        const elL = document.getElementById(`l5-left-${leftId}`);
+        const elM = document.getElementById(`l5-mid-${midId}`);
+        connectNodes(elL, elM, '#ec4899');
+      });
+
+      Object.entries(l5MidToRight).forEach(([midId, rightId]) => {
+        const elM = document.getElementById(`l5-mid-${midId}`);
+        const elR = document.getElementById(`l5-right-${rightId}`);
+        connectNodes(elM, elR, '#0284c7');
+      });
     }
 
     function renderBoard() {
@@ -1635,8 +1960,8 @@
 
           rowsContainer.appendChild(cardEl);
         });
-      } else {
-        // Render Level4-M05-4.4: Story + Vehicle Distance Table with dotted unit dropdowns
+      } else if (currentLevel === 4) {
+        // Render Level4-M05-4.4: 2nd column (right to vehicles) left with ONLY units dropdown; 3rd column unchanged
         const disabledAttr = levelCompleted ? 'disabled' : '';
         const v1 = currentRows[0];
         const v2 = currentRows[1];
@@ -1666,6 +1991,16 @@
 
         let tableRowsHTML = '';
         currentRows.forEach((vItem, idx) => {
+          const ans = l4TypedAnswers[idx];
+          const col2HTML = `
+            <td id="l4-col2-${idx}" class="w-32 sm:w-40 l4-cell-status">
+              <div class="inline-flex items-center justify-center gap-1.5">
+                ${renderFractionHTML(vItem, '', true)}
+                ${renderUnitDropdownHTML(ans.col2Unit, `updateL4Answer(${idx}, 'col2Unit', this.value)`, disabledAttr, `Unit for ${vItem.label}`, 'px-1.5 py-0.5 text-xs sm:text-sm')}
+              </div>
+            </td>
+          `;
+
           if (vItem.givenInTable) {
             tableRowsHTML += `
               <tr class="bg-slate-50/70">
@@ -1673,25 +2008,20 @@
                   ${renderVehicleIconSVG(vItem.id)}
                   <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
                 </td>
-                <td class="w-32 sm:w-40">
-                  ${renderFractionHTML(vItem, 'k.m.', true)}
-                </td>
+                ${col2HTML}
                 <td class="font-extrabold text-slate-800 text-base sm:text-lg">
                   ${vItem.m} m.
                 </td>
               </tr>
             `;
           } else {
-            const ans = l4TypedAnswers[idx];
             tableRowsHTML += `
               <tr>
                 <td class="w-28 sm:w-32">
                   ${renderVehicleIconSVG(vItem.id)}
                   <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
                 </td>
-                <td class="w-32 sm:w-40">
-                  ${renderFractionHTML(vItem, 'k.m.', true)}
-                </td>
+                ${col2HTML}
                 <td id="l4-cell-${idx}" class="l4-cell-status">
                   <div class="inline-flex flex-wrap items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl border-2 border-sky-400 bg-white">
                     <input
@@ -1739,6 +2069,76 @@
           </table>
         `;
         rowsContainer.appendChild(tableWrapEl);
+      } else {
+        // Render Level5-M05-4.5: Match (Vegetables in k.g. -> Gram label -> Iron weights)
+        const boardDiv = document.createElement('div');
+        boardDiv.id = 'l5MatchBoard';
+        boardDiv.className = 'relative bg-white border-2 border-sky-200 rounded-2xl p-3 sm:p-5';
+
+        const leftColHTML = l5LeftItems.map(item => {
+          const isSel = l5SelectedNode && l5SelectedNode.col === 'left' && l5SelectedNode.id === item.id;
+          const isMatched = Boolean(l5LeftToMid[item.id]);
+          return `
+            <div
+              id="l5-left-${item.id}"
+              onclick="handleL5NodeClick('left', '${item.id}')"
+              class="l5-node p-2.5 flex flex-col items-center justify-center gap-1.5 ${isSel ? 'selected' : ''} ${isMatched ? 'matched-left' : ''}"
+            >
+              ${renderVegetableSVG(item.id)}
+              <div class="l5-veg-pill px-3 py-1">
+                ${renderFractionHTML(item, 'k.g.', true)}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const midColHTML = l5MidItems.map(item => {
+          const isSel = l5SelectedNode && l5SelectedNode.col === 'mid' && l5SelectedNode.id === item.id;
+          const isMatchedLeft = Object.values(l5LeftToMid).includes(item.id);
+          const isMatchedRight = Boolean(l5MidToRight[item.id]);
+          return `
+            <div
+              id="l5-mid-${item.id}"
+              onclick="handleL5NodeClick('mid', '${item.id}')"
+              class="l5-node l5-gram-pill px-3 py-3 text-center font-extrabold text-slate-800 text-sm sm:text-base ${isSel ? 'selected' : ''} ${(isMatchedLeft || isMatchedRight) ? 'matched-mid' : ''}"
+            >
+              ${item.grams} gram
+            </div>
+          `;
+        }).join('');
+
+        const rightColHTML = l5RightItems.map(item => {
+          const isSel = l5SelectedNode && l5SelectedNode.col === 'right' && l5SelectedNode.id === item.id;
+          const isMatched = Object.values(l5MidToRight).includes(item.id);
+          const weightsHTML = item.weights.map(w => renderHexWeightSVG(w)).join('');
+          return `
+            <div
+              id="l5-right-${item.id}"
+              onclick="handleL5NodeClick('right', '${item.id}')"
+              class="l5-node l5-weight-box p-2 flex flex-col items-center justify-center gap-0.5 min-h-[96px] ${isSel ? 'selected' : ''} ${isMatched ? 'matched-right' : ''}"
+            >
+              ${weightsHTML}
+            </div>
+          `;
+        }).join('');
+
+        boardDiv.innerHTML = `
+          <svg id="l5MatchSvg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+          <div class="relative z-20 grid grid-cols-3 gap-6 sm:gap-12 items-center">
+            <div class="flex flex-col justify-between gap-3 sm:gap-4">
+              ${leftColHTML}
+            </div>
+            <div class="flex flex-col justify-around gap-6 sm:gap-10">
+              ${midColHTML}
+            </div>
+            <div class="flex flex-col justify-between gap-3 sm:gap-4">
+              ${rightColHTML}
+            </div>
+          </div>
+        `;
+
+        rowsContainer.appendChild(boardDiv);
+        requestAnimationFrame(() => drawL5Lines());
       }
     }
 
@@ -1907,40 +2307,86 @@
         });
 
         handleCheckOutcome(correctCount, 6);
-      } else {
-        // Level4-M05-4.4: Check numbers and units (k.m. and m.) for the 3 vehicles
+      } else if (currentLevel === 4) {
+        // Level4-M05-4.4: Check 2nd column unit dropdown for all 3 rows + 3rd column blanks for rows 2 & 3
+        const hasCol2Blank = l4TypedAnswers.some(ans => ans.col2Unit === '');
         const fillableIndices = [1, 2];
-        const hasBlank = fillableIndices.some(
+        const hasCol3Blank = fillableIndices.some(
           idx =>
             l4TypedAnswers[idx].km.trim() === '' ||
             l4TypedAnswers[idx].kmUnit === '' ||
             l4TypedAnswers[idx].m.trim() === '' ||
             l4TypedAnswers[idx].mUnit === ''
         );
-        if (hasBlank) {
+        if (hasCol2Blank || hasCol3Blank) {
           playSound('error');
-          showFeedback('Please fill in both numbers and select both units (k.m. and m.) for the remaining vehicles!', 'warning');
+          showFeedback('Please select the unit in the 2nd column and fill in all blanks in the 3rd column!', 'warning');
           return;
         }
 
-        let correctCount = 1; // Row 0 (250 m.) is given in the table
-        fillableIndices.forEach(idx => {
-          const cellEl = document.getElementById(`l4-cell-${idx}`);
-          cellEl.classList.remove('correct', 'incorrect');
+        let correctCount = 0;
+        currentRows.forEach((vItem, idx) => {
+          const col2El = document.getElementById(`l4-col2-${idx}`);
+          col2El.classList.remove('correct', 'incorrect');
+          const col2Ok = l4TypedAnswers[idx].col2Unit === 'km';
 
-          const enteredKm = parseInt(l4TypedAnswers[idx].km.trim(), 10);
-          const enteredM = parseInt(l4TypedAnswers[idx].m.trim(), 10);
-          const unitsOk = l4TypedAnswers[idx].kmUnit === 'km' && l4TypedAnswers[idx].mUnit === 'm';
-
-          if (enteredKm === currentRows[idx].km && enteredM === currentRows[idx].m && unitsOk) {
-            correctCount++;
-            cellEl.classList.add('correct');
+          if (vItem.givenInTable) {
+            if (col2Ok) {
+              correctCount++;
+              col2El.classList.add('correct');
+            } else {
+              col2El.classList.add('incorrect');
+            }
           } else {
-            cellEl.classList.add('incorrect');
+            const cellEl = document.getElementById(`l4-cell-${idx}`);
+            cellEl.classList.remove('correct', 'incorrect');
+
+            const enteredKm = parseInt(l4TypedAnswers[idx].km.trim(), 10);
+            const enteredM = parseInt(l4TypedAnswers[idx].m.trim(), 10);
+            const col3UnitsOk = l4TypedAnswers[idx].kmUnit === 'km' && l4TypedAnswers[idx].mUnit === 'm';
+            const col3Ok = enteredKm === vItem.km && enteredM === vItem.m && col3UnitsOk;
+
+            if (col2Ok) col2El.classList.add('correct');
+            else col2El.classList.add('incorrect');
+
+            if (col3Ok) cellEl.classList.add('correct');
+            else cellEl.classList.add('incorrect');
+
+            if (col2Ok && col3Ok) correctCount++;
           }
         });
 
         handleCheckOutcome(correctCount, 3);
+      } else {
+        // Level5-M05-4.5: Check all 4 chains (Left vegetable -> Middle gram -> Right iron weight)
+        if (Object.keys(l5LeftToMid).length < 4 || Object.keys(l5MidToRight).length < 4) {
+          playSound('error');
+          showFeedback('Please match all 4 items across all three columns before checking!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        LEVEL5_MATCH_ITEMS.forEach(item => {
+          const leftEl = document.getElementById(`l5-left-${item.id}`);
+          const midEl = document.getElementById(`l5-mid-${item.id}`);
+          const rightEl = document.getElementById(`l5-right-${item.id}`);
+          [leftEl, midEl, rightEl].forEach(el => el && el.classList.remove('correct', 'incorrect'));
+
+          const matchedMid = l5LeftToMid[item.id];
+          const matchedRight = matchedMid ? l5MidToRight[matchedMid] : null;
+          if (matchedMid === item.id && matchedRight === item.id) {
+            correctCount++;
+            if (leftEl) leftEl.classList.add('correct');
+            if (midEl) midEl.classList.add('correct');
+            if (rightEl) rightEl.classList.add('correct');
+          } else {
+            if (leftEl) leftEl.classList.add('incorrect');
+            if (midEl) midEl.classList.add('incorrect');
+            if (rightEl) rightEl.classList.add('incorrect');
+          }
+        });
+
+        handleCheckOutcome(correctCount, 4);
       }
     }
 
@@ -1951,7 +2397,9 @@
         levelStats[currentLevel].correct = targetTotal;
         levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
         updateHeaderDisplay();
-        renderBoard(); // lock inputs and dropdowns on completion
+        if (currentLevel !== 5) {
+          renderBoard(); // lock inputs and dropdowns on completion
+        }
 
         document.getElementById('checkBtn').classList.add('hidden');
         const nextBtn = document.getElementById('nextLevelBtn');
@@ -1969,10 +2417,14 @@
           nextBtnText.textContent = 'Proceed to Level4-M05-4.4 →';
           nextBtn.classList.remove('hidden');
           showFeedback('சூப்பர்! Level3-M05-4.3 முடிந்தது (6/6). Level4-M05-4.4-க்குச் செல்லவும்!', 'success');
+        } else if (currentLevel === 4) {
+          nextBtnText.textContent = 'Proceed to Level5-M05-4.5 →';
+          nextBtn.classList.remove('hidden');
+          showFeedback('நன்று! Level4-M05-4.4 முடிந்தது (3/3). Level5-M05-4.5-க்குச் செல்லவும்!', 'success');
         } else {
           nextBtnText.textContent = 'Submit Score ✓';
           nextBtn.classList.remove('hidden');
-          showFeedback('அருமை! Level1-M05-4.1, Level2-M05-4.2, Level3-M05-4.3 & Level4-M05-4.4 அனைத்தும் முடிந்தன (17/17)!', 'success');
+          showFeedback('அருமை! Level1-M05-4.1 முதல் Level5-M05-4.5 வரை அனைத்தும் முடிந்தன (21/21)!', 'success');
           submitGameDataToLMS();
         }
       } else {
@@ -1993,6 +2445,8 @@
         setupLevel(3);
       } else if (currentLevel === 3) {
         setupLevel(4);
+      } else if (currentLevel === 4) {
+        setupLevel(5);
       } else {
         submitGameDataToLMS();
       }
@@ -2007,13 +2461,16 @@
       const l3TimeStr = formatSecondsHHMMSS(levelStats[3].seconds);
       const l4ScoreStr = `${levelStats[4].correct}/3-${Math.round((levelStats[4].correct / 3) * 100)}%`;
       const l4TimeStr = formatSecondsHHMMSS(levelStats[4].seconds);
+      const l5ScoreStr = `${levelStats[5].correct}/4-${Math.round((levelStats[5].correct / 4) * 100)}%`;
+      const l5TimeStr = formatSecondsHHMMSS(levelStats[5].seconds);
 
       const totCorrect =
         levelStats[1].correct +
         levelStats[2].correct +
         levelStats[3].correct +
-        levelStats[4].correct;
-      const totScoreStr = `${totCorrect}/17-${Math.round((totCorrect / 17) * 100)}%`;
+        levelStats[4].correct +
+        levelStats[5].correct;
+      const totScoreStr = `${totCorrect}/21-${Math.round((totCorrect / 21) * 100)}%`;
 
       document.getElementById('sumStudentId').textContent = lmsContext.studentId;
       document.getElementById('sumStudentName').textContent = lmsContext.name;
@@ -2021,6 +2478,7 @@
       document.getElementById('sumL2').textContent = `${l2ScoreStr} (${l2TimeStr})`;
       document.getElementById('sumL3').textContent = `${l3ScoreStr} (${l3TimeStr})`;
       document.getElementById('sumL4').textContent = `${l4ScoreStr} (${l4TimeStr})`;
+      document.getElementById('sumL5').textContent = `${l5ScoreStr} (${l5TimeStr})`;
       document.getElementById('sumTotal').textContent = totScoreStr;
       document.getElementById('completionModal').classList.remove('hidden');
 
@@ -2047,6 +2505,8 @@
         level3Time: l3TimeStr,
         level4Score: l4ScoreStr,
         level4Time: l4TimeStr,
+        level5Score: l5ScoreStr,
+        level5Time: l5TimeStr,
         score: totScoreStr,
         trialId: lmsContext.trialId
       };
@@ -2072,7 +2532,8 @@
         1: { correct: 0, total: 4, seconds: 0 },
         2: { correct: 0, total: 4, seconds: 0 },
         3: { correct: 0, total: 6, seconds: 0 },
-        4: { correct: 0, total: 3, seconds: 0 }
+        4: { correct: 0, total: 3, seconds: 0 },
+        5: { correct: 0, total: 4, seconds: 0 }
       };
       document.getElementById('completionModal').classList.add('hidden');
       setupLevel(1);
@@ -2100,6 +2561,10 @@
       const banner = document.getElementById('feedbackBanner');
       banner.classList.add('hidden');
     }
+
+    window.addEventListener('resize', () => {
+      if (currentLevel === 5) drawL5Lines();
+    });
 
     // Start Level1-M05-4.1 on page load
     window.addEventListener('DOMContentLoaded', () => {

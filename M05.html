@@ -270,87 +270,6 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 4 Soft pink/rose textbook header banner (matching 4.4 image) */
-    .textbook-header-l4 {
-      background: linear-gradient(180deg, #fbcfe8 0%, #fce7f3 65%, #fdf2f8 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(190, 24, 93, 0.14);
-    }
-
-    .badge-l4 {
-      background: #ffffff;
-      border: 2px solid #db2777;
-      border-radius: 10px 10px 10px 2px;
-      color: #be185d;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(219, 39, 119, 0.16);
-    }
-
-    .l4-story-box {
-      background: linear-gradient(180deg, #fffdfd 0%, #fdf2f8 100%);
-      border: 2px solid #f472b6;
-      border-radius: 14px;
-      box-shadow: 0 3px 8px rgba(219, 39, 119, 0.08);
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      font-weight: 600;
-      color: #1e293b;
-      line-height: 1.75;
-    }
-
-    .l4-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
-      border: 2px solid #94a3b8;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
-    }
-
-    .l4-table th {
-      background: #f8fafc;
-      color: #0f172a;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      border-bottom: 2px solid #94a3b8;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 10px 12px;
-      text-align: center;
-    }
-
-    .l4-table th:last-child {
-      border-right: none;
-    }
-
-    .l4-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 10px 12px;
-      text-align: center;
-      vertical-align: middle;
-    }
-
-    .l4-table td:last-child {
-      border-right: none;
-    }
-
-    .l4-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .l4-cell-status.correct {
-      background-color: #f0fdf4 !important;
-      box-shadow: inset 0 0 0 2px #16a34a;
-    }
-
-    .l4-cell-status.incorrect {
-      background-color: #fef2f2 !important;
-      box-shadow: inset 0 0 0 2px #dc2626;
-      animation: shake 0.38s ease-in-out;
-    }
-
     /* Numeric inputs for whole, numerator, denominator */
     .frac-input {
       font-family: 'Inter', sans-serif;
@@ -492,7 +411,7 @@
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/17</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/12</span>
       </div>
     </div>
 
@@ -598,7 +517,7 @@
       </div>
       <h2 class="text-xl font-extrabold text-slate-900">வாழ்த்துகள்! (Congratulations!)</h2>
       <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        நீங்கள் Level1-M05-4.1, Level2-M05-4.2, Level3-M05-4.3 மற்றும் Level4-M05-4.4 அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+        நீங்கள் Level1-M05-4.1, Level2-M05-4.2 மற்றும் Level3-M05-4.3 அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
@@ -607,7 +526,6 @@
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level1-M05-4.1:</span> <span class="font-bold text-blue-700" id="sumL1">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level2-M05-4.2:</span> <span class="font-bold text-purple-700" id="sumL2">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level3-M05-4.3:</span> <span class="font-bold text-emerald-700" id="sumL3">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level4-M05-4.4:</span> <span class="font-bold text-pink-700" id="sumL4">--</span></div>
         <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saving to Google Sheet...</span></div>
       </div>
@@ -706,164 +624,9 @@
       '#60a5fa'  // Sky Blue (bottom-right)
     ];
 
-    // Level4-M05-4.4 Story & Vehicle Pools (matching workbook 4.4 layout)
-    const LEVEL4_STORY_THEMES = [
-      {
-        traveller: 'Ramu',
-        place1: "uncle's house",
-        place2: "aunt's house",
-        destination: 'a waterfall'
-      },
-      {
-        traveller: 'Anbu',
-        place1: "grandpa's farm",
-        place2: "cousin's house",
-        destination: 'the river bridge'
-      },
-      {
-        traveller: 'Mala',
-        place1: "teacher's home",
-        place2: 'the library',
-        destination: 'the hill park'
-      }
-    ];
-
-    const LEVEL4_VEHICLE_POOL = [
-      {
-        id: 'bicycle',
-        label: 'Bicycle',
-        whole: '',
-        num: '1',
-        den: '4',
-        km: 0,
-        m: 250,
-        givenInTable: true
-      },
-      {
-        id: 'car',
-        label: 'Car',
-        whole: '3',
-        num: '',
-        den: '',
-        km: 3,
-        m: 0,
-        givenInTable: false
-      },
-      {
-        id: 'motorcycle',
-        label: 'Motorcycle',
-        whole: '2',
-        num: '1',
-        den: '2',
-        km: 2,
-        m: 500,
-        givenInTable: false
-      },
-      {
-        id: 'scooter',
-        label: 'Scooter',
-        whole: '1',
-        num: '3',
-        den: '4',
-        km: 1,
-        m: 750,
-        givenInTable: false
-      },
-      {
-        id: 'van',
-        label: 'Van',
-        whole: '4',
-        num: '1',
-        den: '4',
-        km: 4,
-        m: 250,
-        givenInTable: false
-      },
-      {
-        id: 'bus',
-        label: 'Bus',
-        whole: '6',
-        num: '3',
-        den: '4',
-        km: 6,
-        m: 750,
-        givenInTable: false
-      }
-    ];
-
-    function renderVehicleIconSVG(vehicleId) {
-      if (vehicleId === 'bicycle') {
-        return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bicycle">
-            <circle cx="20" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
-            <circle cx="76" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
-            <path d="M 20 42 L 42 42 L 58 21 L 34 21 Z" stroke="#dc2626" stroke-width="3.4" stroke-linejoin="round" />
-            <path d="M 42 42 L 32 16 M 58 21 L 76 42 M 58 21 L 54 11 H 63" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-            <rect x="25" y="14" width="13" height="4" rx="2" fill="#0f172a" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'car') {
-        return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Car">
-            <path d="M 16 38 L 22 21 Q 24 17 29 17 H 64 Q 69 17 72 22 L 82 36 Q 85 38 85 43 V 46 H 12 V 42 Q 12 39 16 38 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="2.5" stroke-linejoin="round" />
-            <path d="M 27 21 H 45 V 32 H 23 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
-            <path d="M 49 21 H 63 L 71 32 H 49 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
-            <circle cx="27" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
-            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'motorcycle') {
-        return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Motorcycle">
-            <circle cx="21" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
-            <circle cx="76" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
-            <path d="M 21 43 L 44 37 L 62 21 L 76 43" stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M 32 31 H 53 L 64 24 L 54 36 H 38 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="2.2" stroke-linejoin="round" />
-            <path d="M 58 21 L 53 12 H 60" stroke="#0f172a" stroke-width="2.8" stroke-linecap="round" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'scooter') {
-        return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Scooter">
-            <circle cx="22" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
-            <circle cx="74" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
-            <path d="M 22 44 H 56 L 64 20 L 55 13 H 64" stroke="#0284c7" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M 34 38 L 42 25 H 58 L 56 38 Z" fill="#38bdf8" stroke="#0369a1" stroke-width="2.2" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'van') {
-        return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Van">
-            <path d="M 14 16 H 66 Q 72 16 75 23 L 84 35 V 46 H 14 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
-            <rect x="20" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
-            <rect x="39" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
-            <path d="M 58 21 H 66 L 73 32 H 58 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.6" />
-            <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-          </svg>
-        `;
-      }
-      return `
-        <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bus">
-          <rect x="13" y="14" width="70" height="31" rx="6" fill="#16a34a" stroke="#14532d" stroke-width="2.5" />
-          <rect x="19" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
-          <rect x="35" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
-          <rect x="51" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
-          <rect x="67" y="20" width="11" height="11" rx="2" fill="#bae6fd" stroke="#1e293b" stroke-width="1.5" />
-          <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-          <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-        </svg>
-      `;
-    }
-
     // Game & LMS Tracking State
-    let currentLevel = 1; // 1 = Level1-M05-4.1, 2 = Level2-M05-4.2, 3 = Level3-M05-4.3, 4 = Level4-M05-4.4
+    let currentLevel = 1; // 1 = Level1-M05-4.1, 2 = Level2-M05-4.2, 3 = Level3-M05-4.3
     let currentRows = [];
-    let currentL4Story = LEVEL4_STORY_THEMES[0];
     let optionTiles = [];
     let placedAnswers = [null, null, null, null];
     let l2TypedAnswers = [
@@ -880,22 +643,16 @@
       { whole: '', num: '', den: '' },
       { whole: '', num: '', den: '' }
     ];
-    let l4TypedAnswers = [
-      { km: '', m: '' },
-      { km: '', m: '' },
-      { km: '', m: '' }
-    ];
     let selectedOptionId = null;
     let draggedOptionId = null;
     let levelCompleted = false;
     let isSubmittedToSheet = false;
 
-    // Score & Time tracking across 4 levels (4 + 4 + 6 + 3 = 17 total questions)
+    // Score & Time tracking across 3 levels (4 + 4 + 6 = 14 total questions)
     let levelStats = {
       1: { correct: 0, total: 4, seconds: 0 },
       2: { correct: 0, total: 4, seconds: 0 },
-      3: { correct: 0, total: 6, seconds: 0 },
-      4: { correct: 0, total: 3, seconds: 0 }
+      3: { correct: 0, total: 6, seconds: 0 }
     };
     let levelStartTime = Date.now();
     let timerInterval = null;
@@ -944,8 +701,7 @@
           const totalElapsed =
             levelStats[1].seconds +
             (currentLevel >= 2 ? levelStats[2].seconds : 0) +
-            (currentLevel >= 3 ? levelStats[3].seconds : 0) +
-            (currentLevel >= 4 ? levelStats[4].seconds : 0);
+            (currentLevel >= 3 ? levelStats[3].seconds : 0);
           document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(totalElapsed);
         }
       }, 1000);
@@ -954,8 +710,7 @@
     function getLevelTag(lvl) {
       if (lvl === 1) return 'Level1-M05-4.1';
       if (lvl === 2) return 'Level2-M05-4.2';
-      if (lvl === 3) return 'Level3-M05-4.3';
-      return 'Level4-M05-4.4';
+      return 'Level3-M05-4.3';
     }
 
     function updateHeaderDisplay() {
@@ -964,13 +719,9 @@
         lmsContext.studentId !== 'GUEST'
           ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
           : `${levelTag} • அளவைகள் (Practice Mode)`;
-      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/4)`;
-      const totCorrect =
-        levelStats[1].correct +
-        levelStats[2].correct +
-        levelStats[3].correct +
-        levelStats[4].correct;
-      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/17`;
+      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/3)`;
+      const totCorrect = levelStats[1].correct + levelStats[2].correct + levelStats[3].correct;
+      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/14`;
     }
 
     function shuffleArray(array) {
@@ -1020,11 +771,6 @@
         { whole: '', num: '', den: '' },
         { whole: '', num: '', den: '' },
         { whole: '', num: '', den: '' }
-      ];
-      l4TypedAnswers = [
-        { km: '', m: '' },
-        { km: '', m: '' },
-        { km: '', m: '' }
       ];
       selectedOptionId = null;
 
@@ -1080,7 +826,7 @@
           ...placeObj,
           ...randomDists[idx]
         }));
-      } else if (currentLevel === 3) {
+      } else {
         // Level3-M05-4.3: Write the fractional form (m & km)
         headerEl.className = 'textbook-header-l3 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l3 px-3 py-1 text-base sm:text-xl tracking-tight';
@@ -1100,25 +846,6 @@
           ...item,
           borderColor: L3_BUCKET_COLORS[idx % L3_BUCKET_COLORS.length]
         }));
-      } else {
-        // Level4-M05-4.4: Word problem & Vehicle Distance Table (km and m)
-        headerEl.className = 'textbook-header-l4 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l4 px-3 py-1 text-base sm:text-xl tracking-tight';
-        badgeEl.textContent = '4.4';
-        titleEl.textContent = 'Answer the questions.';
-        hintEl.textContent = '1 km = 1000 m • ¼ km = 250 m';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-pink-950 bg-white/85 px-3 py-1 rounded-full border border-pink-300';
-        subHeaderEl.textContent =
-          'Level4-M05-4.4: Read the travel story and write the distance in kilometres and metres for each vehicle.';
-
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-4';
-        optionTiles = [];
-
-        currentL4Story = LEVEL4_STORY_THEMES[Math.floor(Math.random() * LEVEL4_STORY_THEMES.length)];
-        const baseBicycle = LEVEL4_VEHICLE_POOL[0];
-        const otherVehicles = shuffleArray(LEVEL4_VEHICLE_POOL.slice(1)).slice(0, 2);
-        currentRows = [baseBicycle, ...otherVehicles];
       }
 
       updateHeaderDisplay();
@@ -1144,7 +871,7 @@
           { km: '', m: '' },
           { km: '', m: '' }
         ];
-      } else if (currentLevel === 3) {
+      } else {
         l3TypedAnswers = [
           { whole: '', num: '', den: '' },
           { whole: '', num: '', den: '' },
@@ -1152,12 +879,6 @@
           { whole: '', num: '', den: '' },
           { whole: '', num: '', den: '' },
           { whole: '', num: '', den: '' }
-        ];
-      } else {
-        l4TypedAnswers = [
-          { km: '', m: '' },
-          { km: '', m: '' },
-          { km: '', m: '' }
         ];
       }
       hideFeedback();
@@ -1180,16 +901,6 @@
       const bucketEl = document.getElementById(`l3-bucket-${rowIndex}`);
       if (bucketEl) {
         bucketEl.classList.remove('correct', 'incorrect');
-      }
-    }
-
-    function updateL4Answer(rowIndex, field, value) {
-      const maxLen = field === 'km' ? 2 : 3;
-      const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
-      l4TypedAnswers[rowIndex][field] = cleaned;
-      const cellEl = document.getElementById(`l4-cell-${rowIndex}`);
-      if (cellEl) {
-        cellEl.classList.remove('correct', 'incorrect');
       }
     }
 
@@ -1455,110 +1166,6 @@
 
           rowsContainer.appendChild(cardEl);
         });
-      } else {
-        // Render Level4-M05-4.4: Story + Vehicle Distance Table (km and m)
-        const disabledAttr = levelCompleted ? 'disabled' : '';
-        const v1 = currentRows[0];
-        const v2 = currentRows[1];
-        const v3 = currentRows[2];
-
-        const storyEl = document.createElement('div');
-        storyEl.className = 'l4-story-box p-3.5 sm:p-4 text-sm sm:text-base';
-        storyEl.innerHTML = `
-          <p>
-            ${currentL4Story.traveller} visited his ${currentL4Story.place1} on a holiday by his
-            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v1.id)}</span>,
-            which was at a distance of <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v1, 'km', true)}</span>
-            away from his house. From there he travelled
-            <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v3, 'km', true)}</span>
-            by his ${currentL4Story.place1}'s
-            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v3.id)}</span>
-            to reach his ${currentL4Story.place2}. Then they all got into a
-            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v2.id)}</span>
-            and travelled <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v2, 'km', true)}</span>
-            to reach ${currentL4Story.destination}. Write the distance travelled by ${currentL4Story.traveller} in each vehicle in kilometres and metres.
-          </p>
-        `;
-        rowsContainer.appendChild(storyEl);
-
-        const tableWrapEl = document.createElement('div');
-        tableWrapEl.className = 'overflow-x-auto';
-
-        let tableRowsHTML = '';
-        currentRows.forEach((vItem, idx) => {
-          if (vItem.givenInTable) {
-            tableRowsHTML += `
-              <tr class="bg-slate-50/70">
-                <td class="w-28 sm:w-32">
-                  ${renderVehicleIconSVG(vItem.id)}
-                  <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
-                </td>
-                <td class="w-36 sm:w-44">
-                  ${renderFractionHTML(vItem, 'km', true)}
-                </td>
-                <td class="font-extrabold text-slate-800 text-base sm:text-lg">
-                  ${vItem.m} m
-                </td>
-              </tr>
-            `;
-          } else {
-            const ans = l4TypedAnswers[idx];
-            tableRowsHTML += `
-              <tr>
-                <td class="w-28 sm:w-32">
-                  ${renderVehicleIconSVG(vItem.id)}
-                  <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
-                </td>
-                <td class="w-36 sm:w-44">
-                  ${renderFractionHTML(vItem, 'km', true)}
-                </td>
-                <td id="l4-cell-${idx}" class="l4-cell-status">
-                  <div class="inline-flex items-center justify-center gap-1.5 py-1 px-2 rounded-xl border-2 border-sky-400 bg-white">
-                    <input
-                      type="text"
-                      inputmode="numeric"
-                      maxlength="2"
-                      value="${ans.km}"
-                      ${disabledAttr}
-                      oninput="updateL4Answer(${idx}, 'km', this.value)"
-                      placeholder="?"
-                      aria-label="Kilometres for ${vItem.label}"
-                      class="km-m-input w-9 sm:w-10 h-8 text-sm sm:text-base"
-                    />
-                    <span class="font-extrabold text-pink-600 text-sm sm:text-base">km</span>
-                    <input
-                      type="text"
-                      inputmode="numeric"
-                      maxlength="3"
-                      value="${ans.m}"
-                      ${disabledAttr}
-                      oninput="updateL4Answer(${idx}, 'm', this.value)"
-                      placeholder="?"
-                      aria-label="Metres for ${vItem.label}"
-                      class="km-m-input w-12 sm:w-14 h-8 text-sm sm:text-base"
-                    />
-                    <span class="font-extrabold text-pink-600 text-sm sm:text-base">m</span>
-                  </div>
-                </td>
-              </tr>
-            `;
-          }
-        });
-
-        tableWrapEl.innerHTML = `
-          <table class="l4-table">
-            <thead>
-              <tr>
-                <th>Vehicle</th>
-                <th colspan="2">Distance travelled</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tableRowsHTML}
-            </tbody>
-          </table>
-        `;
-        rowsContainer.appendChild(tableWrapEl);
       }
     }
 
@@ -1690,7 +1297,7 @@
         });
 
         handleCheckOutcome(correctCount, 4);
-      } else if (currentLevel === 3) {
+      } else {
         // Level3-M05-4.3: Check whole, numerator, and denominator for all 6 items
         const hasBlank = l3TypedAnswers.some(
           ans => ans.whole.trim() === '' || ans.num.trim() === '' || ans.den.trim() === ''
@@ -1724,35 +1331,6 @@
         });
 
         handleCheckOutcome(correctCount, 6);
-      } else {
-        // Level4-M05-4.4: Check km and m for the 3 vehicles (1 given row + 2 fillable rows = 3 items)
-        const fillableIndices = [1, 2];
-        const hasBlank = fillableIndices.some(
-          idx => l4TypedAnswers[idx].km.trim() === '' || l4TypedAnswers[idx].m.trim() === ''
-        );
-        if (hasBlank) {
-          playSound('error');
-          showFeedback('Please fill in both km and m for both remaining vehicles!', 'warning');
-          return;
-        }
-
-        let correctCount = 1; // Row 0 (250 m) is pre-filled in the table
-        fillableIndices.forEach(idx => {
-          const cellEl = document.getElementById(`l4-cell-${idx}`);
-          cellEl.classList.remove('correct', 'incorrect');
-
-          const enteredKm = parseInt(l4TypedAnswers[idx].km.trim(), 10);
-          const enteredM = parseInt(l4TypedAnswers[idx].m.trim(), 10);
-
-          if (enteredKm === currentRows[idx].km && enteredM === currentRows[idx].m) {
-            correctCount++;
-            cellEl.classList.add('correct');
-          } else {
-            cellEl.classList.add('incorrect');
-          }
-        });
-
-        handleCheckOutcome(correctCount, 3);
       }
     }
 
@@ -1763,7 +1341,7 @@
         levelStats[currentLevel].correct = targetTotal;
         levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
         updateHeaderDisplay();
-        if (currentLevel === 2 || currentLevel === 3 || currentLevel === 4) {
+        if (currentLevel === 2 || currentLevel === 3) {
           renderBoard(); // lock inputs on completion
         }
 
@@ -1779,14 +1357,10 @@
           nextBtnText.textContent = 'Proceed to Level3-M05-4.3 →';
           nextBtn.classList.remove('hidden');
           showFeedback('அருமை! Level2-M05-4.2 முடிந்தது (4/4). Level3-M05-4.3-க்குச் செல்லவும்!', 'success');
-        } else if (currentLevel === 3) {
-          nextBtnText.textContent = 'Proceed to Level4-M05-4.4 →';
-          nextBtn.classList.remove('hidden');
-          showFeedback('சூப்பர்! Level3-M05-4.3 முடிந்தது (6/6). Level4-M05-4.4-க்குச் செல்லவும்!', 'success');
         } else {
           nextBtnText.textContent = 'Submit Score ✓';
           nextBtn.classList.remove('hidden');
-          showFeedback('அருமை! Level1-M05-4.1, Level2-M05-4.2, Level3-M05-4.3 & Level4-M05-4.4 அனைத்தும் முடிந்தன (17/17)!', 'success');
+          showFeedback('சூப்பர்! Level1-M05-4.1, Level2-M05-4.2 & Level3-M05-4.3 அனைத்தும் முடிந்தன (14/14)!', 'success');
           submitGameDataToLMS();
         }
       } else {
@@ -1805,8 +1379,6 @@
         setupLevel(2);
       } else if (currentLevel === 2) {
         setupLevel(3);
-      } else if (currentLevel === 3) {
-        setupLevel(4);
       } else {
         submitGameDataToLMS();
       }
@@ -1819,22 +1391,15 @@
       const l2TimeStr = formatSecondsHHMMSS(levelStats[2].seconds);
       const l3ScoreStr = `${levelStats[3].correct}/6-${Math.round((levelStats[3].correct / 6) * 100)}%`;
       const l3TimeStr = formatSecondsHHMMSS(levelStats[3].seconds);
-      const l4ScoreStr = `${levelStats[4].correct}/3-${Math.round((levelStats[4].correct / 3) * 100)}%`;
-      const l4TimeStr = formatSecondsHHMMSS(levelStats[4].seconds);
 
-      const totCorrect =
-        levelStats[1].correct +
-        levelStats[2].correct +
-        levelStats[3].correct +
-        levelStats[4].correct;
-      const totScoreStr = `${totCorrect}/17-${Math.round((totCorrect / 17) * 100)}%`;
+      const totCorrect = levelStats[1].correct + levelStats[2].correct + levelStats[3].correct;
+      const totScoreStr = `${totCorrect}/14-${Math.round((totCorrect / 14) * 100)}%`;
 
       document.getElementById('sumStudentId').textContent = lmsContext.studentId;
       document.getElementById('sumStudentName').textContent = lmsContext.name;
       document.getElementById('sumL1').textContent = `${l1ScoreStr} (${l1TimeStr})`;
       document.getElementById('sumL2').textContent = `${l2ScoreStr} (${l2TimeStr})`;
       document.getElementById('sumL3').textContent = `${l3ScoreStr} (${l3TimeStr})`;
-      document.getElementById('sumL4').textContent = `${l4ScoreStr} (${l4TimeStr})`;
       document.getElementById('sumTotal').textContent = totScoreStr;
       document.getElementById('completionModal').classList.remove('hidden');
 
@@ -1859,8 +1424,6 @@
         level2Time: l2TimeStr,
         level3Score: l3ScoreStr,
         level3Time: l3TimeStr,
-        level4Score: l4ScoreStr,
-        level4Time: l4TimeStr,
         score: totScoreStr,
         trialId: lmsContext.trialId
       };
@@ -1885,8 +1448,7 @@
       levelStats = {
         1: { correct: 0, total: 4, seconds: 0 },
         2: { correct: 0, total: 4, seconds: 0 },
-        3: { correct: 0, total: 6, seconds: 0 },
-        4: { correct: 0, total: 3, seconds: 0 }
+        3: { correct: 0, total: 6, seconds: 0 }
       };
       document.getElementById('completionModal').classList.add('hidden');
       setupLevel(1);

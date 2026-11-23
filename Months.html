@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panchayat Union Primary School, Anjalam Melur — Months</title>
+<title>Panchayat Union Primary School, Anjalam Melur — Months &amp; Year</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; }
 body {
@@ -225,7 +228,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 
 .drop-zones-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
 }
 .drop-slot {
@@ -277,7 +280,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 }
 .stt-serial { font-weight: bold; color: #38bdf8; font-size: 1.2rem; }
 .spelling-label {
-    font-size: 1rem;
+    font-family: 'Kalam', cursive, system-ui, sans-serif;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #e2e8f0;
     margin-top: 4px;
@@ -295,7 +299,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 .stt-status { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
 .box-timer { font-size: 0.8rem; color: #ef4444; font-weight: bold; margin-top: 2px; }
 
-/* Level 4: 4-Line Cursive Dot-Trace Handwriting Styles */
+/* Level 4: Kalam Handwriting Font & 4-Line Cursive Dot-Trace Styles */
+.hw-toolbar,
+.hw-card,
+.hw-zoom-modal {
+    font-family: 'Kalam', cursive, system-ui, sans-serif;
+}
 .hw-toolbar {
     display: flex;
     align-items: center;
@@ -345,23 +354,27 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     flex-wrap: wrap;
 }
 .hw-title {
+    font-family: 'Kalam', cursive, sans-serif;
     font-weight: 700;
     color: #38bdf8;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
 }
 .hw-word-badge {
+    font-family: 'Kalam', cursive, sans-serif;
     background: #1e293b;
     color: #facc15;
     border: 1px solid #475569;
-    padding: 2px 10px;
+    padding: 2px 12px;
     border-radius: 6px;
+    font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
 .hw-dot-counter {
-    font-size: 0.82rem;
+    font-family: 'Kalam', cursive, sans-serif;
+    font-size: 0.95rem;
     color: #38bdf8;
-    font-weight: 600;
+    font-weight: 700;
 }
 .hw-canvas-wrap {
     background: #ffffff;
@@ -388,13 +401,15 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
     flex-wrap: wrap;
 }
 .hw-btn-sm {
+    font-family: 'Kalam', cursive, system-ui, sans-serif;
     padding: 6px 10px;
-    font-size: 12px;
+    font-size: 13px;
     border-radius: 6px;
 }
 .hw-status {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-family: 'Kalam', cursive, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: #94a3b8;
 }
 
@@ -495,13 +510,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
         <div>Trial 1<strong id="t1Summary">--</strong></div>
         <div>Trial 2<strong id="t2Summary">--</strong></div>
         <div>Trial 3<strong id="t3Summary">--</strong></div>
-        <div>Session Total<strong id="totalSessionSummary" style="color:#22c55e;">0/108 (0%)</strong></div>
+        <div>Session Total<strong id="totalSessionSummary" style="color:#22c55e;">0/135 (0%)</strong></div>
     </div>
 
     <div class="game-bar">
         <div class="stats-display">
             <div class="timer-display" id="timer">00:00:00</div>
-            <div class="score-display" id="scoreDisplay">Score: 0/36-0%</div>
+            <div class="score-display" id="scoreDisplay">Score: 0/45-0%</div>
         </div>
         <div class="btn-group">
             <button class="btn-blink btn-green" id="listenBtn" onclick="listen3RoundsSequence()">🎧 Listen (3 Rounds)</button>
@@ -511,26 +526,26 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
         </div>
     </div>
 
-    <h2>Level 1: Listen &amp; Sort Months of the Year (12 Points)</h2>
+    <h2>Level 1: Listen &amp; Sort Months &amp; Year (15 Points)</h2>
     <p style="color: #94a3b8; font-size: 0.95rem;">Drop icons into slots sequentially (Slot 1 must be filled before Slot 2 unlocks).</p>
     
     <div class="source-pool" id="sourcePool"></div>
     <div class="drop-zones-grid" id="dropZonesGrid"></div>
 
-    <h2>Level 2: Speak All 12 Months (12 Points)</h2>
+    <h2>Level 2: Speak All 15 Words (15 Points)</h2>
     <p style="color: #94a3b8; font-size: 0.95rem;">Mics unlock sequentially. Previous mics lock automatically.</p>
     <div class="stt-grid" id="sttGrid"></div>
 
     <h2>Level 3: Speak Syllable Spellings &amp; Whole Words (TTS &amp; STT)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Listen to every letter in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete month name.</p>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Listen to every letter in Indian English TTS, speak the syllable spelling, and use Whole Word to say the complete word.</p>
     <div class="stt-grid" id="spellingGrid"></div>
 
-    <h2>Level 4: Simple Cursive Handwriting — Connect Numbered Dots Along Arrows on 4 Lines (12 Points)</h2>
-    <p style="color: #94a3b8; font-size: 0.95rem;">Simple cursive strokes with entry/exit joins: numbers reset (1, 2, 3...) for every letter and switch neon colors when a new stroke starts. Follow arrows with <strong>100%</strong> order accuracy for <strong>+1 point</strong> per month.</p>
+    <h2>Level 4: Simple Cursive Handwriting — Connect Numbered Dots Along Arrows on 4 Lines (15 Points)</h2>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Simple cursive strokes with entry/exit joins: numbers reset (1, 2, 3...) for every letter and switch neon colors when a new stroke starts. Follow arrows with <strong>100%</strong> order accuracy for <strong>+1 point</strong> per item.</p>
     <div class="hw-toolbar">
-        <div style="font-size: 0.95rem; color: #e2e8f0; display:flex; gap:16px; flex-wrap:wrap;">
-            <span>Evaluated: <strong id="hwProgressText" style="color: #38bdf8;">0 / 12 Months</strong></span>
-            <span>Level 4 Score: <strong id="hwScoreText" style="color: #22c55e;">0 / 12 Points</strong></span>
+        <div style="font-size: 1.05rem; color: #e2e8f0; display:flex; gap:16px; flex-wrap:wrap;">
+            <span>Evaluated: <strong id="hwProgressText" style="color: #38bdf8;">0 / 15 Items</strong></span>
+            <span>Level 4 Score: <strong id="hwScoreText" style="color: #22c55e;">0 / 15 Points</strong></span>
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button class="btn-slate hw-btn-sm" id="unlockAllHwBtn" onclick="unlockAllHwCards()">🔓 Unlock All Sheets</button>
@@ -543,9 +558,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 <div class="hw-zoom-modal" id="hwZoomModal" role="dialog" aria-modal="true" aria-labelledby="hwZoomTitle">
     <div class="hw-zoom-topbar">
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span id="hwZoomTitle" style="font-size:1.25rem; font-weight:700; color:#38bdf8;">Month #1: January</span>
-            <span id="hwZoomDots" style="font-size:0.95rem; font-weight:700; color:#facc15;">Dots: 0 / 0</span>
-            <span id="hwZoomStatus" style="font-size:0.95rem; font-weight:600; color:#94a3b8;">Ready</span>
+            <span id="hwZoomTitle" style="font-size:1.35rem; font-weight:700; color:#38bdf8;">Item #1: Months</span>
+            <span id="hwZoomDots" style="font-size:1.05rem; font-weight:700; color:#facc15;">Dots: 0 / 0</span>
+            <span id="hwZoomStatus" style="font-size:1.05rem; font-weight:700; color:#94a3b8;">Ready</span>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button class="btn-blue hw-btn-sm" id="hwZoomListenBtn">🔊 Listen</button>
@@ -557,8 +572,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
         <canvas class="hw-zoom-canvas" id="hwZoomCanvas"></canvas>
     </div>
     <div class="hw-zoom-footer">
-        <span style="color:#94a3b8; font-size:0.9rem;">Simple cursive letters span left to right across the screen; follow neon numbered dots &amp; arrows in 100% order.</span>
-        <button class="btn-green" id="hwZoomDoneBtn" style="padding:10px 20px; font-size:15px;">✅ Done &amp; Evaluate</button>
+        <span style="color:#94a3b8; font-size:0.95rem;">Simple cursive letters span left to right across the screen; follow neon numbered dots &amp; arrows in 100% order.</span>
+        <button class="btn-green" id="hwZoomDoneBtn" style="font-family: 'Kalam', cursive, sans-serif; padding:10px 20px; font-size:16px;">✅ Done &amp; Evaluate</button>
     </div>
 </div>
 
@@ -567,28 +582,32 @@ button:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 
 const sheetAppScriptUrl = "https://script.google.com/macros/s/AKfycbydKddCA-uZwXlnt9yvRMS6HgFwSXgT3RiphSojuQ3PyERaURSBhjCh-bFdHX54Hf0x/exec";
 const INDIC_ENGLISH_LOCALE = "en-IN";
-const ITEM_COUNT = 12;
-const MAX_TRIAL_SCORE = 36; // 12 (L1) + 12 (L2) + 12 (L4)
-const MAX_SESSION_SCORE = MAX_TRIAL_SCORE * 3; // 108
+const ITEM_COUNT = 15;
+const MAX_TRIAL_SCORE = 45; // 15 (L1) + 15 (L2) + 15 (L4)
+const MAX_SESSION_SCORE = MAX_TRIAL_SCORE * 3; // 135
 
 const targetWords = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "Months", "Twelve", "January", "February", "March", "April",
+    "May", "June", "July", "August", "September", "October",
+    "November", "December", "Year"
 ];
 
 const syllableSpellings = [
-    "Jan-u-a-ry",
-    "Feb-ru-a-ry",
-    "March",
-    "A-pril",
+    "Mon-ths",
+    "Tw-elve",
+    "Ja-nu-ary",
+    "Feb-ru-ary",
+    "Mar-ch",
+    "Ap-ril",
     "May",
     "June",
-    "Ju-ly",
+    "July",
     "Au-gust",
     "Sep-tem-ber",
     "Oc-to-ber",
     "No-vem-ber",
-    "De-cem-ber"
+    "De-cem-ber",
+    "Year"
 ];
 
 let timerInterval = null;
@@ -614,7 +633,7 @@ let level1Completed = false;
 let level2Completed = false;
 let level3Completed = false;
 
-// Handwriting state per month (1..12)
+// Handwriting state per item (1..15)
 let hwStates = {};
 let activeZoomSerial = null;
 
@@ -715,6 +734,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if ("speechSynthesis" in window && typeof window.speechSynthesis.getVoices === "function") {
         window.speechSynthesis.getVoices();
+    }
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+            targetWords.forEach((word, idx) => redrawHwCanvas(idx + 1, word, false));
+            if (activeZoomSerial !== null) {
+                redrawZoomCanvas(activeZoomSerial, targetWords[activeZoomSerial - 1]);
+            }
+        });
     }
 
     currentTrialNum = 1;
@@ -891,7 +919,7 @@ function initGame() {
         card.className = "stt-card";
         card.id = `stt-card-${serialNum}`;
         card.innerHTML = `
-            <div class="stt-serial">Month #${serialNum}</div>
+            <div class="stt-serial">Word #${serialNum}</div>
             <button class="btn-green" id="speak-btn-${serialNum}" style="margin-top:6px; padding:6px 12px; font-size:12px;" onclick="testSpeechBox('${word}', ${serialNum})" disabled>🎙️ Speak</button>
             <div class="stt-user-speech" id="stt-speech-${serialNum}">You said: --</div>
             <div class="stt-status" id="stt-status-${serialNum}">Locked</div>
@@ -931,7 +959,7 @@ function initGame() {
     updateScoreDisplay();
 }
 
-/* ==================== LEVEL 4: SIMPLE CURSIVE STROKES, PER-LETTER NUMBERS, NEON COLORS & 100% ORDER ==================== */
+/* ==================== LEVEL 4: KALAM HANDWRITING, CURSIVE STROKES, PER-LETTER NUMBERS & 100% ORDER ==================== */
 const NEON_STROKE_COLORS = [
     { fill: "#ff007f", text: "#ffffff" }, // Stroke 1: Neon Pink
     { fill: "#00e5ff", text: "#090d16" }, // Stroke 2: Neon Cyan
@@ -970,6 +998,12 @@ const CURSIVE_DOT_STROKES = {
         [[0.18, 0.0], [0.18, 0.5], [0.18, 1.0]],
         [[0.18, 0.0], [0.52, 0.08], [0.78, 0.3], [0.84, 0.5], [0.78, 0.7], [0.52, 0.92], [0.18, 1.0]]
     ],
+    'T': [
+        [[0.15, 0.14], [0.48, 0.0], [0.84, 0.14], [0.5, 0.0], [0.5, 0.5], [0.5, 1.0]]
+    ],
+    'Y': [
+        [[0.14, 0.0], [0.32, 0.28], [0.5, 0.52], [0.68, 0.28], [0.86, 0.0], [0.5, 0.52], [0.5, 1.0]]
+    ],
     'a': [
         [[0.12, 0.76], [0.34, 0.54], [0.62, 0.52], [0.76, 0.66], [0.74, 0.88], [0.5, 1.0], [0.24, 0.92], [0.22, 0.72], [0.46, 0.54], [0.76, 0.52], [0.76, 0.78], [0.78, 1.0], [0.96, 0.92]]
     ],
@@ -991,6 +1025,9 @@ const CURSIVE_DOT_STROKES = {
     'i': [
         [[0.18, 0.72], [0.5, 0.52], [0.5, 0.76], [0.52, 0.98], [0.74, 0.9]],
         [[0.52, 0.28]]
+    ],
+    'k': [
+        [[0.14, 0.92], [0.22, 0.45], [0.26, 0.0], [0.22, 0.52], [0.18, 1.0], [0.74, 0.52], [0.38, 0.74], [0.78, 0.98], [0.96, 0.9]]
     ],
     'l': [
         [[0.22, 0.86], [0.46, 0.42], [0.54, 0.0], [0.48, 0.52], [0.48, 0.96], [0.74, 0.9]]
@@ -1020,8 +1057,17 @@ const CURSIVE_DOT_STROKES = {
     'u': [
         [[0.12, 0.72], [0.24, 0.52], [0.24, 0.82], [0.42, 0.98], [0.66, 0.86], [0.74, 0.52], [0.76, 0.98], [0.96, 0.9]]
     ],
+    'v': [
+        [[0.12, 0.64], [0.26, 0.52], [0.48, 1.0], [0.76, 0.52], [0.92, 0.62]]
+    ],
+    'w': [
+        [[0.1, 0.64], [0.22, 0.52], [0.34, 1.0], [0.5, 0.58], [0.66, 1.0], [0.82, 0.52], [0.96, 0.62]]
+    ],
     'y': [
         [[0.12, 0.72], [0.24, 0.52], [0.26, 0.84], [0.48, 0.96], [0.72, 0.82], [0.78, 0.52], [0.74, 0.96], [0.62, 1.28], [0.38, 1.44], [0.18, 1.34]]
+    ],
+    'z': [
+        [[0.14, 0.62], [0.78, 0.52], [0.22, 1.0], [0.78, 1.0], [0.76, 1.34], [0.46, 1.42], [0.2, 1.32]]
     ]
 };
 
@@ -1128,7 +1174,7 @@ function buildWordDots(word, canvasWidth, canvasHeight, fullScreenSpread = false
 function initHandwritingLevel4() {
     const hwGrid = document.getElementById("handwritingGrid");
     hwGrid.innerHTML = "";
-    document.getElementById("hwProgressText").textContent = `0 / ${ITEM_COUNT} Months`;
+    document.getElementById("hwProgressText").textContent = `0 / ${ITEM_COUNT} Items`;
     document.getElementById("hwScoreText").textContent = `0 / ${ITEM_COUNT} Points`;
 
     targetWords.forEach((word, index) => {
@@ -1152,7 +1198,7 @@ function initHandwritingLevel4() {
         card.id = `hw-card-${serialNum}`;
         card.innerHTML = `
             <div class="hw-header">
-                <span class="hw-title">Month #${serialNum}</span>
+                <span class="hw-title">Item #${serialNum}</span>
                 <span class="hw-word-badge">${word}</span>
                 <span class="hw-dot-counter" id="hw-dots-${serialNum}">Dots: 0 / 0</span>
                 <span class="hw-status" id="hw-status-${serialNum}">Locked</span>
@@ -1386,13 +1432,13 @@ function drawFourLinesAndGuides(ctx, width, height, state, isLarge) {
         ctx.restore();
     }
 
-    const dotRadius = isLarge ? 13 : 8;
-    const fontSize = isLarge ? 12.5 : 9;
+    const dotRadius = isLarge ? 13 : 8.5;
+    const fontSize = isLarge ? 14 : 10.5;
     ctx.save();
     ctx.setLineDash([]);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = `900 ${fontSize}px system-ui, sans-serif`;
+    ctx.font = `700 ${fontSize}px 'Kalam', cursive, system-ui, sans-serif`;
 
     state.dots.forEach(dot => {
         ctx.beginPath();
@@ -1404,7 +1450,7 @@ function drawFourLinesAndGuides(ctx, width, height, state, isLarge) {
         ctx.stroke();
 
         ctx.fillStyle = dot.connected ? "#ffffff" : (dot.labelText || "#ffffff");
-        ctx.fillText(String(dot.serial), dot.x, dot.y + 0.4);
+        ctx.fillText(String(dot.serial), dot.x, dot.y + 0.5);
     });
     ctx.restore();
 }
@@ -1598,7 +1644,7 @@ function openHwZoomModal(serialNum, word) {
     const modal = document.getElementById("hwZoomModal");
     modal.classList.add("open");
 
-    document.getElementById("hwZoomTitle").textContent = `Month #${serialNum}: ${word}`;
+    document.getElementById("hwZoomTitle").textContent = `Item #${serialNum}: ${word}`;
     syncDotCounterUI(serialNum);
 
     const statusText = document.getElementById(`hw-status-${serialNum}`)?.textContent || "Ready";
@@ -1748,7 +1794,7 @@ function evaluateHwWord(serialNum, word) {
         }
     }
 
-    document.getElementById("hwProgressText").textContent = `${evaluatedL4Words.size} / ${ITEM_COUNT} Months`;
+    document.getElementById("hwProgressText").textContent = `${evaluatedL4Words.size} / ${ITEM_COUNT} Items`;
     document.getElementById("hwScoreText").textContent = `${level4Score} / ${ITEM_COUNT} Points`;
     updateScoreDisplay();
 

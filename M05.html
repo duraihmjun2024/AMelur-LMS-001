@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - அளவைகள் (4.1 - 4.4) | AMelur-LMS-001</title>
+  <title>Game M05 - அளவைகள் (4.1, 4.2 & 4.3) | AMelur-LMS-001</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Noto Sans Tamil & Inter -->
@@ -493,14 +493,6 @@
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/17</span>
-        <button
-          id="adminSkipBtn"
-          onclick="openSkipLevelModal()"
-          title="Teacher / Admin: Skip to next level with password"
-          class="bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-bold px-2.5 py-0.5 rounded-md border border-rose-400 shadow-sm transition flex items-center gap-1 cursor-pointer"
-        >
-          <span>🔒 Next Level</span>
-        </button>
       </div>
     </div>
 
@@ -631,90 +623,8 @@
     </div>
   </div>
 
-  <!-- Teacher / Admin Password Modal to Skip Directly to Next Level -->
-  <div id="skipPasswordModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-indigo-300 text-center space-y-3.5">
-      <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-xl font-extrabold">
-        🔒
-      </div>
-      <h3 class="text-lg font-extrabold text-slate-900">Next Level (Teacher Access)</h3>
-      <p class="text-xs sm:text-sm text-slate-600 font-medium" id="skipModalSubText">
-        Enter the password to jump directly to the next level.
-      </p>
-      <input
-        type="password"
-        id="skipPasswordInput"
-        placeholder="Enter password"
-        onkeydown="if(event.key === 'Enter') verifySkipPassword()"
-        class="w-full px-3.5 py-2.5 text-center font-bold text-slate-800 border-2 border-slate-300 focus:border-indigo-500 rounded-xl outline-none"
-      />
-      <div id="skipPasswordError" class="hidden text-xs font-bold text-rose-600">
-        Incorrect password. Please try again.
-      </div>
-      <div class="flex gap-2.5 pt-1">
-        <button
-          onclick="closeSkipLevelModal()"
-          class="flex-1 py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm cursor-pointer"
-        >
-          Cancel
-        </button>
-        <button
-          onclick="verifySkipPassword()"
-          class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer"
-        >
-          Unlock →
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
-    // Password to skip directly to the next level from the top-right button
-    const TEACHER_SKIP_PASSWORD = "pups";
-
-    function openSkipLevelModal() {
-      const modal = document.getElementById('skipPasswordModal');
-      const input = document.getElementById('skipPasswordInput');
-      const err = document.getElementById('skipPasswordError');
-      const sub = document.getElementById('skipModalSubText');
-
-      err.classList.add('hidden');
-      input.value = '';
-      if (currentLevel < 4) {
-        sub.textContent = `Enter password to skip directly from Level ${currentLevel} to Level ${currentLevel + 1}.`;
-      } else {
-        sub.textContent = 'You are already on the final level (Level4-M05-4.4). Enter password to open summary.';
-      }
-      modal.classList.remove('hidden');
-      setTimeout(() => input.focus(), 50);
-    }
-
-    function closeSkipLevelModal() {
-      document.getElementById('skipPasswordModal').classList.add('hidden');
-    }
-
-    function verifySkipPassword() {
-      const entered = document.getElementById('skipPasswordInput').value.trim();
-      const err = document.getElementById('skipPasswordError');
-
-      if (entered.toLowerCase() !== TEACHER_SKIP_PASSWORD.toLowerCase()) {
-        playSound('error');
-        err.classList.remove('hidden');
-        return;
-      }
-
-      playSound('place');
-      closeSkipLevelModal();
-      levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
-
-      if (currentLevel < 4) {
-        setupLevel(currentLevel + 1);
-      } else {
-        levelCompleted = true;
-        submitGameDataToLMS();
-      }
-    }
 
     // Parse LMS URL parameters passed from index.html
     const urlParams = new URLSearchParams(window.location.search);

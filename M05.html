@@ -178,7 +178,7 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 3 Torchlight Silhouette (matching 4.3 image) */
+    /* Level 3 Torchlight Silhouette (matching source 4.3 torchlight shape) */
     .torch-item {
       filter: drop-shadow(0 3px 5px rgba(15, 23, 42, 0.12));
       transition: transform 0.18s ease, filter 0.2s ease;
@@ -191,7 +191,7 @@
     .torch-body-svg {
       display: block;
       width: 100%;
-      height: 54px;
+      height: 52px;
     }
 
     .torch-body-label {
@@ -202,31 +202,71 @@
       white-space: nowrap;
     }
 
-    .torch-head-box {
-      background: #ffffff;
-      border-width: 3px;
-      border-style: solid;
-      border-radius: 5px 15px 15px 5px;
-      box-shadow:
-        inset 4px 0 0 rgba(15, 23, 42, 0.78),
-        0 3px 6px rgba(15, 23, 42, 0.12);
-      transition: all 0.2s ease;
+    .torch-head-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 152px;
+      height: 76px;
+      flex-shrink: 0;
+      margin-left: -4px;
+      transition: transform 0.2s ease;
     }
 
-    .torch-head-box.correct {
-      border-color: #16a34a !important;
-      background-color: #f0fdf4 !important;
-      box-shadow:
-        inset 4px 0 0 #15803d,
-        0 0 0 3px rgba(22, 163, 74, 0.22);
+    @media (min-width: 640px) {
+      .torch-head-wrap {
+        width: 164px;
+        height: 82px;
+      }
     }
 
-    .torch-head-box.incorrect {
-      border-color: #dc2626 !important;
-      background-color: #fef2f2 !important;
-      box-shadow:
-        inset 4px 0 0 #b91c1c,
-        0 0 0 3px rgba(220, 38, 38, 0.22);
+    .torch-head-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+    }
+
+    .torch-head-fill {
+      fill: #ffffff;
+      transition: fill 0.2s ease;
+    }
+
+    .torch-head-rim {
+      transition: stroke 0.2s ease;
+    }
+
+    .torch-head-content {
+      position: relative;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding-left: 8px;
+      padding-right: 4px;
+    }
+
+    .torch-head-wrap.correct .torch-head-fill {
+      fill: #f0fdf4;
+    }
+
+    .torch-head-wrap.correct .torch-head-rim {
+      stroke: #16a34a !important;
+    }
+
+    .torch-head-wrap.incorrect .torch-head-fill {
+      fill: #fef2f2;
+    }
+
+    .torch-head-wrap.incorrect .torch-head-rim {
+      stroke: #dc2626 !important;
+    }
+
+    .torch-head-wrap.incorrect {
       animation: shake 0.38s ease-in-out;
     }
 
@@ -1012,7 +1052,7 @@
           rowsContainer.appendChild(rowEl);
         });
       } else {
-        // Render Level3-M05-4.3 (Torchlight silhouette: rounded handle + flared head)
+        // Render Level3-M05-4.3 (Torchlight silhouette matching source image: rounded handle + flared trapezoid head)
         const disabledAttr = levelCompleted ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
@@ -1022,15 +1062,15 @@
 
           cardEl.innerHTML = `
             <!-- Torch Handle with Question Text -->
-            <div class="relative flex-1 min-w-0 h-[54px] flex items-center justify-center">
+            <div class="relative flex-1 min-w-0 h-[52px] flex items-center justify-center">
               <svg
                 class="torch-body-svg"
-                viewBox="0 0 220 54"
+                viewBox="0 0 220 52"
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
                 <path
-                  d="M 24 11 H 220 V 43 H 24 A 13 13 0 0 1 24 11 Z"
+                  d="M 25 11 H 220 V 41 H 25 A 15 15 0 0 1 25 11 Z"
                   fill="#ffffff"
                   stroke="#1e293b"
                   stroke-width="2.6"
@@ -1042,51 +1082,85 @@
               </span>
             </div>
 
-            <!-- Flared Torch Head / Lens Frame for Fraction Answer -->
+            <!-- Flared Trapezoid Torch Head / Lens Frame for Fraction Answer -->
             <div
               id="l3-bucket-${rowIndex}"
-              class="torch-head-box w-36 sm:w-40 h-[68px] flex items-center justify-center gap-1.5 px-2 shrink-0 -ml-0.5"
-              style="border-color: ${rowItem.borderColor};"
+              class="torch-head-wrap"
             >
-              <input
-                type="text"
-                inputmode="numeric"
-                maxlength="2"
-                value="${ans.whole}"
-                ${disabledAttr}
-                oninput="updateL3Answer(${rowIndex}, 'whole', this.value)"
-                placeholder="?"
-                aria-label="Whole number for ${rowItem.label}"
-                class="frac-input w-8 h-8 text-sm sm:text-base"
-              />
+              <svg
+                class="torch-head-svg"
+                viewBox="0 0 164 82"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <!-- Collar struts connecting handle to flared torch head -->
+                <path
+                  d="M 2 25 L 18 17 M 2 57 L 18 65"
+                  stroke="#1e293b"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                  vector-effect="non-scaling-stroke"
+                />
+                <!-- Flared outer head with black border and colored rim -->
+                <path
+                  class="torch-head-fill torch-head-rim"
+                  d="M 16 17 L 146 6 Q 158 5 158 18 L 158 64 Q 158 77 146 76 L 16 65 Q 10 64 10 56 L 10 26 Q 10 18 16 17 Z"
+                  stroke="${rowItem.borderColor}"
+                  stroke-width="6"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+                <path
+                  d="M 16 17 L 146 6 Q 158 5 158 18 L 158 64 Q 158 77 146 76 L 16 65 Q 10 64 10 56 L 10 26 Q 10 18 16 17 Z"
+                  fill="none"
+                  stroke="#1e293b"
+                  stroke-width="2.6"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
 
-              <div class="inline-flex flex-col items-center justify-center gap-0.5">
+              <div class="torch-head-content">
                 <input
                   type="text"
                   inputmode="numeric"
                   maxlength="2"
-                  value="${ans.num}"
+                  value="${ans.whole}"
                   ${disabledAttr}
-                  oninput="updateL3Answer(${rowIndex}, 'num', this.value)"
-                  placeholder="n"
-                  aria-label="Numerator for ${rowItem.label}"
-                  class="frac-input w-7 h-6 text-xs sm:text-sm"
+                  oninput="updateL3Answer(${rowIndex}, 'whole', this.value)"
+                  placeholder="?"
+                  aria-label="Whole number for ${rowItem.label}"
+                  class="frac-input w-7 sm:w-8 h-7 sm:h-8 text-xs sm:text-sm"
                 />
-                <span class="w-8 h-[2px] bg-pink-600 rounded-full"></span>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="2"
-                  value="${ans.den}"
-                  ${disabledAttr}
-                  oninput="updateL3Answer(${rowIndex}, 'den', this.value)"
-                  placeholder="d"
-                  aria-label="Denominator for ${rowItem.label}"
-                  class="frac-input w-7 h-6 text-xs sm:text-sm"
-                />
+
+                <div class="inline-flex flex-col items-center justify-center gap-0.5">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="2"
+                    value="${ans.num}"
+                    ${disabledAttr}
+                    oninput="updateL3Answer(${rowIndex}, 'num', this.value)"
+                    placeholder="n"
+                    aria-label="Numerator for ${rowItem.label}"
+                    class="frac-input w-6 sm:w-7 h-5 sm:h-6 text-[11px] sm:text-xs"
+                  />
+                  <span class="w-7 sm:w-8 h-[2px] bg-pink-600 rounded-full"></span>
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="2"
+                    value="${ans.den}"
+                    ${disabledAttr}
+                    oninput="updateL3Answer(${rowIndex}, 'den', this.value)"
+                    placeholder="d"
+                    aria-label="Denominator for ${rowItem.label}"
+                    class="frac-input w-6 sm:w-7 h-5 sm:h-6 text-[11px] sm:text-xs"
+                  />
+                </div>
+
+                <span class="font-extrabold text-pink-600 text-xs sm:text-sm">${rowItem.unit}</span>
               </div>
-
-              <span class="font-extrabold text-pink-600 text-sm sm:text-base ml-0.5">${rowItem.unit}</span>
             </div>
           `;
 

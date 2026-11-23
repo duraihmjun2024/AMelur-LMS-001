@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game M05 - ரிப்பனின் நீளத்தை மீட்டரில் எழுதுக | AMelur-LMS-001</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans Tamil & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+Tamil:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tone.js for gentle interactive sound feedback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
+      min-height: 100vh;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Sky blue textbook header banner matching image */
+    .textbook-header {
+      background: linear-gradient(180deg, #b8e8fc 0%, #cceeff 65%, #e2f5fe 100%);
+      border-bottom: 3px dashed #ffffff;
+      box-shadow: 0 2px 6px rgba(14, 116, 144, 0.12);
+    }
+
+    /* White badge for M05 */
+    .badge-m05 {
+      background: #ffffff;
+      border: 2px solid #0284c7;
+      border-radius: 10px 10px 10px 2px;
+      color: #0369a1;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.15);
+    }
+
+    /* Teal/Emerald 3D-bevel ribbon matching the textbook image */
+    .ribbon-bar {
+      background: linear-gradient(180deg, #22997a 0%, #2cb591 30%, #249e7e 80%, #187a60 100%);
+      border: 2px solid #156b54;
+      border-radius: 6px;
+      box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.35), 0 3px 6px rgba(0, 0, 0, 0.14);
+      transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ribbon-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 35%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+    }
+
+    /* White text with crisp dark outline matching "100 செ.மீ" in image */
+    .ribbon-label {
+      color: #ffffff;
+      font-weight: 800;
+      text-shadow:
+        -1.5px -1.5px 0 #114b3c,
+         1.5px -1.5px 0 #114b3c,
+        -1.5px  1.5px 0 #114b3c,
+         1.5px  1.5px 0 #114b3c,
+         0px    2px   3px rgba(0,0,0,0.45);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    /* Pink rounded answer drop zone matching image */
+    .answer-slot {
+      background-color: #ffffff;
+      border: 2.5px solid #f472b6;
+      border-radius: 10px;
+      box-shadow: inset 0 2px 4px rgba(244, 114, 182, 0.12);
+      transition: all 0.2s ease;
+    }
+
+    .answer-slot.drag-over,
+    .answer-slot.ready-target {
+      border-color: #ec4899;
+      background-color: #fdf2f8;
+      transform: scale(1.04);
+      box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2);
+    }
+
+    .answer-slot.correct {
+      border-color: #16a34a;
+      background-color: #f0fdf4;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+    }
+
+    .answer-slot.incorrect {
+      border-color: #dc2626;
+      background-color: #fef2f2;
+      animation: shake 0.38s ease-in-out;
+    }
+
+    /* Soft peach/orange option container on the right matching image */
+    .option-bank {
+      background: linear-gradient(180deg, #ffedd5 0%, #fed7aa 100%);
+      border: 2px solid #fb923c;
+      border-radius: 14px;
+      box-shadow: inset 0 2px 8px rgba(251, 146, 60, 0.18);
+    }
+
+    /* Blue-bordered white option tiles matching image */
+    .fraction-tile {
+      background: #ffffff;
+      border: 2px solid #60a5fa;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(37, 99, 235, 0.12);
+      cursor: grab;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, opacity 0.2s ease;
+    }
+
+    .fraction-tile:hover:not(.used) {
+      transform: translateY(-2px);
+      border-color: #2563eb;
+      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .fraction-tile:active:not(.used) {
+      cursor: grabbing;
+      transform: scale(0.97);
+    }
+
+    .fraction-tile.selected {
+      border-color: #2563eb;
+      background-color: #eff6ff;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+      transform: scale(1.05);
+    }
+
+    .fraction-tile.used {
+      opacity: 0.32;
+      cursor: default;
+      pointer-events: none;
+      border-style: dashed;
+    }
+
+    /* Stacked fraction formatting */
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.05;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+    }
+    .frac-num {
+      padding: 0 4px 2px 4px;
+      border-bottom: 2px solid #1e293b;
+    }
+    .frac-den {
+      padding: 2px 4px 0 4px;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop {
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center p-2 sm:p-4 md:p-6">
+
+  <!-- Main LMS Game Container -->
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-sky-200 overflow-hidden">
+
+    <!-- Top LMS Meta Bar -->
+    <div class="bg-slate-800 text-white px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+      <div class="flex items-center gap-2">
+        <span class="bg-sky-500 text-white font-bold px-2.5 py-0.5 rounded-md tracking-wide">AMelur-LMS-001</span>
+        <span class="text-slate-300 font-semibold">Game M05 • அளவைகள் (Measurements)</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="roundCounter">சுற்று (Set): 1</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">மதிப்பெண் (Score): 0</span>
+      </div>
+    </div>
+
+    <!-- Textbook Sky-Blue Header -->
+    <header class="textbook-header px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div class="badge-m05 px-3 py-1 text-base sm:text-xl tracking-tight">
+          M05
+        </div>
+        <h1 class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+          ரிப்பனின் நீளத்தை மீட்டரில் எழுதுக.
+        </h1>
+      </div>
+      <span class="text-xs sm:text-sm font-semibold text-sky-900 bg-white/75 px-3 py-1 rounded-full border border-sky-300">
+        100 செ.மீ = 1 மீ
+      </span>
+    </header>
+
+    <!-- Instruction Helper Pill -->
+    <div class="bg-sky-50/80 border-b border-sky-100 px-4 py-2 text-center text-xs sm:text-sm text-slate-700 font-medium">
+      வலதுபுறம் உள்ள மீட்டர் அட்டைகளை இழுத்து (Drag) அல்லது தொட்டு (Tap) சரியான இளஞ்சிவப்புப் பெட்டியில் வைக்கவும்.
+    </div>
+
+    <!-- Game Workspace (Matches Image 2-Column Layout) -->
+    <main class="p-3 sm:p-6 bg-white">
+      <div class="border-2 border-slate-200 rounded-2xl p-3 sm:p-5 bg-slate-50/40 shadow-inner">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+
+          <!-- Left & Center Section: 4 Proportional Ribbons + Pink Answer Slots (8 cols on desktop) -->
+          <div id="rowsContainer" class="lg:col-span-8 flex flex-col justify-between gap-4 sm:gap-5">
+            <!-- Dynamically populated 4 ribbon rows -->
+          </div>
+
+          <!-- Right Section: Peach Option Bank with 4 Fraction Cards (4 cols on desktop) -->
+          <div class="lg:col-span-4 flex flex-col">
+            <div class="option-bank p-3 sm:p-4 flex-1 flex flex-col justify-center">
+              <div class="text-center text-xs font-bold text-orange-900/80 uppercase tracking-wider mb-2.5">
+                விடை அட்டைகள் (Options)
+              </div>
+              <div id="optionsContainer" class="grid grid-cols-2 gap-3 sm:gap-3.5 place-items-center">
+                <!-- Dynamically populated 4 fraction tiles -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Feedback Banner -->
+      <div id="feedbackBanner" class="mt-4 hidden rounded-xl px-4 py-3 text-center font-bold text-sm sm:text-base transition-all"></div>
+
+      <!-- Action Buttons Bar -->
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+        <button
+          id="checkBtn"
+          onclick="checkAnswers()"
+          class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>சரிபார் (Check Answers)</span>
+        </button>
+
+        <button
+          id="clearBtn"
+          onclick="clearCurrentSlots()"
+          class="px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span>அழி (Clear)</span>
+        </button>
+
+        <button
+          id="resetBtn"
+          onclick="resetNumbers()"
+          class="px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-sky-300"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Reset Numbers</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /**
+     * Master pool of centimetre-to-metre conversions with stacked fraction rendering metadata.
+     * Includes the exact textbook values (25, 50, 75, 100) plus additional standard multiples
+     * so every "Reset Numbers" press generates fresh randomized problems with accurate proportions.
+     */
+    const CONVERSION_POOL = [
+      { id: 'c25',  cm: 25,  whole: '',  num: '1', den: '4' },
+      { id: 'c50',  cm: 50,  whole: '',  num: '1', den: '2' },
+      { id: 'c75',  cm: 75,  whole: '',  num: '3', den: '4' },
+      { id: 'c100', cm: 100, whole: '1', num: '',  den: ''  },
+      { id: 'c125', cm: 125, whole: '1', num: '1', den: '4' },
+      { id: 'c150', cm: 150, whole: '1', num: '1', den: '2' },
+      { id: 'c175', cm: 175, whole: '1', num: '3', den: '4' },
+      { id: 'c200', cm: 200, whole: '2', num: '',  den: ''  }
+    ];
+
+    // Game state
+    let currentRows = [];        // Array of 4 items shown in the ribbon rows
+    let optionTiles = [];        // Shuffled array of 4 items shown in the right option box
+    let placedAnswers = [null, null, null, null]; // Stores item.id placed in each row slot
+    let selectedOptionId = null; // Currently tapped/selected option card ID
+    let draggedOptionId = null;  // Currently dragged option card ID
+    let roundNumber = 1;
+    let totalScore = 0;
+    let roundScored = false;
+
+    // Gentle sound synthesizer using Tone.js
+    let synth = null;
+    function playSound(type) {
+      try {
+        if (typeof Tone === 'undefined') return;
+        if (!synth) {
+          synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          synth.volume.value = -10;
+        }
+        if (Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        if (type === 'place') {
+          synth.triggerAttackRelease('C5', '16n');
+        } else if (type === 'remove') {
+          synth.triggerAttackRelease('A4', '16n');
+        } else if (type === 'success') {
+          synth.triggerAttackRelease(['C5', 'E5', 'G5', 'C6'], '8n');
+        } else if (type === 'error') {
+          synth.triggerAttackRelease(['E4', 'Eb4'], '8n');
+        } else if (type === 'reset') {
+          synth.triggerAttackRelease(['G4', 'C5'], '16n');
+        }
+      } catch (e) {
+        // Ignore audio errors on restricted browsers
+      }
+    }
+
+    // Utility: Fisher-Yates shuffle
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Builds HTML for a stacked metre fraction card (e.g., 1/2 மீ, 1 மீ, 1 1/4 மீ)
+    function renderFractionHTML(item, compact = false) {
+      const sizeClass = compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl';
+      const fracSize = compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base';
+      let html = `<div class="inline-flex items-center justify-center gap-1.5 text-slate-900 font-extrabold ${sizeClass}">`;
+
+      if (item.whole) {
+        html += `<span>${item.whole}</span>`;
+      }
+      if (item.num && item.den) {
+        html += `
+          <span class="frac ${fracSize}">
+            <span class="frac-num">${item.num}</span>
+            <span class="frac-den">${item.den}</span>
+          </span>
+        `;
+      }
+      html += `<span class="text-slate-800 font-bold ml-0.5">மீ</span>`;
+      html += `</div>`;
+      return html;
+    }
+
+    // Initializes the initial textbook set (100, 50, 25, 75 செ.மீ) on first load
+    function initInitialGame() {
+      const initialIds = ['c100', 'c50', 'c25', 'c75'];
+      currentRows = initialIds.map(id => CONVERSION_POOL.find(item => item.id === id));
+      // Match option order from textbook image: 1/2 மீ, 1/4 மீ, 1 மீ, 3/4 மீ
+      const initialOptionIds = ['c50', 'c25', 'c100', 'c75'];
+      optionTiles = initialOptionIds.map(id => CONVERSION_POOL.find(item => item.id === id));
+      placedAnswers = [null, null, null, null];
+      selectedOptionId = null;
+      roundScored = false;
+      renderBoard();
+    }
+
+    // Generates a new set of 4 randomized numbers when "Reset Numbers" is clicked
+    function resetNumbers() {
+      playSound('reset');
+      roundNumber++;
+      document.getElementById('roundCounter').textContent = `சுற்று (Set): ${roundNumber}`;
+
+      // Pick 4 random distinct values from the conversion pool
+      const picked = shuffleArray(CONVERSION_POOL).slice(0, 4);
+      currentRows = shuffleArray(picked);
+      optionTiles = shuffleArray(picked);
+
+      // Ensure option tiles aren't in the exact same order as the rows
+      if (optionTiles.every((opt, idx) => opt.id === currentRows[idx].id)) {
+        optionTiles.reverse();
+      }
+
+      placedAnswers = [null, null, null, null];
+      selectedOptionId = null;
+      roundScored = false;
+      hideFeedback();
+      renderBoard();
+    }
+
+    // Clears currently placed cards in the current round
+    function clearCurrentSlots() {
+      playSound('remove');
+      placedAnswers = [null, null, null, null];
+      selectedOptionId = null;
+      hideFeedback();
+      renderBoard();
+    }
+
+    // Renders both the 4 ribbon rows and the 4 option bank cards
+    function renderBoard() {
+      const rowsContainer = document.getElementById('rowsContainer');
+      const optionsContainer = document.getElementById('optionsContainer');
+
+      // Find maximum cm value in the current 4-row set so the longest ribbon is 100% width
+      // and shorter ribbons scale accurately in exact mathematical proportion!
+      const maxCm = Math.max(...currentRows.map(r => r.cm));
+
+      rowsContainer.innerHTML = '';
+      currentRows.forEach((rowItem, rowIndex) => {
+        // Calculate proportional bar width (minimum 22% so label always fits cleanly inside)
+        const rawPercent = (rowItem.cm / maxCm) * 100;
+        const widthPercent = Math.max(22, Math.round(rawPercent));
+
+        const placedId = placedAnswers[rowIndex];
+        const placedItem = placedId ? CONVERSION_POOL.find(i => i.id === placedId) : null;
+
+        const rowEl = document.createElement('div');
+        rowEl.className = 'flex items-center justify-between gap-3 sm:gap-4';
+
+        rowEl.innerHTML = `
+          <!-- Left Ribbon Track -->
+          <div class="flex-1 flex items-center">
+            <div
+              class="ribbon-bar h-12 sm:h-14 flex items-center px-3 sm:px-4"
+              style="width: ${widthPercent}%;"
+              title="${rowItem.cm} செ.மீ"
+            >
+              <span class="ribbon-label text-sm sm:text-lg md:text-xl">
+                ${rowItem.cm} செ.மீ
+              </span>
+            </div>
+          </div>
+
+          <!-- Pink Answer Drop Zone -->
+          <div
+            id="slot-${rowIndex}"
+            data-row="${rowIndex}"
+            onclick="handleSlotClick(${rowIndex})"
+            ondragover="handleDragOver(event, ${rowIndex})"
+            ondragleave="handleDragLeave(${rowIndex})"
+            ondrop="handleDrop(event, ${rowIndex})"
+            class="answer-slot w-24 sm:w-28 md:w-32 h-14 sm:h-16 flex items-center justify-center cursor-pointer shrink-0 ${selectedOptionId && !placedItem ? 'ready-target' : ''}"
+            title="விடையை இங்கே வைக்கவும்"
+          >
+            ${
+              placedItem
+                ? `<div class="animate-pop pointer-events-none">${renderFractionHTML(placedItem, true)}</div>`
+                : `<span class="text-pink-300 text-xs sm:text-sm font-semibold pointer-events-none">? மீ</span>`
+            }
+          </div>
+        `;
+
+        rowsContainer.appendChild(rowEl);
+      });
+
+      // Render right-side peach box option cards
+      optionsContainer.innerHTML = '';
+      optionTiles.forEach((optItem, idx) => {
+        const isUsed = placedAnswers.includes(optItem.id);
+        const isSelected = selectedOptionId === optItem.id;
+        // Slight staggered vertical offset on desktop to mirror the playful textbook layout
+        const staggerClass = idx % 2 === 1 ? 'sm:mt-3' : '';
+
+        const tileEl = document.createElement('div');
+        tileEl.draggable = !isUsed;
+        tileEl.className = `fraction-tile w-24 sm:w-28 h-16 sm:h-20 flex items-center justify-center ${staggerClass} ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}`;
+        tileEl.innerHTML = renderFractionHTML(optItem, false);
+
+        if (!isUsed) {
+          tileEl.onclick = () => handleOptionClick(optItem.id);
+          tileEl.ondragstart = (e) => handleDragStart(e, optItem.id);
+          tileEl.ondragend = () => handleDragEnd();
+        }
+
+        optionsContainer.appendChild(tileEl);
+      });
+    }
+
+    // Tap/Click handler on an option card
+    function handleOptionClick(optionId) {
+      hideFeedback();
+      if (selectedOptionId === optionId) {
+        selectedOptionId = null;
+      } else {
+        selectedOptionId = optionId;
+        playSound('place');
+      }
+      renderBoard();
+    }
+
+    // Tap/Click handler on a pink answer slot
+    function handleSlotClick(rowIndex) {
+      hideFeedback();
+      // If a card is currently selected from the option bank, place it here
+      if (selectedOptionId) {
+        placedAnswers[rowIndex] = selectedOptionId;
+        selectedOptionId = null;
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      // Otherwise, if this slot already has a card, return it to the option bank
+      if (placedAnswers[rowIndex] !== null) {
+        placedAnswers[rowIndex] = null;
+        playSound('remove');
+        renderBoard();
+      } else {
+        // Auto-place the first available unused option if student taps empty slot directly without selecting first
+        showFeedback('முதலில் வலதுபுறம் உள்ள மீட்டர் அட்டையைத் தொடவும் அல்லது இழுக்கவும்.', 'info');
+      }
+    }
+
+    // HTML5 Drag & Drop Handlers
+    function handleDragStart(e, optionId) {
+      draggedOptionId = optionId;
+      selectedOptionId = optionId;
+      if (e.dataTransfer) {
+        e.dataTransfer.setData('text/plain', optionId);
+        e.dataTransfer.effectAllowed = 'move';
+      }
+    }
+
+    function handleDragEnd() {
+      draggedOptionId = null;
+      document.querySelectorAll('.answer-slot').forEach(el => el.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e, rowIndex) {
+      e.preventDefault();
+      const slotEl = document.getElementById(`slot-${rowIndex}`);
+      if (slotEl) slotEl.classList.add('drag-over');
+    }
+
+    function handleDragLeave(rowIndex) {
+      const slotEl = document.getElementById(`slot-${rowIndex}`);
+      if (slotEl) slotEl.classList.remove('drag-over');
+    }
+
+    function handleDrop(e, rowIndex) {
+      e.preventDefault();
+      const slotEl = document.getElementById(`slot-${rowIndex}`);
+      if (slotEl) slotEl.classList.remove('drag-over');
+
+      const droppedId = draggedOptionId || (e.dataTransfer && e.dataTransfer.getData('text/plain'));
+      if (!droppedId) return;
+
+      // Remove from any previous slot if moved
+      const existingIndex = placedAnswers.indexOf(droppedId);
+      if (existingIndex !== -1) {
+        placedAnswers[existingIndex] = null;
+      }
+
+      placedAnswers[rowIndex] = droppedId;
+      selectedOptionId = null;
+      draggedOptionId = null;
+      hideFeedback();
+      playSound('place');
+      renderBoard();
+    }
+
+    // Validates all 4 slots against the correct centimetre-to-metre conversions
+    function checkAnswers() {
+      // Ensure all 4 slots are filled first
+      if (placedAnswers.includes(null)) {
+        playSound('error');
+        showFeedback('அனைத்து 4 பெட்டிகளிலும் விடைகளை நிரப்பவும்! (Please fill all 4 boxes)', 'warning');
+        return;
+      }
+
+      let correctCount = 0;
+      currentRows.forEach((rowItem, idx) => {
+        const slotEl = document.getElementById(`slot-${idx}`);
+        slotEl.classList.remove('correct', 'incorrect');
+
+        if (placedAnswers[idx] === rowItem.id) {
+          correctCount++;
+          slotEl.classList.add('correct');
+        } else {
+          slotEl.classList.add('incorrect');
+        }
+      });
+
+      if (correctCount === 4) {
+        playSound('success');
+        if (!roundScored) {
+          totalScore += 10;
+          roundScored = true;
+          document.getElementById('scoreCounter').textContent = `மதிப்பெண் (Score): ${totalScore}`;
+        }
+        showFeedback('மிக நன்று! 4/4 சரியான விடைகள்! அடுத்த பயிற்சிக்கு "Reset Numbers" அழுத்தவும்.', 'success');
+      } else {
+        playSound('error');
+        showFeedback(`${correctCount} / 4 சரி. சிவப்பு நிறப் பெட்டிகளைத் தொட்டு மீண்டும் முயற்சிக்கவும்!`, 'error');
+      }
+    }
+
+    function showFeedback(message, type) {
+      const banner = document.getElementById('feedbackBanner');
+      banner.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'border-emerald-300', 'bg-rose-100', 'text-rose-900', 'border-rose-300', 'bg-amber-100', 'text-amber-900', 'border-amber-300', 'bg-sky-100', 'text-sky-900', 'border-sky-300');
+      banner.classList.add('border');
+
+      if (type === 'success') {
+        banner.classList.add('bg-emerald-100', 'text-emerald-900', 'border-emerald-300');
+      } else if (type === 'error') {
+        banner.classList.add('bg-rose-100', 'text-rose-900', 'border-rose-300');
+      } else if (type === 'warning') {
+        banner.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+      } else {
+        banner.classList.add('bg-sky-100', 'text-sky-900', 'border-sky-300');
+      }
+
+      banner.textContent = message;
+    }
+
+    function hideFeedback() {
+      const banner = document.getElementById('feedbackBanner');
+      banner.classList.add('hidden');
+    }
+
+    // Start game on page load
+    window.addEventListener('DOMContentLoaded', initInitialGame);
+  </script>
+</body>
+</html>

@@ -178,36 +178,55 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 3 Flashlight / Gauge Bar + Colored Bucket Card (matching 4.3 image) */
-    .l3-bar {
-      background: #ffffff;
-      border: 2.5px solid #334155;
-      border-radius: 9999px 0 0 9999px;
-      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+    /* Level 3 Torchlight Silhouette (matching 4.3 image) */
+    .torch-item {
+      filter: drop-shadow(0 3px 5px rgba(15, 23, 42, 0.12));
+      transition: transform 0.18s ease, filter 0.2s ease;
+    }
+
+    .torch-item:hover {
+      transform: translateY(-1px);
+    }
+
+    .torch-body-svg {
+      display: block;
+      width: 100%;
+      height: 54px;
+    }
+
+    .torch-body-label {
       font-family: 'Inter', sans-serif;
       font-weight: 700;
       color: #1e293b;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
     }
 
-    .l3-bucket {
+    .torch-head-box {
       background: #ffffff;
       border-width: 3px;
       border-style: solid;
-      border-radius: 6px 18px 18px 6px;
-      box-shadow: 0 3px 7px rgba(15, 23, 42, 0.1);
+      border-radius: 5px 15px 15px 5px;
+      box-shadow:
+        inset 4px 0 0 rgba(15, 23, 42, 0.78),
+        0 3px 6px rgba(15, 23, 42, 0.12);
       transition: all 0.2s ease;
-      position: relative;
     }
 
-    .l3-bucket.correct {
+    .torch-head-box.correct {
       border-color: #16a34a !important;
       background-color: #f0fdf4 !important;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
+      box-shadow:
+        inset 4px 0 0 #15803d,
+        0 0 0 3px rgba(22, 163, 74, 0.22);
     }
 
-    .l3-bucket.incorrect {
+    .torch-head-box.incorrect {
       border-color: #dc2626 !important;
       background-color: #fef2f2 !important;
+      box-shadow:
+        inset 4px 0 0 #b91c1c,
+        0 0 0 3px rgba(220, 38, 38, 0.22);
       animation: shake 0.38s ease-in-out;
     }
 
@@ -993,24 +1012,40 @@
           rowsContainer.appendChild(rowEl);
         });
       } else {
-        // Render Level3-M05-4.3 (Matching workbook 4.3 bar + colored answer bucket layout)
+        // Render Level3-M05-4.3 (Torchlight silhouette: rounded handle + flared head)
         const disabledAttr = levelCompleted ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
           const ans = l3TypedAnswers[rowIndex];
           const cardEl = document.createElement('div');
-          cardEl.className = 'flex items-center bg-white/80 rounded-xl p-2 border border-slate-200/80';
+          cardEl.className = 'torch-item flex items-center py-1';
 
           cardEl.innerHTML = `
-            <!-- Left Measurement Pill -->
-            <div class="l3-bar flex-1 h-12 sm:h-14 flex items-center justify-center px-3 text-sm sm:text-lg">
-              ${rowItem.label}
+            <!-- Torch Handle with Question Text -->
+            <div class="relative flex-1 min-w-0 h-[54px] flex items-center justify-center">
+              <svg
+                class="torch-body-svg"
+                viewBox="0 0 220 54"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M 24 11 H 220 V 43 H 24 A 13 13 0 0 1 24 11 Z"
+                  fill="#ffffff"
+                  stroke="#1e293b"
+                  stroke-width="2.6"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+              <span class="torch-body-label relative z-10 pl-3 pr-2 text-sm sm:text-base">
+                ${rowItem.label}
+              </span>
             </div>
 
-            <!-- Right Colored Fraction Answer Bucket -->
+            <!-- Flared Torch Head / Lens Frame for Fraction Answer -->
             <div
               id="l3-bucket-${rowIndex}"
-              class="l3-bucket w-36 sm:w-44 h-16 sm:h-20 flex items-center justify-center gap-1.5 px-2 shrink-0 -ml-1"
+              class="torch-head-box w-36 sm:w-40 h-[68px] flex items-center justify-center gap-1.5 px-2 shrink-0 -ml-0.5"
               style="border-color: ${rowItem.borderColor};"
             >
               <input
@@ -1022,7 +1057,7 @@
                 oninput="updateL3Answer(${rowIndex}, 'whole', this.value)"
                 placeholder="?"
                 aria-label="Whole number for ${rowItem.label}"
-                class="frac-input w-8 sm:w-9 h-8 text-sm sm:text-base"
+                class="frac-input w-8 h-8 text-sm sm:text-base"
               />
 
               <div class="inline-flex flex-col items-center justify-center gap-0.5">
@@ -1035,9 +1070,9 @@
                   oninput="updateL3Answer(${rowIndex}, 'num', this.value)"
                   placeholder="n"
                   aria-label="Numerator for ${rowItem.label}"
-                  class="frac-input w-7 sm:w-8 h-6 text-xs sm:text-sm"
+                  class="frac-input w-7 h-6 text-xs sm:text-sm"
                 />
-                <span class="w-8 sm:w-9 h-[2px] bg-pink-600 rounded-full"></span>
+                <span class="w-8 h-[2px] bg-pink-600 rounded-full"></span>
                 <input
                   type="text"
                   inputmode="numeric"
@@ -1047,7 +1082,7 @@
                   oninput="updateL3Answer(${rowIndex}, 'den', this.value)"
                   placeholder="d"
                   aria-label="Denominator for ${rowItem.label}"
-                  class="frac-input w-7 sm:w-8 h-6 text-xs sm:text-sm"
+                  class="frac-input w-7 h-6 text-xs sm:text-sm"
                 />
               </div>
 

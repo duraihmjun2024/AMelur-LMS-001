@@ -147,6 +147,8 @@
                             <option value="E02">Game: E02</option>
                             <option value="E03">Game: E03</option>
                             <option value="E04">Game: E04</option>
+                            <option value="M03">Game: M03</option>
+                            <option value="M05">Game: M05</option>
                             <option value="ALL">All Games</option>
                         </select>
                     </div>
@@ -204,6 +206,8 @@
                             <option value="E02">Game: E02</option>
                             <option value="E03">Game: E03</option>
                             <option value="E04">Game: E04</option>
+                            <option value="M03">Game: M03</option>
+                            <option value="M05">Game: M05</option>
                             <option value="ALL">All Games</option>
                         </select>
                         <select id="classSelectLeaderboard" onchange="loadClassLeaderboard(this.value)" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
@@ -338,21 +342,22 @@
         let isOverallExpanded = false;
         let isClassExpanded = false;
         let currentUserStudentId = "1B01";
-        let currentGameCode = "E04";
-        let expandedGameCodes = new Set(["E04"]);
+        let currentGameCode = "M05";
+        let expandedGameCodes = new Set(["M05", "E04"]);
         let expandedSubmissionClasses = new Set(["1"]);
         let isUnavailableGamesExpanded = false;
         let dashboardExpandedStandardsByGame = {
+            M05: new Set(["5", "4", "3", "2", "1"]),
             E04: new Set(["5", "4", "3", "2", "1"]),
             E03: new Set(["5", "4", "3", "2", "1"])
         };
 
-        const READY_GAMES = ["E02", "E03", "E04", "M03"];
+        const READY_GAMES = ["E02", "E03", "E04", "M03", "M05"];
         const SUB_IDS = ["1", "2", "3"];
         const DASHBOARD_STANDARDS = ["5", "4", "3", "2", "1"];
 
         function getDashboardStandardSet(gCode) {
-            const key = String(gCode || 'E04').trim().toUpperCase();
+            const key = String(gCode || 'M05').trim().toUpperCase();
             if (!dashboardExpandedStandardsByGame[key]) {
                 dashboardExpandedStandardsByGame[key] = new Set(["5", "4", "3", "2", "1"]);
             }
@@ -360,7 +365,7 @@
         }
 
         function toggleDashboardStandard(gCode, std) {
-            const key = String(gCode || 'E04').trim().toUpperCase();
+            const key = String(gCode || 'M05').trim().toUpperCase();
             const stdKey = String(std);
             const set = getDashboardStandardSet(key);
             if (set.has(stdKey)) {
@@ -372,7 +377,7 @@
         }
 
         function setAllDashboardStandards(gCode, expand) {
-            const key = String(gCode || 'E04').trim().toUpperCase();
+            const key = String(gCode || 'M05').trim().toUpperCase();
             dashboardExpandedStandardsByGame[key] = expand ? new Set(["5", "4", "3", "2", "1"]) : new Set();
             renderStudentEntryGrid();
         }
@@ -527,7 +532,7 @@
                         currentGameCode = data.latestGameCode || gameRecordsData[0].gameCode;
                     } else if (data.latestStudentId) {
                         currentUserStudentId = data.latestStudentId;
-                        currentGameCode = data.latestGameCode || "E04";
+                        currentGameCode = data.latestGameCode || "M05";
                     }
 
                     const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
@@ -541,15 +546,16 @@
                     const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
                     document.getElementById('classSelectLeaderboard').value = studentStd;
 
+                    populateGameSelectors();
                     updateAllHomepageTables();
                 });
         }
 
         function populateGameSelectors() {
             const activeGames = [...new Set(gameRecordsData.map(r => r.gameCode).filter(Boolean))];
-            if (!activeGames.includes("E04")) activeGames.unshift("E04");
-            if (!activeGames.includes("E03")) activeGames.unshift("E03");
-            if (!activeGames.includes("E02")) activeGames.unshift("E02");
+            READY_GAMES.slice().reverse().forEach(g => {
+                if (!activeGames.includes(g)) activeGames.unshift(g);
+            });
 
             const overallSel = document.getElementById('overallGameSelect');
             const classSel = document.getElementById('classGameSelect');
@@ -567,7 +573,7 @@
         }
 
         function setGameMatrixCode(code) {
-            const cleaned = (code || 'E04').trim().toUpperCase();
+            const cleaned = (code || 'M05').trim().toUpperCase();
             currentGameCode = cleaned;
             renderStudentEntryGrid();
             renderGameStudentSubmissionMatrix();
@@ -1107,7 +1113,7 @@
         }
 
         function buildGameDashboardMatrixHtml(activeGameCode) {
-            const activeGame = String(activeGameCode || 'E04').trim().toUpperCase();
+            const activeGame = String(activeGameCode || 'M05').trim().toUpperCase();
             const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
             const expandedStds = getDashboardStandardSet(activeGame);
 
@@ -1673,6 +1679,8 @@
                 let targetGameFile = 'Days.html';
                 if (currentGameCode === 'M03') {
                     targetGameFile = 'SkipCounter.html';
+                } else if (currentGameCode === 'M05') {
+                    targetGameFile = 'M05-MathsWB37.html';
                 } else if (currentGameCode === 'E04') {
                     targetGameFile = 'Months.html';
                 }
@@ -1684,6 +1692,7 @@
         }
 
         window.onload = function() {
+            populateGameSelectors();
             updateAllHomepageTables();
             fetchLiveSheetData();
         };

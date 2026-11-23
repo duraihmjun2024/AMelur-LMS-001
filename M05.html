@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - அளவைகள் (4.1 & 4.2) | AMelur-LMS-001</title>
+  <title>Game M05 - அளவைகள் (4.1, 4.2 & 4.3) | AMelur-LMS-001</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Noto Sans Tamil & Inter -->
@@ -36,7 +36,14 @@
       box-shadow: 0 2px 6px rgba(202, 138, 4, 0.14);
     }
 
-    /* White badge for Level 1 (4.1) */
+    /* Level 3 Soft mint-green textbook header banner (matching 4.3 image) */
+    .textbook-header-l3 {
+      background: linear-gradient(180deg, #bbf7d0 0%, #dcfce7 65%, #f0fdf4 100%);
+      border-bottom: 3px dashed #ffffff;
+      box-shadow: 0 2px 6px rgba(21, 128, 61, 0.14);
+    }
+
+    /* Badges */
     .badge-l1 {
       background: #ffffff;
       border: 2px solid #0284c7;
@@ -47,7 +54,6 @@
       box-shadow: 0 2px 4px rgba(2, 132, 199, 0.15);
     }
 
-    /* White badge for Level 2 (4.2) */
     .badge-l2 {
       background: #ffffff;
       border: 2px solid #f59e0b;
@@ -56,6 +62,16 @@
       font-family: 'Inter', sans-serif;
       font-weight: 800;
       box-shadow: 0 2px 4px rgba(245, 158, 11, 0.15);
+    }
+
+    .badge-l3 {
+      background: #ffffff;
+      border: 2px solid #16a34a;
+      border-radius: 10px 10px 10px 2px;
+      color: #15803d;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      box-shadow: 0 2px 4px rgba(22, 163, 74, 0.15);
     }
 
     /* Teal/Emerald 3D-bevel ribbon for Level 1 */
@@ -162,7 +178,63 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Stage 2 numeric inputs inside km / m box */
+    /* Level 3 Flashlight / Gauge Bar + Colored Bucket Card (matching 4.3 image) */
+    .l3-bar {
+      background: #ffffff;
+      border: 2.5px solid #334155;
+      border-radius: 9999px 0 0 9999px;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .l3-bucket {
+      background: #ffffff;
+      border-width: 3px;
+      border-style: solid;
+      border-radius: 6px 18px 18px 6px;
+      box-shadow: 0 3px 7px rgba(15, 23, 42, 0.1);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .l3-bucket.correct {
+      border-color: #16a34a !important;
+      background-color: #f0fdf4 !important;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
+    }
+
+    .l3-bucket.incorrect {
+      border-color: #dc2626 !important;
+      background-color: #fef2f2 !important;
+      animation: shake 0.38s ease-in-out;
+    }
+
+    /* Numeric inputs for whole, numerator, denominator */
+    .frac-input {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      background-color: #f8fafc;
+      color: #ec4899;
+      outline: none;
+      transition: border-color 0.18s ease, background-color 0.18s ease;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .frac-input:focus {
+      border-color: #ec4899;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.18);
+    }
+    .frac-input::placeholder {
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
     .km-m-input {
       font-family: 'Inter', sans-serif;
       font-weight: 800;
@@ -280,11 +352,11 @@
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/8</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/12</span>
       </div>
     </div>
 
-    <!-- Textbook Header (Switches cleanly between 4.1 and 4.2) -->
+    <!-- Textbook Header (Switches cleanly across 4.1, 4.2 & 4.3) -->
     <header id="textbookHeader" class="textbook-header-l1 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3 sm:gap-4">
         <div class="badge-l1 px-3 py-1 text-base sm:text-xl tracking-tight" id="badgeActivityCode">
@@ -386,7 +458,7 @@
       </div>
       <h2 class="text-xl font-extrabold text-slate-900">வாழ்த்துகள்! (Congratulations!)</h2>
       <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        நீங்கள் Level1-M05-4.1 மற்றும் Level2-M05-4.2 இரண்டையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+        நீங்கள் Level1-M05-4.1, Level2-M05-4.2 மற்றும் Level3-M05-4.3 அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
@@ -394,6 +466,7 @@
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Name:</span> <span class="font-bold text-slate-800" id="sumStudentName">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level1-M05-4.1:</span> <span class="font-bold text-blue-700" id="sumL1">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level2-M05-4.2:</span> <span class="font-bold text-purple-700" id="sumL2">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level3-M05-4.3:</span> <span class="font-bold text-emerald-700" id="sumL3">--</span></div>
         <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saving to Google Sheet...</span></div>
       </div>
@@ -465,26 +538,62 @@
       { whole: 4, num: 3, den: 4, km: 4, m: 750 }
     ];
 
+    // Level3-M05-4.3 Question Pool ("Write the fractional form.")
+    // Includes 1 m 50 cm -> 1 1/2 m, 2 m 25 cm -> 2 1/4 m, 3 m 75 cm -> 3 3/4 m,
+    // 5 km 750 m -> 5 3/4 km, 7 km 500 m -> 7 1/2 km, 9 km 250 m -> 9 1/4 km, plus randomized sets
+    const LEVEL3_POOL = [
+      { label: '1 m 50 cm',  unit: 'm',  whole: 1, num: 1, den: 2 },
+      { label: '2 m 25 cm',  unit: 'm',  whole: 2, num: 1, den: 4 },
+      { label: '3 m 75 cm',  unit: 'm',  whole: 3, num: 3, den: 4 },
+      { label: '4 m 50 cm',  unit: 'm',  whole: 4, num: 1, den: 2 },
+      { label: '5 km 750 m', unit: 'km', whole: 5, num: 3, den: 4 },
+      { label: '7 km 500 m', unit: 'km', whole: 7, num: 1, den: 2 },
+      { label: '9 km 250 m', unit: 'km', whole: 9, num: 1, den: 4 },
+      { label: '6 km 250 m', unit: 'km', whole: 6, num: 1, den: 4 },
+      { label: '8 km 750 m', unit: 'km', whole: 8, num: 3, den: 4 },
+      { label: '4 km 500 m', unit: 'km', whole: 4, num: 1, den: 2 },
+      { label: '6 m 25 cm',  unit: 'm',  whole: 6, num: 1, den: 4 },
+      { label: '8 m 75 cm',  unit: 'm',  whole: 8, num: 3, den: 4 }
+    ];
+
+    const L3_BUCKET_COLORS = [
+      '#f59e0b', // Amber/Yellow (top-left)
+      '#f87171', // Coral/Red (top-right)
+      '#ef4444', // Red (mid-left)
+      '#84cc16', // Lime/Green (mid-right)
+      '#c084fc', // Lavender/Purple (bottom-left)
+      '#60a5fa'  // Sky Blue (bottom-right)
+    ];
+
     // Game & LMS Tracking State
-    let currentLevel = 1; // 1 = Level1-M05-4.1, 2 = Level2-M05-4.2
+    let currentLevel = 1; // 1 = Level1-M05-4.1, 2 = Level2-M05-4.2, 3 = Level3-M05-4.3
     let currentRows = [];
     let optionTiles = [];
-    let placedAnswers = [null, null, null, null]; // Level 1 drag/drop answers
+    let placedAnswers = [null, null, null, null];
     let l2TypedAnswers = [
       { km: '', m: '' },
       { km: '', m: '' },
       { km: '', m: '' },
       { km: '', m: '' }
-    ]; // Level 2 km & m answers
+    ];
+    let l3TypedAnswers = [
+      { whole: '', num: '', den: '' },
+      { whole: '', num: '', den: '' },
+      { whole: '', num: '', den: '' },
+      { whole: '', num: '', den: '' },
+      { whole: '', num: '', den: '' },
+      { whole: '', num: '', den: '' }
+    ];
     let selectedOptionId = null;
     let draggedOptionId = null;
     let levelCompleted = false;
     let isSubmittedToSheet = false;
 
-    // Score & Time tracking per level for AMelur-LMS-001 leaderboard
+    // Score & Time tracking across 3 levels (4 + 4 + 6 = 14 total questions)
     let levelStats = {
       1: { correct: 0, total: 4, seconds: 0 },
-      2: { correct: 0, total: 4, seconds: 0 }
+      2: { correct: 0, total: 4, seconds: 0 },
+      3: { correct: 0, total: 6, seconds: 0 }
     };
     let levelStartTime = Date.now();
     let timerInterval = null;
@@ -530,21 +639,30 @@
         if (!levelCompleted) {
           const elapsed = Math.floor((Date.now() - levelStartTime) / 1000);
           levelStats[currentLevel].seconds = elapsed;
-          const totalElapsed = levelStats[1].seconds + (currentLevel === 2 ? levelStats[2].seconds : 0);
+          const totalElapsed =
+            levelStats[1].seconds +
+            (currentLevel >= 2 ? levelStats[2].seconds : 0) +
+            (currentLevel >= 3 ? levelStats[3].seconds : 0);
           document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(totalElapsed);
         }
       }, 1000);
     }
 
+    function getLevelTag(lvl) {
+      if (lvl === 1) return 'Level1-M05-4.1';
+      if (lvl === 2) return 'Level2-M05-4.2';
+      return 'Level3-M05-4.3';
+    }
+
     function updateHeaderDisplay() {
-      const levelTag = currentLevel === 1 ? 'Level1-M05-4.1' : 'Level2-M05-4.2';
+      const levelTag = getLevelTag(currentLevel);
       document.getElementById('studentInfoBadge').textContent =
         lmsContext.studentId !== 'GUEST'
           ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
           : `${levelTag} • அளவைகள் (Practice Mode)`;
-      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/2)`;
-      const totCorrect = levelStats[1].correct + levelStats[2].correct;
-      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/8`;
+      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/3)`;
+      const totCorrect = levelStats[1].correct + levelStats[2].correct + levelStats[3].correct;
+      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/14`;
     }
 
     function shuffleArray(array) {
@@ -587,6 +705,14 @@
         { km: '', m: '' },
         { km: '', m: '' }
       ];
+      l3TypedAnswers = [
+        { whole: '', num: '', den: '' },
+        { whole: '', num: '', den: '' },
+        { whole: '', num: '', den: '' },
+        { whole: '', num: '', den: '' },
+        { whole: '', num: '', den: '' },
+        { whole: '', num: '', den: '' }
+      ];
       selectedOptionId = null;
 
       document.getElementById('nextLevelBtn').classList.add('hidden');
@@ -613,15 +739,14 @@
           'Level1-M05-4.1: வலதுபுறம் உள்ள மீட்டர் அட்டைகளை இழுத்து (Drag) அல்லது தொட்டு (Tap) சரியான பெட்டியில் வைக்கவும்.';
 
         optionBankWrapper.classList.remove('hidden');
-        rowsContainer.classList.remove('lg:col-span-12');
-        rowsContainer.classList.add('lg:col-span-8');
+        rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-4 sm:gap-5';
 
         currentRows = shuffleArray(LEVEL1_POOL).slice(0, 4);
         optionTiles = shuffleArray(currentRows);
         if (optionTiles.every((opt, idx) => opt.id === currentRows[idx].id)) {
           optionTiles.reverse();
         }
-      } else {
+      } else if (currentLevel === 2) {
         // Level2-M05-4.2: Distance between two places in kilometres and metres
         headerEl.className = 'textbook-header-l2 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l2 px-3 py-1 text-base sm:text-xl tracking-tight';
@@ -633,8 +758,7 @@
           'Level2-M05-4.2: Fill in the distance between each pair of places in km and m (e.g., 1 ½ km = 1 km 500 m).';
 
         optionBankWrapper.classList.add('hidden');
-        rowsContainer.classList.remove('lg:col-span-8');
-        rowsContainer.classList.add('lg:col-span-12');
+        rowsContainer.className = 'lg:col-span-12 divide-y divide-slate-300 bg-white rounded-xl border border-slate-300 overflow-hidden';
         optionTiles = [];
 
         const randomPlaces = shuffleArray(PLACE_PAIRS).slice(0, 4);
@@ -642,6 +766,26 @@
         currentRows = randomPlaces.map((placeObj, idx) => ({
           ...placeObj,
           ...randomDists[idx]
+        }));
+      } else {
+        // Level3-M05-4.3: Write the fractional form (m & km)
+        headerEl.className = 'textbook-header-l3 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
+        badgeEl.className = 'badge-l3 px-3 py-1 text-base sm:text-xl tracking-tight';
+        badgeEl.textContent = '4.3';
+        titleEl.textContent = 'Write the fractional form.';
+        hintEl.textContent = '100 cm = 1 m • 1000 m = 1 km';
+        hintEl.className = 'text-xs sm:text-sm font-semibold text-emerald-950 bg-white/85 px-3 py-1 rounded-full border border-emerald-300';
+        subHeaderEl.textContent =
+          'Level3-M05-4.3: Convert each measurement into mixed fraction form (e.g., 1 m 50 cm → 1 ½ m).';
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5';
+        optionTiles = [];
+
+        // Pick 6 randomized questions from LEVEL3_POOL
+        currentRows = shuffleArray(LEVEL3_POOL).slice(0, 6).map((item, idx) => ({
+          ...item,
+          borderColor: L3_BUCKET_COLORS[idx % L3_BUCKET_COLORS.length]
         }));
       }
 
@@ -661,12 +805,21 @@
       if (currentLevel === 1) {
         placedAnswers = [null, null, null, null];
         selectedOptionId = null;
-      } else {
+      } else if (currentLevel === 2) {
         l2TypedAnswers = [
           { km: '', m: '' },
           { km: '', m: '' },
           { km: '', m: '' },
           { km: '', m: '' }
+        ];
+      } else {
+        l3TypedAnswers = [
+          { whole: '', num: '', den: '' },
+          { whole: '', num: '', den: '' },
+          { whole: '', num: '', den: '' },
+          { whole: '', num: '', den: '' },
+          { whole: '', num: '', den: '' },
+          { whole: '', num: '', den: '' }
         ];
       }
       hideFeedback();
@@ -680,6 +833,15 @@
       const boxEl = document.getElementById(`l2-box-${rowIndex}`);
       if (boxEl) {
         boxEl.classList.remove('correct', 'incorrect');
+      }
+    }
+
+    function updateL3Answer(rowIndex, field, value) {
+      const cleaned = value.replace(/[^0-9]/g, '').slice(0, 2);
+      l3TypedAnswers[rowIndex][field] = cleaned;
+      const bucketEl = document.getElementById(`l3-bucket-${rowIndex}`);
+      if (bucketEl) {
+        bucketEl.classList.remove('correct', 'incorrect');
       }
     }
 
@@ -755,11 +917,8 @@
 
           optionsContainer.appendChild(tileEl);
         });
-      } else {
-        // Render Level2-M05-4.2 (Matching the uploaded workbook image 4.2 layout)
-        rowsContainer.classList.remove('gap-4', 'sm:gap-5');
-        rowsContainer.classList.add('divide-y', 'divide-slate-300', 'bg-white', 'rounded-xl', 'border', 'border-slate-300', 'overflow-hidden');
-
+      } else if (currentLevel === 2) {
+        // Render Level2-M05-4.2
         const disabledAttr = levelCompleted ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
@@ -768,7 +927,6 @@
           rowEl.className = 'grid grid-cols-1 sm:grid-cols-12 items-center gap-3 p-3 sm:px-6 sm:py-3.5 bg-white hover:bg-slate-50/60 transition';
 
           rowEl.innerHTML = `
-            <!-- Left Place Box -->
             <div class="sm:col-span-4 flex justify-center">
               <div
                 class="place-box w-full max-w-[190px] py-2.5 px-3 text-center text-sm sm:text-base"
@@ -778,14 +936,11 @@
               </div>
             </div>
 
-            <!-- Center Distance Fraction Pill + Double Arrow + Fill-in km/m Pill -->
             <div class="sm:col-span-4 flex flex-col items-center justify-center gap-1">
-              <!-- Top Mixed Fraction Pill -->
               <div class="dist-pill-top w-full max-w-[200px] py-1.5 px-4 flex items-center justify-center">
                 ${renderFractionHTML(rowItem, 'km', true)}
               </div>
 
-              <!-- Teal Double-Headed Arrow -->
               <div class="w-full max-w-[215px] flex items-center justify-center my-0.5" aria-hidden="true">
                 <svg class="w-full h-4 text-emerald-500" viewBox="0 0 220 18" fill="none">
                   <line x1="12" y1="9" x2="208" y2="9" stroke="currentColor" stroke-width="2.5" />
@@ -794,7 +949,6 @@
                 </svg>
               </div>
 
-              <!-- Bottom Fill-in Answer Pill (km and m) -->
               <div
                 id="l2-box-${rowIndex}"
                 class="dist-pill-bottom w-full max-w-[205px] py-1.5 px-2.5 flex items-center justify-center gap-1.5"
@@ -826,7 +980,6 @@
               </div>
             </div>
 
-            <!-- Right Place Box -->
             <div class="sm:col-span-4 flex justify-center">
               <div
                 class="place-box w-full max-w-[190px] py-2.5 px-3 text-center text-sm sm:text-base"
@@ -838,6 +991,71 @@
           `;
 
           rowsContainer.appendChild(rowEl);
+        });
+      } else {
+        // Render Level3-M05-4.3 (Matching workbook 4.3 bar + colored answer bucket layout)
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+
+        currentRows.forEach((rowItem, rowIndex) => {
+          const ans = l3TypedAnswers[rowIndex];
+          const cardEl = document.createElement('div');
+          cardEl.className = 'flex items-center bg-white/80 rounded-xl p-2 border border-slate-200/80';
+
+          cardEl.innerHTML = `
+            <!-- Left Measurement Pill -->
+            <div class="l3-bar flex-1 h-12 sm:h-14 flex items-center justify-center px-3 text-sm sm:text-lg">
+              ${rowItem.label}
+            </div>
+
+            <!-- Right Colored Fraction Answer Bucket -->
+            <div
+              id="l3-bucket-${rowIndex}"
+              class="l3-bucket w-36 sm:w-44 h-16 sm:h-20 flex items-center justify-center gap-1.5 px-2 shrink-0 -ml-1"
+              style="border-color: ${rowItem.borderColor};"
+            >
+              <input
+                type="text"
+                inputmode="numeric"
+                maxlength="2"
+                value="${ans.whole}"
+                ${disabledAttr}
+                oninput="updateL3Answer(${rowIndex}, 'whole', this.value)"
+                placeholder="?"
+                aria-label="Whole number for ${rowItem.label}"
+                class="frac-input w-8 sm:w-9 h-8 text-sm sm:text-base"
+              />
+
+              <div class="inline-flex flex-col items-center justify-center gap-0.5">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="2"
+                  value="${ans.num}"
+                  ${disabledAttr}
+                  oninput="updateL3Answer(${rowIndex}, 'num', this.value)"
+                  placeholder="n"
+                  aria-label="Numerator for ${rowItem.label}"
+                  class="frac-input w-7 sm:w-8 h-6 text-xs sm:text-sm"
+                />
+                <span class="w-8 sm:w-9 h-[2px] bg-pink-600 rounded-full"></span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="2"
+                  value="${ans.den}"
+                  ${disabledAttr}
+                  oninput="updateL3Answer(${rowIndex}, 'den', this.value)"
+                  placeholder="d"
+                  aria-label="Denominator for ${rowItem.label}"
+                  class="frac-input w-7 sm:w-8 h-6 text-xs sm:text-sm"
+                />
+              </div>
+
+              <span class="font-extrabold text-pink-600 text-sm sm:text-base ml-0.5">${rowItem.unit}</span>
+            </div>
+          `;
+
+          rowsContainer.appendChild(cardEl);
         });
       }
     }
@@ -944,9 +1162,8 @@
           }
         });
 
-        handleCheckOutcome(correctCount);
-      } else {
-        // Level2-M05-4.2: Check km and m values
+        handleCheckOutcome(correctCount, 4);
+      } else if (currentLevel === 2) {
         const hasBlank = l2TypedAnswers.some(ans => ans.km.trim() === '' || ans.m.trim() === '');
         if (hasBlank) {
           playSound('error');
@@ -970,18 +1187,52 @@
           }
         });
 
-        handleCheckOutcome(correctCount);
+        handleCheckOutcome(correctCount, 4);
+      } else {
+        // Level3-M05-4.3: Check whole, numerator, and denominator for all 6 items
+        const hasBlank = l3TypedAnswers.some(
+          ans => ans.whole.trim() === '' || ans.num.trim() === '' || ans.den.trim() === ''
+        );
+        if (hasBlank) {
+          playSound('error');
+          showFeedback('Please fill in the whole number, numerator, and denominator for all 6 items!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((rowItem, idx) => {
+          const bucketEl = document.getElementById(`l3-bucket-${idx}`);
+          bucketEl.classList.remove('correct', 'incorrect');
+
+          const wVal = parseInt(l3TypedAnswers[idx].whole.trim(), 10);
+          const nVal = parseInt(l3TypedAnswers[idx].num.trim(), 10);
+          const dVal = parseInt(l3TypedAnswers[idx].den.trim(), 10);
+
+          // Accept exact fraction match or equivalent simplified fraction (e.g., 2/4 equals 1/2)
+          const userFracVal = dVal !== 0 ? nVal / dVal : -1;
+          const targetFracVal = rowItem.num / rowItem.den;
+          const isFracEqual = dVal !== 0 && Math.abs(userFracVal - targetFracVal) < 0.0001;
+
+          if (wVal === rowItem.whole && isFracEqual) {
+            correctCount++;
+            bucketEl.classList.add('correct');
+          } else {
+            bucketEl.classList.add('incorrect');
+          }
+        });
+
+        handleCheckOutcome(correctCount, 6);
       }
     }
 
-    function handleCheckOutcome(correctCount) {
-      if (correctCount === 4) {
+    function handleCheckOutcome(correctCount, targetTotal) {
+      if (correctCount === targetTotal) {
         playSound('success');
         levelCompleted = true;
-        levelStats[currentLevel].correct = 4;
+        levelStats[currentLevel].correct = targetTotal;
         levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
         updateHeaderDisplay();
-        if (currentLevel === 2) {
+        if (currentLevel === 2 || currentLevel === 3) {
           renderBoard(); // lock inputs on completion
         }
 
@@ -993,18 +1244,22 @@
           nextBtnText.textContent = 'Proceed to Level2-M05-4.2 →';
           nextBtn.classList.remove('hidden');
           showFeedback('மிக நன்று! Level1-M05-4.1 முடிந்தது (4/4). Level2-M05-4.2-க்குச் செல்லவும்!', 'success');
+        } else if (currentLevel === 2) {
+          nextBtnText.textContent = 'Proceed to Level3-M05-4.3 →';
+          nextBtn.classList.remove('hidden');
+          showFeedback('அருமை! Level2-M05-4.2 முடிந்தது (4/4). Level3-M05-4.3-க்குச் செல்லவும்!', 'success');
         } else {
           nextBtnText.textContent = 'Submit Score ✓';
           nextBtn.classList.remove('hidden');
-          showFeedback('அருமை! Level1-M05-4.1 & Level2-M05-4.2 இரண்டும் வெற்றிகரமாக முடிந்தன (8/8)!', 'success');
+          showFeedback('சூப்பர்! Level1-M05-4.1, Level2-M05-4.2 & Level3-M05-4.3 அனைத்தும் முடிந்தன (14/14)!', 'success');
           submitGameDataToLMS();
         }
       } else {
         playSound('error');
         showFeedback(
           currentLevel === 1
-            ? `${correctCount} / 4 சரி. சிவப்பு நிறப் பெட்டிகளைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்!`
-            : `${correctCount} / 4 correct. Check the red boxes and try again!`,
+            ? `${correctCount} / ${targetTotal} சரி. சிவப்பு நிறப் பெட்டிகளைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்!`
+            : `${correctCount} / ${targetTotal} correct. Check the red boxes and try again!`,
           'error'
         );
       }
@@ -1012,10 +1267,9 @@
 
     function proceedToNextStage() {
       if (currentLevel === 1) {
-        // Restore container spacing classes before rendering Level 2
-        const rowsContainer = document.getElementById('rowsContainer');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col justify-between';
         setupLevel(2);
+      } else if (currentLevel === 2) {
+        setupLevel(3);
       } else {
         submitGameDataToLMS();
       }
@@ -1026,13 +1280,17 @@
       const l1TimeStr = formatSecondsHHMMSS(levelStats[1].seconds);
       const l2ScoreStr = `${levelStats[2].correct}/4-${Math.round((levelStats[2].correct / 4) * 100)}%`;
       const l2TimeStr = formatSecondsHHMMSS(levelStats[2].seconds);
-      const totCorrect = levelStats[1].correct + levelStats[2].correct;
-      const totScoreStr = `${totCorrect}/8-${Math.round((totCorrect / 8) * 100)}%`;
+      const l3ScoreStr = `${levelStats[3].correct}/6-${Math.round((levelStats[3].correct / 6) * 100)}%`;
+      const l3TimeStr = formatSecondsHHMMSS(levelStats[3].seconds);
+
+      const totCorrect = levelStats[1].correct + levelStats[2].correct + levelStats[3].correct;
+      const totScoreStr = `${totCorrect}/14-${Math.round((totCorrect / 14) * 100)}%`;
 
       document.getElementById('sumStudentId').textContent = lmsContext.studentId;
       document.getElementById('sumStudentName').textContent = lmsContext.name;
       document.getElementById('sumL1').textContent = `${l1ScoreStr} (${l1TimeStr})`;
       document.getElementById('sumL2').textContent = `${l2ScoreStr} (${l2TimeStr})`;
+      document.getElementById('sumL3').textContent = `${l3ScoreStr} (${l3TimeStr})`;
       document.getElementById('sumTotal').textContent = totScoreStr;
       document.getElementById('completionModal').classList.remove('hidden');
 
@@ -1055,6 +1313,8 @@
         level1Time: l1TimeStr,
         level2Score: l2ScoreStr,
         level2Time: l2TimeStr,
+        level3Score: l3ScoreStr,
+        level3Time: l3TimeStr,
         score: totScoreStr,
         trialId: lmsContext.trialId
       };
@@ -1078,10 +1338,9 @@
       isSubmittedToSheet = false;
       levelStats = {
         1: { correct: 0, total: 4, seconds: 0 },
-        2: { correct: 0, total: 4, seconds: 0 }
+        2: { correct: 0, total: 4, seconds: 0 },
+        3: { correct: 0, total: 6, seconds: 0 }
       };
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-4 sm:gap-5';
       document.getElementById('completionModal').classList.add('hidden');
       setupLevel(1);
     }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - அளவைகள் (4.1, 4.2 & 4.3) | AMelur-LMS-001</title>
+  <title>Game M05 - அளவைகள் (4.1 - 4.4) | AMelur-LMS-001</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Noto Sans Tamil & Inter -->
@@ -270,6 +270,110 @@
       animation: shake 0.38s ease-in-out;
     }
 
+    /* Unit dropdown styling with dotted units (c.m., m., k.m., m.m.) */
+    .unit-select {
+      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid #cbd5e1;
+      border-radius: 7px;
+      background-color: #fff1f2;
+      color: #db2777;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background-color 0.18s ease;
+    }
+    .unit-select:focus {
+      border-color: #ec4899;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.18);
+    }
+    .unit-select:disabled {
+      cursor: default;
+      opacity: 0.92;
+    }
+
+    /* Level 4 Soft pink/rose textbook header banner (matching 4.4 image) */
+    .textbook-header-l4 {
+      background: linear-gradient(180deg, #fbcfe8 0%, #fce7f3 65%, #fdf2f8 100%);
+      border-bottom: 3px dashed #ffffff;
+      box-shadow: 0 2px 6px rgba(190, 24, 93, 0.14);
+    }
+
+    .badge-l4 {
+      background: #ffffff;
+      border: 2px solid #db2777;
+      border-radius: 10px 10px 10px 2px;
+      color: #be185d;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      box-shadow: 0 2px 4px rgba(219, 39, 119, 0.16);
+    }
+
+    .l4-story-box {
+      background: linear-gradient(180deg, #fffdfd 0%, #fdf2f8 100%);
+      border: 2px solid #f472b6;
+      border-radius: 14px;
+      box-shadow: 0 3px 8px rgba(219, 39, 119, 0.08);
+      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.85;
+    }
+
+    .l4-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #ffffff;
+      border: 2px solid #94a3b8;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .l4-table th {
+      background: #f8fafc;
+      color: #0f172a;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      border-bottom: 2px solid #94a3b8;
+      border-right: 1.5px solid #cbd5e1;
+      padding: 10px 12px;
+      text-align: center;
+    }
+
+    .l4-table th:last-child {
+      border-right: none;
+    }
+
+    .l4-table td {
+      border-bottom: 1.5px solid #cbd5e1;
+      border-right: 1.5px solid #cbd5e1;
+      padding: 10px 12px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .l4-table td:last-child {
+      border-right: none;
+    }
+
+    .l4-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .l4-cell-status.correct {
+      background-color: #f0fdf4 !important;
+      box-shadow: inset 0 0 0 2px #16a34a;
+    }
+
+    .l4-cell-status.incorrect {
+      background-color: #fef2f2 !important;
+      box-shadow: inset 0 0 0 2px #dc2626;
+      animation: shake 0.38s ease-in-out;
+    }
+
     /* Numeric inputs for whole, numerator, denominator */
     .frac-input {
       font-family: 'Inter', sans-serif;
@@ -411,7 +515,14 @@
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/12</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/17</span>
+        <button
+          id="adminSkipBtn"
+          onclick="openSkipLevelModal()"
+          title="Next Level (Password required)"
+          aria-label="Go to next level"
+          class="bg-slate-700/50 hover:bg-slate-700 text-slate-400 hover:text-slate-200 opacity-50 hover:opacity-90 font-bold px-2 py-0.5 rounded-md border border-slate-600/60 transition cursor-pointer text-xs sm:text-sm"
+        >→</button>
       </div>
     </div>
 
@@ -517,7 +628,7 @@
       </div>
       <h2 class="text-xl font-extrabold text-slate-900">வாழ்த்துகள்! (Congratulations!)</h2>
       <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        நீங்கள் Level1-M05-4.1, Level2-M05-4.2 மற்றும் Level3-M05-4.3 அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+        நீங்கள் Level1-M05-4.1, Level2-M05-4.2, Level3-M05-4.3 மற்றும் Level4-M05-4.4 அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
@@ -526,6 +637,7 @@
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level1-M05-4.1:</span> <span class="font-bold text-blue-700" id="sumL1">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level2-M05-4.2:</span> <span class="font-bold text-purple-700" id="sumL2">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level3-M05-4.3:</span> <span class="font-bold text-emerald-700" id="sumL3">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level4-M05-4.4:</span> <span class="font-bold text-pink-700" id="sumL4">--</span></div>
         <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saving to Google Sheet...</span></div>
       </div>
@@ -541,8 +653,116 @@
     </div>
   </div>
 
+  <!-- Password Modal to Skip Directly to Next Level -->
+  <div id="skipPasswordModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-slate-300 text-center space-y-3.5">
+      <div class="w-11 h-11 bg-slate-100 text-slate-700 rounded-full flex items-center justify-center mx-auto text-xl font-extrabold">
+        →
+      </div>
+      <h3 class="text-lg font-extrabold text-slate-900">Next Level</h3>
+      <p class="text-xs sm:text-sm text-slate-600 font-medium" id="skipModalSubText">
+        Enter password to go to the next level.
+      </p>
+      <input
+        type="password"
+        id="skipPasswordInput"
+        placeholder="Password"
+        onkeydown="if(event.key === 'Enter') verifySkipPassword()"
+        class="w-full px-3.5 py-2.5 text-center font-bold text-slate-800 border-2 border-slate-300 focus:border-indigo-500 rounded-xl outline-none"
+      />
+      <div id="skipPasswordError" class="hidden text-xs font-bold text-rose-600">
+        Incorrect password. Please try again.
+      </div>
+      <div class="flex gap-2.5 pt-1">
+        <button
+          onclick="closeSkipLevelModal()"
+          class="flex-1 py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          onclick="verifySkipPassword()"
+          class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer"
+        >
+          Go →
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+    // Password to skip directly to the next level using the top-right dimmed arrow button
+    const TEACHER_SKIP_PASSWORD = "pups";
+
+    function openSkipLevelModal() {
+      const modal = document.getElementById('skipPasswordModal');
+      const input = document.getElementById('skipPasswordInput');
+      const err = document.getElementById('skipPasswordError');
+      const sub = document.getElementById('skipModalSubText');
+
+      err.classList.add('hidden');
+      input.value = '';
+      if (currentLevel < 4) {
+        sub.textContent = `Enter password to move from Level ${currentLevel} to Level ${currentLevel + 1}.`;
+      } else {
+        sub.textContent = 'You are on the final level (Level4-M05-4.4). Enter password to open summary.';
+      }
+      modal.classList.remove('hidden');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closeSkipLevelModal() {
+      document.getElementById('skipPasswordModal').classList.add('hidden');
+    }
+
+    function verifySkipPassword() {
+      const entered = document.getElementById('skipPasswordInput').value.trim();
+      const err = document.getElementById('skipPasswordError');
+
+      if (entered.toLowerCase() !== TEACHER_SKIP_PASSWORD.toLowerCase()) {
+        playSound('error');
+        err.classList.remove('hidden');
+        return;
+      }
+
+      playSound('place');
+      closeSkipLevelModal();
+      levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
+
+      if (currentLevel < 4) {
+        setupLevel(currentLevel + 1);
+      } else {
+        levelCompleted = true;
+        submitGameDataToLMS();
+      }
+    }
+
+    // Dotted unit dropdown options for students to select (m.m., c.m., m., k.m.)
+    const ENGLISH_UNIT_OPTIONS = [
+      { value: 'mm', label: 'm.m.' },
+      { value: 'cm', label: 'c.m.' },
+      { value: 'm',  label: 'm.'   },
+      { value: 'km', label: 'k.m.' }
+    ];
+
+    function renderUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
+      const opts = ENGLISH_UNIT_OPTIONS.map(opt => {
+        const sel = selectedValue === opt.value ? 'selected' : '';
+        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
+      }).join('');
+      return `
+        <select
+          ${disabledAttr}
+          onchange="${onChangeAttr}"
+          aria-label="${ariaLabel}"
+          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
+        >
+          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
+          ${opts}
+        </select>
+      `;
+    }
 
     // Parse LMS URL parameters passed from index.html
     const urlParams = new URLSearchParams(window.location.search);
@@ -598,21 +818,19 @@
     ];
 
     // Level3-M05-4.3 Question Pool ("Write the fractional form.")
-    // Includes 1 m 50 cm -> 1 1/2 m, 2 m 25 cm -> 2 1/4 m, 3 m 75 cm -> 3 3/4 m,
-    // 5 km 750 m -> 5 3/4 km, 7 km 500 m -> 7 1/2 km, 9 km 250 m -> 9 1/4 km, plus randomized sets
     const LEVEL3_POOL = [
-      { label: '1 m 50 cm',  unit: 'm',  whole: 1, num: 1, den: 2 },
-      { label: '2 m 25 cm',  unit: 'm',  whole: 2, num: 1, den: 4 },
-      { label: '3 m 75 cm',  unit: 'm',  whole: 3, num: 3, den: 4 },
-      { label: '4 m 50 cm',  unit: 'm',  whole: 4, num: 1, den: 2 },
-      { label: '5 km 750 m', unit: 'km', whole: 5, num: 3, den: 4 },
-      { label: '7 km 500 m', unit: 'km', whole: 7, num: 1, den: 2 },
-      { label: '9 km 250 m', unit: 'km', whole: 9, num: 1, den: 4 },
-      { label: '6 km 250 m', unit: 'km', whole: 6, num: 1, den: 4 },
-      { label: '8 km 750 m', unit: 'km', whole: 8, num: 3, den: 4 },
-      { label: '4 km 500 m', unit: 'km', whole: 4, num: 1, den: 2 },
-      { label: '6 m 25 cm',  unit: 'm',  whole: 6, num: 1, den: 4 },
-      { label: '8 m 75 cm',  unit: 'm',  whole: 8, num: 3, den: 4 }
+      { label: '1 m. 50 c.m.',   unit: 'm',  whole: 1, num: 1, den: 2 },
+      { label: '2 m. 25 c.m.',   unit: 'm',  whole: 2, num: 1, den: 4 },
+      { label: '3 m. 75 c.m.',   unit: 'm',  whole: 3, num: 3, den: 4 },
+      { label: '4 m. 50 c.m.',   unit: 'm',  whole: 4, num: 1, den: 2 },
+      { label: '5 k.m. 750 m.',  unit: 'km', whole: 5, num: 3, den: 4 },
+      { label: '7 k.m. 500 m.',  unit: 'km', whole: 7, num: 1, den: 2 },
+      { label: '9 k.m. 250 m.',  unit: 'km', whole: 9, num: 1, den: 4 },
+      { label: '6 k.m. 250 m.',  unit: 'km', whole: 6, num: 1, den: 4 },
+      { label: '8 k.m. 750 m.',  unit: 'km', whole: 8, num: 3, den: 4 },
+      { label: '4 k.m. 500 m.',  unit: 'km', whole: 4, num: 1, den: 2 },
+      { label: '6 m. 25 c.m.',   unit: 'm',  whole: 6, num: 1, den: 4 },
+      { label: '8 m. 75 c.m.',   unit: 'm',  whole: 8, num: 3, den: 4 }
     ];
 
     const L3_BUCKET_COLORS = [
@@ -624,35 +842,203 @@
       '#60a5fa'  // Sky Blue (bottom-right)
     ];
 
+    // Level4-M05-4.4 Story & Vehicle Pools (matching workbook 4.4 layout with random questions)
+    const LEVEL4_STORY_THEMES = [
+      {
+        traveller: 'Ramu',
+        place1: "uncle's house",
+        place2: "aunt's house",
+        destination: 'a waterfall'
+      },
+      {
+        traveller: 'Anbu',
+        place1: "grandpa's farm",
+        place2: "cousin's house",
+        destination: 'the river bridge'
+      },
+      {
+        traveller: 'Mala',
+        place1: "teacher's home",
+        place2: 'the library',
+        destination: 'the hill park'
+      },
+      {
+        traveller: 'Kavin',
+        place1: "friend's house",
+        place2: 'the temple',
+        destination: 'the lake park'
+      }
+    ];
+
+    const LEVEL4_VEHICLE_POOL = [
+      {
+        id: 'bicycle',
+        label: 'Bicycle',
+        whole: '',
+        num: '1',
+        den: '4',
+        km: 0,
+        m: 250,
+        givenInTable: true
+      },
+      {
+        id: 'car',
+        label: 'Car',
+        whole: '3',
+        num: '',
+        den: '',
+        km: 3,
+        m: 0,
+        givenInTable: false
+      },
+      {
+        id: 'motorcycle',
+        label: 'Motorcycle',
+        whole: '2',
+        num: '1',
+        den: '2',
+        km: 2,
+        m: 500,
+        givenInTable: false
+      },
+      {
+        id: 'scooter',
+        label: 'Scooter',
+        whole: '1',
+        num: '3',
+        den: '4',
+        km: 1,
+        m: 750,
+        givenInTable: false
+      },
+      {
+        id: 'van',
+        label: 'Van',
+        whole: '4',
+        num: '1',
+        den: '4',
+        km: 4,
+        m: 250,
+        givenInTable: false
+      },
+      {
+        id: 'bus',
+        label: 'Bus',
+        whole: '6',
+        num: '3',
+        den: '4',
+        km: 6,
+        m: 750,
+        givenInTable: false
+      }
+    ];
+
+    function renderVehicleIconSVG(vehicleId) {
+      if (vehicleId === 'bicycle') {
+        return `
+          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bicycle">
+            <circle cx="20" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
+            <circle cx="76" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
+            <path d="M 20 42 L 42 42 L 58 21 L 34 21 Z" stroke="#dc2626" stroke-width="3.4" stroke-linejoin="round" />
+            <path d="M 42 42 L 32 16 M 58 21 L 76 42 M 58 21 L 54 11 H 63" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="25" y="14" width="13" height="4" rx="2" fill="#0f172a" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'car') {
+        return `
+          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Car">
+            <path d="M 16 38 L 22 21 Q 24 17 29 17 H 64 Q 69 17 72 22 L 82 36 Q 85 38 85 43 V 46 H 12 V 42 Q 12 39 16 38 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="2.5" stroke-linejoin="round" />
+            <path d="M 27 21 H 45 V 32 H 23 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
+            <path d="M 49 21 H 63 L 71 32 H 49 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
+            <circle cx="27" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
+            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'motorcycle') {
+        return `
+          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Motorcycle">
+            <circle cx="21" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
+            <circle cx="76" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
+            <path d="M 21 43 L 44 37 L 62 21 L 76 43" stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 32 31 H 53 L 64 24 L 54 36 H 38 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M 58 21 L 53 12 H 60" stroke="#0f172a" stroke-width="2.8" stroke-linecap="round" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'scooter') {
+        return `
+          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Scooter">
+            <circle cx="22" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
+            <circle cx="74" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
+            <path d="M 22 44 H 56 L 64 20 L 55 13 H 64" stroke="#0284c7" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 34 38 L 42 25 H 58 L 56 38 Z" fill="#38bdf8" stroke="#0369a1" stroke-width="2.2" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'van') {
+        return `
+          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Van">
+            <path d="M 14 16 H 66 Q 72 16 75 23 L 84 35 V 46 H 14 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
+            <rect x="20" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
+            <rect x="39" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
+            <path d="M 58 21 H 66 L 73 32 H 58 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.6" />
+            <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+          </svg>
+        `;
+      }
+      return `
+        <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bus">
+          <rect x="13" y="14" width="70" height="31" rx="6" fill="#16a34a" stroke="#14532d" stroke-width="2.5" />
+          <rect x="19" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
+          <rect x="35" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
+          <rect x="51" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
+          <rect x="67" y="20" width="11" height="11" rx="2" fill="#bae6fd" stroke="#1e293b" stroke-width="1.5" />
+          <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+          <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+        </svg>
+      `;
+    }
+
     // Game & LMS Tracking State
-    let currentLevel = 1; // 1 = Level1-M05-4.1, 2 = Level2-M05-4.2, 3 = Level3-M05-4.3
+    let currentLevel = 1; // 1 = Level1-M05-4.1, 2 = Level2-M05-4.2, 3 = Level3-M05-4.3, 4 = Level4-M05-4.4
     let currentRows = [];
+    let currentL4Story = LEVEL4_STORY_THEMES[0];
     let optionTiles = [];
     let placedAnswers = [null, null, null, null];
+    let l1UnitAnswers = ['', '', '', ''];
     let l2TypedAnswers = [
-      { km: '', m: '' },
-      { km: '', m: '' },
-      { km: '', m: '' },
-      { km: '', m: '' }
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' }
     ];
     let l3TypedAnswers = [
-      { whole: '', num: '', den: '' },
-      { whole: '', num: '', den: '' },
-      { whole: '', num: '', den: '' },
-      { whole: '', num: '', den: '' },
-      { whole: '', num: '', den: '' },
-      { whole: '', num: '', den: '' }
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' }
+    ];
+    let l4TypedAnswers = [
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' }
     ];
     let selectedOptionId = null;
     let draggedOptionId = null;
     let levelCompleted = false;
     let isSubmittedToSheet = false;
 
-    // Score & Time tracking across 3 levels (4 + 4 + 6 = 14 total questions)
+    // Score & Time tracking across 4 levels (4 + 4 + 6 + 3 = 17 total questions)
     let levelStats = {
       1: { correct: 0, total: 4, seconds: 0 },
       2: { correct: 0, total: 4, seconds: 0 },
-      3: { correct: 0, total: 6, seconds: 0 }
+      3: { correct: 0, total: 6, seconds: 0 },
+      4: { correct: 0, total: 3, seconds: 0 }
     };
     let levelStartTime = Date.now();
     let timerInterval = null;
@@ -701,7 +1087,8 @@
           const totalElapsed =
             levelStats[1].seconds +
             (currentLevel >= 2 ? levelStats[2].seconds : 0) +
-            (currentLevel >= 3 ? levelStats[3].seconds : 0);
+            (currentLevel >= 3 ? levelStats[3].seconds : 0) +
+            (currentLevel >= 4 ? levelStats[4].seconds : 0);
           document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(totalElapsed);
         }
       }, 1000);
@@ -710,7 +1097,8 @@
     function getLevelTag(lvl) {
       if (lvl === 1) return 'Level1-M05-4.1';
       if (lvl === 2) return 'Level2-M05-4.2';
-      return 'Level3-M05-4.3';
+      if (lvl === 3) return 'Level3-M05-4.3';
+      return 'Level4-M05-4.4';
     }
 
     function updateHeaderDisplay() {
@@ -719,9 +1107,13 @@
         lmsContext.studentId !== 'GUEST'
           ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
           : `${levelTag} • அளவைகள் (Practice Mode)`;
-      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/3)`;
-      const totCorrect = levelStats[1].correct + levelStats[2].correct + levelStats[3].correct;
-      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/14`;
+      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/4)`;
+      const totCorrect =
+        levelStats[1].correct +
+        levelStats[2].correct +
+        levelStats[3].correct +
+        levelStats[4].correct;
+      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/17`;
     }
 
     function shuffleArray(array) {
@@ -733,7 +1125,7 @@
       return arr;
     }
 
-    function renderFractionHTML(item, unitLabel = 'மீ', compact = false) {
+    function renderFractionHTML(item, unitLabel = 'மீ.', compact = false) {
       const sizeClass = compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl';
       const fracSize = compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base';
       let html = `<div class="inline-flex items-center justify-center gap-1.5 text-slate-900 font-extrabold ${sizeClass}">`;
@@ -749,7 +1141,9 @@
           </span>
         `;
       }
-      html += `<span class="text-slate-800 font-bold ml-0.5">${unitLabel}</span>`;
+      if (unitLabel) {
+        html += `<span class="text-slate-800 font-bold ml-0.5">${unitLabel}</span>`;
+      }
       html += `</div>`;
       return html;
     }
@@ -758,19 +1152,25 @@
       currentLevel = levelNum;
       levelCompleted = false;
       placedAnswers = [null, null, null, null];
+      l1UnitAnswers = ['', '', '', ''];
       l2TypedAnswers = [
-        { km: '', m: '' },
-        { km: '', m: '' },
-        { km: '', m: '' },
-        { km: '', m: '' }
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' }
       ];
       l3TypedAnswers = [
-        { whole: '', num: '', den: '' },
-        { whole: '', num: '', den: '' },
-        { whole: '', num: '', den: '' },
-        { whole: '', num: '', den: '' },
-        { whole: '', num: '', den: '' },
-        { whole: '', num: '', den: '' }
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' }
+      ];
+      l4TypedAnswers = [
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' }
       ];
       selectedOptionId = null;
 
@@ -787,15 +1187,15 @@
       const rowsContainer = document.getElementById('rowsContainer');
 
       if (currentLevel === 1) {
-        // Level1-M05-4.1: Ribbon cm -> m with randomized questions & randomized draggable answers
+        // Level1-M05-4.1: Ribbon cm -> m with randomized questions, draggable answers & unit dropdown
         headerEl.className = 'textbook-header-l1 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l1 px-3 py-1 text-base sm:text-xl tracking-tight';
         badgeEl.textContent = '4.1';
         titleEl.textContent = 'ரிப்பனின் நீளத்தை மீட்டரில் எழுதுக.';
-        hintEl.textContent = '100 செ.மீ = 1 மீ';
+        hintEl.textContent = '100 செ.மீ. = 1 மீ.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-sky-900 bg-white/80 px-3 py-1 rounded-full border border-sky-300';
         subHeaderEl.textContent =
-          'Level1-M05-4.1: வலதுபுறம் உள்ள மீட்டர் அட்டைகளை இழுத்து (Drag) அல்லது தொட்டு (Tap) சரியான பெட்டியில் வைக்கவும்.';
+          'Level1-M05-4.1: வலதுபுறம் உள்ள அட்டைகளை பெட்டியில் வைத்து, சரியான அலகை (மீ. / செ.மீ.) தேர்ந்தெடுக்கவும்.';
 
         optionBankWrapper.classList.remove('hidden');
         rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-4 sm:gap-5';
@@ -811,10 +1211,10 @@
         badgeEl.className = 'badge-l2 px-3 py-1 text-base sm:text-xl tracking-tight';
         badgeEl.textContent = '4.2';
         titleEl.textContent = 'Write the distance between the two places in kilometres and metres.';
-        hintEl.textContent = '1 km = 1000 m';
+        hintEl.textContent = '1 k.m. = 1000 m.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-amber-900 bg-white/85 px-3 py-1 rounded-full border border-amber-300';
         subHeaderEl.textContent =
-          'Level2-M05-4.2: Fill in the distance between each pair of places in km and m (e.g., 1 ½ km = 1 km 500 m).';
+          'Level2-M05-4.2: Fill in the distance and choose the matching units (k.m. and m.) from each dropdown.';
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12 divide-y divide-slate-300 bg-white rounded-xl border border-slate-300 overflow-hidden';
@@ -826,16 +1226,16 @@
           ...placeObj,
           ...randomDists[idx]
         }));
-      } else {
-        // Level3-M05-4.3: Write the fractional form (m & km)
+      } else if (currentLevel === 3) {
+        // Level3-M05-4.3: Write the fractional form (m. & k.m.)
         headerEl.className = 'textbook-header-l3 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l3 px-3 py-1 text-base sm:text-xl tracking-tight';
         badgeEl.textContent = '4.3';
         titleEl.textContent = 'Write the fractional form.';
-        hintEl.textContent = '100 cm = 1 m • 1000 m = 1 km';
+        hintEl.textContent = '100 c.m. = 1 m. • 1000 m. = 1 k.m.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-emerald-950 bg-white/85 px-3 py-1 rounded-full border border-emerald-300';
         subHeaderEl.textContent =
-          'Level3-M05-4.3: Convert each measurement into mixed fraction form (e.g., 1 m 50 cm → 1 ½ m).';
+          'Level3-M05-4.3: Enter the mixed fraction and choose the matching unit (m. or k.m.) from the dropdown.';
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5';
@@ -846,6 +1246,25 @@
           ...item,
           borderColor: L3_BUCKET_COLORS[idx % L3_BUCKET_COLORS.length]
         }));
+      } else {
+        // Level4-M05-4.4: Word problem & Vehicle Distance Table (fill in the blanks for random questions)
+        headerEl.className = 'textbook-header-l4 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
+        badgeEl.className = 'badge-l4 px-3 py-1 text-base sm:text-xl tracking-tight';
+        badgeEl.textContent = '4.4';
+        titleEl.textContent = 'Answer the questions.';
+        hintEl.textContent = '1 k.m. = 1000 m. • ¼ k.m. = 250 m.';
+        hintEl.className = 'text-xs sm:text-sm font-semibold text-pink-950 bg-white/85 px-3 py-1 rounded-full border border-pink-300';
+        subHeaderEl.textContent =
+          'Level4-M05-4.4: Read the story and fill in the blanks with numbers and units (k.m. and m.) for each vehicle.';
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-4';
+        optionTiles = [];
+
+        currentL4Story = LEVEL4_STORY_THEMES[Math.floor(Math.random() * LEVEL4_STORY_THEMES.length)];
+        const baseBicycle = LEVEL4_VEHICLE_POOL[0];
+        const otherVehicles = shuffleArray(LEVEL4_VEHICLE_POOL.slice(1)).slice(0, 2);
+        currentRows = [baseBicycle, ...otherVehicles];
       }
 
       updateHeaderDisplay();
@@ -863,32 +1282,49 @@
       playSound('remove');
       if (currentLevel === 1) {
         placedAnswers = [null, null, null, null];
+        l1UnitAnswers = ['', '', '', ''];
         selectedOptionId = null;
       } else if (currentLevel === 2) {
         l2TypedAnswers = [
-          { km: '', m: '' },
-          { km: '', m: '' },
-          { km: '', m: '' },
-          { km: '', m: '' }
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' }
+        ];
+      } else if (currentLevel === 3) {
+        l3TypedAnswers = [
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' }
         ];
       } else {
-        l3TypedAnswers = [
-          { whole: '', num: '', den: '' },
-          { whole: '', num: '', den: '' },
-          { whole: '', num: '', den: '' },
-          { whole: '', num: '', den: '' },
-          { whole: '', num: '', den: '' },
-          { whole: '', num: '', den: '' }
+        l4TypedAnswers = [
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' }
         ];
       }
       hideFeedback();
       renderBoard();
     }
 
+    function updateL1Unit(rowIndex, value) {
+      l1UnitAnswers[rowIndex] = value;
+      const slotEl = document.getElementById(`slot-${rowIndex}`);
+      if (slotEl) slotEl.classList.remove('correct', 'incorrect');
+    }
+
     function updateL2Answer(rowIndex, field, value) {
-      const maxLen = field === 'km' ? 2 : 3;
-      const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
-      l2TypedAnswers[rowIndex][field] = cleaned;
+      if (field === 'kmUnit' || field === 'mUnit') {
+        l2TypedAnswers[rowIndex][field] = value;
+      } else {
+        const maxLen = field === 'km' ? 2 : 3;
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
+        l2TypedAnswers[rowIndex][field] = cleaned;
+      }
       const boxEl = document.getElementById(`l2-box-${rowIndex}`);
       if (boxEl) {
         boxEl.classList.remove('correct', 'incorrect');
@@ -896,11 +1332,29 @@
     }
 
     function updateL3Answer(rowIndex, field, value) {
-      const cleaned = value.replace(/[^0-9]/g, '').slice(0, 2);
-      l3TypedAnswers[rowIndex][field] = cleaned;
+      if (field === 'unit') {
+        l3TypedAnswers[rowIndex].unit = value;
+      } else {
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, 2);
+        l3TypedAnswers[rowIndex][field] = cleaned;
+      }
       const bucketEl = document.getElementById(`l3-bucket-${rowIndex}`);
       if (bucketEl) {
         bucketEl.classList.remove('correct', 'incorrect');
+      }
+    }
+
+    function updateL4Answer(rowIndex, field, value) {
+      if (field === 'kmUnit' || field === 'mUnit') {
+        l4TypedAnswers[rowIndex][field] = value;
+      } else {
+        const maxLen = field === 'km' ? 2 : 3;
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
+        l4TypedAnswers[rowIndex][field] = cleaned;
+      }
+      const cellEl = document.getElementById(`l4-cell-${rowIndex}`);
+      if (cellEl) {
+        cellEl.classList.remove('correct', 'incorrect');
       }
     }
 
@@ -911,27 +1365,29 @@
       rowsContainer.innerHTML = '';
 
       if (currentLevel === 1) {
-        // Render Level1-M05-4.1
+        // Render Level1-M05-4.1 with Tamil unit dropdown (மீ. / செ.மீ.)
         const maxCm = Math.max(...currentRows.map(r => r.cm));
+        const disabledAttr = levelCompleted ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
           const rawPercent = (rowItem.cm / maxCm) * 100;
           const widthPercent = Math.max(24, Math.round(rawPercent));
           const placedId = placedAnswers[rowIndex];
           const placedItem = placedId ? LEVEL1_POOL.find(i => i.id === placedId) : null;
+          const unitVal = l1UnitAnswers[rowIndex];
 
           const rowEl = document.createElement('div');
-          rowEl.className = 'flex items-center justify-between gap-3 sm:gap-4';
+          rowEl.className = 'flex items-center justify-between gap-2 sm:gap-4';
 
           rowEl.innerHTML = `
             <div class="flex-1 flex items-center">
               <div
                 class="ribbon-bar h-12 sm:h-14 flex items-center px-3 sm:px-4"
                 style="width: ${widthPercent}%;"
-                title="${rowItem.cm} செ.மீ"
+                title="${rowItem.cm} செ.மீ."
               >
                 <span class="ribbon-label text-sm sm:text-lg md:text-xl">
-                  ${rowItem.cm} செ.மீ
+                  ${rowItem.cm} செ.மீ.
                 </span>
               </div>
             </div>
@@ -943,14 +1399,27 @@
               ondragover="handleDragOver(event, ${rowIndex})"
               ondragleave="handleDragLeave(${rowIndex})"
               ondrop="handleDrop(event, ${rowIndex})"
-              class="answer-slot w-24 sm:w-28 md:w-32 h-14 sm:h-16 flex items-center justify-center cursor-pointer shrink-0 ${selectedOptionId && !placedItem ? 'ready-target' : ''}"
-              title="விடையை இங்கே வைக்கவும்"
+              class="answer-slot px-2 sm:px-2.5 min-w-[122px] sm:min-w-[138px] h-14 sm:h-16 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${selectedOptionId && !placedItem ? 'ready-target' : ''}"
+              title="விடையை வைத்து அலகைத் தேர்ந்தெடுக்கவும்"
             >
               ${
                 placedItem
-                  ? `<div class="animate-pop pointer-events-none">${renderFractionHTML(placedItem, 'மீ', true)}</div>`
-                  : `<span class="text-pink-300 text-xs sm:text-sm font-semibold pointer-events-none">? மீ</span>`
+                  ? `<div class="animate-pop pointer-events-none">${renderFractionHTML(placedItem, '', true)}</div>`
+                  : `<span class="text-pink-300 text-xs sm:text-sm font-semibold pointer-events-none">?</span>`
               }
+              <select
+                ${disabledAttr}
+                onclick="event.stopPropagation()"
+                onchange="updateL1Unit(${rowIndex}, this.value)"
+                aria-label="Unit for ${rowItem.cm} cm"
+                class="unit-select px-1 py-0.5 text-xs sm:text-sm"
+              >
+                <option value="" ${!unitVal ? 'selected' : ''}>அலகு</option>
+                <option value="mm" ${unitVal === 'mm' ? 'selected' : ''}>மி.மீ.</option>
+                <option value="cm" ${unitVal === 'cm' ? 'selected' : ''}>செ.மீ.</option>
+                <option value="m" ${unitVal === 'm' ? 'selected' : ''}>மீ.</option>
+                <option value="km" ${unitVal === 'km' ? 'selected' : ''}>கி.மீ.</option>
+              </select>
             </div>
           `;
 
@@ -966,7 +1435,7 @@
           const tileEl = document.createElement('div');
           tileEl.draggable = !isUsed && !levelCompleted;
           tileEl.className = `fraction-tile w-24 sm:w-28 h-16 sm:h-20 flex items-center justify-center ${staggerClass} ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}`;
-          tileEl.innerHTML = renderFractionHTML(optItem, 'மீ', false);
+          tileEl.innerHTML = renderFractionHTML(optItem, '', false);
 
           if (!isUsed && !levelCompleted) {
             tileEl.onclick = () => handleOptionClick(optItem.id);
@@ -977,30 +1446,30 @@
           optionsContainer.appendChild(tileEl);
         });
       } else if (currentLevel === 2) {
-        // Render Level2-M05-4.2
+        // Render Level2-M05-4.2 with dotted unit dropdowns (k.m., m., c.m., m.m.)
         const disabledAttr = levelCompleted ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
           const ans = l2TypedAnswers[rowIndex];
           const rowEl = document.createElement('div');
-          rowEl.className = 'grid grid-cols-1 sm:grid-cols-12 items-center gap-3 p-3 sm:px-6 sm:py-3.5 bg-white hover:bg-slate-50/60 transition';
+          rowEl.className = 'grid grid-cols-1 sm:grid-cols-12 items-center gap-3 p-3 sm:px-5 sm:py-3.5 bg-white hover:bg-slate-50/60 transition';
 
           rowEl.innerHTML = `
-            <div class="sm:col-span-4 flex justify-center">
+            <div class="sm:col-span-3 flex justify-center">
               <div
-                class="place-box w-full max-w-[190px] py-2.5 px-3 text-center text-sm sm:text-base"
+                class="place-box w-full max-w-[175px] py-2.5 px-2.5 text-center text-sm sm:text-base"
                 style="border-color: ${rowItem.leftBorder};"
               >
                 ${rowItem.left}
               </div>
             </div>
 
-            <div class="sm:col-span-4 flex flex-col items-center justify-center gap-1">
-              <div class="dist-pill-top w-full max-w-[200px] py-1.5 px-4 flex items-center justify-center">
-                ${renderFractionHTML(rowItem, 'km', true)}
+            <div class="sm:col-span-6 flex flex-col items-center justify-center gap-1">
+              <div class="dist-pill-top w-full max-w-[210px] py-1.5 px-4 flex items-center justify-center">
+                ${renderFractionHTML(rowItem, 'k.m.', true)}
               </div>
 
-              <div class="w-full max-w-[215px] flex items-center justify-center my-0.5" aria-hidden="true">
+              <div class="w-full max-w-[235px] flex items-center justify-center my-0.5" aria-hidden="true">
                 <svg class="w-full h-4 text-emerald-500" viewBox="0 0 220 18" fill="none">
                   <line x1="12" y1="9" x2="208" y2="9" stroke="currentColor" stroke-width="2.5" />
                   <polyline points="18,3 6,9 18,15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -1010,7 +1479,7 @@
 
               <div
                 id="l2-box-${rowIndex}"
-                class="dist-pill-bottom w-full max-w-[205px] py-1.5 px-2.5 flex items-center justify-center gap-1.5"
+                class="dist-pill-bottom w-full max-w-[295px] py-1.5 px-2 flex flex-wrap items-center justify-center gap-1"
               >
                 <input
                   type="text"
@@ -1021,9 +1490,9 @@
                   oninput="updateL2Answer(${rowIndex}, 'km', this.value)"
                   placeholder="?"
                   aria-label="Kilometres for ${rowItem.left} to ${rowItem.right}"
-                  class="km-m-input w-9 sm:w-10 h-8 text-sm sm:text-base"
+                  class="km-m-input w-8 sm:w-9 h-8 text-sm sm:text-base"
                 />
-                <span class="font-extrabold text-pink-600 text-sm sm:text-base">km</span>
+                ${renderUnitDropdownHTML(ans.kmUnit, `updateL2Answer(${rowIndex}, 'kmUnit', this.value)`, disabledAttr, `First unit for ${rowItem.left} to ${rowItem.right}`)}
                 <input
                   type="text"
                   inputmode="numeric"
@@ -1033,15 +1502,15 @@
                   oninput="updateL2Answer(${rowIndex}, 'm', this.value)"
                   placeholder="?"
                   aria-label="Metres for ${rowItem.left} to ${rowItem.right}"
-                  class="km-m-input w-12 sm:w-14 h-8 text-sm sm:text-base"
+                  class="km-m-input w-11 sm:w-12 h-8 text-sm sm:text-base"
                 />
-                <span class="font-extrabold text-pink-600 text-sm sm:text-base">m</span>
+                ${renderUnitDropdownHTML(ans.mUnit, `updateL2Answer(${rowIndex}, 'mUnit', this.value)`, disabledAttr, `Second unit for ${rowItem.left} to ${rowItem.right}`)}
               </div>
             </div>
 
-            <div class="sm:col-span-4 flex justify-center">
+            <div class="sm:col-span-3 flex justify-center">
               <div
-                class="place-box w-full max-w-[190px] py-2.5 px-3 text-center text-sm sm:text-base"
+                class="place-box w-full max-w-[175px] py-2.5 px-2.5 text-center text-sm sm:text-base"
                 style="border-color: ${rowItem.rightBorder};"
               >
                 ${rowItem.right}
@@ -1051,8 +1520,8 @@
 
           rowsContainer.appendChild(rowEl);
         });
-      } else {
-        // Render Level3-M05-4.3 (Torchlight silhouette matching source image: rounded handle + flared trapezoid head)
+      } else if (currentLevel === 3) {
+        // Render Level3-M05-4.3 with dotted unit dropdown (m., k.m., c.m., m.m.)
         const disabledAttr = levelCompleted ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
@@ -1077,12 +1546,12 @@
                   vector-effect="non-scaling-stroke"
                 />
               </svg>
-              <span class="torch-body-label relative z-10 pl-3 pr-2 text-sm sm:text-base">
+              <span class="torch-body-label relative z-10 pl-3 pr-2 text-xs sm:text-sm md:text-base">
                 ${rowItem.label}
               </span>
             </div>
 
-            <!-- Flared Trapezoid Torch Head / Lens Frame for Fraction Answer -->
+            <!-- Flared Trapezoid Torch Head / Lens Frame for Fraction Answer + Unit Dropdown -->
             <div
               id="l3-bucket-${rowIndex}"
               class="torch-head-wrap"
@@ -1130,7 +1599,7 @@
                   oninput="updateL3Answer(${rowIndex}, 'whole', this.value)"
                   placeholder="?"
                   aria-label="Whole number for ${rowItem.label}"
-                  class="frac-input w-7 sm:w-8 h-7 sm:h-8 text-xs sm:text-sm"
+                  class="frac-input w-6 sm:w-7 h-7 sm:h-8 text-xs sm:text-sm"
                 />
 
                 <div class="inline-flex flex-col items-center justify-center gap-0.5">
@@ -1143,9 +1612,9 @@
                     oninput="updateL3Answer(${rowIndex}, 'num', this.value)"
                     placeholder="n"
                     aria-label="Numerator for ${rowItem.label}"
-                    class="frac-input w-6 sm:w-7 h-5 sm:h-6 text-[11px] sm:text-xs"
+                    class="frac-input w-6 h-5 text-[11px]"
                   />
-                  <span class="w-7 sm:w-8 h-[2px] bg-pink-600 rounded-full"></span>
+                  <span class="w-6 sm:w-7 h-[2px] bg-pink-600 rounded-full"></span>
                   <input
                     type="text"
                     inputmode="numeric"
@@ -1155,17 +1624,121 @@
                     oninput="updateL3Answer(${rowIndex}, 'den', this.value)"
                     placeholder="d"
                     aria-label="Denominator for ${rowItem.label}"
-                    class="frac-input w-6 sm:w-7 h-5 sm:h-6 text-[11px] sm:text-xs"
+                    class="frac-input w-6 h-5 text-[11px]"
                   />
                 </div>
 
-                <span class="font-extrabold text-pink-600 text-xs sm:text-sm">${rowItem.unit}</span>
+                ${renderUnitDropdownHTML(ans.unit, `updateL3Answer(${rowIndex}, 'unit', this.value)`, disabledAttr, `Unit for ${rowItem.label}`, 'text-[11px] sm:text-xs px-0.5')}
               </div>
             </div>
           `;
 
           rowsContainer.appendChild(cardEl);
         });
+      } else {
+        // Render Level4-M05-4.4: Story + Vehicle Distance Table with dotted unit dropdowns
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const v1 = currentRows[0];
+        const v2 = currentRows[1];
+        const v3 = currentRows[2];
+
+        const storyEl = document.createElement('div');
+        storyEl.className = 'l4-story-box p-3.5 sm:p-4 text-sm sm:text-base';
+        storyEl.innerHTML = `
+          <p>
+            ${currentL4Story.traveller} visited his ${currentL4Story.place1} on a holiday by his
+            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v1.id)}</span>,
+            which was at a distance of <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v1, 'k.m.', true)}</span>
+            away from his house. From there he travelled
+            <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v3, 'k.m.', true)}</span>
+            by his ${currentL4Story.place1}'s
+            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v3.id)}</span>
+            to reach his ${currentL4Story.place2}. Then they all got into a
+            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v2.id)}</span>
+            and travelled <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v2, 'k.m.', true)}</span>
+            to reach ${currentL4Story.destination}. Write the distance travelled by ${currentL4Story.traveller} in each vehicle in kilometres and metres.
+          </p>
+        `;
+        rowsContainer.appendChild(storyEl);
+
+        const tableWrapEl = document.createElement('div');
+        tableWrapEl.className = 'overflow-x-auto';
+
+        let tableRowsHTML = '';
+        currentRows.forEach((vItem, idx) => {
+          if (vItem.givenInTable) {
+            tableRowsHTML += `
+              <tr class="bg-slate-50/70">
+                <td class="w-28 sm:w-32">
+                  ${renderVehicleIconSVG(vItem.id)}
+                  <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
+                </td>
+                <td class="w-32 sm:w-40">
+                  ${renderFractionHTML(vItem, 'k.m.', true)}
+                </td>
+                <td class="font-extrabold text-slate-800 text-base sm:text-lg">
+                  ${vItem.m} m.
+                </td>
+              </tr>
+            `;
+          } else {
+            const ans = l4TypedAnswers[idx];
+            tableRowsHTML += `
+              <tr>
+                <td class="w-28 sm:w-32">
+                  ${renderVehicleIconSVG(vItem.id)}
+                  <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
+                </td>
+                <td class="w-32 sm:w-40">
+                  ${renderFractionHTML(vItem, 'k.m.', true)}
+                </td>
+                <td id="l4-cell-${idx}" class="l4-cell-status">
+                  <div class="inline-flex flex-wrap items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl border-2 border-sky-400 bg-white">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="2"
+                      value="${ans.km}"
+                      ${disabledAttr}
+                      oninput="updateL4Answer(${idx}, 'km', this.value)"
+                      placeholder="?"
+                      aria-label="Kilometres for ${vItem.label}"
+                      class="km-m-input w-9 sm:w-10 h-8 text-sm sm:text-base"
+                    />
+                    ${renderUnitDropdownHTML(ans.kmUnit, `updateL4Answer(${idx}, 'kmUnit', this.value)`, disabledAttr, `First unit for ${vItem.label}`)}
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="3"
+                      value="${ans.m}"
+                      ${disabledAttr}
+                      oninput="updateL4Answer(${idx}, 'm', this.value)"
+                      placeholder="?"
+                      aria-label="Metres for ${vItem.label}"
+                      class="km-m-input w-12 sm:w-14 h-8 text-sm sm:text-base"
+                    />
+                    ${renderUnitDropdownHTML(ans.mUnit, `updateL4Answer(${idx}, 'mUnit', this.value)`, disabledAttr, `Second unit for ${vItem.label}`)}
+                  </div>
+                </td>
+              </tr>
+            `;
+          }
+        });
+
+        tableWrapEl.innerHTML = `
+          <table class="l4-table">
+            <thead>
+              <tr>
+                <th>Vehicle</th>
+                <th colspan="2">Distance travelled</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRowsHTML}
+            </tbody>
+          </table>
+        `;
+        rowsContainer.appendChild(tableWrapEl);
       }
     }
 
@@ -1197,7 +1770,7 @@
         playSound('remove');
         renderBoard();
       } else {
-        showFeedback('முதலில் வலதுபுறம் உள்ள மீட்டர் அட்டையைத் தொடவும் அல்லது இழுக்கவும்.', 'info');
+        showFeedback('முதலில் வலதுபுறம் உள்ள அட்டையைத் தொடவும் அல்லது இழுக்கவும்.', 'info');
       }
     }
 
@@ -1252,9 +1825,9 @@
 
     function checkAnswers() {
       if (currentLevel === 1) {
-        if (placedAnswers.includes(null)) {
+        if (placedAnswers.includes(null) || l1UnitAnswers.includes('')) {
           playSound('error');
-          showFeedback('அனைத்து 4 பெட்டிகளிலும் விடைகளை நிரப்பவும்! (Please fill all 4 boxes)', 'warning');
+          showFeedback('அனைத்து 4 பெட்டிகளிலும் எண் அட்டையையும் அலகையும் (மீ.) நிரப்பவும்!', 'warning');
           return;
         }
 
@@ -1263,7 +1836,7 @@
           const slotEl = document.getElementById(`slot-${idx}`);
           slotEl.classList.remove('correct', 'incorrect');
 
-          if (placedAnswers[idx] === rowItem.id) {
+          if (placedAnswers[idx] === rowItem.id && l1UnitAnswers[idx] === 'm') {
             correctCount++;
             slotEl.classList.add('correct');
           } else {
@@ -1273,10 +1846,12 @@
 
         handleCheckOutcome(correctCount, 4);
       } else if (currentLevel === 2) {
-        const hasBlank = l2TypedAnswers.some(ans => ans.km.trim() === '' || ans.m.trim() === '');
+        const hasBlank = l2TypedAnswers.some(
+          ans => ans.km.trim() === '' || ans.kmUnit === '' || ans.m.trim() === '' || ans.mUnit === ''
+        );
         if (hasBlank) {
           playSound('error');
-          showFeedback('Please fill in both km and m values for all 4 rows!', 'warning');
+          showFeedback('Please fill in the numbers and select units (k.m. and m.) for all 4 rows!', 'warning');
           return;
         }
 
@@ -1287,8 +1862,9 @@
 
           const enteredKm = parseInt(l2TypedAnswers[idx].km.trim(), 10);
           const enteredM = parseInt(l2TypedAnswers[idx].m.trim(), 10);
+          const unitsOk = l2TypedAnswers[idx].kmUnit === 'km' && l2TypedAnswers[idx].mUnit === 'm';
 
-          if (enteredKm === rowItem.km && enteredM === rowItem.m) {
+          if (enteredKm === rowItem.km && enteredM === rowItem.m && unitsOk) {
             correctCount++;
             boxEl.classList.add('correct');
           } else {
@@ -1297,14 +1873,14 @@
         });
 
         handleCheckOutcome(correctCount, 4);
-      } else {
-        // Level3-M05-4.3: Check whole, numerator, and denominator for all 6 items
+      } else if (currentLevel === 3) {
+        // Level3-M05-4.3: Check whole, numerator, denominator, and unit dropdown for all 6 items
         const hasBlank = l3TypedAnswers.some(
-          ans => ans.whole.trim() === '' || ans.num.trim() === '' || ans.den.trim() === ''
+          ans => ans.whole.trim() === '' || ans.num.trim() === '' || ans.den.trim() === '' || ans.unit === ''
         );
         if (hasBlank) {
           playSound('error');
-          showFeedback('Please fill in the whole number, numerator, and denominator for all 6 items!', 'warning');
+          showFeedback('Please fill in the whole number, numerator, denominator, and unit for all 6 items!', 'warning');
           return;
         }
 
@@ -1316,13 +1892,13 @@
           const wVal = parseInt(l3TypedAnswers[idx].whole.trim(), 10);
           const nVal = parseInt(l3TypedAnswers[idx].num.trim(), 10);
           const dVal = parseInt(l3TypedAnswers[idx].den.trim(), 10);
+          const unitOk = l3TypedAnswers[idx].unit === rowItem.unit;
 
-          // Accept exact fraction match or equivalent simplified fraction (e.g., 2/4 equals 1/2)
           const userFracVal = dVal !== 0 ? nVal / dVal : -1;
           const targetFracVal = rowItem.num / rowItem.den;
           const isFracEqual = dVal !== 0 && Math.abs(userFracVal - targetFracVal) < 0.0001;
 
-          if (wVal === rowItem.whole && isFracEqual) {
+          if (wVal === rowItem.whole && isFracEqual && unitOk) {
             correctCount++;
             bucketEl.classList.add('correct');
           } else {
@@ -1331,6 +1907,40 @@
         });
 
         handleCheckOutcome(correctCount, 6);
+      } else {
+        // Level4-M05-4.4: Check numbers and units (k.m. and m.) for the 3 vehicles
+        const fillableIndices = [1, 2];
+        const hasBlank = fillableIndices.some(
+          idx =>
+            l4TypedAnswers[idx].km.trim() === '' ||
+            l4TypedAnswers[idx].kmUnit === '' ||
+            l4TypedAnswers[idx].m.trim() === '' ||
+            l4TypedAnswers[idx].mUnit === ''
+        );
+        if (hasBlank) {
+          playSound('error');
+          showFeedback('Please fill in both numbers and select both units (k.m. and m.) for the remaining vehicles!', 'warning');
+          return;
+        }
+
+        let correctCount = 1; // Row 0 (250 m.) is given in the table
+        fillableIndices.forEach(idx => {
+          const cellEl = document.getElementById(`l4-cell-${idx}`);
+          cellEl.classList.remove('correct', 'incorrect');
+
+          const enteredKm = parseInt(l4TypedAnswers[idx].km.trim(), 10);
+          const enteredM = parseInt(l4TypedAnswers[idx].m.trim(), 10);
+          const unitsOk = l4TypedAnswers[idx].kmUnit === 'km' && l4TypedAnswers[idx].mUnit === 'm';
+
+          if (enteredKm === currentRows[idx].km && enteredM === currentRows[idx].m && unitsOk) {
+            correctCount++;
+            cellEl.classList.add('correct');
+          } else {
+            cellEl.classList.add('incorrect');
+          }
+        });
+
+        handleCheckOutcome(correctCount, 3);
       }
     }
 
@@ -1341,9 +1951,7 @@
         levelStats[currentLevel].correct = targetTotal;
         levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
         updateHeaderDisplay();
-        if (currentLevel === 2 || currentLevel === 3) {
-          renderBoard(); // lock inputs on completion
-        }
+        renderBoard(); // lock inputs and dropdowns on completion
 
         document.getElementById('checkBtn').classList.add('hidden');
         const nextBtn = document.getElementById('nextLevelBtn');
@@ -1357,10 +1965,14 @@
           nextBtnText.textContent = 'Proceed to Level3-M05-4.3 →';
           nextBtn.classList.remove('hidden');
           showFeedback('அருமை! Level2-M05-4.2 முடிந்தது (4/4). Level3-M05-4.3-க்குச் செல்லவும்!', 'success');
+        } else if (currentLevel === 3) {
+          nextBtnText.textContent = 'Proceed to Level4-M05-4.4 →';
+          nextBtn.classList.remove('hidden');
+          showFeedback('சூப்பர்! Level3-M05-4.3 முடிந்தது (6/6). Level4-M05-4.4-க்குச் செல்லவும்!', 'success');
         } else {
           nextBtnText.textContent = 'Submit Score ✓';
           nextBtn.classList.remove('hidden');
-          showFeedback('சூப்பர்! Level1-M05-4.1, Level2-M05-4.2 & Level3-M05-4.3 அனைத்தும் முடிந்தன (14/14)!', 'success');
+          showFeedback('அருமை! Level1-M05-4.1, Level2-M05-4.2, Level3-M05-4.3 & Level4-M05-4.4 அனைத்தும் முடிந்தன (17/17)!', 'success');
           submitGameDataToLMS();
         }
       } else {
@@ -1379,6 +1991,8 @@
         setupLevel(2);
       } else if (currentLevel === 2) {
         setupLevel(3);
+      } else if (currentLevel === 3) {
+        setupLevel(4);
       } else {
         submitGameDataToLMS();
       }
@@ -1391,15 +2005,22 @@
       const l2TimeStr = formatSecondsHHMMSS(levelStats[2].seconds);
       const l3ScoreStr = `${levelStats[3].correct}/6-${Math.round((levelStats[3].correct / 6) * 100)}%`;
       const l3TimeStr = formatSecondsHHMMSS(levelStats[3].seconds);
+      const l4ScoreStr = `${levelStats[4].correct}/3-${Math.round((levelStats[4].correct / 3) * 100)}%`;
+      const l4TimeStr = formatSecondsHHMMSS(levelStats[4].seconds);
 
-      const totCorrect = levelStats[1].correct + levelStats[2].correct + levelStats[3].correct;
-      const totScoreStr = `${totCorrect}/14-${Math.round((totCorrect / 14) * 100)}%`;
+      const totCorrect =
+        levelStats[1].correct +
+        levelStats[2].correct +
+        levelStats[3].correct +
+        levelStats[4].correct;
+      const totScoreStr = `${totCorrect}/17-${Math.round((totCorrect / 17) * 100)}%`;
 
       document.getElementById('sumStudentId').textContent = lmsContext.studentId;
       document.getElementById('sumStudentName').textContent = lmsContext.name;
       document.getElementById('sumL1').textContent = `${l1ScoreStr} (${l1TimeStr})`;
       document.getElementById('sumL2').textContent = `${l2ScoreStr} (${l2TimeStr})`;
       document.getElementById('sumL3').textContent = `${l3ScoreStr} (${l3TimeStr})`;
+      document.getElementById('sumL4').textContent = `${l4ScoreStr} (${l4TimeStr})`;
       document.getElementById('sumTotal').textContent = totScoreStr;
       document.getElementById('completionModal').classList.remove('hidden');
 
@@ -1424,6 +2045,8 @@
         level2Time: l2TimeStr,
         level3Score: l3ScoreStr,
         level3Time: l3TimeStr,
+        level4Score: l4ScoreStr,
+        level4Time: l4TimeStr,
         score: totScoreStr,
         trialId: lmsContext.trialId
       };
@@ -1448,7 +2071,8 @@
       levelStats = {
         1: { correct: 0, total: 4, seconds: 0 },
         2: { correct: 0, total: 4, seconds: 0 },
-        3: { correct: 0, total: 6, seconds: 0 }
+        3: { correct: 0, total: 6, seconds: 0 },
+        4: { correct: 0, total: 3, seconds: 0 }
       };
       document.getElementById('completionModal').classList.add('hidden');
       setupLevel(1);

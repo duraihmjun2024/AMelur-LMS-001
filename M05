@@ -189,20 +189,24 @@
 
     <!-- Top LMS Meta Bar -->
     <div class="bg-slate-800 text-white px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-0.5 rounded-md border border-slate-500 transition">
+          ← Home
+        </a>
         <span class="bg-sky-500 text-white font-bold px-2.5 py-0.5 rounded-md tracking-wide">AMelur-LMS-001</span>
-        <span class="text-slate-300 font-semibold">Game M05 • அளவைகள் (Measurements)</span>
+        <span class="text-slate-300 font-semibold" id="studentInfoBadge">Game M05 • அளவைகள்</span>
       </div>
-      <div class="flex items-center gap-3">
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="roundCounter">சுற்று (Set): 1</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">மதிப்பெண் (Score): 0</span>
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">நிலை (Level): 1 / 2</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">மதிப்பெண்: 0/8</span>
       </div>
     </div>
 
     <!-- Textbook Sky-Blue Header -->
     <header class="textbook-header px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3 sm:gap-4">
-        <div class="badge-m05 px-3 py-1 text-base sm:text-xl tracking-tight">
+        <div class="badge-m05 px-3 py-1 text-base sm:text-xl tracking-tight" id="badgeGameCode">
           M05
         </div>
         <h1 class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
@@ -215,8 +219,8 @@
     </header>
 
     <!-- Instruction Helper Pill -->
-    <div class="bg-sky-50/80 border-b border-sky-100 px-4 py-2 text-center text-xs sm:text-sm text-slate-700 font-medium">
-      வலதுபுறம் உள்ள மீட்டர் அட்டைகளை இழுத்து (Drag) அல்லது தொட்டு (Tap) சரியான இளஞ்சிவப்புப் பெட்டியில் வைக்கவும்.
+    <div class="bg-sky-50/80 border-b border-sky-100 px-4 py-2 text-center text-xs sm:text-sm text-slate-700 font-medium" id="levelSubHeader">
+      நிலை 1 (அடிப்படை அளவுகள்): வலதுபுறம் உள்ள மீட்டர் அட்டைகளை இழுத்து (Drag) அல்லது தொட்டு (Tap) சரியான இளஞ்சிவப்புப் பெட்டியில் வைக்கவும்.
     </div>
 
     <!-- Game Workspace (Matches Image 2-Column Layout) -->
@@ -261,6 +265,14 @@
         </button>
 
         <button
+          id="nextLevelBtn"
+          onclick="proceedToNextStage()"
+          class="hidden px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-indigo-300"
+        >
+          <span id="nextLevelBtnText">நிலை 2-க்குச் செல் (Next Level) →</span>
+        </button>
+
+        <button
           id="clearBtn"
           onclick="clearCurrentSlots()"
           class="px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
@@ -285,13 +297,61 @@
     </main>
   </div>
 
+  <!-- LMS Completion & Submission Summary Modal -->
+  <div id="completionModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-300 text-center space-y-4">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-extrabold">
+        ★
+      </div>
+      <h2 class="text-xl font-extrabold text-slate-900">வாழ்த்துகள்! (Congratulations!)</h2>
+      <p class="text-sm text-slate-600 font-medium" id="completionSubText">
+        நீங்கள் இரண்டு நிலைகளையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+      </p>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Student ID:</span> <span class="font-bold text-indigo-700" id="sumStudentId">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Name:</span> <span class="font-bold text-slate-800" id="sumStudentName">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level 1 Score &amp; Time:</span> <span class="font-bold text-blue-700" id="sumL1">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level 2 Score &amp; Time:</span> <span class="font-bold text-purple-700" id="sumL2">--</span></div>
+        <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saving to Google Sheet...</span></div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+        <button onclick="playAgainFullGame()" class="flex-1 py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm cursor-pointer">
+          மீண்டும் விளையாடு (Play Again)
+        </button>
+        <a href="index.html" class="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm text-center">
+          முகப்புப் பக்கம் (Home)
+        </a>
+      </div>
+    </div>
+  </div>
+
   <script>
-    /**
-     * Master pool of centimetre-to-metre conversions with stacked fraction rendering metadata.
-     * Includes the exact textbook values (25, 50, 75, 100) plus additional standard multiples
-     * so every "Reset Numbers" press generates fresh randomized problems with accurate proportions.
-     */
-    const CONVERSION_POOL = [
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+
+    // Parse LMS URL parameters passed from index.html
+    const urlParams = new URLSearchParams(window.location.search);
+    const lmsContext = {
+      gameCode: (urlParams.get('gameCode') || 'M05').trim().toUpperCase(),
+      studentId: (urlParams.get('studentId') || 'GUEST').trim().toUpperCase(),
+      name: (urlParams.get('name') || 'Student').trim(),
+      school: (urlParams.get('school') || 'PUPS Anjalam Melur').trim(),
+      whatsapp: (urlParams.get('whatsapp') || '').trim(),
+      trialId: (urlParams.get('trialId') || '1').trim()
+    };
+
+    // Level 1 pool: Basic textbook conversions (25, 50, 75, 100 cm)
+    const LEVEL_1_POOL = [
+      { id: 'c25',  cm: 25,  whole: '',  num: '1', den: '4' },
+      { id: 'c50',  cm: 50,  whole: '',  num: '1', den: '2' },
+      { id: 'c75',  cm: 75,  whole: '',  num: '3', den: '4' },
+      { id: 'c100', cm: 100, whole: '1', num: '',  den: ''  }
+    ];
+
+    // Level 2 pool: Extended mixed numbers & whole metres (125, 150, 175, 200 cm + basic pool)
+    const LEVEL_2_POOL = [
       { id: 'c25',  cm: 25,  whole: '',  num: '1', den: '4' },
       { id: 'c50',  cm: 50,  whole: '',  num: '1', den: '2' },
       { id: 'c75',  cm: 75,  whole: '',  num: '3', den: '4' },
@@ -302,15 +362,23 @@
       { id: 'c200', cm: 200, whole: '2', num: '',  den: ''  }
     ];
 
-    // Game state
-    let currentRows = [];        // Array of 4 items shown in the ribbon rows
-    let optionTiles = [];        // Shuffled array of 4 items shown in the right option box
-    let placedAnswers = [null, null, null, null]; // Stores item.id placed in each row slot
-    let selectedOptionId = null; // Currently tapped/selected option card ID
-    let draggedOptionId = null;  // Currently dragged option card ID
-    let roundNumber = 1;
-    let totalScore = 0;
-    let roundScored = false;
+    // Game & LMS Tracking State
+    let currentLevel = 1; // 1 or 2
+    let currentRows = [];
+    let optionTiles = [];
+    let placedAnswers = [null, null, null, null];
+    let selectedOptionId = null;
+    let draggedOptionId = null;
+    let levelCompleted = false;
+    let isSubmittedToSheet = false;
+
+    // Score & Time tracking per level for AMelur-LMS-001 leaderboard
+    let levelStats = {
+      1: { correct: 0, total: 4, seconds: 0 },
+      2: { correct: 0, total: 4, seconds: 0 }
+    };
+    let levelStartTime = Date.now();
+    let timerInterval = null;
 
     // Gentle sound synthesizer using Tone.js
     let synth = null;
@@ -335,12 +403,41 @@
         } else if (type === 'reset') {
           synth.triggerAttackRelease(['G4', 'C5'], '16n');
         }
-      } catch (e) {
-        // Ignore audio errors on restricted browsers
-      }
+      } catch (e) {}
     }
 
-    // Utility: Fisher-Yates shuffle
+    function formatSecondsHHMMSS(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const hrs = String(Math.floor(s / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      const secs = String(s % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
+    }
+
+    function startLevelTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      levelStartTime = Date.now();
+      timerInterval = setInterval(() => {
+        if (!levelCompleted) {
+          const elapsed = Math.floor((Date.now() - levelStartTime) / 1000);
+          levelStats[currentLevel].seconds = elapsed;
+          const totalElapsed = levelStats[1].seconds + (currentLevel === 2 ? levelStats[2].seconds : 0);
+          document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(totalElapsed);
+        }
+      }, 1000);
+    }
+
+    function updateHeaderDisplay() {
+      document.getElementById('badgeGameCode').textContent = lmsContext.gameCode;
+      document.getElementById('studentInfoBadge').textContent =
+        lmsContext.studentId !== 'GUEST'
+          ? `${lmsContext.gameCode} • ${lmsContext.studentId} (${lmsContext.name})`
+          : `Game ${lmsContext.gameCode} • அளவைகள் (Practice Mode)`;
+      document.getElementById('levelDisplay').textContent = `நிலை (Level): ${currentLevel} / 2`;
+      const totCorrect = levelStats[1].correct + levelStats[2].correct;
+      document.getElementById('scoreCounter').textContent = `மதிப்பெண்: ${totCorrect}/8`;
+    }
+
     function shuffleArray(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -350,7 +447,6 @@
       return arr;
     }
 
-    // Builds HTML for a stacked metre fraction card (e.g., 1/2 மீ, 1 மீ, 1 1/4 மீ)
     function renderFractionHTML(item, compact = false) {
       const sizeClass = compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl';
       const fracSize = compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base';
@@ -372,44 +468,58 @@
       return html;
     }
 
-    // Initializes the initial textbook set (100, 50, 25, 75 செ.மீ) on first load
-    function initInitialGame() {
-      const initialIds = ['c100', 'c50', 'c25', 'c75'];
-      currentRows = initialIds.map(id => CONVERSION_POOL.find(item => item.id === id));
-      // Match option order from textbook image: 1/2 மீ, 1/4 மீ, 1 மீ, 3/4 மீ
-      const initialOptionIds = ['c50', 'c25', 'c100', 'c75'];
-      optionTiles = initialOptionIds.map(id => CONVERSION_POOL.find(item => item.id === id));
+    function setupLevel(levelNum, useTextbookExactOnFirstLoad = false) {
+      currentLevel = levelNum;
+      levelCompleted = false;
       placedAnswers = [null, null, null, null];
       selectedOptionId = null;
-      roundScored = false;
-      renderBoard();
-    }
 
-    // Generates a new set of 4 randomized numbers when "Reset Numbers" is clicked
-    function resetNumbers() {
-      playSound('reset');
-      roundNumber++;
-      document.getElementById('roundCounter').textContent = `சுற்று (Set): ${roundNumber}`;
+      document.getElementById('nextLevelBtn').classList.add('hidden');
+      document.getElementById('checkBtn').classList.remove('hidden');
+      hideFeedback();
 
-      // Pick 4 random distinct values from the conversion pool
-      const picked = shuffleArray(CONVERSION_POOL).slice(0, 4);
-      currentRows = shuffleArray(picked);
-      optionTiles = shuffleArray(picked);
-
-      // Ensure option tiles aren't in the exact same order as the rows
-      if (optionTiles.every((opt, idx) => opt.id === currentRows[idx].id)) {
-        optionTiles.reverse();
+      if (currentLevel === 1) {
+        document.getElementById('levelSubHeader').textContent =
+          'நிலை 1 (அடிப்படை அளவுகள்): வலதுபுறம் உள்ள மீட்டர் அட்டைகளை இழுத்து (Drag) அல்லது தொட்டு (Tap) சரியான இளஞ்சிவப்புப் பெட்டியில் வைக்கவும்.';
+        if (useTextbookExactOnFirstLoad) {
+          const initialIds = ['c100', 'c50', 'c25', 'c75'];
+          currentRows = initialIds.map(id => LEVEL_1_POOL.find(item => item.id === id));
+          const initialOptionIds = ['c50', 'c25', 'c100', 'c75'];
+          optionTiles = initialOptionIds.map(id => LEVEL_1_POOL.find(item => item.id === id));
+        } else {
+          currentRows = shuffleArray(LEVEL_1_POOL);
+          optionTiles = shuffleArray(LEVEL_1_POOL);
+          if (optionTiles.every((opt, idx) => opt.id === currentRows[idx].id)) {
+            optionTiles.reverse();
+          }
+        }
+      } else {
+        document.getElementById('levelSubHeader').textContent =
+          'நிலை 2 (கலப்பு எண்கள்): 100 செ.மீ-க்கு மேற்பட்ட ரிப்பன் நீளங்களைக் கலப்பு பின்ன மீட்டரில் பொருத்தவும்.';
+        // Pick 4 items including at least two > 100 cm values
+        const higherItems = shuffleArray(LEVEL_2_POOL.filter(i => i.cm > 100)).slice(0, 2);
+        const remainingItems = shuffleArray(LEVEL_2_POOL.filter(i => !higherItems.some(h => h.id === i.id))).slice(0, 2);
+        const picked = shuffleArray([...higherItems, ...remainingItems]);
+        currentRows = shuffleArray(picked);
+        optionTiles = shuffleArray(picked);
+        if (optionTiles.every((opt, idx) => opt.id === currentRows[idx].id)) {
+          optionTiles.reverse();
+        }
       }
 
-      placedAnswers = [null, null, null, null];
-      selectedOptionId = null;
-      roundScored = false;
-      hideFeedback();
+      updateHeaderDisplay();
+      startLevelTimer();
       renderBoard();
     }
 
-    // Clears currently placed cards in the current round
+    // "Reset Numbers" button generates fresh randomized numbers for the active level
+    function resetNumbers() {
+      playSound('reset');
+      setupLevel(currentLevel, false);
+    }
+
     function clearCurrentSlots() {
+      if (levelCompleted) return;
       playSound('remove');
       placedAnswers = [null, null, null, null];
       selectedOptionId = null;
@@ -417,29 +527,24 @@
       renderBoard();
     }
 
-    // Renders both the 4 ribbon rows and the 4 option bank cards
     function renderBoard() {
       const rowsContainer = document.getElementById('rowsContainer');
       const optionsContainer = document.getElementById('optionsContainer');
 
-      // Find maximum cm value in the current 4-row set so the longest ribbon is 100% width
-      // and shorter ribbons scale accurately in exact mathematical proportion!
       const maxCm = Math.max(...currentRows.map(r => r.cm));
 
       rowsContainer.innerHTML = '';
       currentRows.forEach((rowItem, rowIndex) => {
-        // Calculate proportional bar width (minimum 22% so label always fits cleanly inside)
         const rawPercent = (rowItem.cm / maxCm) * 100;
-        const widthPercent = Math.max(22, Math.round(rawPercent));
+        const widthPercent = Math.max(24, Math.round(rawPercent));
 
         const placedId = placedAnswers[rowIndex];
-        const placedItem = placedId ? CONVERSION_POOL.find(i => i.id === placedId) : null;
+        const placedItem = placedId ? LEVEL_2_POOL.find(i => i.id === placedId) : null;
 
         const rowEl = document.createElement('div');
         rowEl.className = 'flex items-center justify-between gap-3 sm:gap-4';
 
         rowEl.innerHTML = `
-          <!-- Left Ribbon Track -->
           <div class="flex-1 flex items-center">
             <div
               class="ribbon-bar h-12 sm:h-14 flex items-center px-3 sm:px-4"
@@ -452,7 +557,6 @@
             </div>
           </div>
 
-          <!-- Pink Answer Drop Zone -->
           <div
             id="slot-${rowIndex}"
             data-row="${rowIndex}"
@@ -474,20 +578,18 @@
         rowsContainer.appendChild(rowEl);
       });
 
-      // Render right-side peach box option cards
       optionsContainer.innerHTML = '';
       optionTiles.forEach((optItem, idx) => {
         const isUsed = placedAnswers.includes(optItem.id);
         const isSelected = selectedOptionId === optItem.id;
-        // Slight staggered vertical offset on desktop to mirror the playful textbook layout
         const staggerClass = idx % 2 === 1 ? 'sm:mt-3' : '';
 
         const tileEl = document.createElement('div');
-        tileEl.draggable = !isUsed;
+        tileEl.draggable = !isUsed && !levelCompleted;
         tileEl.className = `fraction-tile w-24 sm:w-28 h-16 sm:h-20 flex items-center justify-center ${staggerClass} ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}`;
         tileEl.innerHTML = renderFractionHTML(optItem, false);
 
-        if (!isUsed) {
+        if (!isUsed && !levelCompleted) {
           tileEl.onclick = () => handleOptionClick(optItem.id);
           tileEl.ondragstart = (e) => handleDragStart(e, optItem.id);
           tileEl.ondragend = () => handleDragEnd();
@@ -497,8 +599,8 @@
       });
     }
 
-    // Tap/Click handler on an option card
     function handleOptionClick(optionId) {
+      if (levelCompleted) return;
       hideFeedback();
       if (selectedOptionId === optionId) {
         selectedOptionId = null;
@@ -509,10 +611,9 @@
       renderBoard();
     }
 
-    // Tap/Click handler on a pink answer slot
     function handleSlotClick(rowIndex) {
+      if (levelCompleted) return;
       hideFeedback();
-      // If a card is currently selected from the option bank, place it here
       if (selectedOptionId) {
         placedAnswers[rowIndex] = selectedOptionId;
         selectedOptionId = null;
@@ -521,18 +622,15 @@
         return;
       }
 
-      // Otherwise, if this slot already has a card, return it to the option bank
       if (placedAnswers[rowIndex] !== null) {
         placedAnswers[rowIndex] = null;
         playSound('remove');
         renderBoard();
       } else {
-        // Auto-place the first available unused option if student taps empty slot directly without selecting first
         showFeedback('முதலில் வலதுபுறம் உள்ள மீட்டர் அட்டையைத் தொடவும் அல்லது இழுக்கவும்.', 'info');
       }
     }
 
-    // HTML5 Drag & Drop Handlers
     function handleDragStart(e, optionId) {
       draggedOptionId = optionId;
       selectedOptionId = optionId;
@@ -560,13 +658,13 @@
 
     function handleDrop(e, rowIndex) {
       e.preventDefault();
+      if (levelCompleted) return;
       const slotEl = document.getElementById(`slot-${rowIndex}`);
       if (slotEl) slotEl.classList.remove('drag-over');
 
       const droppedId = draggedOptionId || (e.dataTransfer && e.dataTransfer.getData('text/plain'));
       if (!droppedId) return;
 
-      // Remove from any previous slot if moved
       const existingIndex = placedAnswers.indexOf(droppedId);
       if (existingIndex !== -1) {
         placedAnswers[existingIndex] = null;
@@ -580,9 +678,7 @@
       renderBoard();
     }
 
-    // Validates all 4 slots against the correct centimetre-to-metre conversions
     function checkAnswers() {
-      // Ensure all 4 slots are filled first
       if (placedAnswers.includes(null)) {
         playSound('error');
         showFeedback('அனைத்து 4 பெட்டிகளிலும் விடைகளை நிரப்பவும்! (Please fill all 4 boxes)', 'warning');
@@ -604,16 +700,100 @@
 
       if (correctCount === 4) {
         playSound('success');
-        if (!roundScored) {
-          totalScore += 10;
-          roundScored = true;
-          document.getElementById('scoreCounter').textContent = `மதிப்பெண் (Score): ${totalScore}`;
+        levelCompleted = true;
+        levelStats[currentLevel].correct = 4;
+        levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
+        updateHeaderDisplay();
+
+        document.getElementById('checkBtn').classList.add('hidden');
+        const nextBtn = document.getElementById('nextLevelBtn');
+        const nextBtnText = document.getElementById('nextLevelBtnText');
+
+        if (currentLevel === 1) {
+          nextBtnText.textContent = 'நிலை 2-க்குச் செல் (Proceed to Level 2) →';
+          nextBtn.classList.remove('hidden');
+          showFeedback('மிக நன்று! நிலை 1 முடிந்தது (4/4). நிலை 2-க்குச் செல்லவும்!', 'success');
+        } else {
+          nextBtnText.textContent = 'மதிப்பெண் சமர்ப்பி (Submit Score) ✓';
+          nextBtn.classList.remove('hidden');
+          showFeedback('அருமை! இரண்டு நிலைகளும் வெற்றிகரமாக முடிந்தன (8/8)!', 'success');
+          submitGameDataToLMS();
         }
-        showFeedback('மிக நன்று! 4/4 சரியான விடைகள்! அடுத்த பயிற்சிக்கு "Reset Numbers" அழுத்தவும்.', 'success');
       } else {
         playSound('error');
         showFeedback(`${correctCount} / 4 சரி. சிவப்பு நிறப் பெட்டிகளைத் தொட்டு மீண்டும் முயற்சிக்கவும்!`, 'error');
       }
+    }
+
+    function proceedToNextStage() {
+      if (currentLevel === 1) {
+        setupLevel(2, false);
+      } else {
+        submitGameDataToLMS();
+      }
+    }
+
+    function submitGameDataToLMS() {
+      const l1ScoreStr = `${levelStats[1].correct}/4-${Math.round((levelStats[1].correct / 4) * 100)}%`;
+      const l1TimeStr = formatSecondsHHMMSS(levelStats[1].seconds);
+      const l2ScoreStr = `${levelStats[2].correct}/4-${Math.round((levelStats[2].correct / 4) * 100)}%`;
+      const l2TimeStr = formatSecondsHHMMSS(levelStats[2].seconds);
+      const totCorrect = levelStats[1].correct + levelStats[2].correct;
+      const totScoreStr = `${totCorrect}/8-${Math.round((totCorrect / 8) * 100)}%`;
+
+      document.getElementById('sumStudentId').textContent = lmsContext.studentId;
+      document.getElementById('sumStudentName').textContent = lmsContext.name;
+      document.getElementById('sumL1').textContent = `${l1ScoreStr} (${l1TimeStr})`;
+      document.getElementById('sumL2').textContent = `${l2ScoreStr} (${l2TimeStr})`;
+      document.getElementById('sumTotal').textContent = totScoreStr;
+      document.getElementById('completionModal').classList.remove('hidden');
+
+      if (isSubmittedToSheet) return;
+      isSubmittedToSheet = true;
+
+      if (lmsContext.studentId === 'GUEST') {
+        document.getElementById('sumSyncStatus').textContent = 'Practice Mode (Not logged in via Student Grid)';
+        return;
+      }
+
+      const payload = {
+        action: 'saveGameData',
+        gameCode: lmsContext.gameCode,
+        studentId: lmsContext.studentId,
+        name: lmsContext.name,
+        school: lmsContext.school,
+        whatsapp: lmsContext.whatsapp,
+        level1Score: l1ScoreStr,
+        level1Time: l1TimeStr,
+        level2Score: l2ScoreStr,
+        level2Time: l2TimeStr,
+        score: totScoreStr,
+        trialId: lmsContext.trialId
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(payload).toString()
+      })
+      .then(() => {
+        document.getElementById('sumSyncStatus').textContent = 'Saved to AMelur-LMS-001 Leaderboard ✓';
+        document.getElementById('sumSyncStatus').classList.replace('text-amber-600', 'text-emerald-600');
+      })
+      .catch(() => {
+        document.getElementById('sumSyncStatus').textContent = 'Saved Locally (Offline)';
+      });
+    }
+
+    function playAgainFullGame() {
+      isSubmittedToSheet = false;
+      levelStats = {
+        1: { correct: 0, total: 4, seconds: 0 },
+        2: { correct: 0, total: 4, seconds: 0 }
+      };
+      document.getElementById('completionModal').classList.add('hidden');
+      setupLevel(1, false);
     }
 
     function showFeedback(message, type) {
@@ -639,8 +819,10 @@
       banner.classList.add('hidden');
     }
 
-    // Start game on page load
-    window.addEventListener('DOMContentLoaded', initInitialGame);
+    // Start Level 1 on page load with the textbook layout
+    window.addEventListener('DOMContentLoaded', () => {
+      setupLevel(1, true);
+    });
   </script>
 </body>
 </html>

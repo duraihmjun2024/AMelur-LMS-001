@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - அளவைகள் (4.1 - 4.6) | AMelur-LMS-001</title>
+  <title>Game M05 - அளவைகள் (4.1 - 4.5) | AMelur-LMS-001</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Noto Sans Tamil & Inter -->
@@ -450,100 +450,6 @@
       background: #ffffff;
     }
 
-    /* Level 6 Warm Amber/Orange textbook header banner (4.6 Tick the weights & write kg/g) */
-    .textbook-header-l6 {
-      background: linear-gradient(180deg, #fed7aa 0%, #ffedd5 65%, #fff7ed 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(194, 65, 12, 0.14);
-    }
-
-    .badge-l6 {
-      background: #ffffff;
-      border: 2px solid #ea580c;
-      border-radius: 10px 10px 10px 2px;
-      color: #c2410c;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(234, 88, 12, 0.16);
-    }
-
-    .l6-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
-      border: 2px solid #f472b6;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
-    }
-
-    .l6-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 10px 10px;
-      text-align: center;
-      vertical-align: middle;
-    }
-
-    .l6-table td:last-child {
-      border-right: none;
-    }
-
-    .l6-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .l6-weight-checkbox {
-      width: 28px;
-      height: 28px;
-      border: 2.5px solid #0284c7;
-      border-radius: 6px;
-      background: #ffffff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Inter', sans-serif;
-      font-weight: 900;
-      font-size: 16px;
-      color: #059669;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .l6-weight-checkbox:hover:not(:disabled) {
-      border-color: #0369a1;
-      background: #f0f9ff;
-      transform: scale(1.06);
-    }
-    .l6-weight-checkbox.checked {
-      background: #ecfdf5;
-      border-color: #059669;
-      box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.18);
-    }
-
-    .l6-answer-pill {
-      border: 2px solid #d946ef;
-      border-radius: 12px;
-      background: #ffffff;
-      padding: 6px 10px;
-      display: inline-flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .l6-answer-pill.correct {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
-    }
-    .l6-answer-pill.incorrect {
-      border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
-    }
-
     /* Numeric inputs for whole, numerator, denominator */
     .frac-input {
       font-family: 'Inter', sans-serif;
@@ -685,7 +591,7 @@
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/24</span>
+        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/21</span>
         <button
           id="adminSkipBtn"
           onclick="openSkipLevelModal()"
@@ -798,7 +704,7 @@
       </div>
       <h2 class="text-xl font-extrabold text-slate-900">வாழ்த்துகள்! (Congratulations!)</h2>
       <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        நீங்கள் Level1-M05-4.1 முதல் Level6-M05-4.6 வரை அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+        நீங்கள் Level1-M05-4.1 முதல் Level5-M05-4.5 வரை அனைத்தையும் வெற்றிகரமாக முடித்துவிட்டீர்கள்!
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
@@ -809,7 +715,6 @@
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level3-M05-4.3:</span> <span class="font-bold text-emerald-700" id="sumL3">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level4-M05-4.4:</span> <span class="font-bold text-pink-700" id="sumL4">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level5-M05-4.5:</span> <span class="font-bold text-sky-700" id="sumL5">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level6-M05-4.6:</span> <span class="font-bold text-orange-700" id="sumL6">--</span></div>
         <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saving to Google Sheet...</span></div>
       </div>
@@ -875,10 +780,10 @@
 
       err.classList.add('hidden');
       input.value = '';
-      if (currentLevel < 6) {
+      if (currentLevel < 5) {
         sub.textContent = `Enter password to move from Level ${currentLevel} to Level ${currentLevel + 1}.`;
       } else {
-        sub.textContent = 'You are on the final level (Level6-M05-4.6). Enter password to open summary.';
+        sub.textContent = 'You are on the final level (Level5-M05-4.5). Enter password to open summary.';
       }
       modal.classList.remove('hidden');
       setTimeout(() => input.focus(), 50);
@@ -902,7 +807,7 @@
       closeSkipLevelModal();
       levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
 
-      if (currentLevel < 6) {
+      if (currentLevel < 5) {
         setupLevel(currentLevel + 1);
       } else {
         levelCompleted = true;
@@ -920,31 +825,6 @@
 
     function renderUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
       const opts = ENGLISH_UNIT_OPTIONS.map(opt => {
-        const sel = selectedValue === opt.value ? 'selected' : '';
-        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
-      }).join('');
-      return `
-        <select
-          ${disabledAttr}
-          onchange="${onChangeAttr}"
-          aria-label="${ariaLabel}"
-          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
-        >
-          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
-          ${opts}
-        </select>
-      `;
-    }
-
-    // Dotted mass unit dropdown options for Level 6 (m.g., g., k.g.)
-    const MASS_UNIT_OPTIONS = [
-      { value: 'mg', label: 'm.g.' },
-      { value: 'g',  label: 'g.'   },
-      { value: 'kg', label: 'k.g.' }
-    ];
-
-    function renderMassUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
-      const opts = MASS_UNIT_OPTIONS.map(opt => {
         const sel = selectedValue === opt.value ? 'selected' : '';
         return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
       }).join('');
@@ -1294,115 +1174,6 @@
       `;
     }
 
-        // Level6-M05-4.6 Basket Pool (Tick the required weights & write in kg and g)
-    const LEVEL6_WEIGHT_LIST = [
-      { id: '2kg',  label: '2 k.g.',  grams: 2000, sizeClass: 'w-14 h-12 sm:w-16 sm:h-14' },
-      { id: '1kg',  label: '1 k.g.',  grams: 1000, sizeClass: 'w-13 h-11 sm:w-14 sm:h-12' },
-      { id: '500g', label: '500 g.',  grams: 500,  sizeClass: 'w-11 h-10 sm:w-12 sm:h-11' },
-      { id: '200g', label: '200 g.',  grams: 200,  sizeClass: 'w-10 h-9 sm:w-11 sm:h-9'  },
-      { id: '100g', label: '100 g.',  grams: 100,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'   },
-      { id: '50g',  label: '50 g.',   grams: 50,   sizeClass: 'w-8 h-7 sm:w-9 sm:h-7'    }
-    ];
-
-    const LEVEL6_POOL = [
-      {
-        id: 'apples',
-        name: 'Apples Basket',
-        whole: '3', num: '3', den: '4',
-        kg: 3, g: 750,
-        reqWeights: ['2kg', '1kg', '500g', '200g', '50g']
-      },
-      {
-        id: 'oranges',
-        name: 'Oranges Basket',
-        whole: '2', num: '1', den: '4',
-        kg: 2, g: 250,
-        reqWeights: ['2kg', '200g', '50g']
-      },
-      {
-        id: 'mangoes',
-        name: 'Mangoes Basket',
-        whole: '1', num: '3', den: '4',
-        kg: 1, g: 750,
-        reqWeights: ['1kg', '500g', '200g', '50g']
-      },
-      {
-        id: 'tomatoes',
-        name: 'Tomatoes Basket',
-        whole: '2', num: '1', den: '2',
-        kg: 2, g: 500,
-        reqWeights: ['2kg', '500g']
-      },
-      {
-        id: 'guavas',
-        name: 'Guavas Basket',
-        whole: '3', num: '1', den: '2',
-        kg: 3, g: 500,
-        reqWeights: ['2kg', '1kg', '500g']
-      },
-      {
-        id: 'lemons',
-        name: 'Lemons Basket',
-        whole: '1', num: '1', den: '4',
-        kg: 1, g: 250,
-        reqWeights: ['1kg', '200g', '50g']
-      },
-      {
-        id: 'bananas',
-        name: 'Bananas Basket',
-        whole: '3', num: '1', den: '4',
-        kg: 3, g: 250,
-        reqWeights: ['2kg', '1kg', '200g', '50g']
-      },
-      {
-        id: 'potatoes',
-        name: 'Potatoes Basket',
-        whole: '2', num: '3', den: '4',
-        kg: 2, g: 750,
-        reqWeights: ['2kg', '500g', '200g', '50g']
-      }
-    ];
-
-    function renderBasketSVG(itemId) {
-      const fruitColors = {
-        apples:   ['#dc2626', '#ef4444', '#b91c1c'],
-        oranges:  ['#f97316', '#fb923c', '#ea580c'],
-        mangoes:  ['#facc15', '#eab308', '#f59e0b'],
-        tomatoes: ['#ef4444', '#dc2626', '#f87171'],
-        guavas:   ['#4ade80', '#22c55e', '#86efac'],
-        lemons:   ['#fde047', '#facc15', '#fef08a'],
-        bananas:  ['#fde047', '#eab308', '#fef08a'],
-        potatoes: ['#d97706', '#b45309', '#f59e0b']
-      };
-      const [c1, c2, c3] = fruitColors[itemId] || fruitColors.apples;
-      return `
-        <svg class="w-24 h-16 mx-auto block" viewBox="0 0 120 78" fill="none" aria-label="${itemId}">
-          <!-- Fruits piled in basket -->
-          <circle cx="38" cy="27" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="56" cy="22" r="12" fill="${c2}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="76" cy="25" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="46" cy="34" r="11" fill="${c3}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="66" cy="33" r="11" fill="${c2}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="85" cy="34" r="10" fill="${c3}" stroke="#7f1d1d" stroke-width="1.5" />
-          <!-- Woven Wicker Basket -->
-          <path d="M 18 38 H 102 L 90 68 Q 88 72 82 72 H 38 Q 32 72 30 68 Z" fill="#d97706" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
-          <rect x="15" y="35" width="90" height="7" rx="3.5" fill="#b45309" stroke="#78350f" stroke-width="2" />
-          <path d="M 24 50 H 96 M 27 60 H 93" stroke="#92400e" stroke-width="2" />
-          <path d="M 40 42 L 44 71 M 60 42 V 71 M 80 42 L 76 71" stroke="#92400e" stroke-width="2" />
-        </svg>
-      `;
-    }
-
-    function renderL6HexWeightSVG(wObj) {
-      return `
-        <svg class="${wObj.sizeClass} mx-auto block" viewBox="0 0 84 70" fill="none" aria-label="${wObj.label}">
-          <polygon points="23,6 61,6 79,35 61,64 23,64 5,35" fill="#334155" stroke="#0f172a" stroke-width="3" />
-          <polygon points="26,13 58,13 72,35 58,57 26,57 12,35" fill="#475569" stroke="#94a3b8" stroke-width="1.5" />
-          <text x="42" y="39" text-anchor="middle" fill="#f8fafc" font-family="Inter, sans-serif" font-weight="800" font-size="13.5">${wObj.label}</text>
-        </svg>
-      `;
-    }
-
     // Game & LMS Tracking State
     let currentLevel = 1; // 1 = 4.1, 2 = 4.2, 3 = 4.3, 4 = 4.4, 5 = 4.5
     let currentRows = [];
@@ -1439,26 +1210,18 @@
     let l5MidToRight = {};  // midId -> rightId
     let l5SelectedNode = null; // { col: 'left'|'mid'|'right', id: string }
 
-    // Level 6 (4.6) state: 3 rows, each with checked weights array + kg, kgUnit, g, gUnit
-    let l6TypedAnswers = [
-      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
-      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
-      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
-    ];
-
     let selectedOptionId = null;
     let draggedOptionId = null;
     let levelCompleted = false;
     let isSubmittedToSheet = false;
 
-    // Score & Time tracking across 6 levels (4 + 4 + 6 + 3 + 4 + 3 = 24 total questions)
+    // Score & Time tracking across 5 levels (4 + 4 + 6 + 3 + 4 = 21 total questions)
     let levelStats = {
       1: { correct: 0, total: 4, seconds: 0 },
       2: { correct: 0, total: 4, seconds: 0 },
       3: { correct: 0, total: 6, seconds: 0 },
       4: { correct: 0, total: 3, seconds: 0 },
-      5: { correct: 0, total: 4, seconds: 0 },
-      6: { correct: 0, total: 3, seconds: 0 }
+      5: { correct: 0, total: 4, seconds: 0 }
     };
     let levelStartTime = Date.now();
     let timerInterval = null;
@@ -1509,8 +1272,7 @@
             (currentLevel >= 2 ? levelStats[2].seconds : 0) +
             (currentLevel >= 3 ? levelStats[3].seconds : 0) +
             (currentLevel >= 4 ? levelStats[4].seconds : 0) +
-            (currentLevel >= 5 ? levelStats[5].seconds : 0) +
-            (currentLevel >= 6 ? levelStats[6].seconds : 0);
+            (currentLevel >= 5 ? levelStats[5].seconds : 0);
           document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(totalElapsed);
         }
       }, 1000);
@@ -1521,8 +1283,7 @@
       if (lvl === 2) return 'Level2-M05-4.2';
       if (lvl === 3) return 'Level3-M05-4.3';
       if (lvl === 4) return 'Level4-M05-4.4';
-      if (lvl === 5) return 'Level5-M05-4.5';
-      return 'Level6-M05-4.6';
+      return 'Level5-M05-4.5';
     }
 
     function updateHeaderDisplay() {
@@ -1531,15 +1292,14 @@
         lmsContext.studentId !== 'GUEST'
           ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
           : `${levelTag} • அளவைகள் (Practice Mode)`;
-      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/6)`;
+      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/5)`;
       const totCorrect =
         levelStats[1].correct +
         levelStats[2].correct +
         levelStats[3].correct +
         levelStats[4].correct +
-        levelStats[5].correct +
-        levelStats[6].correct;
-      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/24`;
+        levelStats[5].correct;
+      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/21`;
     }
 
     function shuffleArray(array) {
@@ -1694,7 +1454,7 @@
         const baseBicycle = LEVEL4_VEHICLE_POOL[0];
         const otherVehicles = shuffleArray(LEVEL4_VEHICLE_POOL.slice(1)).slice(0, 2);
         currentRows = [baseBicycle, ...otherVehicles];
-      } else if (currentLevel === 5) {
+      } else {
         // Level5-M05-4.5: Match vegetables (k.g.) -> gram labels -> iron weights
         headerEl.className = 'textbook-header-l5 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l5 px-3 py-1 text-base sm:text-xl tracking-tight';
@@ -1719,27 +1479,6 @@
           l5RightItems.reverse();
         }
         currentRows = l5LeftItems;
-      } else {
-        // Level6-M05-4.6: Tick the weights needed & write in k.g. and g.
-        headerEl.className = 'textbook-header-l6 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l6 px-3 py-1 text-base sm:text-xl tracking-tight';
-        badgeEl.textContent = '4.6';
-        titleEl.textContent = 'Tick (✓) the required weights and write in kilograms and grams.';
-        hintEl.textContent = '1 k.g. = 1000 g.';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-orange-950 bg-white/85 px-3 py-1 rounded-full border border-orange-300';
-        subHeaderEl.textContent =
-          'Level6-M05-4.6: Tick (✓) the boxes under the weights needed, then fill in the values and units (k.g. and g.).';
-
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12';
-        optionTiles = [];
-
-        l6TypedAnswers = [
-          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
-          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
-          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
-        ];
-        currentRows = shuffleArray(LEVEL6_POOL).slice(0, 3);
       }
 
       updateHeaderDisplay();
@@ -1781,47 +1520,13 @@
           { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
           { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' }
         ];
-      } else if (currentLevel === 5) {
+      } else {
         l5LeftToMid = {};
         l5MidToRight = {};
         l5SelectedNode = null;
-      } else {
-        l6TypedAnswers = [
-          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
-          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
-          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
-        ];
       }
       hideFeedback();
       renderBoard();
-    }
-
-    function toggleL6Weight(rowIndex, weightId) {
-      if (levelCompleted || currentLevel !== 6) return;
-      const arr = l6TypedAnswers[rowIndex].checked;
-      const pos = arr.indexOf(weightId);
-      if (pos === -1) {
-        arr.push(weightId);
-        playSound('place');
-      } else {
-        arr.splice(pos, 1);
-        playSound('remove');
-      }
-      const pillEl = document.getElementById(`l6-pill-${rowIndex}`);
-      if (pillEl) pillEl.classList.remove('correct', 'incorrect');
-      renderBoard();
-    }
-
-    function updateL6Answer(rowIndex, field, value) {
-      if (field === 'kgUnit' || field === 'gUnit') {
-        l6TypedAnswers[rowIndex][field] = value;
-      } else {
-        const maxLen = field === 'kg' ? 2 : 3;
-        const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
-        l6TypedAnswers[rowIndex][field] = cleaned;
-      }
-      const pillEl = document.getElementById(`l6-pill-${rowIndex}`);
-      if (pillEl) pillEl.classList.remove('correct', 'incorrect');
     }
 
     function updateL1Unit(rowIndex, value) {
@@ -2434,87 +2139,6 @@
 
         rowsContainer.appendChild(boardDiv);
         requestAnimationFrame(() => drawL5Lines());
-      } else {
-        // Render Level6-M05-4.6: Basket with fractional kg | 6 hex weights with tick boxes + ___ k.g. ___ g.
-        const disabledAttr = levelCompleted ? 'disabled' : '';
-        const wrapDiv = document.createElement('div');
-        wrapDiv.className = 'overflow-x-auto';
-
-        const rowsHTML = currentRows.map((item, rowIndex) => {
-          const ans = l6TypedAnswers[rowIndex];
-          const weightsGridHTML = LEVEL6_WEIGHT_LIST.map(wObj => {
-            const isChecked = ans.checked.includes(wObj.id);
-            return `
-              <div class="flex flex-col items-center justify-end gap-1.5">
-                <div onclick="toggleL6Weight(${rowIndex}, '${wObj.id}')" class="cursor-pointer">
-                  ${renderL6HexWeightSVG(wObj)}
-                </div>
-                <button
-                  type="button"
-                  ${disabledAttr}
-                  onclick="toggleL6Weight(${rowIndex}, '${wObj.id}')"
-                  aria-label="Select ${wObj.label} for ${item.name}"
-                  class="l6-weight-checkbox ${isChecked ? 'checked' : ''}"
-                >
-                  ${isChecked ? '✓' : ''}
-                </button>
-              </div>
-            `;
-          }).join('');
-
-          return `
-            <tr>
-              <td class="w-32 sm:w-44 bg-orange-50/30">
-                ${renderBasketSVG(item.id)}
-                <div class="mt-1">
-                  ${renderFractionHTML(item, 'k.g.', true)}
-                </div>
-              </td>
-              <td>
-                <div class="flex flex-col items-center justify-center gap-3 py-1">
-                  <div class="grid grid-cols-6 gap-1.5 sm:gap-3 items-end w-full max-w-lg mx-auto">
-                    ${weightsGridHTML}
-                  </div>
-                  <div id="l6-pill-${rowIndex}" class="l6-answer-pill">
-                    <input
-                      type="text"
-                      inputmode="numeric"
-                      maxlength="2"
-                      value="${ans.kg}"
-                      ${disabledAttr}
-                      oninput="updateL6Answer(${rowIndex}, 'kg', this.value)"
-                      placeholder="?"
-                      aria-label="Kilograms for ${item.name}"
-                      class="km-m-input w-9 sm:w-10 h-8 text-sm sm:text-base"
-                    />
-                    ${renderMassUnitDropdownHTML(ans.kgUnit, `updateL6Answer(${rowIndex}, 'kgUnit', this.value)`, disabledAttr, `First unit for ${item.name}`)}
-                    <input
-                      type="text"
-                      inputmode="numeric"
-                      maxlength="3"
-                      value="${ans.g}"
-                      ${disabledAttr}
-                      oninput="updateL6Answer(${rowIndex}, 'g', this.value)"
-                      placeholder="?"
-                      aria-label="Grams for ${item.name}"
-                      class="km-m-input w-12 sm:w-14 h-8 text-sm sm:text-base"
-                    />
-                    ${renderMassUnitDropdownHTML(ans.gUnit, `updateL6Answer(${rowIndex}, 'gUnit', this.value)`, disabledAttr, `Second unit for ${item.name}`)}
-                  </div>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
-
-        wrapDiv.innerHTML = `
-          <table class="l6-table">
-            <tbody>
-              ${rowsHTML}
-            </tbody>
-          </table>
-        `;
-        rowsContainer.appendChild(wrapDiv);
       }
     }
 
@@ -2763,47 +2387,6 @@
         });
 
         handleCheckOutcome(correctCount, 4);
-      } else {
-        // Level6-M05-4.6: Check ticked weights + kg/g values & units for all 3 rows
-        const hasBlank = l6TypedAnswers.some(
-          ans =>
-            ans.checked.length === 0 ||
-            ans.kg.trim() === '' ||
-            ans.kgUnit === '' ||
-            ans.g.trim() === '' ||
-            ans.gUnit === ''
-        );
-        if (hasBlank) {
-          playSound('error');
-          showFeedback('Please tick the required weights and fill in all values and units (k.g. and g.) for all 3 rows!', 'warning');
-          return;
-        }
-
-        let correctCount = 0;
-        currentRows.forEach((item, idx) => {
-          const pillEl = document.getElementById(`l6-pill-${idx}`);
-          pillEl.classList.remove('correct', 'incorrect');
-
-          const ans = l6TypedAnswers[idx];
-          const sortedUserWeights = [...ans.checked].sort();
-          const sortedReqWeights = [...item.reqWeights].sort();
-          const weightsMatch =
-            sortedUserWeights.length === sortedReqWeights.length &&
-            sortedUserWeights.every((w, i) => w === sortedReqWeights[i]);
-
-          const enteredKg = parseInt(ans.kg.trim(), 10);
-          const enteredG = parseInt(ans.g.trim(), 10);
-          const unitsOk = ans.kgUnit === 'kg' && ans.gUnit === 'g';
-
-          if (weightsMatch && enteredKg === item.kg && enteredG === item.g && unitsOk) {
-            correctCount++;
-            pillEl.classList.add('correct');
-          } else {
-            pillEl.classList.add('incorrect');
-          }
-        });
-
-        handleCheckOutcome(correctCount, 3);
       }
     }
 
@@ -2838,14 +2421,10 @@
           nextBtnText.textContent = 'Proceed to Level5-M05-4.5 →';
           nextBtn.classList.remove('hidden');
           showFeedback('நன்று! Level4-M05-4.4 முடிந்தது (3/3). Level5-M05-4.5-க்குச் செல்லவும்!', 'success');
-        } else if (currentLevel === 5) {
-          nextBtnText.textContent = 'Proceed to Level6-M05-4.6 →';
-          nextBtn.classList.remove('hidden');
-          showFeedback('மிக நன்று! Level5-M05-4.5 முடிந்தது (4/4). Level6-M05-4.6-க்குச் செல்லவும்!', 'success');
         } else {
           nextBtnText.textContent = 'Submit Score ✓';
           nextBtn.classList.remove('hidden');
-          showFeedback('அருமை! Level1-M05-4.1 முதல் Level6-M05-4.6 வரை அனைத்தும் முடிந்தன (24/24)!', 'success');
+          showFeedback('அருமை! Level1-M05-4.1 முதல் Level5-M05-4.5 வரை அனைத்தும் முடிந்தன (21/21)!', 'success');
           submitGameDataToLMS();
         }
       } else {
@@ -2868,8 +2447,6 @@
         setupLevel(4);
       } else if (currentLevel === 4) {
         setupLevel(5);
-      } else if (currentLevel === 5) {
-        setupLevel(6);
       } else {
         submitGameDataToLMS();
       }
@@ -2886,17 +2463,14 @@
       const l4TimeStr = formatSecondsHHMMSS(levelStats[4].seconds);
       const l5ScoreStr = `${levelStats[5].correct}/4-${Math.round((levelStats[5].correct / 4) * 100)}%`;
       const l5TimeStr = formatSecondsHHMMSS(levelStats[5].seconds);
-      const l6ScoreStr = `${levelStats[6].correct}/3-${Math.round((levelStats[6].correct / 3) * 100)}%`;
-      const l6TimeStr = formatSecondsHHMMSS(levelStats[6].seconds);
 
       const totCorrect =
         levelStats[1].correct +
         levelStats[2].correct +
         levelStats[3].correct +
         levelStats[4].correct +
-        levelStats[5].correct +
-        levelStats[6].correct;
-      const totScoreStr = `${totCorrect}/24-${Math.round((totCorrect / 24) * 100)}%`;
+        levelStats[5].correct;
+      const totScoreStr = `${totCorrect}/21-${Math.round((totCorrect / 21) * 100)}%`;
 
       document.getElementById('sumStudentId').textContent = lmsContext.studentId;
       document.getElementById('sumStudentName').textContent = lmsContext.name;
@@ -2905,7 +2479,6 @@
       document.getElementById('sumL3').textContent = `${l3ScoreStr} (${l3TimeStr})`;
       document.getElementById('sumL4').textContent = `${l4ScoreStr} (${l4TimeStr})`;
       document.getElementById('sumL5').textContent = `${l5ScoreStr} (${l5TimeStr})`;
-      document.getElementById('sumL6').textContent = `${l6ScoreStr} (${l6TimeStr})`;
       document.getElementById('sumTotal').textContent = totScoreStr;
       document.getElementById('completionModal').classList.remove('hidden');
 
@@ -2934,8 +2507,6 @@
         level4Time: l4TimeStr,
         level5Score: l5ScoreStr,
         level5Time: l5TimeStr,
-        level6Score: l6ScoreStr,
-        level6Time: l6TimeStr,
         score: totScoreStr,
         trialId: lmsContext.trialId
       };
@@ -2962,8 +2533,7 @@
         2: { correct: 0, total: 4, seconds: 0 },
         3: { correct: 0, total: 6, seconds: 0 },
         4: { correct: 0, total: 3, seconds: 0 },
-        5: { correct: 0, total: 4, seconds: 0 },
-        6: { correct: 0, total: 3, seconds: 0 }
+        5: { correct: 0, total: 4, seconds: 0 }
       };
       document.getElementById('completionModal').classList.add('hidden');
       setupLevel(1);

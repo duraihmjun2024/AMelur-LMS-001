@@ -22,6 +22,79 @@
       -webkit-user-select: none;
     }
 
+    /* Virtual Scale on Top & Bottom Edges for Length Questions (4.1 - 4.4) */
+    .virtual-scale-edge {
+      background: linear-gradient(180deg, #fef9c3 0%, #fde68a 100%);
+      border-color: #d97706;
+      color: #1e293b;
+      height: 22px;
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      overflow: hidden;
+    }
+    .virtual-scale-top {
+      border-bottom: 1.5px solid #b45309;
+    }
+    .virtual-scale-bottom {
+      border-top: 1.5px solid #b45309;
+    }
+    .scale-tick {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      border-right: 1px solid rgba(120, 53, 15, 0.35);
+    }
+    .scale-tick:last-child {
+      border-right: none;
+    }
+    .scale-tick::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      width: 1px;
+      height: 5px;
+      background: rgba(120, 53, 15, 0.45);
+    }
+    .virtual-scale-top .scale-tick::after {
+      top: 0;
+    }
+    .virtual-scale-bottom .scale-tick::after {
+      bottom: 0;
+    }
+    .scale-num {
+      position: relative;
+      z-index: 2;
+      line-height: 1;
+      padding: 0 2px;
+      color: #78350f;
+    }
+    .virtual-scale-top .scale-num {
+      align-self: flex-end;
+      padding-bottom: 2px;
+    }
+    .virtual-scale-bottom .scale-num {
+      align-self: flex-start;
+      padding-top: 2px;
+    }
+    .scale-unit-tag {
+      background: #fffbeb;
+      color: #92400e;
+      font-weight: 800;
+      font-size: 9px;
+      padding: 0 5px;
+      display: inline-flex;
+      align-items: center;
+      border-left: 1px solid rgba(180, 83, 9, 0.35);
+      border-right: 1px solid rgba(180, 83, 9, 0.35);
+      white-space: nowrap;
+    }
+
     /* Level 1 Sky blue textbook header banner */
     .textbook-header-l1 {
       background: linear-gradient(180deg, #b8e8fc 0%, #cceeff 65%, #e2f5fe 100%);
@@ -698,25 +771,26 @@
   <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-sky-200 overflow-hidden">
 
     <!-- Top LMS Meta Bar -->
-    <div class="bg-slate-800 text-white px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-      <div class="flex flex-wrap items-center gap-2">
+    <div class="bg-slate-800 text-white px-3 py-1.5 flex items-center justify-between gap-2 text-xs sm:text-sm">
+      <div class="flex flex-wrap items-center gap-2 min-w-0">
         <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-0.5 rounded-md border border-slate-500 transition">
           ← Home
         </a>
         <span class="bg-sky-500 text-white font-bold px-2.5 py-0.5 rounded-md tracking-wide">AMelur-LMS-001</span>
-        <span class="text-slate-300 font-semibold" id="studentInfoBadge">Game M05 • Measurements</span>
+        <span class="text-slate-300 font-semibold truncate" id="studentInfoBadge">Game M05 • Measurements</span>
       </div>
-      <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <div class="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 shrink-0">
         <span class="bg-slate-700 px-2 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
         <span class="bg-indigo-700 px-2 py-0.5 rounded-md text-indigo-100 font-bold border border-indigo-500" id="trialBadge">Trial 1/3</span>
         <span class="bg-slate-700 px-2 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/26</span>
-        <!-- Discreet top-right arrow button for teacher use only -->
+        <!-- Top-right discreet teacher skip arrow button in every level -->
         <button
+          type="button"
           id="adminSkipBtn"
           onclick="openSkipLevelModal()"
           aria-label="Advance"
-          class="opacity-10 hover:opacity-80 focus:opacity-80 text-slate-400 font-bold px-1.5 py-0.5 rounded transition cursor-pointer text-xs select-none"
+          class="opacity-40 hover:opacity-100 focus:opacity-100 bg-slate-700/80 text-slate-300 hover:text-white border border-slate-500/50 font-extrabold px-2 py-0.5 rounded transition cursor-pointer text-xs select-none"
         >→</button>
       </div>
     </div>
@@ -743,6 +817,9 @@
 
     <!-- Game Workspace -->
     <main id="gameMain" class="p-2.5 sm:p-4 bg-white">
+      <!-- Top Virtual Scale (shown for length levels 4.1 - 4.4) -->
+      <div id="topScaleBar" class="virtual-scale-edge virtual-scale-top rounded-t-xl border-x"></div>
+
       <div id="workspaceFrame" class="border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner">
         <div id="workspaceGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
 
@@ -765,6 +842,9 @@
 
         </div>
       </div>
+
+      <!-- Bottom Virtual Scale (shown for length levels 4.1 - 4.4) -->
+      <div id="bottomScaleBar" class="virtual-scale-edge virtual-scale-bottom rounded-b-xl border-x"></div>
 
       <!-- Feedback Banner -->
       <div id="feedbackBanner" class="mt-2.5 hidden rounded-xl px-3.5 py-2 text-center font-bold text-xs sm:text-sm transition-all"></div>
@@ -895,6 +975,34 @@
 <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
     const TEACHER_SKIP_PASSWORD = "pups";
+
+    function renderLengthScalesForLevel(lvl) {
+      const topEl = document.getElementById('topScaleBar');
+      const botEl = document.getElementById('bottomScaleBar');
+      const frameEl = document.getElementById('workspaceFrame');
+      if (!topEl || !botEl || !frameEl) return;
+
+      if (lvl > 4) {
+        topEl.classList.add('hidden');
+        botEl.classList.add('hidden');
+        frameEl.classList.remove('rounded-none', 'border-t-0', 'border-b-0');
+        frameEl.classList.add('rounded-2xl');
+        return;
+      }
+
+      const unitLabel = lvl === 1 ? 'c.m. / m.' : 'm. / k.m.';
+      const ticksHTML = Array.from({ length: 10 }, (_, i) => {
+        const mark = lvl === 1 ? i * 25 : i;
+        return `<div class="scale-tick"><span class="scale-num">${mark}</span></div>`;
+      }).join('') + `<div class="scale-unit-tag">${unitLabel}</div>`;
+
+      topEl.innerHTML = ticksHTML;
+      botEl.innerHTML = ticksHTML;
+      topEl.classList.remove('hidden');
+      botEl.classList.remove('hidden');
+      frameEl.classList.remove('rounded-2xl');
+      frameEl.classList.add('rounded-none', 'border-t-0', 'border-b-0');
+    }
 
     function openSkipLevelModal() {
       const modal = document.getElementById('skipPasswordModal');
@@ -1590,6 +1698,7 @@
       document.getElementById('checkBtn').classList.remove('hidden');
       document.getElementById('clearBtn').classList.remove('hidden');
       hideFeedback();
+      renderLengthScalesForLevel(currentLevel);
 
       const headerEl = document.getElementById('textbookHeader');
       const badgeEl = document.getElementById('badgeActivityCode');
@@ -1602,7 +1711,9 @@
       const workspaceFrameEl = document.getElementById('workspaceFrame');
 
       gameMainEl.className = 'p-2.5 sm:p-4 bg-white';
-      workspaceFrameEl.className = 'border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner';
+      workspaceFrameEl.className = currentLevel <= 4
+        ? 'border-2 border-slate-200 rounded-none border-t-0 border-b-0 p-2.5 sm:p-4 bg-slate-50/40 shadow-inner'
+        : 'border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner';
 
       if (currentLevel === 1) {
         headerEl.className = 'textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';

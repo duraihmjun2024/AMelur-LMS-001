@@ -29,35 +29,35 @@
       box-shadow: 0 2px 6px rgba(14, 116, 144, 0.12);
     }
 
-    /* Level 2 Warm yellow textbook header banner (matching 4.2 image) */
+    /* Level 2 Warm yellow textbook header banner */
     .textbook-header-l2 {
       background: linear-gradient(180deg, #fef08a 0%, #fef9c3 65%, #fefce8 100%);
       border-bottom: 3px dashed #ffffff;
       box-shadow: 0 2px 6px rgba(202, 138, 4, 0.14);
     }
 
-    /* Level 3 Soft mint-green textbook header banner (matching 4.3 image) */
+    /* Level 3 Soft mint-green textbook header banner */
     .textbook-header-l3 {
       background: linear-gradient(180deg, #bbf7d0 0%, #dcfce7 65%, #f0fdf4 100%);
       border-bottom: 3px dashed #ffffff;
       box-shadow: 0 2px 6px rgba(21, 128, 61, 0.14);
     }
 
-    /* Level 4 Soft pink/rose textbook header banner (matching 4.4 image) */
+    /* Level 4 Soft pink/rose textbook header banner */
     .textbook-header-l4 {
       background: linear-gradient(180deg, #fbcfe8 0%, #fce7f3 65%, #fdf2f8 100%);
       border-bottom: 3px dashed #ffffff;
       box-shadow: 0 2px 6px rgba(190, 24, 93, 0.14);
     }
 
-    /* Level 5 Sky-blue textbook header banner (matching 4.5 Match image) */
+    /* Level 5 Sky-blue textbook header banner */
     .textbook-header-l5 {
       background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 65%, #f0f9ff 100%);
       border-bottom: 3px dashed #ffffff;
       box-shadow: 0 2px 6px rgba(2, 132, 199, 0.14);
     }
 
-    /* Level 6 Warm amber/peach textbook header banner (matching 4.6 image) */
+    /* Level 6 Warm amber/peach textbook header banner */
     .textbook-header-l6 {
       background: linear-gradient(180deg, #fed7aa 0%, #ffedd5 65%, #fff7ed 100%);
       border-bottom: 3px dashed #ffffff;
@@ -125,7 +125,7 @@
       box-shadow: 0 2px 4px rgba(234, 88, 12, 0.16);
     }
 
-    /* Teal/Emerald 3D-bevel ribbon for Level 1 (fit-content so text never clips) */
+    /* Teal/Emerald 3D-bevel ribbon for Level 1 */
     .ribbon-bar {
       background: linear-gradient(180deg, #22997a 0%, #2cb591 30%, #249e7e 80%, #187a60 100%);
       border: 2px solid #156b54;
@@ -192,7 +192,7 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 2 Place Cards (matching 4.2 workbook aesthetic) */
+    /* Level 2 Place Cards */
     .place-box {
       background: linear-gradient(180deg, #ffffff 0%, #fdf8ff 100%);
       border-width: 2.5px;
@@ -232,7 +232,7 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 3 Torchlight Silhouette (matching source 4.3 torchlight shape) */
+    /* Level 3 Torchlight Silhouette */
     .torch-item {
       filter: drop-shadow(0 3px 5px rgba(15, 23, 42, 0.12));
       transition: transform 0.18s ease, filter 0.2s ease;
@@ -324,7 +324,7 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Unit dropdown styling with dotted units (c.m., m., k.m., m.m., g., k.g., m.g.) */
+    /* Unit dropdown styling with dotted units */
     .unit-select {
       font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
       font-weight: 800;
@@ -412,7 +412,7 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 5 Matching nodes (Left Vegetables, Middle Grams, Right Iron Weights) */
+    /* Level 5 Matching nodes */
     .l5-node {
       background: #ffffff;
       border: 2.5px solid #cbd5e1;
@@ -682,17 +682,18 @@
         <span class="bg-sky-500 text-white font-bold px-2.5 py-0.5 rounded-md tracking-wide">AMelur-LMS-001</span>
         <span class="text-slate-300 font-semibold" id="studentInfoBadge">Game M05 • Measurements</span>
       </div>
-      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
+        <span class="bg-indigo-700 px-2.5 py-0.5 rounded-md text-indigo-100 font-bold border border-indigo-500" id="trialBadge">Trial 1/3</span>
         <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/24</span>
         <button
           id="adminSkipBtn"
           onclick="openSkipLevelModal()"
           title="Next Level (Password required)"
           aria-label="Go to next level"
-          class="bg-slate-700/50 hover:bg-slate-700 text-slate-400 hover:text-slate-200 opacity-50 hover:opacity-90 font-bold px-2 py-0.5 rounded-md border border-slate-600/60 transition cursor-pointer text-xs sm:text-sm"
-        >→</button>
+          class="bg-slate-700/70 hover:bg-slate-600 text-slate-200 font-bold px-2.5 py-0.5 rounded-md border border-slate-500 transition cursor-pointer text-xs sm:text-sm"
+        >Next Level →</button>
       </div>
     </div>
 
@@ -713,7 +714,7 @@
 
     <!-- Instruction Helper Pill -->
     <div class="bg-sky-50/80 border-b border-sky-100 px-4 py-2 text-center text-xs sm:text-sm text-slate-700 font-medium" id="levelSubHeader">
-      Level1-M05-4.1: Drag or tap a fraction card on the right to place it in the box, then select the unit (m.).
+      Level1-M05-4.1 (Trial 1/3): Drag or tap a fraction card on the right to place it in the box, then select the unit (m.).
     </div>
 
     <!-- Game Workspace -->
@@ -745,7 +746,7 @@
       <div id="feedbackBanner" class="mt-4 hidden rounded-xl px-4 py-3 text-center font-bold text-sm sm:text-base transition-all"></div>
 
       <!-- Action Buttons Bar -->
-      <div class="mt-5 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-3 sm:gap-3.5">
         <button
           id="checkBtn"
           onclick="checkAnswers()"
@@ -755,14 +756,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
           <span>Check Answers</span>
-        </button>
-
-        <button
-          id="nextLevelBtn"
-          onclick="proceedToNextStage()"
-          class="hidden px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-indigo-300"
-        >
-          <span id="nextLevelBtnText">Proceed to Level2-M05-4.2 →</span>
         </button>
 
         <button
@@ -777,14 +770,27 @@
         </button>
 
         <button
-          id="resetBtn"
-          onclick="resetNumbers()"
-          class="px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-sky-300"
+          id="trial2Btn"
+          onclick="startTrial(2, true)"
+          class="px-4 py-3 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-sky-300"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <span>Reset Numbers</span>
+          <span>Trial 2</span>
+        </button>
+
+        <button
+          id="trial3Btn"
+          onclick="startTrial(3, true)"
+          class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-purple-300"
+        >
+          <span>Trial 3</span>
+        </button>
+
+        <button
+          id="nextLevelBtn"
+          onclick="openSkipLevelModal()"
+          class="px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-indigo-300"
+        >
+          <span id="nextLevelBtnText">Next Level →</span>
         </button>
       </div>
     </main>
@@ -798,7 +804,7 @@
       </div>
       <h2 class="text-xl font-extrabold text-slate-900">Congratulations!</h2>
       <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        You have completed all levels from Level1-M05-4.1 through Level6-M05-4.6!
+        You have completed all levels (Level1-M05-4.1 through Level6-M05-4.6) across all 3 trials!
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
@@ -811,7 +817,7 @@
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level5-M05-4.5:</span> <span class="font-bold text-sky-700" id="sumL5">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level6-M05-4.6:</span> <span class="font-bold text-orange-700" id="sumL6">--</span></div>
         <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saving to Google Sheet...</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saved to AMelur-LMS-001 Leaderboard ✓</span></div>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
@@ -867,9 +873,9 @@
 
 
   
-  <script>
+<script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
-    // Password to skip directly to the next level using the top-right dimmed arrow button
+    // Password to skip directly to the next level using the Next Level button
     const TEACHER_SKIP_PASSWORD = "pups";
 
     function openSkipLevelModal() {
@@ -905,17 +911,18 @@
 
       playSound('place');
       closeSkipLevelModal();
-      levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
+      recordTrialSnapshot(currentLevel, currentTrial, false);
+      syncTrialToGoogleSheet(currentLevel, currentTrial);
 
       if (currentLevel < 6) {
-        setupLevel(currentLevel + 1);
+        setupLevel(currentLevel + 1, 1);
       } else {
         levelCompleted = true;
-        submitGameDataToLMS();
+        openFinalSummaryModal();
       }
     }
 
-    // Dotted unit dropdown options for students to select (m.m., c.m., m., k.m.)
+    // Dotted unit dropdown options (m.m., c.m., m., k.m.)
     const ENGLISH_UNIT_OPTIONS = [
       { value: 'mm', label: 'm.m.' },
       { value: 'cm', label: 'c.m.' },
@@ -993,17 +1000,17 @@
       { id: 'c300', cm: 300, whole: '3', num: '',  den: ''  }
     ];
 
-    // Level2-M05-4.2 Place Pairs (matching workbook page 37 style)
+    // Level2-M05-4.2 Place Pairs
     const PLACE_PAIRS = [
-      { left: 'Pon Nagar',     right: 'Koodal Nagar',  leftBorder: '#c026d3', rightBorder: '#ec4899' },
-      { left: 'Pasumai Nagar', right: 'Thendral Nagar', leftBorder: '#4d7c0f', rightBorder: '#7e22ce' },
-      { left: 'Valar Nagar',   right: 'Anbu Nagar',    leftBorder: '#ca8a04', rightBorder: '#0284c7' },
-      { left: 'Muthu Nagar',   right: 'Pothigai Nagar', leftBorder: '#f43f5e', rightBorder: '#f97316' },
-      { left: 'Kaveri Nagar',  right: 'Mullai Nagar',  leftBorder: '#0d9488', rightBorder: '#6366f1' },
-      { left: 'Marutham Nagar',right: 'Kurinji Nagar', leftBorder: '#16a34a', rightBorder: '#db2777' }
+      { left: 'Pon Nagar',      right: 'Koodal Nagar',   leftBorder: '#c026d3', rightBorder: '#ec4899' },
+      { left: 'Pasumai Nagar',  right: 'Thendral Nagar', leftBorder: '#4d7c0f', rightBorder: '#7e22ce' },
+      { left: 'Valar Nagar',    right: 'Anbu Nagar',     leftBorder: '#ca8a04', rightBorder: '#0284c7' },
+      { left: 'Muthu Nagar',    right: 'Pothigai Nagar', leftBorder: '#f43f5e', rightBorder: '#f97316' },
+      { left: 'Kaveri Nagar',   right: 'Mullai Nagar',   leftBorder: '#0d9488', rightBorder: '#6366f1' },
+      { left: 'Marutham Nagar', right: 'Kurinji Nagar',  leftBorder: '#16a34a', rightBorder: '#db2777' }
     ];
 
-    // Level2-M05-4.2 Distance Pool (mixed fraction km -> km and m)
+    // Level2-M05-4.2 Distance Pool
     const LEVEL2_DIST_POOL = [
       { whole: 1, num: 1, den: 2, km: 1, m: 500 },
       { whole: 1, num: 1, den: 4, km: 1, m: 250 },
@@ -1036,103 +1043,29 @@
     ];
 
     const L3_BUCKET_COLORS = [
-      '#f59e0b', // Amber/Yellow (top-left)
-      '#f87171', // Coral/Red (top-right)
-      '#ef4444', // Red (mid-left)
-      '#84cc16', // Lime/Green (mid-right)
-      '#c084fc', // Lavender/Purple (bottom-left)
-      '#60a5fa'  // Sky Blue (bottom-right)
+      '#f59e0b',
+      '#f87171',
+      '#ef4444',
+      '#84cc16',
+      '#c084fc',
+      '#60a5fa'
     ];
 
-    // Level4-M05-4.4 Story & Vehicle Pools (matching workbook 4.4 layout with random questions)
+    // Level4-M05-4.4 Story & Vehicle Pools
     const LEVEL4_STORY_THEMES = [
-      {
-        traveller: 'Ramu',
-        place1: "uncle's house",
-        place2: "aunt's house",
-        destination: 'a waterfall'
-      },
-      {
-        traveller: 'Anbu',
-        place1: "grandpa's farm",
-        place2: "cousin's house",
-        destination: 'the river bridge'
-      },
-      {
-        traveller: 'Mala',
-        place1: "teacher's home",
-        place2: 'the library',
-        destination: 'the hill park'
-      },
-      {
-        traveller: 'Kavin',
-        place1: "friend's house",
-        place2: 'the temple',
-        destination: 'the lake park'
-      }
+      { traveller: 'Ramu',  place1: "uncle's house",  place2: "aunt's house",   destination: 'a waterfall' },
+      { traveller: 'Anbu',  place1: "grandpa's farm", place2: "cousin's house", destination: 'the river bridge' },
+      { traveller: 'Mala',  place1: "teacher's home", place2: 'the library',    destination: 'the hill park' },
+      { traveller: 'Kavin', place1: "friend's house", place2: 'the temple',     destination: 'the lake park' }
     ];
 
     const LEVEL4_VEHICLE_POOL = [
-      {
-        id: 'bicycle',
-        label: 'Bicycle',
-        whole: '',
-        num: '1',
-        den: '4',
-        km: 0,
-        m: 250,
-        givenInTable: true
-      },
-      {
-        id: 'car',
-        label: 'Car',
-        whole: '3',
-        num: '',
-        den: '',
-        km: 3,
-        m: 0,
-        givenInTable: false
-      },
-      {
-        id: 'motorcycle',
-        label: 'Motorcycle',
-        whole: '2',
-        num: '1',
-        den: '2',
-        km: 2,
-        m: 500,
-        givenInTable: false
-      },
-      {
-        id: 'scooter',
-        label: 'Scooter',
-        whole: '1',
-        num: '3',
-        den: '4',
-        km: 1,
-        m: 750,
-        givenInTable: false
-      },
-      {
-        id: 'van',
-        label: 'Van',
-        whole: '4',
-        num: '1',
-        den: '4',
-        km: 4,
-        m: 250,
-        givenInTable: false
-      },
-      {
-        id: 'bus',
-        label: 'Bus',
-        whole: '6',
-        num: '3',
-        den: '4',
-        km: 6,
-        m: 750,
-        givenInTable: false
-      }
+      { id: 'bicycle',    label: 'Bicycle',    whole: '',  num: '1', den: '4', km: 0, m: 250, givenInTable: true  },
+      { id: 'car',        label: 'Car',        whole: '3', num: '',  den: '',  km: 3, m: 0,   givenInTable: false },
+      { id: 'motorcycle', label: 'Motorcycle', whole: '2', num: '1', den: '2', km: 2, m: 500, givenInTable: false },
+      { id: 'scooter',    label: 'Scooter',    whole: '1', num: '3', den: '4', km: 1, m: 750, givenInTable: false },
+      { id: 'van',        label: 'Van',        whole: '4', num: '1', den: '4', km: 4, m: 250, givenInTable: false },
+      { id: 'bus',        label: 'Bus',        whole: '6', num: '3', den: '4', km: 6, m: 750, givenInTable: false }
     ];
 
     function renderVehicleIconSVG(vehicleId) {
@@ -1204,44 +1137,12 @@
       `;
     }
 
-    // Level5-M05-4.5 Match Data (Vegetables in k.g. -> Gram label -> Iron weights)
+    // Level5-M05-4.5 Match Data
     const LEVEL5_MATCH_ITEMS = [
-      {
-        id: 'yam',
-        name: 'Elephant Yam',
-        whole: '1',
-        num: '',
-        den: '',
-        grams: 1000,
-        weights: ['1 k.g.']
-      },
-      {
-        id: 'chayote',
-        name: 'Chayote (Chow Chow)',
-        whole: '',
-        num: '1',
-        den: '4',
-        grams: 250,
-        weights: ['200 g.', '50 g.']
-      },
-      {
-        id: 'cabbage',
-        name: 'Cabbage',
-        whole: '',
-        num: '1',
-        den: '2',
-        grams: 500,
-        weights: ['500 g.']
-      },
-      {
-        id: 'cauliflower',
-        name: 'Cauliflower',
-        whole: '',
-        num: '3',
-        den: '4',
-        grams: 750,
-        weights: ['500 g.', '200 g.', '50 g.']
-      }
+      { id: 'yam',         name: 'Elephant Yam',       whole: '1', num: '',  den: '',  grams: 1000, weights: ['1 k.g.'] },
+      { id: 'chayote',     name: 'Chayote (Chow Chow)',whole: '',  num: '1', den: '4', grams: 250,  weights: ['200 g.', '50 g.'] },
+      { id: 'cabbage',     name: 'Cabbage',            whole: '',  num: '1', den: '2', grams: 500,  weights: ['500 g.'] },
+      { id: 'cauliflower', name: 'Cauliflower',        whole: '',  num: '3', den: '4', grams: 750,  weights: ['500 g.', '200 g.', '50 g.'] }
     ];
 
     function renderVegetableSVG(vegId) {
@@ -1299,7 +1200,7 @@
       `;
     }
 
-    // Level6-M05-4.6 Basket Pool (Tick the required weights & write in k.g. and g.)
+    // Level6-M05-4.6 Basket Pool
     const LEVEL6_WEIGHT_LIST = [
       { id: '2kg',  label: '2 k.g.',  grams: 2000, sizeClass: 'w-14 h-12 sm:w-16 sm:h-14' },
       { id: '1kg',  label: '1 k.g.',  grams: 1000, sizeClass: 'w-13 h-11 sm:w-14 sm:h-12' },
@@ -1310,62 +1211,14 @@
     ];
 
     const LEVEL6_POOL = [
-      {
-        id: 'apples',
-        name: 'Apples Basket',
-        whole: '3', num: '3', den: '4',
-        kg: 3, g: 750,
-        reqWeights: ['2kg', '1kg', '500g', '200g', '50g']
-      },
-      {
-        id: 'oranges',
-        name: 'Oranges Basket',
-        whole: '2', num: '1', den: '4',
-        kg: 2, g: 250,
-        reqWeights: ['2kg', '200g', '50g']
-      },
-      {
-        id: 'mangoes',
-        name: 'Mangoes Basket',
-        whole: '1', num: '3', den: '4',
-        kg: 1, g: 750,
-        reqWeights: ['1kg', '500g', '200g', '50g']
-      },
-      {
-        id: 'tomatoes',
-        name: 'Tomatoes Basket',
-        whole: '2', num: '1', den: '2',
-        kg: 2, g: 500,
-        reqWeights: ['2kg', '500g']
-      },
-      {
-        id: 'guavas',
-        name: 'Guavas Basket',
-        whole: '3', num: '1', den: '2',
-        kg: 3, g: 500,
-        reqWeights: ['2kg', '1kg', '500g']
-      },
-      {
-        id: 'lemons',
-        name: 'Lemons Basket',
-        whole: '1', num: '1', den: '4',
-        kg: 1, g: 250,
-        reqWeights: ['1kg', '200g', '50g']
-      },
-      {
-        id: 'bananas',
-        name: 'Bananas Basket',
-        whole: '3', num: '1', den: '4',
-        kg: 3, g: 250,
-        reqWeights: ['2kg', '1kg', '200g', '50g']
-      },
-      {
-        id: 'potatoes',
-        name: 'Potatoes Basket',
-        whole: '2', num: '3', den: '4',
-        kg: 2, g: 750,
-        reqWeights: ['2kg', '500g', '200g', '50g']
-      }
+      { id: 'apples',   name: 'Apples Basket',   whole: '3', num: '3', den: '4', kg: 3, g: 750, reqWeights: ['2kg', '1kg', '500g', '200g', '50g'] },
+      { id: 'oranges',  name: 'Oranges Basket',  whole: '2', num: '1', den: '4', kg: 2, g: 250, reqWeights: ['2kg', '200g', '50g'] },
+      { id: 'mangoes',  name: 'Mangoes Basket',  whole: '1', num: '3', den: '4', kg: 1, g: 750, reqWeights: ['1kg', '500g', '200g', '50g'] },
+      { id: 'tomatoes', name: 'Tomatoes Basket', whole: '2', num: '1', den: '2', kg: 2, g: 500, reqWeights: ['2kg', '500g'] },
+      { id: 'guavas',   name: 'Guavas Basket',   whole: '3', num: '1', den: '2', kg: 3, g: 500, reqWeights: ['2kg', '1kg', '500g'] },
+      { id: 'lemons',   name: 'Lemons Basket',   whole: '1', num: '1', den: '4', kg: 1, g: 250, reqWeights: ['1kg', '200g', '50g'] },
+      { id: 'bananas',  name: 'Bananas Basket',  whole: '3', num: '1', den: '4', kg: 3, g: 250, reqWeights: ['2kg', '1kg', '200g', '50g'] },
+      { id: 'potatoes', name: 'Potatoes Basket', whole: '2', num: '3', den: '4', kg: 2, g: 750, reqWeights: ['2kg', '500g', '200g', '50g'] }
     ];
 
     function renderBasketSVG(itemId) {
@@ -1406,8 +1259,9 @@
       `;
     }
 
-    // Game & LMS Tracking State
+    // Game & 3-Trial LMS Tracking State
     let currentLevel = 1; // 1 = 4.1, 2 = 4.2, 3 = 4.3, 4 = 4.4, 5 = 4.5, 6 = 4.6
+    let currentTrial = 1; // 1, 2, or 3 per level
     let currentRows = [];
     let currentL4Story = LEVEL4_STORY_THEMES[0];
     let optionTiles = [];
@@ -1447,19 +1301,28 @@
     let selectedOptionId = null;
     let draggedOptionId = null;
     let levelCompleted = false;
-    let isSubmittedToSheet = false;
 
-    // Score & Time tracking across 6 levels (4 + 4 + 6 + 3 + 4 + 3 = 24 total questions)
-    let levelStats = {
-      1: { correct: 0, total: 4, seconds: 0 },
-      2: { correct: 0, total: 4, seconds: 0 },
-      3: { correct: 0, total: 6, seconds: 0 },
-      4: { correct: 0, total: 3, seconds: 0 },
-      5: { correct: 0, total: 4, seconds: 0 },
-      6: { correct: 0, total: 3, seconds: 0 }
-    };
+    const LEVEL_MAX_QUESTIONS = { 1: 4, 2: 4, 3: 6, 4: 3, 5: 4, 6: 3 };
+
+    function createEmptyLevelStats() {
+      const stats = {};
+      for (let lvl = 1; lvl <= 6; lvl++) {
+        stats[lvl] = {
+          total: LEVEL_MAX_QUESTIONS[lvl],
+          trials: {
+            1: { correct: 0, seconds: 0, done: false },
+            2: { correct: 0, seconds: 0, done: false },
+            3: { correct: 0, seconds: 0, done: false }
+          }
+        };
+      }
+      return stats;
+    }
+
+    let levelStats = createEmptyLevelStats();
     let levelStartTime = Date.now();
     let timerInterval = null;
+    let autoAdvanceTimeout = null;
 
     // Gentle sound synthesizer using Tone.js
     let synth = null;
@@ -1495,21 +1358,32 @@
       return `${hrs}:${mins}:${secs}`;
     }
 
+    function getLevelBestCorrect(lvl) {
+      const t = levelStats[lvl].trials;
+      return Math.max(t[1].correct, t[2].correct, t[3].correct);
+    }
+
+    function getLevelTotalSeconds(lvl) {
+      const t = levelStats[lvl].trials;
+      return t[1].seconds + t[2].seconds + t[3].seconds;
+    }
+
+    function getAllLevelsTotalElapsed() {
+      let sum = 0;
+      for (let lvl = 1; lvl <= 6; lvl++) {
+        sum += getLevelTotalSeconds(lvl);
+      }
+      return sum;
+    }
+
     function startLevelTimer() {
       if (timerInterval) clearInterval(timerInterval);
       levelStartTime = Date.now();
       timerInterval = setInterval(() => {
         if (!levelCompleted) {
           const elapsed = Math.floor((Date.now() - levelStartTime) / 1000);
-          levelStats[currentLevel].seconds = elapsed;
-          const totalElapsed =
-            levelStats[1].seconds +
-            (currentLevel >= 2 ? levelStats[2].seconds : 0) +
-            (currentLevel >= 3 ? levelStats[3].seconds : 0) +
-            (currentLevel >= 4 ? levelStats[4].seconds : 0) +
-            (currentLevel >= 5 ? levelStats[5].seconds : 0) +
-            (currentLevel >= 6 ? levelStats[6].seconds : 0);
-          document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(totalElapsed);
+          levelStats[currentLevel].trials[currentTrial].seconds = elapsed;
+          document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(getAllLevelsTotalElapsed());
         }
       }, 1000);
     }
@@ -1530,14 +1404,30 @@
           ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
           : `${levelTag} • Measurements (Practice Mode)`;
       document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/6)`;
-      const totCorrect =
-        levelStats[1].correct +
-        levelStats[2].correct +
-        levelStats[3].correct +
-        levelStats[4].correct +
-        levelStats[5].correct +
-        levelStats[6].correct;
-      document.getElementById('scoreCounter').textContent = `Score: ${totCorrect}/24`;
+      document.getElementById('trialBadge').textContent = `Trial ${currentTrial}/3`;
+
+      let totBestCorrect = 0;
+      for (let lvl = 1; lvl <= 6; lvl++) {
+        totBestCorrect += getLevelBestCorrect(lvl);
+      }
+      document.getElementById('scoreCounter').textContent = `Score: ${totBestCorrect}/24`;
+
+      // Highlight active Trial button
+      const t2Btn = document.getElementById('trial2Btn');
+      const t3Btn = document.getElementById('trial3Btn');
+      if (t2Btn) {
+        t2Btn.classList.toggle('ring-4', currentTrial === 2);
+        t2Btn.classList.toggle('ring-sky-400', currentTrial === 2);
+      }
+      if (t3Btn) {
+        t3Btn.classList.toggle('ring-4', currentTrial === 3);
+        t3Btn.classList.toggle('ring-purple-400', currentTrial === 3);
+      }
+
+      const nextLvlBtnText = document.getElementById('nextLevelBtnText');
+      if (nextLvlBtnText) {
+        nextLvlBtnText.textContent = currentLevel < 6 ? 'Next Level →' : 'Summary ✓';
+      }
     }
 
     function shuffleArray(array) {
@@ -1572,8 +1462,76 @@
       return html;
     }
 
-    function setupLevel(levelNum) {
+    function recordTrialSnapshot(lvl, trialNum, isCompleted) {
+      const elapsed = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
+      const tObj = levelStats[lvl].trials[trialNum];
+      tObj.seconds = elapsed;
+      if (isCompleted) {
+        tObj.correct = levelStats[lvl].total;
+        tObj.done = true;
+      }
+      updateHeaderDisplay();
+    }
+
+    // Save the active trial's score and time to Google Sheet immediately
+    function syncTrialToGoogleSheet(lvl, trialNum) {
+      if (lmsContext.studentId === 'GUEST') return;
+
+      const tObj = levelStats[lvl].trials[trialNum];
+      const maxQ = levelStats[lvl].total;
+      const trialScoreStr = `${tObj.correct}/${maxQ}-${Math.round((tObj.correct / maxQ) * 100)}%`;
+      const trialTimeStr = formatSecondsHHMMSS(tObj.seconds);
+
+      let totBestCorrect = 0;
+      for (let i = 1; i <= 6; i++) {
+        totBestCorrect += getLevelBestCorrect(i);
+      }
+      const totScoreStr = `${totBestCorrect}/24-${Math.round((totBestCorrect / 24) * 100)}%`;
+
+      const payload = {
+        action: 'saveGameData',
+        gameCode: lmsContext.gameCode,
+        studentId: lmsContext.studentId,
+        name: lmsContext.name,
+        school: lmsContext.school,
+        whatsapp: lmsContext.whatsapp,
+        level: getLevelTag(lvl),
+        trialId: String(trialNum),
+        levelScore: trialScoreStr,
+        levelTime: trialTimeStr,
+        [`level${lvl}Score`]: trialScoreStr,
+        [`level${lvl}Time`]: trialTimeStr,
+        score: totScoreStr
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(payload).toString()
+      }).catch(() => {});
+    }
+
+    function startTrial(targetTrial, saveCurrentFirst = true) {
+      if (autoAdvanceTimeout) {
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = null;
+      }
+      if (saveCurrentFirst && currentTrial !== targetTrial) {
+        recordTrialSnapshot(currentLevel, currentTrial, levelCompleted);
+        syncTrialToGoogleSheet(currentLevel, currentTrial);
+      }
+      playSound('reset');
+      setupLevel(currentLevel, targetTrial);
+    }
+
+    function setupLevel(levelNum, trialNum = 1) {
+      if (autoAdvanceTimeout) {
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = null;
+      }
       currentLevel = levelNum;
+      currentTrial = trialNum;
       levelCompleted = false;
       placedAnswers = [null, null, null, null];
       l1UnitAnswers = ['', '', '', ''];
@@ -1606,7 +1564,6 @@
       ];
       selectedOptionId = null;
 
-      document.getElementById('nextLevelBtn').classList.add('hidden');
       document.getElementById('checkBtn').classList.remove('hidden');
       hideFeedback();
 
@@ -1619,7 +1576,6 @@
       const rowsContainer = document.getElementById('rowsContainer');
 
       if (currentLevel === 1) {
-        // Level1-M05-4.1: English medium ribbon length in metres with fit-content ribbons
         headerEl.className = 'textbook-header-l1 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l1 px-3 py-1 text-base sm:text-xl tracking-tight';
         badgeEl.textContent = '4.1';
@@ -1627,7 +1583,7 @@
         hintEl.textContent = '100 c.m. = 1 m.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-sky-900 bg-white/80 px-3 py-1 rounded-full border border-sky-300';
         subHeaderEl.textContent =
-          'Level1-M05-4.1: Drag or tap an answer card on the right to place it in the box, then select the unit (m.).';
+          `Level1-M05-4.1 (Trial ${currentTrial}/3): Drag or tap an answer card on the right to place it in the box, then select the unit (m.).`;
 
         optionBankWrapper.classList.remove('hidden');
         rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-4 sm:gap-5';
@@ -1645,7 +1601,7 @@
         hintEl.textContent = '1 k.m. = 1000 m.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-amber-900 bg-white/85 px-3 py-1 rounded-full border border-amber-300';
         subHeaderEl.textContent =
-          'Level2-M05-4.2: Fill in the distance and choose the matching units (k.m. and m.) from each dropdown.';
+          `Level2-M05-4.2 (Trial ${currentTrial}/3): Fill in the distance and choose the matching units (k.m. and m.) from each dropdown.`;
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12 divide-y divide-slate-300 bg-white rounded-xl border border-slate-300 overflow-hidden';
@@ -1665,7 +1621,7 @@
         hintEl.textContent = '100 c.m. = 1 m. • 1000 m. = 1 k.m.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-emerald-950 bg-white/85 px-3 py-1 rounded-full border border-emerald-300';
         subHeaderEl.textContent =
-          'Level3-M05-4.3: Enter the mixed fraction and choose the matching unit (m. or k.m.) from the dropdown.';
+          `Level3-M05-4.3 (Trial ${currentTrial}/3): Enter the mixed fraction and choose the matching unit (m. or k.m.) from the dropdown.`;
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5';
@@ -1683,7 +1639,7 @@
         hintEl.textContent = '1 k.m. = 1000 m. • ¼ k.m. = 250 m.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-pink-950 bg-white/85 px-3 py-1 rounded-full border border-pink-300';
         subHeaderEl.textContent =
-          'Level4-M05-4.4: Select the unit in the 2nd column and fill in the distance in k.m. and m. in the 3rd column.';
+          `Level4-M05-4.4 (Trial ${currentTrial}/3): Select the unit in the 2nd column and fill in the distance in k.m. and m. in the 3rd column.`;
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12 flex flex-col gap-4';
@@ -1701,7 +1657,7 @@
         hintEl.textContent = '1 k.g. = 1000 gram';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-sky-950 bg-white/85 px-3 py-1 rounded-full border border-sky-300';
         subHeaderEl.textContent =
-          'Level5-M05-4.5: Tap a vegetable on the left, its matching gram box in the middle, and its matching weight on the right.';
+          `Level5-M05-4.5 (Trial ${currentTrial}/3): Tap a vegetable on the left, its matching gram box in the middle, and its matching weight on the right.`;
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12';
@@ -1718,7 +1674,6 @@
         }
         currentRows = l5LeftItems;
       } else {
-        // Level6-M05-4.6: Tick the weights needed & write in k.g. and g.
         headerEl.className = 'textbook-header-l6 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
         badgeEl.className = 'badge-l6 px-3 py-1 text-base sm:text-xl tracking-tight';
         badgeEl.textContent = '4.6';
@@ -1726,7 +1681,7 @@
         hintEl.textContent = '1 k.g. = 1000 g.';
         hintEl.className = 'text-xs sm:text-sm font-semibold text-orange-950 bg-white/85 px-3 py-1 rounded-full border border-orange-300';
         subHeaderEl.textContent =
-          'Level6-M05-4.6: Tick (✓) the boxes under the weights needed, then fill in the values and units (k.g. and g.).';
+          `Level6-M05-4.6 (Trial ${currentTrial}/3): Tick (✓) the boxes under the weights needed, then fill in the values and units (k.g. and g.).`;
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12';
@@ -1738,11 +1693,6 @@
       updateHeaderDisplay();
       startLevelTimer();
       renderBoard();
-    }
-
-    function resetNumbers() {
-      playSound('reset');
-      setupLevel(currentLevel);
     }
 
     function clearCurrentSlots() {
@@ -1976,7 +1926,6 @@
       rowsContainer.innerHTML = '';
 
       if (currentLevel === 1) {
-        // Level 1 in English medium with fit-content ribbons so text never overflows or clips
         const maxCm = Math.max(...currentRows.map(r => r.cm));
         const disabledAttr = levelCompleted ? 'disabled' : '';
 
@@ -2406,7 +2355,6 @@
         rowsContainer.appendChild(boardDiv);
         requestAnimationFrame(() => drawL5Lines());
       } else {
-        // Level6-M05-4.6: Basket with fractional k.g. | 6 hex weights with tick boxes + ___ k.g. ___ g.
         const disabledAttr = levelCompleted ? 'disabled' : '';
         const wrapDiv = document.createElement('div');
         wrapDiv.className = 'overflow-x-auto';
@@ -2571,6 +2519,8 @@
     }
 
     function checkAnswers() {
+      if (levelCompleted) return;
+
       if (currentLevel === 1) {
         if (placedAnswers.includes(null) || l1UnitAnswers.includes('')) {
           playSound('error');
@@ -2778,42 +2728,44 @@
       if (correctCount === targetTotal) {
         playSound('success');
         levelCompleted = true;
-        levelStats[currentLevel].correct = targetTotal;
-        levelStats[currentLevel].seconds = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
-        updateHeaderDisplay();
+        recordTrialSnapshot(currentLevel, currentTrial, true);
+        syncTrialToGoogleSheet(currentLevel, currentTrial);
+
         if (currentLevel !== 5) {
           renderBoard();
         }
-
         document.getElementById('checkBtn').classList.add('hidden');
-        const nextBtn = document.getElementById('nextLevelBtn');
-        const nextBtnText = document.getElementById('nextLevelBtnText');
 
-        if (currentLevel === 1) {
-          nextBtnText.textContent = 'Proceed to Level2-M05-4.2 →';
-          nextBtn.classList.remove('hidden');
-          showFeedback('Great job! Level1-M05-4.1 complete (4/4). Proceed to Level2-M05-4.2!', 'success');
-        } else if (currentLevel === 2) {
-          nextBtnText.textContent = 'Proceed to Level3-M05-4.3 →';
-          nextBtn.classList.remove('hidden');
-          showFeedback('Well done! Level2-M05-4.2 complete (4/4). Proceed to Level3-M05-4.3!', 'success');
-        } else if (currentLevel === 3) {
-          nextBtnText.textContent = 'Proceed to Level4-M05-4.4 →';
-          nextBtn.classList.remove('hidden');
-          showFeedback('Awesome! Level3-M05-4.3 complete (6/6). Proceed to Level4-M05-4.4!', 'success');
-        } else if (currentLevel === 4) {
-          nextBtnText.textContent = 'Proceed to Level5-M05-4.5 →';
-          nextBtn.classList.remove('hidden');
-          showFeedback('Nice work! Level4-M05-4.4 complete (3/3). Proceed to Level5-M05-4.5!', 'success');
-        } else if (currentLevel === 5) {
-          nextBtnText.textContent = 'Proceed to Level6-M05-4.6 →';
-          nextBtn.classList.remove('hidden');
-          showFeedback('Great job! Level5-M05-4.5 complete (4/4). Proceed to Level6-M05-4.6!', 'success');
+        const levelTag = getLevelTag(currentLevel);
+        const trialTimeStr = formatSecondsHHMMSS(levelStats[currentLevel].trials[currentTrial].seconds);
+
+        if (currentTrial < 3) {
+          const nextTrialNum = currentTrial + 1;
+          showFeedback(
+            `${levelTag} Trial ${currentTrial}/3 saved (${targetTotal}/${targetTotal} in ${trialTimeStr})! Starting Trial ${nextTrialNum}/3 automatically...`,
+            'success'
+          );
+          autoAdvanceTimeout = setTimeout(() => {
+            setupLevel(currentLevel, nextTrialNum);
+          }, 1500);
+        } else if (currentLevel < 6) {
+          const nextLevelNum = currentLevel + 1;
+          const nextLevelTag = getLevelTag(nextLevelNum);
+          showFeedback(
+            `${levelTag} Trial 3/3 saved (${targetTotal}/${targetTotal} in ${trialTimeStr})! Moving to ${nextLevelTag} automatically...`,
+            'success'
+          );
+          autoAdvanceTimeout = setTimeout(() => {
+            setupLevel(nextLevelNum, 1);
+          }, 1500);
         } else {
-          nextBtnText.textContent = 'Submit Score ✓';
-          nextBtn.classList.remove('hidden');
-          showFeedback('Awesome! All levels from Level1-M05-4.1 through Level6-M05-4.6 complete (24/24)!', 'success');
-          submitGameDataToLMS();
+          showFeedback(
+            `Awesome! All levels (4.1 through 4.6) and all 3 trials complete and saved!`,
+            'success'
+          );
+          autoAdvanceTimeout = setTimeout(() => {
+            openFinalSummaryModal();
+          }, 1200);
         }
       } else {
         playSound('error');
@@ -2821,114 +2773,48 @@
       }
     }
 
-    function proceedToNextStage() {
-      if (currentLevel === 1) {
-        setupLevel(2);
-      } else if (currentLevel === 2) {
-        setupLevel(3);
-      } else if (currentLevel === 3) {
-        setupLevel(4);
-      } else if (currentLevel === 4) {
-        setupLevel(5);
-      } else if (currentLevel === 5) {
-        setupLevel(6);
-      } else {
-        submitGameDataToLMS();
-      }
+    function formatLevelSummaryText(lvl) {
+      const maxQ = levelStats[lvl].total;
+      const t = levelStats[lvl].trials;
+      const best = getLevelBestCorrect(lvl);
+      const totalSec = getLevelTotalSeconds(lvl);
+      const tSummary = `T1:${t[1].correct}/${maxQ}, T2:${t[2].correct}/${maxQ}, T3:${t[3].correct}/${maxQ}`;
+      return `${best}/${maxQ} (${formatSecondsHHMMSS(totalSec)}) [${tSummary}]`;
     }
 
-    function submitGameDataToLMS() {
-      const l1ScoreStr = `${levelStats[1].correct}/4-${Math.round((levelStats[1].correct / 4) * 100)}%`;
-      const l1TimeStr = formatSecondsHHMMSS(levelStats[1].seconds);
-      const l2ScoreStr = `${levelStats[2].correct}/4-${Math.round((levelStats[2].correct / 4) * 100)}%`;
-      const l2TimeStr = formatSecondsHHMMSS(levelStats[2].seconds);
-      const l3ScoreStr = `${levelStats[3].correct}/6-${Math.round((levelStats[3].correct / 6) * 100)}%`;
-      const l3TimeStr = formatSecondsHHMMSS(levelStats[3].seconds);
-      const l4ScoreStr = `${levelStats[4].correct}/3-${Math.round((levelStats[4].correct / 3) * 100)}%`;
-      const l4TimeStr = formatSecondsHHMMSS(levelStats[4].seconds);
-      const l5ScoreStr = `${levelStats[5].correct}/4-${Math.round((levelStats[5].correct / 4) * 100)}%`;
-      const l5TimeStr = formatSecondsHHMMSS(levelStats[5].seconds);
-      const l6ScoreStr = `${levelStats[6].correct}/3-${Math.round((levelStats[6].correct / 3) * 100)}%`;
-      const l6TimeStr = formatSecondsHHMMSS(levelStats[6].seconds);
-
-      const totCorrect =
-        levelStats[1].correct +
-        levelStats[2].correct +
-        levelStats[3].correct +
-        levelStats[4].correct +
-        levelStats[5].correct +
-        levelStats[6].correct;
-      const totScoreStr = `${totCorrect}/24-${Math.round((totCorrect / 24) * 100)}%`;
+    function openFinalSummaryModal() {
+      let totBestCorrect = 0;
+      for (let lvl = 1; lvl <= 6; lvl++) {
+        totBestCorrect += getLevelBestCorrect(lvl);
+      }
+      const totScoreStr = `${totBestCorrect}/24-${Math.round((totBestCorrect / 24) * 100)}%`;
 
       document.getElementById('sumStudentId').textContent = lmsContext.studentId;
       document.getElementById('sumStudentName').textContent = lmsContext.name;
-      document.getElementById('sumL1').textContent = `${l1ScoreStr} (${l1TimeStr})`;
-      document.getElementById('sumL2').textContent = `${l2ScoreStr} (${l2TimeStr})`;
-      document.getElementById('sumL3').textContent = `${l3ScoreStr} (${l3TimeStr})`;
-      document.getElementById('sumL4').textContent = `${l4ScoreStr} (${l4TimeStr})`;
-      document.getElementById('sumL5').textContent = `${l5ScoreStr} (${l5TimeStr})`;
-      document.getElementById('sumL6').textContent = `${l6ScoreStr} (${l6TimeStr})`;
+      document.getElementById('sumL1').textContent = formatLevelSummaryText(1);
+      document.getElementById('sumL2').textContent = formatLevelSummaryText(2);
+      document.getElementById('sumL3').textContent = formatLevelSummaryText(3);
+      document.getElementById('sumL4').textContent = formatLevelSummaryText(4);
+      document.getElementById('sumL5').textContent = formatLevelSummaryText(5);
+      document.getElementById('sumL6').textContent = formatLevelSummaryText(6);
       document.getElementById('sumTotal').textContent = totScoreStr;
-      document.getElementById('completionModal').classList.remove('hidden');
 
-      if (isSubmittedToSheet) return;
-      isSubmittedToSheet = true;
-
+      const statusEl = document.getElementById('sumSyncStatus');
       if (lmsContext.studentId === 'GUEST') {
-        document.getElementById('sumSyncStatus').textContent = 'Practice Mode (Not logged in via Student Grid)';
-        return;
+        statusEl.textContent = 'Practice Mode (Not logged in via Student Grid)';
+        statusEl.className = 'font-bold text-amber-600';
+      } else {
+        statusEl.textContent = 'All Trial Scores & Times Saved to AMelur-LMS-001 ✓';
+        statusEl.className = 'font-bold text-emerald-600';
       }
 
-      const payload = {
-        action: 'saveGameData',
-        gameCode: lmsContext.gameCode,
-        studentId: lmsContext.studentId,
-        name: lmsContext.name,
-        school: lmsContext.school,
-        whatsapp: lmsContext.whatsapp,
-        level1Score: l1ScoreStr,
-        level1Time: l1TimeStr,
-        level2Score: l2ScoreStr,
-        level2Time: l2TimeStr,
-        level3Score: l3ScoreStr,
-        level3Time: l3TimeStr,
-        level4Score: l4ScoreStr,
-        level4Time: l4TimeStr,
-        level5Score: l5ScoreStr,
-        level5Time: l5TimeStr,
-        level6Score: l6ScoreStr,
-        level6Time: l6TimeStr,
-        score: totScoreStr,
-        trialId: lmsContext.trialId
-      };
-
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(payload).toString()
-      })
-      .then(() => {
-        document.getElementById('sumSyncStatus').textContent = 'Saved to AMelur-LMS-001 Leaderboard ✓';
-        document.getElementById('sumSyncStatus').classList.replace('text-amber-600', 'text-emerald-600');
-      })
-      .catch(() => {
-        document.getElementById('sumSyncStatus').textContent = 'Saved Locally (Offline)';
-      });
+      document.getElementById('completionModal').classList.remove('hidden');
     }
 
     function playAgainFullGame() {
-      isSubmittedToSheet = false;
-      levelStats = {
-        1: { correct: 0, total: 4, seconds: 0 },
-        2: { correct: 0, total: 4, seconds: 0 },
-        3: { correct: 0, total: 6, seconds: 0 },
-        4: { correct: 0, total: 3, seconds: 0 },
-        5: { correct: 0, total: 4, seconds: 0 },
-        6: { correct: 0, total: 3, seconds: 0 }
-      };
+      levelStats = createEmptyLevelStats();
       document.getElementById('completionModal').classList.add('hidden');
-      setupLevel(1);
+      setupLevel(1, 1);
     }
 
     function showFeedback(message, type) {
@@ -2958,9 +2844,9 @@
       if (currentLevel === 5) drawL5Lines();
     });
 
-    // Start Level1-M05-4.1 on page load
+    // Start Level1-M05-4.1 Trial 1 on page load
     window.addEventListener('DOMContentLoaded', () => {
-      setupLevel(1);
+      setupLevel(1, 1);
     });
   </script>
 </body>

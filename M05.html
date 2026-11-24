@@ -22,77 +22,78 @@
       -webkit-user-select: none;
     }
 
-    /* Virtual Scale on Top & Bottom Edges for Length Questions (4.1 - 4.4) */
-    .virtual-scale-edge {
-      background: linear-gradient(180deg, #fef9c3 0%, #fde68a 100%);
-      border-color: #d97706;
-      color: #1e293b;
-      height: 22px;
+    /* Horizontal Scrollable Virtual Ruler with Slider (Length Levels 4.1 - 4.4) */
+    .virtual-ruler-panel {
+      background: #f8fafc;
+      border: 2px solid #94a3b8;
+      border-radius: 12px;
+      padding: 8px 10px;
+      box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.06);
+    }
+    .ruler-scroll-viewport {
+      overflow-x: auto;
+      background: #ffffff;
+      border: 1.5px solid #334155;
+      border-radius: 6px;
+      scrollbar-width: thin;
+    }
+    .ruler-strip {
       position: relative;
-      display: flex;
-      align-items: stretch;
-      justify-content: space-between;
+      height: 62px;
+      min-width: 1120px;
+      background: #ffffff;
+      color: #0f172a;
       font-family: 'Inter', sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      overflow: hidden;
     }
-    .virtual-scale-top {
-      border-bottom: 1.5px solid #b45309;
-    }
-    .virtual-scale-bottom {
-      border-top: 1.5px solid #b45309;
-    }
-    .scale-tick {
-      flex: 1;
-      position: relative;
-      display: flex;
-      justify-content: space-between;
-      border-right: 1px solid rgba(120, 53, 15, 0.35);
-    }
-    .scale-tick:last-child {
-      border-right: none;
-    }
-    .scale-tick::after {
-      content: '';
+    .ruler-minor-tick {
       position: absolute;
-      left: 50%;
-      width: 1px;
-      height: 5px;
-      background: rgba(120, 53, 15, 0.45);
-    }
-    .virtual-scale-top .scale-tick::after {
       top: 0;
+      width: 1px;
+      height: 10px;
+      background: #64748b;
     }
-    .virtual-scale-bottom .scale-tick::after {
-      bottom: 0;
+    .ruler-mid-tick {
+      position: absolute;
+      top: 0;
+      width: 1.5px;
+      height: 18px;
+      background: #1e293b;
     }
-    .scale-num {
-      position: relative;
-      z-index: 2;
-      line-height: 1;
-      padding: 0 2px;
-      color: #78350f;
+    .ruler-major-tick {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 26px;
+      background: #0f172a;
     }
-    .virtual-scale-top .scale-num {
-      align-self: flex-end;
-      padding-bottom: 2px;
-    }
-    .virtual-scale-bottom .scale-num {
-      align-self: flex-start;
-      padding-top: 2px;
-    }
-    .scale-unit-tag {
-      background: #fffbeb;
-      color: #92400e;
+    .ruler-major-label {
+      position: absolute;
+      top: 27px;
+      transform: translateX(-50%);
+      font-size: 13px;
       font-weight: 800;
-      font-size: 9px;
-      padding: 0 5px;
-      display: inline-flex;
+      color: #0f172a;
+      line-height: 1;
+    }
+    .ruler-frac-label {
+      position: absolute;
+      top: 43px;
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-weight: 700;
+      color: #475569;
+      line-height: 1;
+    }
+    .ruler-slider-row {
+      display: flex;
       align-items: center;
-      border-left: 1px solid rgba(180, 83, 9, 0.35);
-      border-right: 1px solid rgba(180, 83, 9, 0.35);
-      white-space: nowrap;
+      gap: 10px;
+      margin-top: 7px;
+    }
+    .ruler-slider {
+      flex: 1;
+      accent-color: #0284c7;
+      cursor: pointer;
     }
 
     /* Level 1 Sky blue textbook header banner */
@@ -790,7 +791,7 @@
           id="adminSkipBtn"
           onclick="openSkipLevelModal()"
           aria-label="Advance"
-          class="opacity-40 hover:opacity-100 focus:opacity-100 bg-slate-700/80 text-slate-300 hover:text-white border border-slate-500/50 font-extrabold px-2 py-0.5 rounded transition cursor-pointer text-xs select-none"
+          class="opacity-45 hover:opacity-100 focus:opacity-100 bg-slate-700/80 text-slate-300 hover:text-white border border-slate-500/50 font-extrabold px-2 py-0.5 rounded transition cursor-pointer text-xs select-none"
         >→</button>
       </div>
     </div>
@@ -817,9 +818,6 @@
 
     <!-- Game Workspace -->
     <main id="gameMain" class="p-2.5 sm:p-4 bg-white">
-      <!-- Top Virtual Scale (shown for length levels 4.1 - 4.4) -->
-      <div id="topScaleBar" class="virtual-scale-edge virtual-scale-top rounded-t-xl border-x"></div>
-
       <div id="workspaceFrame" class="border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner">
         <div id="workspaceGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
 
@@ -843,8 +841,8 @@
         </div>
       </div>
 
-      <!-- Bottom Virtual Scale (shown for length levels 4.1 - 4.4) -->
-      <div id="bottomScaleBar" class="virtual-scale-edge virtual-scale-bottom rounded-b-xl border-x"></div>
+      <!-- Horizontal Virtual Ruler with Scroll Slider (shown for length levels 4.1 - 4.4) -->
+      <div id="virtualRulerContainer" class="mt-3"></div>
 
       <!-- Feedback Banner -->
       <div id="feedbackBanner" class="mt-2.5 hidden rounded-xl px-3.5 py-2 text-center font-bold text-xs sm:text-sm transition-all"></div>
@@ -1179,7 +1177,7 @@
       '#60a5fa'
     ];
 
-    // Level4-M05-4.4 Story Themes with familiar Tamil Nadu names (>= 6 letters) & exact pronoun/verb agreement
+    // Level4-M05-4.4 Story Themes with Tamil Nadu names & exact pronoun/verb agreement
     const LEVEL4_STORY_THEMES = [
       { traveller: 'Karthik',    possPron: 'his', subjPron: 'he',  place1: "uncle's house",  place2: "aunt's house",   destination: 'a waterfall' },
       { traveller: 'Senthamizh', possPron: 'his', subjPron: 'he',  place1: "grandpa's farm", place2: "cousin's house", destination: 'the river bridge' },
@@ -1317,7 +1315,6 @@
       `;
     }
 
-    // Unified dark-slate stone appearance across all weights (1 k.g., 500 g., 200 g., 50 g.)
     function renderHexWeightSVG(label) {
       const isLarge = label.includes('1 k.g.') || label.includes('500');
       const isMed = label.includes('200');
@@ -1331,7 +1328,7 @@
       `;
     }
 
-    // Level6-M05-4.6 Basket Pool (5 questions per trial, compact size)
+    // Level6-M05-4.6 Basket Pool (5 questions per trial)
     const LEVEL6_WEIGHT_LIST = [
       { id: '2kg',  label: '2 k.g.', grams: 2000, sizeClass: 'w-11 h-9 sm:w-12 sm:h-10' },
       { id: '1kg',  label: '1 k.g.', grams: 1000, sizeClass: 'w-10 h-8 sm:w-11 sm:h-9'  },
@@ -1380,7 +1377,6 @@
       `;
     }
 
-    // Uniform dark-slate stone appearance across all weights in 4.6 (2 k.g., 1 k.g., 500 g., 200 g., 100 g., 50 g.)
     function renderL6HexWeightSVG(wObj) {
       return `
         <svg class="${wObj.sizeClass} mx-auto block" viewBox="0 0 84 70" fill="none" aria-label="${wObj.label}">
@@ -1459,7 +1455,6 @@
     let timerInterval = null;
     let autoAdvanceTimeout = null;
 
-    // Gentle sound synthesizer using Tone.js
     let synth = null;
     function playSound(type) {
       try {
@@ -1602,7 +1597,6 @@
       updateHeaderDisplay();
     }
 
-    // Save the active trial's score and time to Google Sheet immediately
     function syncTrialToGoogleSheet(lvl, trialNum) {
       if (lmsContext.studentId === 'GUEST') return;
 
@@ -1814,7 +1808,6 @@
         }
         currentRows = l5LeftItems;
       } else {
-        // Level 6: Compact header/instructions so 5 basket rows fit in minimum lines
         headerEl.className = 'textbook-header-l6 px-3 py-1.5 sm:px-4 sm:py-2 flex flex-wrap items-center justify-between gap-2';
         badgeEl.className = 'badge-l6 px-2 py-0.5 text-sm sm:text-base tracking-tight';
         badgeEl.textContent = '4.6';
@@ -2493,7 +2486,6 @@
         rowsContainer.appendChild(boardDiv);
         requestAnimationFrame(() => drawL5Lines());
       } else {
-        // Level 6: Compact 5-question basket table
         const disabledAttr = levelCompleted ? 'disabled' : '';
         const wrapDiv = document.createElement('div');
         wrapDiv.className = 'overflow-x-auto';
@@ -2863,11 +2855,9 @@
       }
     }
 
-    // Lock trial immediately on submission (accept wrong answers as final for that trial, save score & time, and auto-advance)
     function finalizeTrialSubmission(correctCount, targetTotal) {
       levelCompleted = true;
 
-      // Disable inputs and action buttons so the submitted trial cannot be retried
       document.querySelectorAll('#rowsContainer input, #rowsContainer select, #rowsContainer button').forEach(el => {
         el.disabled = true;
       });
@@ -2985,7 +2975,6 @@
       if (currentLevel === 5) drawL5Lines();
     });
 
-    // Start Level1-M05-4.1 Trial 1 on page load
     window.addEventListener('DOMContentLoaded', () => {
       setupLevel(1, 1);
     });

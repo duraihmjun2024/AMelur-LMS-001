@@ -1018,3 +1018,2840 @@
       </div>
     </div>
   </div>
+
+
+
+
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+    const TEACHER_SKIP_PASSWORD = "pups";
+
+    /* =====================================================================
+       1. VIRTUAL SCROLLABLE RULER WITH SLIDER & POINTER (LENGTH LEVELS 4.1-4.4)
+       ===================================================================== */
+    let activeRulerMode = 'cm_m'; // 'mm_cm' | 'cm_m' | 'm_km'
+    let rulerPointerSteps = 0;
+
+    const RULER_MODES = {
+      mm_cm: {
+        label: 'm.m. & c.m.',
+        subUnit: 'm.m.',
+        mainUnit: 'c.m.',
+        subPerMain: 10,
+        maxMain: 30,
+        stepSize: 1,
+        pxPerStep: 4,
+        minorEvery: 1,
+        midEvery: 5,
+        majorEvery: 10,
+        formatReadout(steps) {
+          const cm = Math.floor(steps / 10);
+          const mm = steps % 10;
+          return `${steps} m.m. = ${cm} c.m. ${mm} m.m.`;
+        }
+      },
+      cm_m: {
+        label: 'c.m. & m.',
+        subUnit: 'c.m.',
+        mainUnit: 'm.',
+        subPerMain: 100,
+        maxMain: 5,
+        stepSize: 5,
+        pxPerStep: 12.5,
+        minorEvery: 1,
+        midEvery: 10,
+        majorEvery: 20,
+        formatReadout(steps) {
+          const totalCm = steps * 5;
+          const m = Math.floor(totalCm / 100);
+          const cm = totalCm % 100;
+          let fracStr = '';
+          if (cm === 25) fracStr = m > 0 ? ` (${m} ¼ m.)` : ` (¼ m.)`;
+          else if (cm === 50) fracStr = m > 0 ? ` (${m} ½ m.)` : ` (½ m.)`;
+          else if (cm === 75) fracStr = m > 0 ? ` (${m} ¾ m.)` : ` (¾ m.)`;
+          else if (cm === 0 && m > 0) fracStr = ` (${m} m.)`;
+          return `${totalCm} c.m. = ${m} m. ${cm} c.m.${fracStr}`;
+        }
+      },
+      m_km: {
+        label: 'm. & k.m.',
+        subUnit: 'm.',
+        mainUnit: 'k.m.',
+        subPerMain: 1000,
+        maxMain: 10,
+        stepSize: 50,
+        pxPerStep: 8.5,
+        minorEvery: 1,
+        midEvery: 10,
+        majorEvery: 20,
+        formatReadout(steps) {
+          const totalM = steps * 50;
+          const km = Math.floor(totalM / 1000);
+          const m = totalM % 1000;
+          let fracStr = '';
+          if (m === 250) fracStr = km > 0 ? ` (${km} ¼ k.m.)` : ` (¼ k.m.)`;
+          else if (m === 500) fracStr = km > 0 ? ` (${km} ½ k.m.)` : ` (½ k.m.)`;
+          else if (m === 750) fracStr = km > 0 ? ` (${km} ¾ k.m.)` : ` (¾ k.m.)`;
+          else if (m === 0 && km > 0) fracStr = ` (${km} k.m.)`;
+          return `${totalM} m. = ${km} k.m. ${m} m.${fracStr}`;
+        }
+      }
+    };
+
+    function setVirtualRulerMode(mode) {
+      if (!RULER_MODES[mode]) return;
+      activeRulerMode = mode;
+      rulerPointerSteps = 0;
+      renderLengthScalesForLevel(currentLevel);
+    }
+
+    function updateRulerPointer(stepVal, shouldAutoScroll = true) {
+      const cfg = RULER_MODES[activeRulerMode];
+      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
+      rulerPointerSteps = Math.max(0, Math.min(maxSteps, parseInt(stepVal, 10) || 0));
+
+      const leftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
+      const pointerEl = document.getElementById('rulerPointerLine');
+      const readoutEl = document.getElementById('rulerPointerReadout');
+      const sliderEl = document.getElementById('rulerRangeSlider');
+      const viewportEl = document.getElementById('rulerScrollViewport');
+
+      if (pointerEl) pointerEl.style.left = `${leftPx}px`;
+      if (readoutEl) readoutEl.textContent = cfg.formatReadout(rulerPointerSteps);
+      if (sliderEl && parseInt(sliderEl.value, 10) !== rulerPointerSteps) {
+        sliderEl.value = String(rulerPointerSteps);
+      }
+
+      if (shouldAutoScroll && viewportEl) {
+        const viewW = viewportEl.clientWidth;
+        const targetScroll = Math.max(0, leftPx - viewW * 0.5);
+        viewportEl.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      }
+    }
+
+    function handleRulerStripClick(event) {
+      const stripEl = document.getElementById('rulerStripCanvas');
+      if (!stripEl) return;
+      const rect = stripEl.getBoundingClientRect();
+      const clickX = event.clientX - rect.left - 24;
+      const cfg = RULER_MODES[activeRulerMode];
+      const nearestStep = Math.round(clickX / cfg.pxPerStep);
+      updateRulerPointer(nearestStep, false);
+    }
+
+    function renderLengthScalesForLevel(lvl, resetDefaultMode = false) {
+      const container = document.getElementById('virtualRulerContainer');
+      if (!container) return;
+
+      if (lvl > 4) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      if (resetDefaultMode) {
+        activeRulerMode = lvl === 1 ? 'cm_m' : 'm_km';
+        rulerPointerSteps = 0;
+      }
+
+      container.classList.remove('hidden');
+      const cfg = RULER_MODES[activeRulerMode];
+      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
+      const totalWidthPx = 48 + maxSteps * cfg.pxPerStep;
+
+      let ticksHTML = '';
+      for (let s = 0; s <= maxSteps; s++) {
+        const x = 24 + s * cfg.pxPerStep;
+        if (s % cfg.majorEvery === 0) {
+          const mainVal = (s * cfg.stepSize) / cfg.subPerMain;
+          const subVal = s * cfg.stepSize;
+          const topLabel = s === 0 ? `0 (${cfg.mainUnit})` : `${mainVal}`;
+          const botLabel = s === 0 ? `0 (${cfg.subUnit})` : `${subVal}`;
+          ticksHTML += `
+            <div class="ruler-major-tick" style="left:${x}px;"></div>
+            <div class="ruler-major-label" style="left:${x}px;">${topLabel}</div>
+            <div class="ruler-frac-label" style="left:${x}px;">${botLabel}</div>
+          `;
+        } else if (s % cfg.midEvery === 0) {
+          const subVal = s * cfg.stepSize;
+          let midText = '';
+          if (activeRulerMode === 'mm_cm') {
+            const halfCmVal = (s * cfg.stepSize) / 10;
+            midText = `${halfCmVal}`;
+          } else {
+            midText = `${subVal}`;
+          }
+          ticksHTML += `
+            <div class="ruler-mid-tick" style="left:${x}px;"></div>
+            <div class="ruler-frac-label" style="left:${x}px;">${midText}</div>
+          `;
+        } else {
+          ticksHTML += `<div class="ruler-minor-tick" style="left:${x}px;"></div>`;
+        }
+      }
+
+      const modeButtonsHTML = Object.entries(RULER_MODES).map(([key, mObj]) => {
+        const isActive = key === activeRulerMode;
+        const btnCls = isActive
+          ? 'bg-sky-600 text-white border-sky-700 shadow-sm'
+          : 'bg-white text-slate-700 border-slate-300 hover:bg-sky-50';
+        return `
+          <button
+            type="button"
+            onclick="setVirtualRulerMode('${key}')"
+            class="px-2.5 py-1 rounded-lg border text-xs font-extrabold transition cursor-pointer ${btnCls}"
+          >
+            ${mObj.label}
+          </button>
+        `;
+      }).join('');
+
+      const pointerLeftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
+
+      container.innerHTML = `
+        <div class="virtual-ruler-panel">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wide mr-1">Virtual Ruler:</span>
+              ${modeButtonsHTML}
+            </div>
+            <div class="bg-rose-50 border border-rose-300 text-rose-900 px-2.5 py-0.5 rounded-lg text-xs sm:text-sm font-extrabold font-mono">
+              Pointer: <span id="rulerPointerReadout">${cfg.formatReadout(rulerPointerSteps)}</span>
+            </div>
+          </div>
+
+          <div id="rulerScrollViewport" class="ruler-scroll-viewport">
+            <div
+              id="rulerStripCanvas"
+              onclick="handleRulerStripClick(event)"
+              class="ruler-strip cursor-crosshair"
+              style="width:${totalWidthPx}px; min-width:${totalWidthPx}px;"
+              title="Tap anywhere on the ruler or drag the slider below to move the pointer"
+            >
+              ${ticksHTML}
+              <div id="rulerPointerLine" class="ruler-pointer-line" style="left:${pointerLeftPx}px;">
+                <div class="ruler-pointer-head"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ruler-slider-row">
+            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">0</span>
+            <input
+              id="rulerRangeSlider"
+              type="range"
+              min="0"
+              max="${maxSteps}"
+              step="1"
+              value="${rulerPointerSteps}"
+              oninput="updateRulerPointer(this.value, true)"
+              aria-label="Slide virtual ruler pointer"
+              class="ruler-slider"
+            />
+            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">${cfg.maxMain} ${cfg.mainUnit}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function openSkipLevelModal() {
+      const modal = document.getElementById('skipPasswordModal');
+      const input = document.getElementById('skipPasswordInput');
+      const err = document.getElementById('skipPasswordError');
+      const sub = document.getElementById('skipModalSubText');
+
+      err.classList.add('hidden');
+      input.value = '';
+      if (currentLevel < 8) {
+        sub.textContent = `Enter password to move from Level ${currentLevel} to Level ${currentLevel + 1}.`;
+      } else {
+        sub.textContent = 'You are on the final level (Level8-M05-4.8). Enter password to open summary.';
+      }
+      modal.classList.remove('hidden');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closeSkipLevelModal() {
+      document.getElementById('skipPasswordModal').classList.add('hidden');
+    }
+
+    function verifySkipPassword() {
+      const entered = document.getElementById('skipPasswordInput').value.trim();
+      const err = document.getElementById('skipPasswordError');
+
+      if (entered.toLowerCase() !== TEACHER_SKIP_PASSWORD.toLowerCase()) {
+        playSound('error');
+        err.classList.remove('hidden');
+        return;
+      }
+
+      playSound('place');
+      closeSkipLevelModal();
+      if (!levelCompleted) {
+        recordTrialSnapshot(currentLevel, currentTrial, 0, false);
+        syncTrialToGoogleSheet(currentLevel, currentTrial);
+      }
+
+      if (currentLevel < 8) {
+        setupLevel(currentLevel + 1, 1);
+      } else {
+        levelCompleted = true;
+        openFinalSummaryModal();
+      }
+    }
+
+    const ENGLISH_UNIT_OPTIONS = [
+      { value: 'mm', label: 'm.m.' },
+      { value: 'cm', label: 'c.m.' },
+      { value: 'm',  label: 'm.'   },
+      { value: 'km', label: 'k.m.' }
+    ];
+
+    function renderUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
+      const opts = ENGLISH_UNIT_OPTIONS.map(opt => {
+        const sel = selectedValue === opt.value ? 'selected' : '';
+        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
+      }).join('');
+      return `
+        <select
+          ${disabledAttr}
+          onclick="event.stopPropagation()"
+          onchange="${onChangeAttr}"
+          aria-label="${ariaLabel}"
+          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
+        >
+          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
+          ${opts}
+        </select>
+      `;
+    }
+
+    const MASS_UNIT_OPTIONS = [
+      { value: 'mg', label: 'm.g.' },
+      { value: 'g',  label: 'g.'   },
+      { value: 'kg', label: 'k.g.' }
+    ];
+
+    function renderMassUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
+      const opts = MASS_UNIT_OPTIONS.map(opt => {
+        const sel = selectedValue === opt.value ? 'selected' : '';
+        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
+      }).join('');
+      return `
+        <select
+          ${disabledAttr}
+          onchange="${onChangeAttr}"
+          aria-label="${ariaLabel}"
+          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
+        >
+          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
+          ${opts}
+        </select>
+      `;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const lmsContext = {
+      gameCode: (urlParams.get('gameCode') || 'M05').trim().toUpperCase(),
+      studentId: (urlParams.get('studentId') || 'GUEST').trim().toUpperCase(),
+      name: (urlParams.get('name') || 'Student').trim(),
+      school: (urlParams.get('school') || 'PUPS Anjalam Melur').trim(),
+      whatsapp: (urlParams.get('whatsapp') || '').trim(),
+      trialId: (urlParams.get('trialId') || '1').trim()
+    };
+
+    const LEVEL1_POOL = [
+      { id: 'c25',  cm: 25,  whole: '',  num: '1', den: '4' },
+      { id: 'c50',  cm: 50,  whole: '',  num: '1', den: '2' },
+      { id: 'c75',  cm: 75,  whole: '',  num: '3', den: '4' },
+      { id: 'c100', cm: 100, whole: '1', num: '',  den: ''  },
+      { id: 'c125', cm: 125, whole: '1', num: '1', den: '4' },
+      { id: 'c150', cm: 150, whole: '1', num: '1', den: '2' },
+      { id: 'c175', cm: 175, whole: '1', num: '3', den: '4' },
+      { id: 'c200', cm: 200, whole: '2', num: '',  den: ''  },
+      { id: 'c225', cm: 225, whole: '2', num: '1', den: '4' },
+      { id: 'c250', cm: 250, whole: '2', num: '1', den: '2' },
+      { id: 'c275', cm: 275, whole: '2', num: '3', den: '4' },
+      { id: 'c300', cm: 300, whole: '3', num: '',  den: ''  }
+    ];
+
+    const PLACE_PAIRS = [
+      { left: 'Pon Nagar',      right: 'Koodal Nagar',   leftBorder: '#c026d3', rightBorder: '#ec4899' },
+      { left: 'Pasumai Nagar',  right: 'Thendral Nagar', leftBorder: '#4d7c0f', rightBorder: '#7e22ce' },
+      { left: 'Valar Nagar',    right: 'Anbu Nagar',     leftBorder: '#ca8a04', rightBorder: '#0284c7' },
+      { left: 'Muthu Nagar',    right: 'Pothigai Nagar', leftBorder: '#f43f5e', rightBorder: '#f97316' },
+      { left: 'Kaveri Nagar',   right: 'Mullai Nagar',   leftBorder: '#0d9488', rightBorder: '#6366f1' },
+      { left: 'Marutham Nagar', right: 'Kurinji Nagar',  leftBorder: '#16a34a', rightBorder: '#db2777' }
+    ];
+
+    const LEVEL2_DIST_POOL = [
+      { whole: 1, num: 1, den: 2, km: 1, m: 500 },
+      { whole: 1, num: 1, den: 4, km: 1, m: 250 },
+      { whole: 2, num: 3, den: 4, km: 2, m: 750 },
+      { whole: 3, num: 1, den: 2, km: 3, m: 500 },
+      { whole: 2, num: 1, den: 4, km: 2, m: 250 },
+      { whole: 3, num: 3, den: 4, km: 3, m: 750 },
+      { whole: 4, num: 1, den: 2, km: 4, m: 500 },
+      { whole: 4, num: 1, den: 4, km: 4, m: 250 },
+      { whole: 1, num: 3, den: 4, km: 1, m: 750 },
+      { whole: 5, num: 1, den: 2, km: 5, m: 500 },
+      { whole: 2, num: 1, den: 2, km: 2, m: 500 },
+      { whole: 4, num: 3, den: 4, km: 4, m: 750 }
+    ];
+
+    const LEVEL3_POOL = [
+      { label: '1 m. 50 c.m.',   unit: 'm',  whole: 1, num: 1, den: 2 },
+      { label: '2 m. 25 c.m.',   unit: 'm',  whole: 2, num: 1, den: 4 },
+      { label: '3 m. 75 c.m.',   unit: 'm',  whole: 3, num: 3, den: 4 },
+      { label: '4 m. 50 c.m.',   unit: 'm',  whole: 4, num: 1, den: 2 },
+      { label: '5 k.m. 750 m.',  unit: 'km', whole: 5, num: 3, den: 4 },
+      { label: '7 k.m. 500 m.',  unit: 'km', whole: 7, num: 1, den: 2 },
+      { label: '9 k.m. 250 m.',  unit: 'km', whole: 9, num: 1, den: 4 },
+      { label: '6 k.m. 250 m.',  unit: 'km', whole: 6, num: 1, den: 4 },
+      { label: '8 k.m. 750 m.',  unit: 'km', whole: 8, num: 3, den: 4 },
+      { label: '4 k.m. 500 m.',  unit: 'km', whole: 4, num: 1, den: 2 },
+      { label: '6 m. 25 c.m.',   unit: 'm',  whole: 6, num: 1, den: 4 },
+      { label: '8 m. 75 c.m.',   unit: 'm',  whole: 8, num: 3, den: 4 }
+    ];
+
+    const L3_BUCKET_COLORS = [
+      '#f59e0b',
+      '#f87171',
+      '#ef4444',
+      '#84cc16',
+      '#c084fc',
+      '#60a5fa'
+    ];
+
+    const LEVEL4_STORY_THEMES = [
+      { traveller: 'Karthik',    possPron: 'his', subjPron: 'he',  place1: "uncle's house",  place2: "aunt's house",   destination: 'a waterfall' },
+      { traveller: 'Senthamizh', possPron: 'his', subjPron: 'he',  place1: "grandpa's farm", place2: "cousin's house", destination: 'the river bridge' },
+      { traveller: 'Kavitha',    possPron: 'her', subjPron: 'she', place1: "teacher's home", place2: 'the library',    destination: 'the hill park' },
+      { traveller: 'Thamarai',   possPron: 'her', subjPron: 'she', place1: "friend's house", place2: 'the temple',     destination: 'the lake park' },
+      { traveller: 'Bharathi',   possPron: 'her', subjPron: 'she', place1: "aunt's house",   place2: "uncle's farm",   destination: 'the botanical garden' },
+      { traveller: 'Sundaram',   possPron: 'his', subjPron: 'he',  place1: "cousin's home",  place2: 'the museum',     destination: 'the dam view point' }
+    ];
+
+    const LEVEL4_VEHICLE_POOL = [
+      { id: 'bicycle',    label: 'Bicycle',    whole: '',  num: '1', den: '4', km: 0, m: 250, givenInTable: true  },
+      { id: 'car',        label: 'Car',        whole: '3', num: '',  den: '',  km: 3, m: 0,   givenInTable: false },
+      { id: 'motorcycle', label: 'Motorcycle', whole: '2', num: '1', den: '2', km: 2, m: 500, givenInTable: false },
+      { id: 'scooter',    label: 'Scooter',    whole: '1', num: '3', den: '4', km: 1, m: 750, givenInTable: false },
+      { id: 'van',        label: 'Van',        whole: '4', num: '1', den: '4', km: 4, m: 250, givenInTable: false },
+      { id: 'bus',        label: 'Bus',        whole: '6', num: '3', den: '4', km: 6, m: 750, givenInTable: false }
+    ];
+
+    function renderVehicleIconSVG(vehicleId) {
+      if (vehicleId === 'bicycle') {
+        return `
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bicycle">
+            <circle cx="20" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
+            <circle cx="76" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
+            <path d="M 20 42 L 42 42 L 58 21 L 34 21 Z" stroke="#dc2626" stroke-width="3.4" stroke-linejoin="round" />
+            <path d="M 42 42 L 32 16 M 58 21 L 76 42 M 58 21 L 54 11 H 63" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="25" y="14" width="13" height="4" rx="2" fill="#0f172a" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'car') {
+        return `
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Car">
+            <path d="M 16 38 L 22 21 Q 24 17 29 17 H 64 Q 69 17 72 22 L 82 36 Q 85 38 85 43 V 46 H 12 V 42 Q 12 39 16 38 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="2.5" stroke-linejoin="round" />
+            <path d="M 27 21 H 45 V 32 H 23 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
+            <path d="M 49 21 H 63 L 71 32 H 49 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
+            <circle cx="27" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
+            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'motorcycle') {
+        return `
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Motorcycle">
+            <circle cx="21" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
+            <circle cx="76" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
+            <path d="M 21 43 L 44 37 L 62 21 L 76 43" stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 32 31 H 53 L 64 24 L 54 36 H 38 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M 58 21 L 53 12 H 60" stroke="#0f172a" stroke-width="2.8" stroke-linecap="round" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'scooter') {
+        return `
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Scooter">
+            <circle cx="22" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
+            <circle cx="74" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
+            <path d="M 22 44 H 56 L 64 20 L 55 13 H 64" stroke="#0284c7" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 34 38 L 42 25 H 58 L 56 38 Z" fill="#38bdf8" stroke="#0369a1" stroke-width="2.2" />
+          </svg>
+        `;
+      }
+      if (vehicleId === 'van') {
+        return `
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Van">
+            <path d="M 14 16 H 66 Q 72 16 75 23 L 84 35 V 46 H 14 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
+            <rect x="20" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
+            <rect x="39" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
+            <path d="M 58 21 H 66 L 73 32 H 58 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.6" />
+            <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+          </svg>
+        `;
+      }
+      return `
+        <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bus">
+          <rect x="13" y="14" width="70" height="31" rx="6" fill="#16a34a" stroke="#14532d" stroke-width="2.5" />
+          <rect x="19" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
+          <rect x="35" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
+          <rect x="51" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
+          <rect x="67" y="20" width="11" height="11" rx="2" fill="#bae6fd" stroke="#1e293b" stroke-width="1.5" />
+          <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+          <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
+        </svg>
+      `;
+    }
+
+    const LEVEL5_MATCH_ITEMS = [
+      { id: 'yam',         name: 'Elephant Yam',        whole: '1', num: '',  den: '',  grams: 1000, weights: ['1 k.g.'] },
+      { id: 'chayote',     name: 'Chayote (Chow Chow)', whole: '',  num: '1', den: '4', grams: 250,  weights: ['200 g.', '50 g.'] },
+      { id: 'cabbage',     name: 'Cabbage',             whole: '',  num: '1', den: '2', grams: 500,  weights: ['500 g.'] },
+      { id: 'cauliflower', name: 'Cauliflower',         whole: '',  num: '3', den: '4', grams: 750,  weights: ['500 g.', '200 g.', '50 g.'] }
+    ];
+
+    function renderVegetableSVG(vegId) {
+      if (vegId === 'yam') {
+        return `
+          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Elephant Yam">
+            <ellipse cx="48" cy="36" rx="34" ry="24" fill="#854d0e" stroke="#422006" stroke-width="2.5" />
+            <ellipse cx="48" cy="31" rx="22" ry="12" fill="#a16207" />
+            <ellipse cx="48" cy="31" rx="11" ry="6" fill="#5c2d0c" />
+            <circle cx="28" cy="42" r="2.2" fill="#422006" />
+            <circle cx="67" cy="40" r="2.2" fill="#422006" />
+            <circle cx="48" cy="49" r="2" fill="#422006" />
+          </svg>
+        `;
+      }
+      if (vegId === 'chayote') {
+        return `
+          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Chayote">
+            <path d="M 18 35 C 18 19, 44 15, 68 21 C 80 24, 83 31, 82 36 C 81 43, 74 49, 60 51 C 38 54, 18 49, 18 35 Z" fill="#bef264" stroke="#4d7c0f" stroke-width="2.5" />
+            <path d="M 24 31 C 40 27, 58 28, 76 32" stroke="#84cc16" stroke-width="2" stroke-linecap="round" />
+            <path d="M 24 40 C 42 43, 58 42, 74 39" stroke="#84cc16" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        `;
+      }
+      if (vegId === 'cabbage') {
+        return `
+          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Cabbage">
+            <circle cx="48" cy="35" r="25" fill="#86efac" stroke="#15803d" stroke-width="2.5" />
+            <path d="M 32 22 C 42 15, 58 18, 64 30 C 56 38, 39 39, 31 31" stroke="#22c55e" stroke-width="2.2" fill="#bbf7d0" />
+            <path d="M 25 38 C 32 49, 55 54, 69 42" stroke="#16a34a" stroke-width="2.2" fill="none" />
+          </svg>
+        `;
+      }
+      return `
+        <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Cauliflower">
+          <path d="M 22 42 C 18 52, 34 60, 48 58 C 62 60, 78 52, 74 42" fill="#22c55e" stroke="#15803d" stroke-width="2.3" />
+          <circle cx="34" cy="33" r="13" fill="#fefce8" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="62" cy="33" r="13" fill="#fefce8" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="48" cy="24" r="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="48" cy="37" r="13" fill="#fef9c3" stroke="#cbd5e1" stroke-width="1.8" />
+        </svg>
+      `;
+    }
+
+    /* =====================================================================
+       4. 3D KG & GRAM STONES WITH BLACK BG (IDENTICAL SIZES IN 4.5, 4.6 & 4.8)
+       ===================================================================== */
+    function render3DWeightStoneSVG(label, sizeClass, scaleFactor = 1.25) {
+      const uid = 'w3d_' + Math.random().toString(36).slice(2, 8);
+      return `
+        <div class="inline-flex items-center justify-center bg-black rounded-lg p-0.5" style="transform: scale(${scaleFactor}); transform-origin: center;">
+          <svg class="${sizeClass} mx-auto block bg-black rounded-md" viewBox="0 0 88 76" fill="none" aria-label="${label}">
+            <defs>
+              <linearGradient id="${uid}_rim" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#94a3b8" />
+                <stop offset="50%" stop-color="#475569" />
+                <stop offset="100%" stop-color="#1e293b" />
+              </linearGradient>
+              <linearGradient id="${uid}_inner" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#09090b" />
+                <stop offset="55%" stop-color="#000000" />
+                <stop offset="100%" stop-color="#000000" />
+              </linearGradient>
+            </defs>
+            <polygon points="24,12 64,12 83,41 64,71 24,71 5,41" fill="#000000" />
+            <polygon points="24,5 64,5 83,35 64,65 24,65 5,35" fill="url(#${uid}_rim)" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round" />
+            <polyline points="8,34 25,7 63,7 80,34" fill="none" stroke="#e2e8f0" stroke-width="1.6" stroke-linecap="round" opacity="0.75" />
+            <polygon points="27,12 61,12 75,35 61,58 27,58 13,35" fill="url(#${uid}_inner)" stroke="#334155" stroke-width="1.5" stroke-linejoin="round" />
+            <text x="44" y="40" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="800" font-size="14" letter-spacing="0.2">${label}</text>
+          </svg>
+        </div>
+      `;
+    }
+
+    const LEVEL6_WEIGHT_LIST = [
+      { id: '2kg',  label: '2 k.g.', grams: 2000, sizeClass: 'w-12 h-10 sm:w-13 sm:h-11' },
+      { id: '1kg',  label: '1 k.g.', grams: 1000, sizeClass: 'w-11 h-9 sm:w-12 sm:h-10'  },
+      { id: '500g', label: '500 g.', grams: 500,  sizeClass: 'w-10 h-9 sm:w-11 sm:h-9'   },
+      { id: '200g', label: '200 g.', grams: 200,  sizeClass: 'w-10 h-8 sm:w-10 sm:h-9'   },
+      { id: '100g', label: '100 g.', grams: 100,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'    },
+      { id: '50g',  label: '50 g.',  grams: 50,   sizeClass: 'w-9 h-7 sm:w-9 sm:h-8'     }
+    ];
+
+    function renderHexWeightSVG(label) {
+      const matchedSpec = LEVEL6_WEIGHT_LIST.find(w => w.label === label);
+      const sizeClass = matchedSpec ? matchedSpec.sizeClass : 'w-11 h-9 sm:w-12 sm:h-10';
+      return render3DWeightStoneSVG(label, sizeClass, 1.25);
+    }
+
+    const LEVEL6_POOL = [
+      { id: 'apples',   name: 'Apples Basket',   whole: '3', num: '3', den: '4', kg: 3, g: 750, reqWeights: ['2kg', '1kg', '500g', '200g', '50g'] },
+      { id: 'oranges',  name: 'Oranges Basket',  whole: '2', num: '1', den: '4', kg: 2, g: 250, reqWeights: ['2kg', '200g', '50g'] },
+      { id: 'mangoes',  name: 'Mangoes Basket',  whole: '1', num: '3', den: '4', kg: 1, g: 750, reqWeights: ['1kg', '500g', '200g', '50g'] },
+      { id: 'tomatoes', name: 'Tomatoes Basket', whole: '2', num: '1', den: '2', kg: 2, g: 500, reqWeights: ['2kg', '500g'] },
+      { id: 'guavas',   name: 'Guavas Basket',   whole: '3', num: '1', den: '2', kg: 3, g: 500, reqWeights: ['2kg', '1kg', '500g'] },
+      { id: 'lemons',   name: 'Lemons Basket',   whole: '1', num: '1', den: '4', kg: 1, g: 250, reqWeights: ['1kg', '200g', '50g'] },
+      { id: 'bananas',  name: 'Bananas Basket',  whole: '3', num: '1', den: '4', kg: 3, g: 250, reqWeights: ['2kg', '1kg', '200g', '50g'] },
+      { id: 'potatoes', name: 'Potatoes Basket', whole: '2', num: '3', den: '4', kg: 2, g: 750, reqWeights: ['2kg', '500g', '200g', '50g'] }
+    ];
+
+    function renderBasketSVG(itemId) {
+      const fruitColors = {
+        apples:   ['#dc2626', '#ef4444', '#b91c1c'],
+        oranges:  ['#f97316', '#fb923c', '#ea580c'],
+        mangoes:  ['#facc15', '#eab308', '#f59e0b'],
+        tomatoes: ['#ef4444', '#dc2626', '#f87171'],
+        guavas:   ['#4ade80', '#22c55e', '#86efac'],
+        lemons:   ['#fde047', '#facc15', '#fef08a'],
+        bananas:  ['#fde047', '#eab308', '#fef08a'],
+        potatoes: ['#d97706', '#b45309', '#f59e0b']
+      };
+      const [c1, c2, c3] = fruitColors[itemId] || fruitColors.apples;
+      return `
+        <svg class="w-16 h-11 mx-auto block" viewBox="0 0 120 78" fill="none" aria-label="${itemId}">
+          <circle cx="38" cy="27" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
+          <circle cx="56" cy="22" r="12" fill="${c2}" stroke="#7f1d1d" stroke-width="1.5" />
+          <circle cx="76" cy="25" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
+          <circle cx="46" cy="34" r="11" fill="${c3}" stroke="#7f1d1d" stroke-width="1.5" />
+          <circle cx="66" cy="33" r="11" fill="${c2}" stroke="#7f1d1d" stroke-width="1.5" />
+          <circle cx="85" cy="34" r="10" fill="${c3}" stroke="#7f1d1d" stroke-width="1.5" />
+          <path d="M 18 38 H 102 L 90 68 Q 88 72 82 72 H 38 Q 32 72 30 68 Z" fill="#d97706" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
+          <rect x="15" y="35" width="90" height="7" rx="3.5" fill="#b45309" stroke="#78350f" stroke-width="2" />
+          <path d="M 24 50 H 96 M 27 60 H 93" stroke="#92400e" stroke-width="2" />
+          <path d="M 40 42 L 44 71 M 60 42 V 71 M 80 42 L 76 71" stroke="#92400e" stroke-width="2" />
+        </svg>
+      `;
+    }
+
+    function renderL6HexWeightSVG(wObj) {
+      return render3DWeightStoneSVG(wObj.label, wObj.sizeClass, 1.25);
+    }
+
+    const LEVEL7_CHILD_NAMES = ['Naveen', 'Kavya', 'Arjun', 'Divya', 'Karthik', 'Meenakshi'];
+
+    const LEVEL7_VEG_POOL = [
+      { name: 'Garlic',       kg: 1, g: 250, whole: 1, num: 1, den: 4 },
+      { name: 'Potatoes',     kg: 2, g: 500, whole: 2, num: 1, den: 2 },
+      { name: 'Onions',       kg: 3, g: 250, whole: 3, num: 1, den: 4 },
+      { name: "Lady's finger",kg: 0, g: 750, whole: 0, num: 3, den: 4 },
+      { name: 'Beans',        kg: 1, g: 500, whole: 1, num: 1, den: 2 },
+      { name: 'Brinjal',      kg: 2, g: 250, whole: 2, num: 1, den: 4 },
+      { name: 'Tomatoes',     kg: 4, g: 750, whole: 4, num: 3, den: 4 },
+      { name: 'Chillies',     kg: 0, g: 250, whole: 0, num: 1, den: 4 },
+      { name: 'Carrots',      kg: 1, g: 750, whole: 1, num: 3, den: 4 },
+      { name: 'Beetroot',     kg: 2, g: 750, whole: 2, num: 3, den: 4 },
+      { name: 'Drumstick',    kg: 0, g: 500, whole: 0, num: 1, den: 2 },
+      { name: 'Radish',       kg: 3, g: 500, whole: 3, num: 1, den: 2 }
+    ];
+
+    /* =====================================================================
+       5. LEVEL 4.8 DATA & RENDERERS (BALANCE SCALE, STONES, MILK, BUCKET)
+       ===================================================================== */
+    const LEVEL8_SCALE_ITEMS = [
+      {
+        id: 'papaya',
+        name: 'papaya',
+        stones: ['1 k.g.', '200 g.', '50 g.'],
+        whole: 1, num: 1, den: 4,
+        color1: '#fb923c', color2: '#facc15', stroke: '#c2410c'
+      },
+      {
+        id: 'pineapple',
+        name: 'pineapple',
+        stones: ['1 k.g.', '500 g.'],
+        whole: 1, num: 1, den: 2,
+        color1: '#eab308', color2: '#facc15', stroke: '#854d0e'
+      },
+      {
+        id: 'pumpkin',
+        name: 'pumpkin',
+        stones: ['1 k.g.', '500 g.', '200 g.', '50 g.'],
+        whole: 1, num: 3, den: 4,
+        color1: '#f97316', color2: '#fb923c', stroke: '#9a3412'
+      },
+      {
+        id: 'watermelon',
+        name: 'watermelon',
+        stones: ['2 k.g.', '500 g.'],
+        whole: 2, num: 1, den: 2,
+        color1: '#16a34a', color2: '#4ade80', stroke: '#14532d'
+      },
+      {
+        id: 'jackfruit',
+        name: 'jackfruit',
+        stones: ['2 k.g.', '200 g.', '50 g.'],
+        whole: 2, num: 1, den: 4,
+        color1: '#84cc16', color2: '#bef264', stroke: '#3f6212'
+      },
+      {
+        id: 'muskmelon',
+        name: 'muskmelon',
+        stones: ['1 k.g.'],
+        whole: 1, num: 0, den: 0,
+        color1: '#f59e0b', color2: '#fde047', stroke: '#92400e'
+      }
+    ];
+
+    function renderScaleProduceSVG(item) {
+      return `
+        <svg class="w-11 h-9 inline-block align-middle" viewBox="0 0 80 60" fill="none" aria-label="${item.name}">
+          <ellipse cx="40" cy="33" rx="27" ry="17" fill="${item.color1}" stroke="${item.stroke}" stroke-width="2.5" />
+          <ellipse cx="40" cy="30" rx="17" ry="9" fill="${item.color2}" opacity="0.65" />
+          <path d="M 65 30 Q 74 26 76 31 Q 72 36 65 35" fill="${item.color1}" stroke="${item.stroke}" stroke-width="2" />
+        </svg>
+      `;
+    }
+
+    function renderBalanceScaleSVG(scaleItem) {
+      const stonesHTML = scaleItem.stones
+        .map(stLabel => `<div class="scale-stone-wrap">${renderHexWeightSVG(stLabel)}</div>`)
+        .join('');
+
+      return `
+        <div class="relative w-full max-w-[360px] mx-auto pt-1 pb-2 select-none">
+          <svg class="w-full h-24 block" viewBox="0 0 360 115" fill="none" aria-label="Balance scale">
+            <line x1="180" y1="12" x2="180" y2="104" stroke="#ca8a04" stroke-width="6" stroke-linecap="round" />
+            <ellipse cx="180" cy="105" rx="44" ry="7" fill="#eab308" stroke="#854d0e" stroke-width="2.2" />
+            <path d="M 74 34 Q 180 18 286 34" stroke="#eab308" stroke-width="6" stroke-linecap="round" fill="none" />
+            <circle cx="180" cy="24" r="6" fill="#fef08a" stroke="#854d0e" stroke-width="2" />
+            <!-- Left Pan Ropes -->
+            <line x1="76" y1="34" x2="40" y2="78" stroke="#d97706" stroke-width="1.8" />
+            <line x1="76" y1="34" x2="112" y2="78" stroke="#d97706" stroke-width="1.8" />
+            <line x1="76" y1="34" x2="76" y2="78" stroke="#b45309" stroke-width="1.5" />
+            <!-- Right Pan Ropes -->
+            <line x1="284" y1="34" x2="248" y2="78" stroke="#d97706" stroke-width="1.8" />
+            <line x1="284" y1="34" x2="320" y2="78" stroke="#d97706" stroke-width="1.8" />
+            <line x1="284" y1="34" x2="284" y2="78" stroke="#b45309" stroke-width="1.5" />
+            <!-- Left & Right Pans -->
+            <path d="M 34 78 Q 76 92 118 78 Z" fill="#facc15" stroke="#854d0e" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M 242 78 Q 284 92 326 78 Z" fill="#facc15" stroke="#854d0e" stroke-width="2.2" stroke-linejoin="round" />
+          </svg>
+          <!-- Stones sitting on left pan -->
+          <div class="flex items-center justify-center gap-1.5 -mt-12 pl-2 pr-36 pointer-events-none">
+            ${stonesHTML}
+          </div>
+          <!-- Produce sitting on right pan -->
+          <div class="flex items-center justify-center -mt-9 pl-40 pr-2 pointer-events-none">
+            ${renderScaleProduceSVG(scaleItem)}
+          </div>
+        </div>
+      `;
+    }
+
+    const LEVEL8_Q2_POOL = [
+      {
+        correctId: 'b_200_50',
+        choices: [
+          { id: 'a_500_34', stones: ['500 g.'],             frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' },
+          { id: 'b_200_50', stones: ['200 g.', '50 g.'],   frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' },
+          { id: 'c_500_200',stones: ['500 g.', '200 g.'],  frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' },
+          { id: 'd_200_50q',stones: ['200 g.', '50 g.'],   frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' }
+        ]
+      },
+      {
+        correctId: 'a_500_12',
+        choices: [
+          { id: 'a_500_12', stones: ['500 g.'],            frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' },
+          { id: 'b_200_34', stones: ['200 g.', '50 g.'],   frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' },
+          { id: 'c_500_14', stones: ['500 g.', '200 g.'],  frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' },
+          { id: 'd_200_12', stones: ['200 g.'],            frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' }
+        ]
+      },
+      {
+        correctId: 'c_500_200_50',
+        choices: [
+          { id: 'a_500_14',     stones: ['500 g.'],               frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' },
+          { id: 'b_200_12',     stones: ['200 g.'],               frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' },
+          { id: 'c_500_200_50', stones: ['500 g.', '200 g.', '50 g.'], frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' },
+          { id: 'd_200_50_34',  stones: ['200 g.', '50 g.'],      frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' }
+        ]
+      }
+    ];
+
+    const LEVEL8_Q3_POOL = [
+      { name: 'Arun',    mornL: 1, mornMl: 0,   eveFrac: { whole: '', num: 1, den: 2 }, eveMl: 500, totalL: 1, totalMl: 500 },
+      { name: 'Priya',   mornL: 1, mornMl: 0,   eveFrac: { whole: '', num: 1, den: 4 }, eveMl: 250, totalL: 1, totalMl: 250 },
+      { name: 'Senthil', mornL: 1, mornMl: 0,   eveFrac: { whole: '', num: 3, den: 4 }, eveMl: 750, totalL: 1, totalMl: 750 },
+      { name: 'Meena',   mornL: 2, mornMl: 0,   eveFrac: { whole: '', num: 1, den: 2 }, eveMl: 500, totalL: 2, totalMl: 500 }
+    ];
+
+    const LEVEL8_Q4_POOL = [
+      { capL: 10, capMl: 750, frac: { whole: 10, num: 3, den: 4 }, unit: 'ℓ' },
+      { capL: 10, capMl: 500, frac: { whole: 10, num: 1, den: 2 }, unit: 'ℓ' },
+      { capL: 8,  capMl: 250, frac: { whole: 8,  num: 1, den: 4 }, unit: 'ℓ' },
+      { capL: 6,  capMl: 750, frac: { whole: 6,  num: 3, den: 4 }, unit: 'ℓ' }
+    ];
+
+    function buildLevel8Questions() {
+      const chosenScale = LEVEL8_SCALE_ITEMS[Math.floor(Math.random() * LEVEL8_SCALE_ITEMS.length)];
+      const q1Correct = {
+        id: 'q1_ans',
+        frac: {
+          whole: chosenScale.whole > 0 ? chosenScale.whole : '',
+          num: chosenScale.num > 0 ? chosenScale.num : '',
+          den: chosenScale.den > 0 ? chosenScale.den : ''
+        },
+        unit: 'k.g.'
+      };
+      const q1Distractors = [
+        { id: 'q1_d1', frac: { whole: 1, num: '', den: '' }, unit: 'k.g.' },
+        { id: 'q1_d2', frac: { whole: 1, num: 1, den: 4 }, unit: 'k.g.' },
+        { id: 'q1_d3', frac: { whole: 1, num: 1, den: 2 }, unit: 'k.g.' },
+        { id: 'q1_d4', frac: { whole: 1, num: 3, den: 4 }, unit: 'k.g.' },
+        { id: 'q1_d5', frac: { whole: 2, num: 1, den: 2 }, unit: 'k.g.' }
+      ].filter(d => {
+        const sameWhole = String(d.frac.whole) === String(q1Correct.frac.whole);
+        const sameNum = String(d.frac.num) === String(q1Correct.frac.num);
+        const sameDen = String(d.frac.den) === String(q1Correct.frac.den);
+        return !(sameWhole && sameNum && sameDen);
+      });
+      const q1Options = shuffleArray([q1Correct, ...shuffleArray(q1Distractors).slice(0, 3)]);
+
+      const q2Template = LEVEL8_Q2_POOL[Math.floor(Math.random() * LEVEL8_Q2_POOL.length)];
+      const q2Options = shuffleArray(q2Template.choices);
+
+      const q3Data = LEVEL8_Q3_POOL[Math.floor(Math.random() * LEVEL8_Q3_POOL.length)];
+      const q3CorrectId = 'q3_ans';
+      const q3Options = shuffleArray([
+        { id: 'q3_ans', text: '1000 mℓ' },
+        { id: 'q3_b',   text: `${q3Data.totalL} ℓ 250 mℓ` },
+        { id: 'q3_c',   text: `${q3Data.totalL} ℓ 500 mℓ` },
+        { id: 'q3_d',   text: `${q3Data.totalL} ℓ 750 mℓ` }
+      ]).map((opt, i) => {
+        const expected = `${q3Data.totalL} ℓ ${q3Data.totalMl} mℓ`;
+        if (opt.text === expected && opt.id !== q3CorrectId) {
+          return { ...opt, text: `${q3Data.totalL} ℓ 250 mℓ` };
+        }
+        return i === 0 && opt.id === q3CorrectId ? { ...opt, text: expected } : opt;
+      });
+
+      const q4Data = LEVEL8_Q4_POOL[Math.floor(Math.random() * LEVEL8_Q4_POOL.length)];
+      const q4CorrectId = 'q4_ans';
+      const q4Options = shuffleArray([
+        { id: 'q4_ans', frac: { whole: q4Data.capL, num: q4Data.frac.num, den: q4Data.frac.den }, unit: 'ℓ' },
+        { id: 'q4_b',   frac: { whole: q4Data.capL, num: 1, den: 4 }, unit: 'ℓ' },
+        { id: 'q4_c',   frac: { whole: q4Data.capL, num: 1, den: 2 }, unit: 'ℓ' },
+        { id: 'q4_d',   frac: { whole: q4Data.capL, num: 3, den: 4 }, unit: 'ℓ' }
+      ]).map(opt => {
+        if (opt.id !== q4CorrectId && opt.frac.num === q4Data.frac.num && opt.frac.den === q4Data.frac.den) {
+          const altNum = q4Data.frac.num === 1 ? 3 : 1;
+          return { ...opt, frac: { whole: q4Data.capL, num: altNum, den: 4 } };
+        }
+        return opt;
+      });
+
+      return [
+        {
+          numLabel: '1)',
+          type: 'scale',
+          scaleItem: chosenScale,
+          promptHTML: `${renderScaleProduceSVG(chosenScale)} What is the weight of the ${chosenScale.name}?`,
+          correctId: q1Correct.id,
+          options: q1Options
+        },
+        {
+          numLabel: '2)',
+          type: 'stones',
+          promptHTML: 'Which one is correct?',
+          correctId: q2Template.correctId,
+          options: q2Options
+        },
+        {
+          numLabel: '3)',
+          type: 'text',
+          promptHTML: `If ${q3Data.name}'s family buys ${q3Data.mornL} litre of milk in the morning and ${renderFractionHTML(q3Data.eveFrac, '', true)} litre of milk in the evening, what is the quantity of milk bought in a day?`,
+          correctId: q3CorrectId,
+          options: q3Options
+        },
+        {
+          numLabel: '4)',
+          type: 'frac_l',
+          promptHTML: `We can express the capacity of a bucket which is ${q4Data.capL} ℓ ${q4Data.capMl} mℓ as,`,
+          correctId: q4CorrectId,
+          options: q4Options
+        }
+      ];
+    }
+
+
+
+
+
+
+// Game & 3-Trial LMS Tracking State
+    let currentLevel = 1; // 1 = 4.1, 2 = 4.2, 3 = 4.3, 4 = 4.4, 5 = 4.5, 6 = 4.6, 7 = 4.7, 8 = 4.8
+    let currentTrial = 1; // 1, 2, or 3 per level
+    let currentRows = [];
+    let currentL4Story = LEVEL4_STORY_THEMES[0];
+    let currentL7ChildName = 'Naveen';
+    let optionTiles = [];
+    let placedAnswers = [null, null, null, null];
+    let l1UnitAnswers = ['', '', '', ''];
+    let l2TypedAnswers = [
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' },
+      { km: '', kmUnit: '', m: '', mUnit: '' }
+    ];
+    let l3TypedAnswers = [
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' }
+    ];
+    let l4TypedAnswers = [
+      { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+      { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+      { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' }
+    ];
+    let l5LeftItems = [];
+    let l5MidItems = [];
+    let l5RightItems = [];
+    let l5LeftToMid = {};
+    let l5MidToRight = {};
+    let l5SelectedNode = null;
+    let l6TypedAnswers = [
+      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
+    ];
+    let l7TypedAnswers = Array.from({ length: 7 }, () => ({ whole: '', num: '', den: '', unit: '' }));
+    let l8SelectedAnswers = [null, null, null, null];
+
+    let selectedOptionId = null;
+    let draggedOptionId = null;
+    let draggedFromSlotIndex = null;
+    let levelCompleted = false;
+
+    const LEVEL_MAX_QUESTIONS = { 1: 4, 2: 4, 3: 6, 4: 3, 5: 4, 6: 5, 7: 6, 8: 4 };
+    const TOTAL_MAX_SCORE = 36;
+
+    function createEmptyLevelStats() {
+      const stats = {};
+      for (let lvl = 1; lvl <= 8; lvl++) {
+        stats[lvl] = {
+          total: LEVEL_MAX_QUESTIONS[lvl],
+          trials: {
+            1: { correct: 0, seconds: 0, done: false },
+            2: { correct: 0, seconds: 0, done: false },
+            3: { correct: 0, seconds: 0, done: false }
+          }
+        };
+      }
+      return stats;
+    }
+
+    let levelStats = createEmptyLevelStats();
+    let levelStartTime = Date.now();
+    let timerInterval = null;
+    let autoAdvanceTimeout = null;
+
+    let synth = null;
+    function playSound(type) {
+      try {
+        if (typeof Tone === 'undefined') return;
+        if (!synth) {
+          synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          synth.volume.value = -10;
+        }
+        if (Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        if (type === 'place') {
+          synth.triggerAttackRelease('C5', '16n');
+        } else if (type === 'remove') {
+          synth.triggerAttackRelease('A4', '16n');
+        } else if (type === 'success') {
+          synth.triggerAttackRelease(['C5', 'E5', 'G5', 'C6'], '8n');
+        } else if (type === 'error') {
+          synth.triggerAttackRelease(['E4', 'Eb4'], '8n');
+        } else if (type === 'reset') {
+          synth.triggerAttackRelease(['G4', 'C5'], '16n');
+        }
+      } catch (e) {}
+    }
+
+    function formatSecondsHHMMSS(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const hrs = String(Math.floor(s / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      const secs = String(s % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
+    }
+
+    function getLevelBestCorrect(lvl) {
+      const t = levelStats[lvl].trials;
+      return Math.max(t[1].correct, t[2].correct, t[3].correct);
+    }
+
+    function getLevelTotalSeconds(lvl) {
+      const t = levelStats[lvl].trials;
+      return t[1].seconds + t[2].seconds + t[3].seconds;
+    }
+
+    function getAllLevelsTotalElapsed() {
+      let sum = 0;
+      for (let lvl = 1; lvl <= 8; lvl++) {
+        sum += getLevelTotalSeconds(lvl);
+      }
+      return sum;
+    }
+
+    function startLevelTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      levelStartTime = Date.now();
+      timerInterval = setInterval(() => {
+        if (!levelCompleted) {
+          const elapsed = Math.floor((Date.now() - levelStartTime) / 1000);
+          levelStats[currentLevel].trials[currentTrial].seconds = elapsed;
+          document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(getAllLevelsTotalElapsed());
+        }
+      }, 1000);
+    }
+
+    function getLevelTag(lvl) {
+      if (lvl === 1) return 'Level1-M05-4.1';
+      if (lvl === 2) return 'Level2-M05-4.2';
+      if (lvl === 3) return 'Level3-M05-4.3';
+      if (lvl === 4) return 'Level4-M05-4.4';
+      if (lvl === 5) return 'Level5-M05-4.5';
+      if (lvl === 6) return 'Level6-M05-4.6';
+      if (lvl === 7) return 'Level7-M05-4.7';
+      return 'Level8-M05-4.8';
+    }
+
+    function updateHeaderDisplay() {
+      const levelTag = getLevelTag(currentLevel);
+      document.getElementById('studentInfoBadge').textContent =
+        lmsContext.studentId !== 'GUEST'
+          ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
+          : `${levelTag} • Measurements (Practice Mode)`;
+      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/8)`;
+      document.getElementById('trialBadge').textContent = `Trial ${currentTrial}/3`;
+
+      let totBestCorrect = 0;
+      for (let lvl = 1; lvl <= 8; lvl++) {
+        totBestCorrect += getLevelBestCorrect(lvl);
+      }
+      document.getElementById('scoreCounter').textContent = `Score: ${totBestCorrect}/${TOTAL_MAX_SCORE}`;
+
+      const t2Btn = document.getElementById('trial2Btn');
+      const t3Btn = document.getElementById('trial3Btn');
+      if (t2Btn) {
+        t2Btn.classList.toggle('ring-4', currentTrial === 2);
+        t2Btn.classList.toggle('ring-sky-400', currentTrial === 2);
+      }
+      if (t3Btn) {
+        t3Btn.classList.toggle('ring-4', currentTrial === 3);
+        t3Btn.classList.toggle('ring-purple-400', currentTrial === 3);
+      }
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function renderFractionHTML(item, unitLabel = 'm.', compact = false) {
+      const sizeClass = compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl';
+      const fracSize = compact ? 'text-xs' : 'text-sm sm:text-base';
+      let html = `<div class="inline-flex items-center justify-center gap-1 text-slate-900 font-extrabold ${sizeClass}">`;
+
+      if (item.whole !== '' && item.whole !== 0 && item.whole !== '0') {
+        html += `<span>${item.whole}</span>`;
+      }
+      if (item.num && item.den) {
+        html += `
+          <span class="frac ${fracSize}">
+            <span class="frac-num">${item.num}</span>
+            <span class="frac-den">${item.den}</span>
+          </span>
+        `;
+      }
+      if (unitLabel) {
+        html += `<span class="text-slate-800 font-bold ml-0.5">${unitLabel}</span>`;
+      }
+      html += `</div>`;
+      return html;
+    }
+
+    function recordTrialSnapshot(lvl, trialNum, earnedCorrect, isDone) {
+      const elapsed = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
+      const tObj = levelStats[lvl].trials[trialNum];
+      tObj.seconds = elapsed;
+      tObj.correct = earnedCorrect;
+      if (isDone) {
+        tObj.done = true;
+      }
+      updateHeaderDisplay();
+    }
+
+    function syncTrialToGoogleSheet(lvl, trialNum) {
+      if (lmsContext.studentId === 'GUEST') return;
+
+      const tObj = levelStats[lvl].trials[trialNum];
+      const maxQ = levelStats[lvl].total;
+      const trialScoreStr = `${tObj.correct}/${maxQ}-${Math.round((tObj.correct / maxQ) * 100)}%`;
+      const trialTimeStr = formatSecondsHHMMSS(tObj.seconds);
+
+      let totBestCorrect = 0;
+      for (let i = 1; i <= 8; i++) {
+        totBestCorrect += getLevelBestCorrect(i);
+      }
+      const totScoreStr = `${totBestCorrect}/${TOTAL_MAX_SCORE}-${Math.round((totBestCorrect / TOTAL_MAX_SCORE) * 100)}%`;
+
+      const payload = {
+        action: 'saveGameData',
+        gameCode: lmsContext.gameCode,
+        studentId: lmsContext.studentId,
+        name: lmsContext.name,
+        school: lmsContext.school,
+        whatsapp: lmsContext.whatsapp,
+        level: getLevelTag(lvl),
+        trialId: String(trialNum),
+        levelScore: trialScoreStr,
+        levelTime: trialTimeStr,
+        [`level${lvl}Score`]: trialScoreStr,
+        [`level${lvl}Time`]: trialTimeStr,
+        score: totScoreStr
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(payload).toString()
+      }).catch(() => {});
+    }
+
+    function startTrial(targetTrial, saveCurrentFirst = true) {
+      if (autoAdvanceTimeout) {
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = null;
+      }
+      if (saveCurrentFirst && currentTrial !== targetTrial && !levelCompleted) {
+        recordTrialSnapshot(currentLevel, currentTrial, 0, false);
+        syncTrialToGoogleSheet(currentLevel, currentTrial);
+      }
+      playSound('reset');
+      setupLevel(currentLevel, targetTrial);
+    }
+
+    function setupLevel(levelNum, trialNum = 1) {
+      if (autoAdvanceTimeout) {
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = null;
+      }
+      currentLevel = levelNum;
+      currentTrial = trialNum;
+      levelCompleted = false;
+      placedAnswers = [null, null, null, null];
+      l1UnitAnswers = ['', '', '', ''];
+      l2TypedAnswers = [
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' },
+        { km: '', kmUnit: '', m: '', mUnit: '' }
+      ];
+      l3TypedAnswers = [
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' },
+        { whole: '', num: '', den: '', unit: '' }
+      ];
+      l4TypedAnswers = [
+        { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+        { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+        { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' }
+      ];
+      l5LeftToMid = {};
+      l5MidToRight = {};
+      l5SelectedNode = null;
+      l6TypedAnswers = [
+        { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+        { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+        { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+        { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+        { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
+      ];
+      l7TypedAnswers = Array.from({ length: 7 }, () => ({ whole: '', num: '', den: '', unit: '' }));
+      l8SelectedAnswers = [null, null, null, null];
+      selectedOptionId = null;
+      draggedOptionId = null;
+      draggedFromSlotIndex = null;
+
+      document.getElementById('checkBtn').classList.remove('hidden');
+      document.getElementById('clearBtn').classList.remove('hidden');
+      hideFeedback();
+      renderLengthScalesForLevel(currentLevel, true);
+
+      const headerEl = document.getElementById('textbookHeader');
+      const badgeEl = document.getElementById('badgeActivityCode');
+      const titleEl = document.getElementById('mainQuestionTitle');
+      const hintEl = document.getElementById('conversionHintBadge');
+      const subHeaderEl = document.getElementById('levelSubHeader');
+      const optionBankWrapper = document.getElementById('optionBankWrapper');
+      const rowsContainer = document.getElementById('rowsContainer');
+      const gameMainEl = document.getElementById('gameMain');
+      const workspaceFrameEl = document.getElementById('workspaceFrame');
+
+      gameMainEl.className = 'p-2.5 sm:p-4 bg-white';
+      workspaceFrameEl.className = 'border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner';
+
+      if (currentLevel === 1) {
+        headerEl.className = 'textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l1 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.1';
+        titleEl.textContent = 'Write the length of the ribbon in metres.';
+        hintEl.textContent = '100 c.m. = 1 m.';
+        hintEl.className = 'text-xs font-semibold text-sky-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-sky-300';
+        subHeaderEl.textContent =
+          `Level1-M05-4.1 (Trial ${currentTrial}/3): Drag or tap an answer card on the right to place it in an empty box (tap or drag a placed card to move/remove it), then select the unit (m.).`;
+
+        optionBankWrapper.classList.remove('hidden');
+        rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-3 sm:gap-4';
+
+        currentRows = shuffleArray(LEVEL1_POOL).slice(0, 4);
+        optionTiles = shuffleArray(currentRows);
+        if (optionTiles.every((opt, idx) => opt.id === currentRows[idx].id)) {
+          optionTiles.reverse();
+        }
+      } else if (currentLevel === 2) {
+        headerEl.className = 'textbook-header-l2 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l2 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.2';
+        titleEl.textContent = 'Write the distance between the two places in kilometres and metres.';
+        hintEl.textContent = '1 k.m. = 1000 m.';
+        hintEl.className = 'text-xs font-semibold text-amber-900 bg-white/85 px-2.5 py-0.5 rounded-full border border-amber-300';
+        subHeaderEl.textContent =
+          `Level2-M05-4.2 (Trial ${currentTrial}/3): Fill in the distance and choose the matching units (k.m. and m.) from each dropdown.`;
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 divide-y divide-slate-300 bg-white rounded-xl border border-slate-300 overflow-hidden';
+        optionTiles = [];
+
+        const randomPlaces = shuffleArray(PLACE_PAIRS).slice(0, 4);
+        const randomDists = shuffleArray(LEVEL2_DIST_POOL).slice(0, 4);
+        currentRows = randomPlaces.map((placeObj, idx) => ({
+          ...placeObj,
+          ...randomDists[idx]
+        }));
+      } else if (currentLevel === 3) {
+        headerEl.className = 'textbook-header-l3 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l3 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.3';
+        titleEl.textContent = 'Write the fractional form.';
+        hintEl.textContent = '100 c.m. = 1 m. • 1000 m. = 1 k.m.';
+        hintEl.className = 'text-xs font-semibold text-emerald-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-emerald-300';
+        subHeaderEl.textContent =
+          `Level3-M05-4.3 (Trial ${currentTrial}/3): Enter the mixed fraction and choose the matching unit (m. or k.m.) inside each torchlight.`;
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4';
+        optionTiles = [];
+
+        currentRows = shuffleArray(LEVEL3_POOL).slice(0, 6).map((item, idx) => ({
+          ...item,
+          borderColor: L3_BUCKET_COLORS[idx % L3_BUCKET_COLORS.length]
+        }));
+      } else if (currentLevel === 4) {
+        headerEl.className = 'textbook-header-l4 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l4 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.4';
+        titleEl.textContent = 'Answer the questions.';
+        hintEl.textContent = '1 k.m. = 1000 m. • ¼ k.m. = 250 m.';
+        hintEl.className = 'text-xs font-semibold text-pink-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-pink-300';
+        subHeaderEl.textContent =
+          `Level4-M05-4.4 (Trial ${currentTrial}/3): Select the unit in the 2nd column and fill in the distance in k.m. and m. in the 3rd column.`;
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
+        optionTiles = [];
+
+        currentL4Story = LEVEL4_STORY_THEMES[Math.floor(Math.random() * LEVEL4_STORY_THEMES.length)];
+        const baseBicycle = LEVEL4_VEHICLE_POOL[0];
+        const otherVehicles = shuffleArray(LEVEL4_VEHICLE_POOL.slice(1)).slice(0, 2);
+        currentRows = [baseBicycle, ...otherVehicles];
+      } else if (currentLevel === 5) {
+        headerEl.className = 'textbook-header-l5 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l5 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.5';
+        titleEl.textContent = 'Match.';
+        hintEl.textContent = '1 k.g. = 1000 gram';
+        hintEl.className = 'text-xs font-semibold text-sky-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-sky-300';
+        subHeaderEl.textContent =
+          `Level5-M05-4.5 (Trial ${currentTrial}/3): Tap a vegetable on the left, its matching gram box in the middle, and its matching weight on the right.`;
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12';
+        optionTiles = [];
+
+        l5LeftItems = shuffleArray(LEVEL5_MATCH_ITEMS);
+        l5MidItems = shuffleArray(LEVEL5_MATCH_ITEMS);
+        if (l5MidItems.every((item, idx) => item.id === l5LeftItems[idx].id)) {
+          l5MidItems.reverse();
+        }
+        l5RightItems = shuffleArray(LEVEL5_MATCH_ITEMS);
+        if (l5RightItems.every((item, idx) => item.id === l5MidItems[idx].id)) {
+          l5RightItems.reverse();
+        }
+        currentRows = l5LeftItems;
+      } else if (currentLevel === 6) {
+        headerEl.className = 'textbook-header-l6 px-3 py-1.5 sm:px-4 sm:py-2 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l6 px-2 py-0.5 text-sm sm:text-base tracking-tight';
+        badgeEl.textContent = '4.6';
+        titleEl.textContent = 'Tick (✓) required weights & write in k.g. and g.';
+        hintEl.textContent = '1 k.g. = 1000 g.';
+        hintEl.className = 'text-[11px] sm:text-xs font-semibold text-orange-950 bg-white/85 px-2 py-0.5 rounded-full border border-orange-300';
+        subHeaderEl.textContent =
+          `Level6-M05-4.6 (Trial ${currentTrial}/3): Tick (✓) the required weights and fill in k.g. and g.`;
+
+        gameMainEl.className = 'p-2 sm:p-3 bg-white';
+        workspaceFrameEl.className = 'border-2 border-slate-200 rounded-xl p-1.5 sm:p-2.5 bg-slate-50/40 shadow-inner';
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12';
+        optionTiles = [];
+
+        currentRows = shuffleArray(LEVEL6_POOL).slice(0, 5);
+      } else if (currentLevel === 7) {
+        headerEl.className = 'textbook-header-l7 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l7 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.7';
+        titleEl.textContent = 'Express the vegetable quantities as fractions.';
+        hintEl.textContent = '250 g. = ¼ k.g. • 500 g. = ½ k.g. • 750 g. = ¾ k.g.';
+        hintEl.className = 'text-xs font-semibold text-indigo-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-indigo-300';
+        subHeaderEl.textContent =
+          `Level7-M05-4.7 (Trial ${currentTrial}/3): Fill in the fractional form (whole number if needed, numerator, denominator, and k.g. unit) for each vegetable.`;
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
+        optionTiles = [];
+
+        currentL7ChildName = LEVEL7_CHILD_NAMES[Math.floor(Math.random() * LEVEL7_CHILD_NAMES.length)];
+        const sampledVegs = shuffleArray(LEVEL7_VEG_POOL).slice(0, 7);
+        currentRows = sampledVegs.map((v, idx) => ({
+          ...v,
+          isExample: idx === 0
+        }));
+      } else {
+        headerEl.className = 'textbook-header-l8 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l8 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.8';
+        titleEl.textContent = 'Choose the correct answer.';
+        hintEl.textContent = '1 k.g. = 1000 g. • 1 ℓ = 1000 mℓ';
+        hintEl.className = 'text-xs font-semibold text-fuchsia-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-fuchsia-300';
+        subHeaderEl.textContent =
+          `Level8-M05-4.8 (Trial ${currentTrial}/3): Tap the correct option (a, b, c, or d) for each of the 4 questions.`;
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-3.5';
+        optionTiles = [];
+
+        currentRows = buildLevel8Questions();
+      }
+
+      updateHeaderDisplay();
+      startLevelTimer();
+      renderBoard();
+    }
+
+    function clearCurrentSlots() {
+      if (levelCompleted) return;
+      playSound('remove');
+      if (currentLevel === 1) {
+        placedAnswers = [null, null, null, null];
+        l1UnitAnswers = ['', '', '', ''];
+        selectedOptionId = null;
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
+      } else if (currentLevel === 2) {
+        l2TypedAnswers = [
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' },
+          { km: '', kmUnit: '', m: '', mUnit: '' }
+        ];
+      } else if (currentLevel === 3) {
+        l3TypedAnswers = [
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' },
+          { whole: '', num: '', den: '', unit: '' }
+        ];
+      } else if (currentLevel === 4) {
+        l4TypedAnswers = [
+          { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+          { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' },
+          { col2Unit: '', km: '', kmUnit: '', m: '', mUnit: '' }
+        ];
+      } else if (currentLevel === 5) {
+        l5LeftToMid = {};
+        l5MidToRight = {};
+        l5SelectedNode = null;
+      } else if (currentLevel === 6) {
+        l6TypedAnswers = [
+          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
+        ];
+      } else if (currentLevel === 7) {
+        l7TypedAnswers = Array.from({ length: 7 }, () => ({ whole: '', num: '', den: '', unit: '' }));
+      } else {
+        l8SelectedAnswers = [null, null, null, null];
+      }
+      hideFeedback();
+      renderBoard();
+    }
+
+    function selectL8Option(qIndex, optId) {
+      if (levelCompleted || currentLevel !== 8) return;
+      l8SelectedAnswers[qIndex] = optId;
+      playSound('place');
+      hideFeedback();
+      renderBoard();
+    }
+
+    function updateL7Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
+      if (field === 'unit') {
+        l7TypedAnswers[rowIndex].unit = value;
+      } else {
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, 2);
+        l7TypedAnswers[rowIndex][field] = cleaned;
+      }
+      const cellEl = document.getElementById(`l7-ans-${rowIndex}`);
+      if (cellEl) cellEl.classList.remove('correct', 'incorrect');
+    }
+
+    function toggleL6Weight(rowIndex, weightId) {
+      if (levelCompleted || currentLevel !== 6) return;
+      const arr = l6TypedAnswers[rowIndex].checked;
+      const pos = arr.indexOf(weightId);
+      if (pos === -1) {
+        arr.push(weightId);
+        playSound('place');
+      } else {
+        arr.splice(pos, 1);
+        playSound('remove');
+      }
+      const pillEl = document.getElementById(`l6-pill-${rowIndex}`);
+      if (pillEl) pillEl.classList.remove('correct', 'incorrect');
+      renderBoard();
+    }
+
+    function updateL6Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
+      if (field === 'kgUnit' || field === 'gUnit') {
+        l6TypedAnswers[rowIndex][field] = value;
+      } else {
+        const maxLen = field === 'kg' ? 2 : 3;
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
+        l6TypedAnswers[rowIndex][field] = cleaned;
+      }
+      const pillEl = document.getElementById(`l6-pill-${rowIndex}`);
+      if (pillEl) pillEl.classList.remove('correct', 'incorrect');
+    }
+
+    function updateL1Unit(rowIndex, value) {
+      if (levelCompleted) return;
+      l1UnitAnswers[rowIndex] = value;
+      const slotEl = document.getElementById(`slot-${rowIndex}`);
+      if (slotEl) slotEl.classList.remove('correct', 'incorrect');
+    }
+
+    function updateL2Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
+      if (field === 'kmUnit' || field === 'mUnit') {
+        l2TypedAnswers[rowIndex][field] = value;
+      } else {
+        const maxLen = field === 'km' ? 2 : 3;
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
+        l2TypedAnswers[rowIndex][field] = cleaned;
+      }
+      const boxEl = document.getElementById(`l2-box-${rowIndex}`);
+      if (boxEl) {
+        boxEl.classList.remove('correct', 'incorrect');
+      }
+    }
+
+    function updateL3Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
+      if (field === 'unit') {
+        l3TypedAnswers[rowIndex].unit = value;
+      } else {
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, 2);
+        l3TypedAnswers[rowIndex][field] = cleaned;
+      }
+      const bucketEl = document.getElementById(`l3-bucket-${rowIndex}`);
+      if (bucketEl) {
+        bucketEl.classList.remove('correct', 'incorrect');
+      }
+    }
+
+    function updateL4Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
+      if (field === 'col2Unit' || field === 'kmUnit' || field === 'mUnit') {
+        l4TypedAnswers[rowIndex][field] = value;
+      } else {
+        const maxLen = field === 'km' ? 2 : 3;
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, maxLen);
+        l4TypedAnswers[rowIndex][field] = cleaned;
+      }
+      const col2El = document.getElementById(`l4-col2-${rowIndex}`);
+      if (col2El) col2El.classList.remove('correct', 'incorrect');
+      const cellEl = document.getElementById(`l4-cell-${rowIndex}`);
+      if (cellEl) cellEl.classList.remove('correct', 'incorrect');
+    }
+
+    function handleL5NodeClick(col, id) {
+      if (levelCompleted || currentLevel !== 5) return;
+      hideFeedback();
+
+      if (!l5SelectedNode) {
+        l5SelectedNode = { col, id };
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      if (l5SelectedNode.col === col && l5SelectedNode.id === id) {
+        l5SelectedNode = null;
+        playSound('remove');
+        renderBoard();
+        return;
+      }
+
+      if (l5SelectedNode.col === col) {
+        l5SelectedNode = { col, id };
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      if (
+        (l5SelectedNode.col === 'left' && col === 'mid') ||
+        (l5SelectedNode.col === 'mid' && col === 'left')
+      ) {
+        const leftId = l5SelectedNode.col === 'left' ? l5SelectedNode.id : id;
+        const midId = l5SelectedNode.col === 'mid' ? l5SelectedNode.id : id;
+        Object.keys(l5LeftToMid).forEach(k => {
+          if (l5LeftToMid[k] === midId) delete l5LeftToMid[k];
+        });
+        l5LeftToMid[leftId] = midId;
+        l5SelectedNode = null;
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      if (
+        (l5SelectedNode.col === 'mid' && col === 'right') ||
+        (l5SelectedNode.col === 'right' && col === 'mid')
+      ) {
+        const midId = l5SelectedNode.col === 'mid' ? l5SelectedNode.id : id;
+        const rightId = l5SelectedNode.col === 'right' ? l5SelectedNode.id : id;
+        Object.keys(l5MidToRight).forEach(k => {
+          if (l5MidToRight[k] === rightId) delete l5MidToRight[k];
+        });
+        l5MidToRight[midId] = rightId;
+        l5SelectedNode = null;
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      l5SelectedNode = { col, id };
+      playSound('place');
+      showFeedback('First match the vegetable to its gram value in the middle column, then to the weight on the right.', 'info');
+      renderBoard();
+    }
+
+    function drawL5Lines() {
+      const board = document.getElementById('l5MatchBoard');
+      const svg = document.getElementById('l5MatchSvg');
+      if (!board || !svg) return;
+
+      const boardRect = board.getBoundingClientRect();
+      svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
+      svg.innerHTML = '';
+
+      function connectNodes(elA, elB, color) {
+        if (!elA || !elB) return;
+        const rA = elA.getBoundingClientRect();
+        const rB = elB.getBoundingClientRect();
+        const x1 = rA.right - boardRect.left;
+        const y1 = rA.top + rA.height / 2 - boardRect.top;
+        const x2 = rB.left - boardRect.left;
+        const y2 = rB.top + rB.height / 2 - boardRect.top;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', '3');
+        line.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(line);
+      }
+
+      Object.entries(l5LeftToMid).forEach(([leftId, midId]) => {
+        const elL = document.getElementById(`l5-left-${leftId}`);
+        const elM = document.getElementById(`l5-mid-${midId}`);
+        connectNodes(elL, elM, '#ec4899');
+      });
+
+      Object.entries(l5MidToRight).forEach(([midId, rightId]) => {
+        const elM = document.getElementById(`l5-mid-${midId}`);
+        const elR = document.getElementById(`l5-right-${rightId}`);
+        connectNodes(elM, elR, '#0284c7');
+      });
+    }
+
+    function renderBoard() {
+      const rowsContainer = document.getElementById('rowsContainer');
+      const optionsContainer = document.getElementById('optionsContainer');
+
+      rowsContainer.innerHTML = '';
+
+      if (currentLevel === 1) {
+        const maxCm = Math.max(...currentRows.map(r => r.cm));
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+
+        currentRows.forEach((rowItem, rowIndex) => {
+          const rawPercent = (rowItem.cm / maxCm) * 100;
+          const minWidthPercent = Math.max(20, Math.round(rawPercent));
+          const placedId = placedAnswers[rowIndex];
+          const placedItem = placedId ? LEVEL1_POOL.find(i => i.id === placedId) : null;
+          const unitVal = l1UnitAnswers[rowIndex];
+
+          const rowEl = document.createElement('div');
+          rowEl.className = 'flex items-center justify-between gap-2 sm:gap-4';
+
+          rowEl.innerHTML = `
+            <div class="flex-1 flex items-center min-w-0">
+              <div
+                class="ribbon-bar h-12 sm:h-14 flex items-center px-3 sm:px-4"
+                style="min-width: ${minWidthPercent}%;"
+                title="${rowItem.cm} c.m."
+              >
+                <span class="ribbon-label text-sm sm:text-lg md:text-xl">
+                  ${rowItem.cm} c.m.
+                </span>
+              </div>
+            </div>
+
+            <div
+              id="slot-${rowIndex}"
+              data-row="${rowIndex}"
+              onclick="handleSlotClick(${rowIndex})"
+              ondragover="handleDragOver(event, ${rowIndex})"
+              ondragleave="handleDragLeave(${rowIndex})"
+              ondrop="handleDrop(event, ${rowIndex})"
+              class="answer-slot px-2 sm:px-2.5 min-w-[126px] sm:min-w-[144px] h-14 sm:h-16 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${placedItem ? 'locked-filled' : (selectedOptionId ? 'ready-target' : '')}"
+              title="${placedItem ? 'Fixed in slot. Tap or drag this card to move/remove it.' : 'Drop or tap an answer card here'}"
+            >
+              ${
+                placedItem
+                  ? `<div
+                       draggable="${!levelCompleted}"
+                       ondragstart="handlePlacedCardDragStart(event, '${placedItem.id}', ${rowIndex})"
+                       ondragend="handleDragEnd()"
+                       class="dropped-card-chip animate-pop"
+                     >${renderFractionHTML(placedItem, '', true)}</div>`
+                  : `<span class="text-pink-300 text-xs sm:text-sm font-semibold pointer-events-none">?</span>`
+              }
+              ${renderUnitDropdownHTML(unitVal, `updateL1Unit(${rowIndex}, this.value)`, disabledAttr, `Unit for ${rowItem.cm} c.m.`)}
+            </div>
+          `;
+
+          rowsContainer.appendChild(rowEl);
+        });
+
+        optionsContainer.innerHTML = '';
+        optionTiles.forEach((optItem, idx) => {
+          const isUsed = placedAnswers.includes(optItem.id);
+          const isSelected = selectedOptionId === optItem.id;
+          const staggerClass = idx % 2 === 1 ? 'sm:mt-3' : '';
+
+          const tileEl = document.createElement('div');
+          tileEl.draggable = !isUsed && !levelCompleted;
+          tileEl.className = `fraction-tile w-24 sm:w-28 h-16 sm:h-20 flex items-center justify-center ${staggerClass} ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}`;
+          tileEl.innerHTML = renderFractionHTML(optItem, '', false);
+
+          if (!isUsed && !levelCompleted) {
+            tileEl.onclick = () => handleOptionClick(optItem.id);
+            tileEl.ondragstart = (e) => handleDragStart(e, optItem.id);
+            tileEl.ondragend = () => handleDragEnd();
+          }
+
+          optionsContainer.appendChild(tileEl);
+        });
+      } else if (currentLevel === 2) {
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+
+        currentRows.forEach((rowItem, rowIndex) => {
+          const ans = l2TypedAnswers[rowIndex];
+          const rowEl = document.createElement('div');
+          rowEl.className = 'grid grid-cols-1 sm:grid-cols-12 items-center gap-2.5 p-2.5 sm:px-5 sm:py-3 bg-white hover:bg-slate-50/60 transition';
+
+          rowEl.innerHTML = `
+            <div class="sm:col-span-3 flex justify-center">
+              <div
+                class="place-box w-full max-w-[175px] py-2 px-2.5 text-center text-sm sm:text-base"
+                style="border-color: ${rowItem.leftBorder};"
+              >
+                ${rowItem.left}
+              </div>
+            </div>
+
+            <div class="sm:col-span-6 flex flex-col items-center justify-center gap-1">
+              <div class="dist-pill-top w-full max-w-[210px] py-1 px-4 flex items-center justify-center">
+                ${renderFractionHTML(rowItem, 'k.m.', true)}
+              </div>
+
+              <div class="w-full max-w-[235px] flex items-center justify-center my-0.5" aria-hidden="true">
+                <svg class="w-full h-3.5 text-emerald-500" viewBox="0 0 220 18" fill="none">
+                  <line x1="12" y1="9" x2="208" y2="9" stroke="currentColor" stroke-width="2.5" />
+                  <polyline points="18,3 6,9 18,15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <polyline points="202,3 214,9 202,15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+
+              <div
+                id="l2-box-${rowIndex}"
+                class="dist-pill-bottom w-full max-w-[295px] py-1 px-2 flex flex-wrap items-center justify-center gap-1"
+              >
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="2"
+                  value="${ans.km}"
+                  ${disabledAttr}
+                  oninput="updateL2Answer(${rowIndex}, 'km', this.value)"
+                  placeholder="?"
+                  aria-label="Kilometres for ${rowItem.left} to ${rowItem.right}"
+                  class="km-m-input w-8 sm:w-9 h-7 sm:h-8 text-sm sm:text-base"
+                />
+                ${renderUnitDropdownHTML(ans.kmUnit, `updateL2Answer(${rowIndex}, 'kmUnit', this.value)`, disabledAttr, `First unit for ${rowItem.left} to ${rowItem.right}`)}
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="3"
+                  value="${ans.m}"
+                  ${disabledAttr}
+                  oninput="updateL2Answer(${rowIndex}, 'm', this.value)"
+                  placeholder="?"
+                  aria-label="Metres for ${rowItem.left} to ${rowItem.right}"
+                  class="km-m-input w-11 sm:w-12 h-7 sm:h-8 text-sm sm:text-base"
+                />
+                ${renderUnitDropdownHTML(ans.mUnit, `updateL2Answer(${rowIndex}, 'mUnit', this.value)`, disabledAttr, `Second unit for ${rowItem.left} to ${rowItem.right}`)}
+              </div>
+            </div>
+
+            <div class="sm:col-span-3 flex justify-center">
+              <div
+                class="place-box w-full max-w-[175px] py-2 px-2.5 text-center text-sm sm:text-base"
+                style="border-color: ${rowItem.rightBorder};"
+              >
+                ${rowItem.right}
+              </div>
+            </div>
+          `;
+
+          rowsContainer.appendChild(rowEl);
+        });
+      } else if (currentLevel === 3) {
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+
+        currentRows.forEach((rowItem, rowIndex) => {
+          const ans = l3TypedAnswers[rowIndex];
+          const cardEl = document.createElement('div');
+          cardEl.className = 'torch-item flex items-center py-1';
+
+          cardEl.innerHTML = `
+            <div class="torch-handle-box">
+              <span class="torch-switch-dot" aria-hidden="true"></span>
+              <span class="torch-body-label text-xs sm:text-sm md:text-base">
+                ${rowItem.label}
+              </span>
+            </div>
+
+            <div
+              id="l3-bucket-${rowIndex}"
+              class="torch-head-wrap"
+            >
+              <svg
+                class="torch-head-svg"
+                viewBox="0 0 170 82"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  class="torch-head-fill torch-head-rim"
+                  d="M 2 19 L 18 19 L 154 6 Q 165 5 165 18 L 165 64 Q 165 77 154 76 L 18 63 L 2 63 Z"
+                  stroke="${rowItem.borderColor}"
+                  stroke-width="6"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+                <path
+                  d="M 2 19 L 18 19 L 154 6 Q 165 5 165 18 L 165 64 Q 165 77 154 76 L 18 63 L 2 63"
+                  fill="none"
+                  stroke="#1e293b"
+                  stroke-width="2.5"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+                <line
+                  x1="18" y1="19" x2="18" y2="63"
+                  stroke="#1e293b"
+                  stroke-width="2.2"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+
+              <div class="torch-head-content">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="2"
+                  value="${ans.whole}"
+                  ${disabledAttr}
+                  oninput="updateL3Answer(${rowIndex}, 'whole', this.value)"
+                  placeholder="?"
+                  aria-label="Whole number for ${rowItem.label}"
+                  class="frac-input w-6 sm:w-7 h-7 sm:h-8 text-xs sm:text-sm"
+                />
+
+                <div class="inline-flex flex-col items-center justify-center gap-0.5">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="2"
+                    value="${ans.num}"
+                    ${disabledAttr}
+                    oninput="updateL3Answer(${rowIndex}, 'num', this.value)"
+                    placeholder="n"
+                    aria-label="Numerator for ${rowItem.label}"
+                    class="frac-input w-6 h-5 text-[11px]"
+                  />
+                  <span class="w-6 sm:w-7 h-[2px] bg-pink-600 rounded-full"></span>
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="2"
+                    value="${ans.den}"
+                    ${disabledAttr}
+                    oninput="updateL3Answer(${rowIndex}, 'den', this.value)"
+                    placeholder="d"
+                    aria-label="Denominator for ${rowItem.label}"
+                    class="frac-input w-6 h-5 text-[11px]"
+                  />
+                </div>
+
+                ${renderUnitDropdownHTML(ans.unit, `updateL3Answer(${rowIndex}, 'unit', this.value)`, disabledAttr, `Unit for ${rowItem.label}`, 'text-[11px] sm:text-xs px-0.5')}
+              </div>
+            </div>
+          `;
+
+          rowsContainer.appendChild(cardEl);
+        });
+      } else if (currentLevel === 4) {
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const v1 = currentRows[0];
+        const v2 = currentRows[1];
+        const v3 = currentRows[2];
+        const { traveller, possPron, subjPron, place1, place2, destination } = currentL4Story;
+
+        const storyEl = document.createElement('div');
+        storyEl.className = 'l4-story-box p-3 sm:p-3.5 text-xs sm:text-sm md:text-base';
+        storyEl.innerHTML = `
+          <p>
+            ${traveller} visited ${possPron} ${place1} on a holiday by ${possPron}
+            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v1.id)}</span>,
+            which was at a distance of <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v1, 'k.m.', true)}</span>
+            away from ${possPron} house. From there, ${subjPron} travelled
+            <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v3, 'k.m.', true)}</span>
+            by a <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v3.id)}</span>
+            to reach ${possPron} ${place2}. Then they all got into a
+            <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v2.id)}</span>
+            and travelled <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v2, 'k.m.', true)}</span>
+            to reach ${destination}. Write the distance travelled by ${traveller} in each vehicle in kilometres and metres.
+          </p>
+        `;
+        rowsContainer.appendChild(storyEl);
+
+        const tableWrapEl = document.createElement('div');
+        tableWrapEl.className = 'overflow-x-auto';
+
+        let tableRowsHTML = '';
+        currentRows.forEach((vItem, idx) => {
+          const ans = l4TypedAnswers[idx];
+          const col2HTML = `
+            <td id="l4-col2-${idx}" class="w-32 sm:w-40 l4-cell-status">
+              <div class="inline-flex items-center justify-center gap-1.5">
+                ${renderFractionHTML(vItem, '', true)}
+                ${renderUnitDropdownHTML(ans.col2Unit, `updateL4Answer(${idx}, 'col2Unit', this.value)`, disabledAttr, `Unit for ${vItem.label}`, 'px-1.5 py-0.5 text-xs sm:text-sm')}
+              </div>
+            </td>
+          `;
+
+          if (vItem.givenInTable) {
+            tableRowsHTML += `
+              <tr class="bg-slate-50/70">
+                <td class="w-28 sm:w-32">
+                  ${renderVehicleIconSVG(vItem.id)}
+                  <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
+                </td>
+                ${col2HTML}
+                <td class="font-extrabold text-slate-800 text-sm sm:text-base">
+                  ${vItem.m} m.
+                </td>
+              </tr>
+            `;
+          } else {
+            tableRowsHTML += `
+              <tr>
+                <td class="w-28 sm:w-32">
+                  ${renderVehicleIconSVG(vItem.id)}
+                  <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
+                </td>
+                ${col2HTML}
+                <td id="l4-cell-${idx}" class="l4-cell-status">
+                  <div class="inline-flex flex-wrap items-center justify-center gap-1.5 py-1 px-2 rounded-xl border-2 border-sky-400 bg-white">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="2"
+                      value="${ans.km}"
+                      ${disabledAttr}
+                      oninput="updateL4Answer(${idx}, 'km', this.value)"
+                      placeholder="?"
+                      aria-label="Kilometres for ${vItem.label}"
+                      class="km-m-input w-9 sm:w-10 h-7 sm:h-8 text-sm sm:text-base"
+                    />
+                    ${renderUnitDropdownHTML(ans.kmUnit, `updateL4Answer(${idx}, 'kmUnit', this.value)`, disabledAttr, `First unit for ${vItem.label}`)}
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="3"
+                      value="${ans.m}"
+                      ${disabledAttr}
+                      oninput="updateL4Answer(${idx}, 'm', this.value)"
+                      placeholder="?"
+                      aria-label="Metres for ${vItem.label}"
+                      class="km-m-input w-12 sm:w-14 h-7 sm:h-8 text-sm sm:text-base"
+                    />
+                    ${renderUnitDropdownHTML(ans.mUnit, `updateL4Answer(${idx}, 'mUnit', this.value)`, disabledAttr, `Second unit for ${vItem.label}`)}
+                  </div>
+                </td>
+              </tr>
+            `;
+          }
+        });
+
+        tableWrapEl.innerHTML = `
+          <table class="l4-table">
+            <thead>
+              <tr>
+                <th>Vehicle</th>
+                <th colspan="2">Distance travelled</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRowsHTML}
+            </tbody>
+          </table>
+        `;
+        rowsContainer.appendChild(tableWrapEl);
+      } else if (currentLevel === 5) {
+        const boardDiv = document.createElement('div');
+        boardDiv.id = 'l5MatchBoard';
+        boardDiv.className = 'relative bg-white border-2 border-sky-200 rounded-2xl p-3 sm:p-4';
+
+        const leftColHTML = l5LeftItems.map(item => {
+          const isSel = l5SelectedNode && l5SelectedNode.col === 'left' && l5SelectedNode.id === item.id;
+          const isMatched = Boolean(l5LeftToMid[item.id]);
+          return `
+            <div
+              id="l5-left-${item.id}"
+              onclick="handleL5NodeClick('left', '${item.id}')"
+              class="l5-node p-2 flex flex-col items-center justify-center gap-1 ${isSel ? 'selected' : ''} ${isMatched ? 'matched-left' : ''}"
+            >
+              ${renderVegetableSVG(item.id)}
+              <div class="l5-veg-pill px-2.5 py-0.5">
+                ${renderFractionHTML(item, 'k.g.', true)}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const midColHTML = l5MidItems.map(item => {
+          const isSel = l5SelectedNode && l5SelectedNode.col === 'mid' && l5SelectedNode.id === item.id;
+          const isMatchedLeft = Object.values(l5LeftToMid).includes(item.id);
+          const isMatchedRight = Boolean(l5MidToRight[item.id]);
+          return `
+            <div
+              id="l5-mid-${item.id}"
+              onclick="handleL5NodeClick('mid', '${item.id}')"
+              class="l5-node l5-gram-pill px-3 py-2.5 text-center font-extrabold text-slate-800 text-sm sm:text-base ${isSel ? 'selected' : ''} ${(isMatchedLeft || isMatchedRight) ? 'matched-mid' : ''}"
+            >
+              ${item.grams} gram
+            </div>
+          `;
+        }).join('');
+
+        const rightColHTML = l5RightItems.map(item => {
+          const isSel = l5SelectedNode && l5SelectedNode.col === 'right' && l5SelectedNode.id === item.id;
+          const isMatched = Object.values(l5MidToRight).includes(item.id);
+          const weightsHTML = item.weights.map(w => renderHexWeightSVG(w)).join('');
+          return `
+            <div
+              id="l5-right-${item.id}"
+              onclick="handleL5NodeClick('right', '${item.id}')"
+              class="l5-node l5-weight-box p-2.5 flex flex-wrap items-center justify-center gap-2 min-h-[96px] ${isSel ? 'selected' : ''} ${isMatched ? 'matched-right' : ''}"
+            >
+              ${weightsHTML}
+            </div>
+          `;
+        }).join('');
+
+        boardDiv.innerHTML = `
+          <svg id="l5MatchSvg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+          <div class="relative z-20 grid grid-cols-3 gap-6 sm:gap-12 items-center">
+            <div class="flex flex-col justify-between gap-2.5 sm:gap-3">
+              ${leftColHTML}
+            </div>
+            <div class="flex flex-col justify-around gap-5 sm:gap-8">
+              ${midColHTML}
+            </div>
+            <div class="flex flex-col justify-between gap-2.5 sm:gap-3">
+              ${rightColHTML}
+            </div>
+          </div>
+        `;
+
+        rowsContainer.appendChild(boardDiv);
+        requestAnimationFrame(() => drawL5Lines());
+      } else if (currentLevel === 6) {
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const wrapDiv = document.createElement('div');
+        wrapDiv.className = 'overflow-x-auto';
+
+        const rowsHTML = currentRows.map((item, rowIndex) => {
+          const ans = l6TypedAnswers[rowIndex];
+          const weightsGridHTML = LEVEL6_WEIGHT_LIST.map(wObj => {
+            const isChecked = ans.checked.includes(wObj.id);
+            return `
+              <div class="flex flex-col items-center justify-end gap-1.5 pt-1">
+                <div onclick="toggleL6Weight(${rowIndex}, '${wObj.id}')" class="cursor-pointer">
+                  ${renderL6HexWeightSVG(wObj)}
+                </div>
+                <button
+                  type="button"
+                  ${disabledAttr}
+                  onclick="toggleL6Weight(${rowIndex}, '${wObj.id}')"
+                  aria-label="Select ${wObj.label} for ${item.name}"
+                  class="l6-weight-checkbox ${isChecked ? 'checked' : ''}"
+                >
+                  ${isChecked ? '✓' : ''}
+                </button>
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <tr>
+              <td class="w-24 sm:w-32 bg-orange-50/30">
+                ${renderBasketSVG(item.id)}
+                <div class="mt-0.5">
+                  ${renderFractionHTML(item, 'k.g.', true)}
+                </div>
+              </td>
+              <td>
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <div class="grid grid-cols-6 gap-1.5 sm:gap-2 items-end flex-1 w-full">
+                    ${weightsGridHTML}
+                  </div>
+                  <div id="l6-pill-${rowIndex}" class="l6-answer-pill shrink-0">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="2"
+                      value="${ans.kg}"
+                      ${disabledAttr}
+                      oninput="updateL6Answer(${rowIndex}, 'kg', this.value)"
+                      placeholder="?"
+                      aria-label="Kilograms for ${item.name}"
+                      class="km-m-input w-8 sm:w-9 h-7 text-xs sm:text-sm"
+                    />
+                    ${renderMassUnitDropdownHTML(ans.kgUnit, `updateL6Answer(${rowIndex}, 'kgUnit', this.value)`, disabledAttr, `First unit for ${item.name}`, 'text-xs px-0.5')}
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="3"
+                      value="${ans.g}"
+                      ${disabledAttr}
+                      oninput="updateL6Answer(${rowIndex}, 'g', this.value)"
+                      placeholder="?"
+                      aria-label="Grams for ${item.name}"
+                      class="km-m-input w-11 sm:w-12 h-7 text-xs sm:text-sm"
+                    />
+                    ${renderMassUnitDropdownHTML(ans.gUnit, `updateL6Answer(${rowIndex}, 'gUnit', this.value)`, disabledAttr, `Second unit for ${item.name}`, 'text-xs px-0.5')}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        wrapDiv.innerHTML = `
+          <table class="l6-table">
+            <tbody>
+              ${rowsHTML}
+            </tbody>
+          </table>
+        `;
+        rowsContainer.appendChild(wrapDiv);
+      } else if (currentLevel === 7) {
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+
+        const bannerEl = document.createElement('div');
+        bannerEl.className = 'l7-prompt-banner text-xs sm:text-sm md:text-base leading-relaxed';
+        bannerEl.innerHTML = `
+          ${currentL7ChildName} looked at the list of vegetables given by mother and mentioned the quantities of the vegetables in the fractional form:
+          <span class="inline-flex items-center gap-1.5 align-middle mx-1">
+            ${renderFractionHTML({ whole: '', num: 1, den: 4 }, '', true)},
+            ${renderFractionHTML({ whole: '', num: 1, den: 2 }, '', true)},
+            ${renderFractionHTML({ whole: '', num: 3, den: 4 }, '', true)}.
+          </span>
+          How would ${currentL7ChildName} express the following quantities as fractions?
+        `;
+        rowsContainer.appendChild(bannerEl);
+
+        const renderTableBlock = (sliceStart, sliceEnd) => {
+          const rowsHTML = currentRows.slice(sliceStart, sliceEnd).map((item, localIdx) => {
+            const idx = sliceStart + localIdx;
+            const qtyDisplay = item.kg > 0
+              ? `<div>${item.kg} k.g.</div><div>${item.g} g.</div>`
+              : `<div>${item.g} g.</div>`;
+
+            if (item.isExample) {
+              return `
+                <tr class="bg-pink-50/40">
+                  <td class="font-bold text-slate-800 text-left pl-3">${item.name}</td>
+                  <td class="font-bold text-slate-700 text-xs sm:text-sm leading-tight">${qtyDisplay}</td>
+                  <td class="text-pink-600 font-extrabold">
+                    ${renderFractionHTML(item, 'k.g.', true)}
+                  </td>
+                </tr>
+              `;
+            }
+
+            const ans = l7TypedAnswers[idx];
+            return `
+              <tr>
+                <td class="font-bold text-slate-800 text-left pl-3">${item.name}</td>
+                <td class="font-bold text-slate-700 text-xs sm:text-sm leading-tight">${qtyDisplay}</td>
+                <td id="l7-ans-${idx}" class="l7-ans-cell">
+                  <div class="inline-flex items-center justify-center gap-1">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="2"
+                      value="${ans.whole}"
+                      ${disabledAttr}
+                      oninput="updateL7Answer(${idx}, 'whole', this.value)"
+                      placeholder="${item.whole === 0 ? '0' : '?'}"
+                      aria-label="Whole k.g. for ${item.name}"
+                      class="frac-input w-6 sm:w-7 h-7 text-xs sm:text-sm"
+                    />
+                    <div class="inline-flex flex-col items-center justify-center gap-0.5">
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="2"
+                        value="${ans.num}"
+                        ${disabledAttr}
+                        oninput="updateL7Answer(${idx}, 'num', this.value)"
+                        placeholder="n"
+                        aria-label="Numerator for ${item.name}"
+                        class="frac-input w-6 h-5 text-[11px]"
+                      />
+                      <span class="w-6 sm:w-7 h-[2px] bg-pink-600 rounded-full"></span>
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="2"
+                        value="${ans.den}"
+                        ${disabledAttr}
+                        oninput="updateL7Answer(${idx}, 'den', this.value)"
+                        placeholder="d"
+                        aria-label="Denominator for ${item.name}"
+                        class="frac-input w-6 h-5 text-[11px]"
+                      />
+                    </div>
+                    ${renderMassUnitDropdownHTML(ans.unit, `updateL7Answer(${idx}, 'unit', this.value)`, disabledAttr, `Unit for ${item.name}`, 'text-[11px] sm:text-xs px-0.5')}
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          return `
+            <table class="l7-table">
+              <thead>
+                <tr>
+                  <th>Vegetables</th>
+                  <th>Quantity</th>
+                  <th>Fractional form</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHTML}
+              </tbody>
+            </table>
+          `;
+        };
+
+        const gridWrap = document.createElement('div');
+        gridWrap.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-start';
+        gridWrap.innerHTML = `
+          <div>${renderTableBlock(0, 4)}</div>
+          <div>${renderTableBlock(4, 7)}</div>
+        `;
+        rowsContainer.appendChild(gridWrap);
+      } else {
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const optLetters = ['a)', 'b)', 'c)', 'd)'];
+
+        currentRows.forEach((qItem, qIdx) => {
+          const cardEl = document.createElement('div');
+          cardEl.id = `l8-qcard-${qIdx}`;
+          cardEl.className = 'l8-q-card flex flex-col justify-between gap-2.5';
+
+          const scaleBlock = qItem.type === 'scale' ? renderBalanceScaleSVG(qItem.scaleItem) : '';
+
+          const optsHTML = qItem.options.map((opt, optIdx) => {
+            const isSelected = l8SelectedAnswers[qIdx] === opt.id;
+            let optBody = '';
+            if (qItem.type === 'stones') {
+              const stonesInline = opt.stones
+                .map(s => render3DWeightStoneSVG(s, 'w-9 h-7', 1.0))
+                .join('');
+              optBody = `
+                <div class="inline-flex items-center gap-1 flex-wrap justify-center">
+                  ${stonesInline}
+                  <span class="font-extrabold text-slate-700 mx-0.5">=</span>
+                  ${renderFractionHTML(opt.frac, opt.unit, true)}
+                </div>
+              `;
+            } else if (opt.frac) {
+              optBody = renderFractionHTML(opt.frac, opt.unit, true);
+            } else {
+              optBody = `<span class="font-extrabold text-slate-900 text-sm sm:text-base">${opt.text}</span>`;
+            }
+
+            return `
+              <button
+                type="button"
+                id="l8-opt-${qIdx}-${opt.id}"
+                ${disabledAttr}
+                onclick="selectL8Option(${qIdx}, '${opt.id}')"
+                class="l8-opt-btn ${isSelected ? 'selected' : ''}"
+              >
+                <span class="font-extrabold text-fuchsia-700 text-xs sm:text-sm shrink-0">${optLetters[optIdx]}</span>
+                ${optBody}
+              </button>
+            `;
+          }).join('');
+
+          cardEl.innerHTML = `
+            <div>
+              ${scaleBlock}
+              <div class="font-bold text-slate-900 text-xs sm:text-sm md:text-base leading-snug">
+                <span class="font-extrabold text-fuchsia-800 mr-1">${qItem.numLabel}</span>
+                ${qItem.promptHTML}
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              ${optsHTML}
+            </div>
+          `;
+
+          rowsContainer.appendChild(cardEl);
+        });
+      }
+    }
+
+    /* =====================================================================
+       2. DROPPED CARDS LOCKED & MOVABLE ONLY BY USER (NO ACCIDENTAL OVERWRITE)
+       ===================================================================== */
+    function handleOptionClick(optionId) {
+      if (levelCompleted || currentLevel !== 1) return;
+      if (placedAnswers.includes(optionId)) return;
+      hideFeedback();
+      if (selectedOptionId === optionId) {
+        selectedOptionId = null;
+      } else {
+        selectedOptionId = optionId;
+        playSound('place');
+      }
+      renderBoard();
+    }
+
+    function handleSlotClick(rowIndex) {
+      if (levelCompleted || currentLevel !== 1) return;
+      hideFeedback();
+
+      if (placedAnswers[rowIndex] !== null) {
+        if (selectedOptionId && placedAnswers[rowIndex] !== selectedOptionId) {
+          playSound('error');
+          showFeedback('This box already has a fixed card. Tap or drag that card out first if you want to change it.', 'warning');
+          return;
+        }
+        placedAnswers[rowIndex] = null;
+        selectedOptionId = null;
+        playSound('remove');
+        renderBoard();
+        return;
+      }
+
+      if (selectedOptionId) {
+        placedAnswers[rowIndex] = selectedOptionId;
+        selectedOptionId = null;
+        playSound('place');
+        renderBoard();
+        return;
+      }
+
+      showFeedback('Tap or drag an answer card from the right into an empty box.', 'info');
+    }
+
+    function handleDragStart(e, optionId) {
+      if (placedAnswers.includes(optionId)) {
+        e.preventDefault();
+        return;
+      }
+      draggedOptionId = optionId;
+      draggedFromSlotIndex = null;
+      selectedOptionId = optionId;
+      if (e.dataTransfer) {
+        e.dataTransfer.setData('text/plain', optionId);
+        e.dataTransfer.effectAllowed = 'move';
+      }
+    }
+
+    function handlePlacedCardDragStart(e, optionId, fromRowIndex) {
+      if (levelCompleted || currentLevel !== 1) {
+        e.preventDefault();
+        return;
+      }
+      e.stopPropagation();
+      draggedOptionId = optionId;
+      draggedFromSlotIndex = fromRowIndex;
+      selectedOptionId = null;
+      if (e.dataTransfer) {
+        e.dataTransfer.setData('text/plain', optionId);
+        e.dataTransfer.effectAllowed = 'move';
+      }
+    }
+
+    function handleDragEnd() {
+      draggedOptionId = null;
+      draggedFromSlotIndex = null;
+      document.querySelectorAll('.answer-slot').forEach(el => el.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e, rowIndex) {
+      if (currentLevel !== 1) return;
+      e.preventDefault();
+      if (placedAnswers[rowIndex] === null || draggedFromSlotIndex === rowIndex) {
+        const slotEl = document.getElementById(`slot-${rowIndex}`);
+        if (slotEl) slotEl.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(rowIndex) {
+      const slotEl = document.getElementById(`slot-${rowIndex}`);
+      if (slotEl) slotEl.classList.remove('drag-over');
+    }
+
+    function handleDrop(e, rowIndex) {
+      if (currentLevel !== 1) return;
+      e.preventDefault();
+      if (levelCompleted) return;
+      const slotEl = document.getElementById(`slot-${rowIndex}`);
+      if (slotEl) slotEl.classList.remove('drag-over');
+
+      const droppedId = draggedOptionId || (e.dataTransfer && e.dataTransfer.getData('text/plain'));
+      if (!droppedId) return;
+
+      if (draggedFromSlotIndex === rowIndex) {
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
+        return;
+      }
+
+      if (placedAnswers[rowIndex] !== null) {
+        playSound('error');
+        showFeedback('This box already has a fixed card. Move or tap it to remove first.', 'warning');
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
+        selectedOptionId = null;
+        renderBoard();
+        return;
+      }
+
+      if (draggedFromSlotIndex !== null && placedAnswers[draggedFromSlotIndex] === droppedId) {
+        placedAnswers[draggedFromSlotIndex] = null;
+      } else if (placedAnswers.includes(droppedId)) {
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
+        selectedOptionId = null;
+        return;
+      }
+
+      placedAnswers[rowIndex] = droppedId;
+      selectedOptionId = null;
+      draggedOptionId = null;
+      draggedFromSlotIndex = null;
+      hideFeedback();
+      playSound('place');
+      renderBoard();
+    }
+
+    function checkAnswers() {
+      if (levelCompleted) return;
+
+      if (currentLevel === 1) {
+        if (placedAnswers.includes(null) || l1UnitAnswers.includes('')) {
+          playSound('error');
+          showFeedback('Please place an answer card and select a unit (m.) in all 4 boxes!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((rowItem, idx) => {
+          const slotEl = document.getElementById(`slot-${idx}`);
+          slotEl.classList.remove('correct', 'incorrect');
+
+          if (placedAnswers[idx] === rowItem.id && l1UnitAnswers[idx] === 'm') {
+            correctCount++;
+            slotEl.classList.add('correct');
+          } else {
+            slotEl.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 4);
+      } else if (currentLevel === 2) {
+        const hasBlank = l2TypedAnswers.some(
+          ans => ans.km.trim() === '' || ans.kmUnit === '' || ans.m.trim() === '' || ans.mUnit === ''
+        );
+        if (hasBlank) {
+          playSound('error');
+          showFeedback('Please fill in the numbers and select units (k.m. and m.) for all 4 rows!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((rowItem, idx) => {
+          const boxEl = document.getElementById(`l2-box-${idx}`);
+          boxEl.classList.remove('correct', 'incorrect');
+
+          const enteredKm = parseInt(l2TypedAnswers[idx].km.trim(), 10);
+          const enteredM = parseInt(l2TypedAnswers[idx].m.trim(), 10);
+          const unitsOk = l2TypedAnswers[idx].kmUnit === 'km' && l2TypedAnswers[idx].mUnit === 'm';
+
+          if (enteredKm === rowItem.km && enteredM === rowItem.m && unitsOk) {
+            correctCount++;
+            boxEl.classList.add('correct');
+          } else {
+            boxEl.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 4);
+      } else if (currentLevel === 3) {
+        const hasBlank = l3TypedAnswers.some(
+          ans => ans.whole.trim() === '' || ans.num.trim() === '' || ans.den.trim() === '' || ans.unit === ''
+        );
+        if (hasBlank) {
+          playSound('error');
+          showFeedback('Please fill in the whole number, numerator, denominator, and unit for all 6 items!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((rowItem, idx) => {
+          const bucketEl = document.getElementById(`l3-bucket-${idx}`);
+          bucketEl.classList.remove('correct', 'incorrect');
+
+          const wVal = parseInt(l3TypedAnswers[idx].whole.trim(), 10);
+          const nVal = parseInt(l3TypedAnswers[idx].num.trim(), 10);
+          const dVal = parseInt(l3TypedAnswers[idx].den.trim(), 10);
+          const unitOk = l3TypedAnswers[idx].unit === rowItem.unit;
+
+          const userFracVal = dVal !== 0 ? nVal / dVal : -1;
+          const targetFracVal = rowItem.num / rowItem.den;
+          const isFracEqual = dVal !== 0 && Math.abs(userFracVal - targetFracVal) < 0.0001;
+
+          if (wVal === rowItem.whole && isFracEqual && unitOk) {
+            correctCount++;
+            bucketEl.classList.add('correct');
+          } else {
+            bucketEl.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 6);
+      } else if (currentLevel === 4) {
+        const hasCol2Blank = l4TypedAnswers.some(ans => ans.col2Unit === '');
+        const fillableIndices = [1, 2];
+        const hasCol3Blank = fillableIndices.some(
+          idx =>
+            l4TypedAnswers[idx].km.trim() === '' ||
+            l4TypedAnswers[idx].kmUnit === '' ||
+            l4TypedAnswers[idx].m.trim() === '' ||
+            l4TypedAnswers[idx].mUnit === ''
+        );
+        if (hasCol2Blank || hasCol3Blank) {
+          playSound('error');
+          showFeedback('Please select the unit in the 2nd column and fill in all blanks in the 3rd column!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((vItem, idx) => {
+          const col2El = document.getElementById(`l4-col2-${idx}`);
+          col2El.classList.remove('correct', 'incorrect');
+          const col2Ok = l4TypedAnswers[idx].col2Unit === 'km';
+
+          if (vItem.givenInTable) {
+            if (col2Ok) {
+              correctCount++;
+              col2El.classList.add('correct');
+            } else {
+              col2El.classList.add('incorrect');
+            }
+          } else {
+            const cellEl = document.getElementById(`l4-cell-${idx}`);
+            cellEl.classList.remove('correct', 'incorrect');
+
+            const enteredKm = parseInt(l4TypedAnswers[idx].km.trim(), 10);
+            const enteredM = parseInt(l4TypedAnswers[idx].m.trim(), 10);
+            const col3UnitsOk = l4TypedAnswers[idx].kmUnit === 'km' && l4TypedAnswers[idx].mUnit === 'm';
+            const col3Ok = enteredKm === vItem.km && enteredM === vItem.m && col3UnitsOk;
+
+            if (col2Ok) col2El.classList.add('correct');
+            else col2El.classList.add('incorrect');
+
+            if (col3Ok) cellEl.classList.add('correct');
+            else cellEl.classList.add('incorrect');
+
+            if (col2Ok && col3Ok) correctCount++;
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 3);
+      } else if (currentLevel === 5) {
+        if (Object.keys(l5LeftToMid).length < 4 || Object.keys(l5MidToRight).length < 4) {
+          playSound('error');
+          showFeedback('Please match all 4 items across all three columns before checking!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        LEVEL5_MATCH_ITEMS.forEach(item => {
+          const leftEl = document.getElementById(`l5-left-${item.id}`);
+          const midEl = document.getElementById(`l5-mid-${item.id}`);
+          const rightEl = document.getElementById(`l5-right-${item.id}`);
+          [leftEl, midEl, rightEl].forEach(el => el && el.classList.remove('correct', 'incorrect'));
+
+          const matchedMid = l5LeftToMid[item.id];
+          const matchedRight = matchedMid ? l5MidToRight[matchedMid] : null;
+          if (matchedMid === item.id && matchedRight === item.id) {
+            correctCount++;
+            if (leftEl) leftEl.classList.add('correct');
+            if (midEl) midEl.classList.add('correct');
+            if (rightEl) rightEl.classList.add('correct');
+          } else {
+            if (leftEl) leftEl.classList.add('incorrect');
+            if (midEl) midEl.classList.add('incorrect');
+            if (rightEl) rightEl.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 4);
+      } else if (currentLevel === 6) {
+        const hasBlank = l6TypedAnswers.some(
+          ans =>
+            ans.checked.length === 0 ||
+            ans.kg.trim() === '' ||
+            ans.kgUnit === '' ||
+            ans.g.trim() === '' ||
+            ans.gUnit === ''
+        );
+        if (hasBlank) {
+          playSound('error');
+          showFeedback('Please tick the required weights and fill in all values and units (k.g. and g.) for all 5 rows!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((item, idx) => {
+          const pillEl = document.getElementById(`l6-pill-${idx}`);
+          pillEl.classList.remove('correct', 'incorrect');
+
+          const ans = l6TypedAnswers[idx];
+          const sortedUserWeights = [...ans.checked].sort();
+          const sortedReqWeights = [...item.reqWeights].sort();
+          const weightsMatch =
+            sortedUserWeights.length === sortedReqWeights.length &&
+            sortedUserWeights.every((w, i) => w === sortedReqWeights[i]);
+
+          const enteredKg = parseInt(ans.kg.trim(), 10);
+          const enteredG = parseInt(ans.g.trim(), 10);
+          const unitsOk = ans.kgUnit === 'kg' && ans.gUnit === 'g';
+
+          if (weightsMatch && enteredKg === item.kg && enteredG === item.g && unitsOk) {
+            correctCount++;
+            pillEl.classList.add('correct');
+          } else {
+            pillEl.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 5);
+      } else if (currentLevel === 7) {
+        const hasBlank = currentRows.some((item, idx) => {
+          if (item.isExample) return false;
+          const ans = l7TypedAnswers[idx];
+          const wholeMissing = item.whole > 0 && ans.whole.trim() === '';
+          return wholeMissing || ans.num.trim() === '' || ans.den.trim() === '' || ans.unit === '';
+        });
+        if (hasBlank) {
+          playSound('error');
+          showFeedback('Please fill in the whole number (if any), numerator, denominator, and k.g. unit for all 6 vegetables!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((item, idx) => {
+          if (item.isExample) return;
+          const cellEl = document.getElementById(`l7-ans-${idx}`);
+          cellEl.classList.remove('correct', 'incorrect');
+
+          const ans = l7TypedAnswers[idx];
+          const wVal = ans.whole.trim() === '' ? 0 : parseInt(ans.whole.trim(), 10);
+          const nVal = parseInt(ans.num.trim(), 10);
+          const dVal = parseInt(ans.den.trim(), 10);
+          const unitOk = ans.unit === 'kg';
+
+          const userFracVal = dVal !== 0 ? nVal / dVal : -1;
+          const targetFracVal = item.num / item.den;
+          const isFracEqual = dVal !== 0 && Math.abs(userFracVal - targetFracVal) < 0.0001;
+
+          if (wVal === item.whole && isFracEqual && unitOk) {
+            correctCount++;
+            cellEl.classList.add('correct');
+          } else {
+            cellEl.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 6);
+      } else {
+        if (l8SelectedAnswers.includes(null)) {
+          playSound('error');
+          showFeedback('Please select an answer (a, b, c, or d) for all 4 questions!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((qItem, qIdx) => {
+          const cardEl = document.getElementById(`l8-qcard-${qIdx}`);
+          const chosenId = l8SelectedAnswers[qIdx];
+          const chosenBtn = document.getElementById(`l8-opt-${qIdx}-${chosenId}`);
+          cardEl.classList.remove('correct', 'incorrect');
+
+          if (chosenId === qItem.correctId) {
+            correctCount++;
+            cardEl.classList.add('correct');
+            if (chosenBtn) chosenBtn.classList.add('correct');
+          } else {
+            cardEl.classList.add('incorrect');
+            if (chosenBtn) chosenBtn.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 4);
+      }
+    }
+
+    function finalizeTrialSubmission(correctCount, targetTotal) {
+      levelCompleted = true;
+
+      document.querySelectorAll('#rowsContainer input, #rowsContainer select, #rowsContainer button').forEach(el => {
+        el.disabled = true;
+      });
+      document.getElementById('checkBtn').classList.add('hidden');
+      document.getElementById('clearBtn').classList.add('hidden');
+
+      recordTrialSnapshot(currentLevel, currentTrial, correctCount, true);
+      syncTrialToGoogleSheet(currentLevel, currentTrial);
+
+      const isAllRight = correctCount === targetTotal;
+      playSound(isAllRight ? 'success' : 'error');
+
+      const levelTag = getLevelTag(currentLevel);
+      const trialTimeStr = formatSecondsHHMMSS(levelStats[currentLevel].trials[currentTrial].seconds);
+      const bannerType = isAllRight ? 'success' : 'error';
+
+      if (currentTrial < 3) {
+        const nextTrialNum = currentTrial + 1;
+        showFeedback(
+          `${levelTag} Trial ${currentTrial}/3 submitted: ${correctCount}/${targetTotal} (${trialTimeStr}). Moving to Trial ${nextTrialNum}/3...`,
+          bannerType
+        );
+        autoAdvanceTimeout = setTimeout(() => {
+          setupLevel(currentLevel, nextTrialNum);
+        }, 1600);
+      } else if (currentLevel < 8) {
+        const nextLevelNum = currentLevel + 1;
+        const nextLevelTag = getLevelTag(nextLevelNum);
+        showFeedback(
+          `${levelTag} Trial 3/3 submitted: ${correctCount}/${targetTotal} (${trialTimeStr}). Moving to ${nextLevelTag}...`,
+          bannerType
+        );
+        autoAdvanceTimeout = setTimeout(() => {
+          setupLevel(nextLevelNum, 1);
+        }, 1600);
+      } else {
+        showFeedback(
+          `${levelTag} Trial 3/3 submitted: ${correctCount}/${targetTotal} (${trialTimeStr}). All levels of M05 completed!`,
+          bannerType
+        );
+        autoAdvanceTimeout = setTimeout(() => {
+          openFinalSummaryModal();
+        }, 1400);
+      }
+    }
+
+    function formatLevelSummaryText(lvl) {
+      const maxQ = levelStats[lvl].total;
+      const t = levelStats[lvl].trials;
+      const best = getLevelBestCorrect(lvl);
+      const totalSec = getLevelTotalSeconds(lvl);
+      const tSummary = `T1:${t[1].correct}/${maxQ}, T2:${t[2].correct}/${maxQ}, T3:${t[3].correct}/${maxQ}`;
+      return `${best}/${maxQ} (${formatSecondsHHMMSS(totalSec)}) [${tSummary}]`;
+    }
+
+    function openFinalSummaryModal() {
+      let totBestCorrect = 0;
+      for (let lvl = 1; lvl <= 8; lvl++) {
+        totBestCorrect += getLevelBestCorrect(lvl);
+      }
+      const totScoreStr = `${totBestCorrect}/${TOTAL_MAX_SCORE}-${Math.round((totBestCorrect / TOTAL_MAX_SCORE) * 100)}%`;
+
+      document.getElementById('sumStudentId').textContent = lmsContext.studentId;
+      document.getElementById('sumStudentName').textContent = lmsContext.name;
+      document.getElementById('sumL1').textContent = formatLevelSummaryText(1);
+      document.getElementById('sumL2').textContent = formatLevelSummaryText(2);
+      document.getElementById('sumL3').textContent = formatLevelSummaryText(3);
+      document.getElementById('sumL4').textContent = formatLevelSummaryText(4);
+      document.getElementById('sumL5').textContent = formatLevelSummaryText(5);
+      document.getElementById('sumL6').textContent = formatLevelSummaryText(6);
+      document.getElementById('sumL7').textContent = formatLevelSummaryText(7);
+      document.getElementById('sumL8').textContent = formatLevelSummaryText(8);
+      document.getElementById('sumTotal').textContent = totScoreStr;
+
+      const statusEl = document.getElementById('sumSyncStatus');
+      if (lmsContext.studentId === 'GUEST') {
+        statusEl.textContent = 'Practice Mode (Not logged in via Student Grid)';
+        statusEl.className = 'font-bold text-amber-600';
+      } else {
+        statusEl.textContent = 'All Trial Scores & Times Saved to AMelur-LMS-001 ✓';
+        statusEl.className = 'font-bold text-emerald-600';
+      }
+
+      document.getElementById('completionModal').classList.remove('hidden');
+    }
+
+    function playAgainFullGame() {
+      levelStats = createEmptyLevelStats();
+      document.getElementById('completionModal').classList.add('hidden');
+      setupLevel(1, 1);
+    }
+
+    function showFeedback(message, type) {
+      const banner = document.getElementById('feedbackBanner');
+      banner.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'border-emerald-300', 'bg-rose-100', 'text-rose-900', 'border-rose-300', 'bg-amber-100', 'text-amber-900', 'border-amber-300', 'bg-sky-100', 'text-sky-900', 'border-sky-300');
+      banner.classList.add('border');
+
+      if (type === 'success') {
+        banner.classList.add('bg-emerald-100', 'text-emerald-900', 'border-emerald-300');
+      } else if (type === 'error') {
+        banner.classList.add('bg-rose-100', 'text-rose-900', 'border-rose-300');
+      } else if (type === 'warning') {
+        banner.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+      } else {
+        banner.classList.add('bg-sky-100', 'text-sky-900', 'border-sky-300');
+      }
+
+      banner.textContent = message;
+    }
+
+    function hideFeedback() {
+      const banner = document.getElementById('feedbackBanner');
+      banner.classList.add('hidden');
+    }
+
+    window.addEventListener('resize', () => {
+      if (currentLevel === 5) drawL5Lines();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setupLevel(1, 1);
+    });
+  </script>
+</body>
+</html>    

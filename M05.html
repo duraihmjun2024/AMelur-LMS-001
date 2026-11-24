@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - Measurements (4.1 - 4.6) | AMelur-LMS-001</title>
+  <title>Game M05 - Measurements (4.1 - 4.7) | AMelur-LMS-001</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Inter & Noto Sans Tamil -->
@@ -152,6 +152,11 @@
       border-bottom: 3px dashed #ffffff;
       box-shadow: 0 2px 6px rgba(194, 65, 12, 0.14);
     }
+    .textbook-header-l7 {
+      background: linear-gradient(180deg, #c7d2fe 0%, #e0e7ff 65%, #eef2ff 100%);
+      border-bottom: 3px dashed #ffffff;
+      box-shadow: 0 2px 6px rgba(67, 56, 202, 0.14);
+    }
 
     /* Badges */
     .badge-l1 {
@@ -207,6 +212,15 @@
       font-family: 'Inter', sans-serif;
       font-weight: 800;
       box-shadow: 0 2px 4px rgba(234, 88, 12, 0.16);
+    }
+    .badge-l7 {
+      background: #ffffff;
+      border: 2px solid #4f46e5;
+      border-radius: 10px 10px 10px 2px;
+      color: #3730a3;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.16);
     }
 
     /* Teal/Emerald 3D-bevel ribbon for Level 1 */
@@ -605,6 +619,55 @@
       animation: shake 0.38s ease-in-out;
     }
 
+    /* Level 7 Vegetable Fractional Form Table */
+    .l7-prompt-banner {
+      background: linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%);
+      border: 2px solid #86efac;
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .l7-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #ffffff;
+      border: 2px solid #f472b6;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+    }
+    .l7-table th {
+      background: #f9a8d4;
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border-bottom: 2px solid #ec4899;
+      border-right: 1.5px solid #f472b6;
+      padding: 7px 8px;
+      text-align: center;
+    }
+    .l7-table th:last-child { border-right: none; }
+    .l7-table td {
+      border-bottom: 1.5px solid #cbd5e1;
+      border-right: 1.5px solid #cbd5e1;
+      padding: 7px 8px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .l7-table td:last-child { border-right: none; }
+    .l7-table tr:last-child td { border-bottom: none; }
+    .l7-ans-cell.correct {
+      background-color: #f0fdf4 !important;
+      box-shadow: inset 0 0 0 2px #16a34a;
+    }
+    .l7-ans-cell.incorrect {
+      background-color: #fef2f2 !important;
+      box-shadow: inset 0 0 0 2px #dc2626;
+      animation: shake 0.38s ease-in-out;
+    }
+
     /* Numeric inputs */
     .frac-input, .km-m-input {
       font-family: 'Inter', sans-serif;
@@ -717,7 +780,7 @@
         <span class="bg-slate-700 px-2 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
         <span class="bg-slate-700 px-2 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
         <span class="bg-indigo-700 px-2 py-0.5 rounded-md text-indigo-100 font-bold border border-indigo-500" id="trialBadge">Trial 1/3</span>
-        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/26</span>
+        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/32</span>
         <button
           type="button"
           id="adminSkipBtn"
@@ -750,7 +813,7 @@
 
     <!-- Game Workspace -->
     <main id="gameMain" class="p-2.5 sm:p-4 bg-white">
-      <!-- Horizontal Virtual Ruler with Scroll Slider & Pointer (Moved to Top for Length levels 4.1 - 4.4) -->
+      <!-- Horizontal Virtual Ruler with Scroll Slider & Pointer (Top for Length levels 4.1 - 4.4) -->
       <div id="virtualRulerContainer" class="mb-3"></div>
 
       <div id="workspaceFrame" class="border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner">
@@ -826,7 +889,7 @@
       </div>
       <h2 class="text-xl font-extrabold text-slate-900">Congratulations!</h2>
       <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        You have completed all levels (Level1-M05-4.1 through Level6-M05-4.6) across all 3 trials!
+        You have completed all levels (Level1-M05-4.1 through Level7-M05-4.7) across all 3 trials!
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
@@ -838,6 +901,7 @@
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level4-M05-4.4:</span> <span class="font-bold text-pink-700" id="sumL4">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level5-M05-4.5:</span> <span class="font-bold text-sky-700" id="sumL5">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level6-M05-4.6:</span> <span class="font-bold text-orange-700" id="sumL6">--</span></div>
+        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level7-M05-4.7:</span> <span class="font-bold text-indigo-700" id="sumL7">--</span></div>
         <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
         <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saved to AMelur-LMS-001 Leaderboard ✓</span></div>
       </div>
@@ -893,7 +957,9 @@
 
 
 
-<script>
+
+
+  <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
     const TEACHER_SKIP_PASSWORD = "pups";
 
@@ -1133,10 +1199,10 @@
 
       err.classList.add('hidden');
       input.value = '';
-      if (currentLevel < 6) {
+      if (currentLevel < 7) {
         sub.textContent = `Enter password to move from Level ${currentLevel} to Level ${currentLevel + 1}.`;
       } else {
-        sub.textContent = 'You are on the final level (Level6-M05-4.6). Enter password to open summary.';
+        sub.textContent = 'You are on the final level (Level7-M05-4.7). Enter password to open summary.';
       }
       modal.classList.remove('hidden');
       setTimeout(() => input.focus(), 50);
@@ -1163,7 +1229,7 @@
         syncTrialToGoogleSheet(currentLevel, currentTrial);
       }
 
-      if (currentLevel < 6) {
+      if (currentLevel < 7) {
         setupLevel(currentLevel + 1, 1);
       } else {
         levelCompleted = true;
@@ -1431,11 +1497,10 @@
     }
 
     /* =====================================================================
-       4. 3D KG & GRAM STONES WITH BLACK BG (+25% ALL, -50% FOR 1KG & 500G IN 4.5)
+       4. 3D KG & GRAM STONES WITH BLACK BG (IDENTICAL SIZES IN 4.5 & 4.6)
        ===================================================================== */
-    function render3DWeightStoneSVG(label, sizeClass, scaleFactor = 1) {
+    function render3DWeightStoneSVG(label, sizeClass, scaleFactor = 1.25) {
       const uid = 'w3d_' + Math.random().toString(36).slice(2, 8);
-      const fontSize = scaleFactor <= 0.7 ? '10.5' : '14.5';
       return `
         <div class="inline-flex items-center justify-center bg-black rounded-lg p-0.5" style="transform: scale(${scaleFactor}); transform-origin: center;">
           <svg class="${sizeClass} mx-auto block bg-black rounded-md" viewBox="0 0 88 76" fill="none" aria-label="${label}">
@@ -1455,19 +1520,10 @@
             <polygon points="24,5 64,5 83,35 64,65 24,65 5,35" fill="url(#${uid}_rim)" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round" />
             <polyline points="8,34 25,7 63,7 80,34" fill="none" stroke="#e2e8f0" stroke-width="1.6" stroke-linecap="round" opacity="0.75" />
             <polygon points="27,12 61,12 75,35 61,58 27,58 13,35" fill="url(#${uid}_inner)" stroke="#334155" stroke-width="1.5" stroke-linejoin="round" />
-            <text x="44" y="40" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="800" font-size="${fontSize}" letter-spacing="0.2">${label}</text>
+            <text x="44" y="40" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="800" font-size="14" letter-spacing="0.2">${label}</text>
           </svg>
         </div>
       `;
-    }
-
-    function renderHexWeightSVG(label) {
-      const isLarge = label.includes('1 k.g.') || label.includes('500');
-      const isMed = label.includes('200');
-      const sizeClass = isLarge ? 'w-16 h-14' : isMed ? 'w-14 h-12' : 'w-12 h-10';
-      // +25% size on all stones in 4.5, and -50% size on 1 k.g. & 500 g. (1.25 * 0.5 = 0.625)
-      const scaleFactor = isLarge ? 0.625 : 1.25;
-      return render3DWeightStoneSVG(label, sizeClass, scaleFactor);
     }
 
     const LEVEL6_WEIGHT_LIST = [
@@ -1478,6 +1534,12 @@
       { id: '100g', label: '100 g.', grams: 100,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'    },
       { id: '50g',  label: '50 g.',  grams: 50,   sizeClass: 'w-9 h-7 sm:w-9 sm:h-8'     }
     ];
+
+    function renderHexWeightSVG(label) {
+      const matchedSpec = LEVEL6_WEIGHT_LIST.find(w => w.label === label);
+      const sizeClass = matchedSpec ? matchedSpec.sizeClass : 'w-11 h-9 sm:w-12 sm:h-10';
+      return render3DWeightStoneSVG(label, sizeClass, 1.25);
+    }
 
     const LEVEL6_POOL = [
       { id: 'apples',   name: 'Apples Basket',   whole: '3', num: '3', den: '4', kg: 3, g: 750, reqWeights: ['2kg', '1kg', '500g', '200g', '50g'] },
@@ -1519,21 +1581,34 @@
     }
 
     function renderL6HexWeightSVG(wObj) {
-      // +25% size across all k.g. and g. stones in Level 4.6 with black background
       return render3DWeightStoneSVG(wObj.label, wObj.sizeClass, 1.25);
     }
 
+    const LEVEL7_CHILD_NAMES = ['Naveen', 'Kavya', 'Arjun', 'Divya', 'Karthik', 'Meenakshi'];
+
+    const LEVEL7_VEG_POOL = [
+      { name: 'Garlic',       kg: 1, g: 250, whole: 1, num: 1, den: 4 },
+      { name: 'Potatoes',     kg: 2, g: 500, whole: 2, num: 1, den: 2 },
+      { name: 'Onions',       kg: 3, g: 250, whole: 3, num: 1, den: 4 },
+      { name: "Lady's finger",kg: 0, g: 750, whole: 0, num: 3, den: 4 },
+      { name: 'Beans',        kg: 1, g: 500, whole: 1, num: 1, den: 2 },
+      { name: 'Brinjal',      kg: 2, g: 250, whole: 2, num: 1, den: 4 },
+      { name: 'Tomatoes',     kg: 4, g: 750, whole: 4, num: 3, den: 4 },
+      { name: 'Chillies',     kg: 0, g: 250, whole: 0, num: 1, den: 4 },
+      { name: 'Carrots',      kg: 1, g: 750, whole: 1, num: 3, den: 4 },
+      { name: 'Beetroot',     kg: 2, g: 750, whole: 2, num: 3, den: 4 },
+      { name: 'Drumstick',    kg: 0, g: 500, whole: 0, num: 1, den: 2 },
+      { name: 'Radish',       kg: 3, g: 500, whole: 3, num: 1, den: 2 }
+    ];
 
 
 
-
-
-
-  // Game & 3-Trial LMS Tracking State
-    let currentLevel = 1; // 1 = 4.1, 2 = 4.2, 3 = 4.3, 4 = 4.4, 5 = 4.5, 6 = 4.6
+// Game & 3-Trial LMS Tracking State
+    let currentLevel = 1; // 1 = 4.1, 2 = 4.2, 3 = 4.3, 4 = 4.4, 5 = 4.5, 6 = 4.6, 7 = 4.7
     let currentTrial = 1; // 1, 2, or 3 per level
     let currentRows = [];
     let currentL4Story = LEVEL4_STORY_THEMES[0];
+    let currentL7ChildName = 'Naveen';
     let optionTiles = [];
     let placedAnswers = [null, null, null, null];
     let l1UnitAnswers = ['', '', '', ''];
@@ -1569,18 +1644,27 @@
       { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
       { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
     ];
+    let l7TypedAnswers = [
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' },
+      { whole: '', num: '', den: '', unit: '' }
+    ];
 
     let selectedOptionId = null;
     let draggedOptionId = null;
     let draggedFromSlotIndex = null;
     let levelCompleted = false;
 
-    const LEVEL_MAX_QUESTIONS = { 1: 4, 2: 4, 3: 6, 4: 3, 5: 4, 6: 5 };
-    const TOTAL_MAX_SCORE = 26;
+    const LEVEL_MAX_QUESTIONS = { 1: 4, 2: 4, 3: 6, 4: 3, 5: 4, 6: 5, 7: 6 };
+    const TOTAL_MAX_SCORE = 32;
 
     function createEmptyLevelStats() {
       const stats = {};
-      for (let lvl = 1; lvl <= 6; lvl++) {
+      for (let lvl = 1; lvl <= 7; lvl++) {
         stats[lvl] = {
           total: LEVEL_MAX_QUESTIONS[lvl],
           trials: {
@@ -1643,7 +1727,7 @@
 
     function getAllLevelsTotalElapsed() {
       let sum = 0;
-      for (let lvl = 1; lvl <= 6; lvl++) {
+      for (let lvl = 1; lvl <= 7; lvl++) {
         sum += getLevelTotalSeconds(lvl);
       }
       return sum;
@@ -1667,7 +1751,8 @@
       if (lvl === 3) return 'Level3-M05-4.3';
       if (lvl === 4) return 'Level4-M05-4.4';
       if (lvl === 5) return 'Level5-M05-4.5';
-      return 'Level6-M05-4.6';
+      if (lvl === 6) return 'Level6-M05-4.6';
+      return 'Level7-M05-4.7';
     }
 
     function updateHeaderDisplay() {
@@ -1676,11 +1761,11 @@
         lmsContext.studentId !== 'GUEST'
           ? `${levelTag} • ${lmsContext.studentId} (${lmsContext.name})`
           : `${levelTag} • Measurements (Practice Mode)`;
-      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/6)`;
+      document.getElementById('levelDisplay').textContent = `${levelTag} (${currentLevel}/7)`;
       document.getElementById('trialBadge').textContent = `Trial ${currentTrial}/3`;
 
       let totBestCorrect = 0;
-      for (let lvl = 1; lvl <= 6; lvl++) {
+      for (let lvl = 1; lvl <= 7; lvl++) {
         totBestCorrect += getLevelBestCorrect(lvl);
       }
       document.getElementById('scoreCounter').textContent = `Score: ${totBestCorrect}/${TOTAL_MAX_SCORE}`;
@@ -1711,7 +1796,7 @@
       const fracSize = compact ? 'text-xs' : 'text-sm sm:text-base';
       let html = `<div class="inline-flex items-center justify-center gap-1 text-slate-900 font-extrabold ${sizeClass}">`;
 
-      if (item.whole) {
+      if (item.whole !== '' && item.whole !== 0 && item.whole !== '0') {
         html += `<span>${item.whole}</span>`;
       }
       if (item.num && item.den) {
@@ -1749,7 +1834,7 @@
       const trialTimeStr = formatSecondsHHMMSS(tObj.seconds);
 
       let totBestCorrect = 0;
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 7; i++) {
         totBestCorrect += getLevelBestCorrect(i);
       }
       const totScoreStr = `${totBestCorrect}/${TOTAL_MAX_SCORE}-${Math.round((totBestCorrect / TOTAL_MAX_SCORE) * 100)}%`;
@@ -1830,6 +1915,7 @@
         { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
         { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
       ];
+      l7TypedAnswers = Array.from({ length: 7 }, () => ({ whole: '', num: '', den: '', unit: '' }));
       selectedOptionId = null;
       draggedOptionId = null;
       draggedFromSlotIndex = null;
@@ -1950,7 +2036,7 @@
           l5RightItems.reverse();
         }
         currentRows = l5LeftItems;
-      } else {
+      } else if (currentLevel === 6) {
         headerEl.className = 'textbook-header-l6 px-3 py-1.5 sm:px-4 sm:py-2 flex flex-wrap items-center justify-between gap-2';
         badgeEl.className = 'badge-l6 px-2 py-0.5 text-sm sm:text-base tracking-tight';
         badgeEl.textContent = '4.6';
@@ -1968,6 +2054,26 @@
         optionTiles = [];
 
         currentRows = shuffleArray(LEVEL6_POOL).slice(0, 5);
+      } else {
+        headerEl.className = 'textbook-header-l7 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l7 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
+        badgeEl.textContent = '4.7';
+        titleEl.textContent = 'Express the vegetable quantities as fractions.';
+        hintEl.textContent = '250 g. = ¼ k.g. • 500 g. = ½ k.g. • 750 g. = ¾ k.g.';
+        hintEl.className = 'text-xs font-semibold text-indigo-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-indigo-300';
+        subHeaderEl.textContent =
+          `Level7-M05-4.7 (Trial ${currentTrial}/3): Fill in the fractional form (whole number if needed, numerator, denominator, and k.g. unit) for each vegetable.`;
+
+        optionBankWrapper.classList.add('hidden');
+        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
+        optionTiles = [];
+
+        currentL7ChildName = LEVEL7_CHILD_NAMES[Math.floor(Math.random() * LEVEL7_CHILD_NAMES.length)];
+        const sampledVegs = shuffleArray(LEVEL7_VEG_POOL).slice(0, 7);
+        currentRows = sampledVegs.map((v, idx) => ({
+          ...v,
+          isExample: idx === 0
+        }));
       }
 
       updateHeaderDisplay();
@@ -2010,7 +2116,7 @@
         l5LeftToMid = {};
         l5MidToRight = {};
         l5SelectedNode = null;
-      } else {
+      } else if (currentLevel === 6) {
         l6TypedAnswers = [
           { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
           { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
@@ -2018,9 +2124,23 @@
           { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
           { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
         ];
+      } else {
+        l7TypedAnswers = Array.from({ length: 7 }, () => ({ whole: '', num: '', den: '', unit: '' }));
       }
       hideFeedback();
       renderBoard();
+    }
+
+    function updateL7Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
+      if (field === 'unit') {
+        l7TypedAnswers[rowIndex].unit = value;
+      } else {
+        const cleaned = value.replace(/[^0-9]/g, '').slice(0, 2);
+        l7TypedAnswers[rowIndex][field] = cleaned;
+      }
+      const cellEl = document.getElementById(`l7-ans-${rowIndex}`);
+      if (cellEl) cellEl.classList.remove('correct', 'incorrect');
     }
 
     function toggleL6Weight(rowIndex, weightId) {
@@ -2610,7 +2730,7 @@
             <div
               id="l5-right-${item.id}"
               onclick="handleL5NodeClick('right', '${item.id}')"
-              class="l5-node l5-weight-box p-2 flex flex-col items-center justify-center gap-1.5 min-h-[96px] ${isSel ? 'selected' : ''} ${isMatched ? 'matched-right' : ''}"
+              class="l5-node l5-weight-box p-2.5 flex flex-wrap items-center justify-center gap-2 min-h-[96px] ${isSel ? 'selected' : ''} ${isMatched ? 'matched-right' : ''}"
             >
               ${weightsHTML}
             </div>
@@ -2634,7 +2754,7 @@
 
         rowsContainer.appendChild(boardDiv);
         requestAnimationFrame(() => drawL5Lines());
-      } else {
+      } else if (currentLevel === 6) {
         const disabledAttr = levelCompleted ? 'disabled' : '';
         const wrapDiv = document.createElement('div');
         wrapDiv.className = 'overflow-x-auto';
@@ -2714,6 +2834,114 @@
           </table>
         `;
         rowsContainer.appendChild(wrapDiv);
+      } else {
+        const disabledAttr = levelCompleted ? 'disabled' : '';
+
+        const bannerEl = document.createElement('div');
+        bannerEl.className = 'l7-prompt-banner text-xs sm:text-sm md:text-base leading-relaxed';
+        bannerEl.innerHTML = `
+          ${currentL7ChildName} looked at the list of vegetables given by mother and mentioned the quantities of the vegetables in the fractional form:
+          <span class="inline-flex items-center gap-1.5 align-middle mx-1">
+            ${renderFractionHTML({ whole: '', num: 1, den: 4 }, '', true)},
+            ${renderFractionHTML({ whole: '', num: 1, den: 2 }, '', true)},
+            ${renderFractionHTML({ whole: '', num: 3, den: 4 }, '', true)}.
+          </span>
+          How would ${currentL7ChildName} express the following quantities as fractions?
+        `;
+        rowsContainer.appendChild(bannerEl);
+
+        const renderTableBlock = (sliceStart, sliceEnd) => {
+          const rowsHTML = currentRows.slice(sliceStart, sliceEnd).map((item, localIdx) => {
+            const idx = sliceStart + localIdx;
+            const qtyDisplay = item.kg > 0
+              ? `<div>${item.kg} k.g.</div><div>${item.g} g.</div>`
+              : `<div>${item.g} g.</div>`;
+
+            if (item.isExample) {
+              return `
+                <tr class="bg-pink-50/40">
+                  <td class="font-bold text-slate-800 text-left pl-3">${item.name}</td>
+                  <td class="font-bold text-slate-700 text-xs sm:text-sm leading-tight">${qtyDisplay}</td>
+                  <td class="text-pink-600 font-extrabold">
+                    ${renderFractionHTML(item, 'k.g.', true)}
+                  </td>
+                </tr>
+              `;
+            }
+
+            const ans = l7TypedAnswers[idx];
+            return `
+              <tr>
+                <td class="font-bold text-slate-800 text-left pl-3">${item.name}</td>
+                <td class="font-bold text-slate-700 text-xs sm:text-sm leading-tight">${qtyDisplay}</td>
+                <td id="l7-ans-${idx}" class="l7-ans-cell">
+                  <div class="inline-flex items-center justify-center gap-1">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      maxlength="2"
+                      value="${ans.whole}"
+                      ${disabledAttr}
+                      oninput="updateL7Answer(${idx}, 'whole', this.value)"
+                      placeholder="${item.whole === 0 ? '0' : '?'}"
+                      aria-label="Whole k.g. for ${item.name}"
+                      class="frac-input w-6 sm:w-7 h-7 text-xs sm:text-sm"
+                    />
+                    <div class="inline-flex flex-col items-center justify-center gap-0.5">
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="2"
+                        value="${ans.num}"
+                        ${disabledAttr}
+                        oninput="updateL7Answer(${idx}, 'num', this.value)"
+                        placeholder="n"
+                        aria-label="Numerator for ${item.name}"
+                        class="frac-input w-6 h-5 text-[11px]"
+                      />
+                      <span class="w-6 h-[2px] bg-pink-600 rounded-full"></span>
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="2"
+                        value="${ans.den}"
+                        ${disabledAttr}
+                        oninput="updateL7Answer(${idx}, 'den', this.value)"
+                        placeholder="d"
+                        aria-label="Denominator for ${item.name}"
+                        class="frac-input w-6 h-5 text-[11px]"
+                      />
+                    </div>
+                    ${renderMassUnitDropdownHTML(ans.unit, `updateL7Answer(${idx}, 'unit', this.value)`, disabledAttr, `Unit for ${item.name}`, 'text-[11px] sm:text-xs px-0.5')}
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          return `
+            <table class="l7-table">
+              <thead>
+                <tr>
+                  <th>Vegetables</th>
+                  <th>Quantity</th>
+                  <th>Fractional form</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHTML}
+              </tbody>
+            </table>
+          `;
+        };
+
+        const gridWrap = document.createElement('div');
+        gridWrap.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-start';
+        gridWrap.innerHTML = `
+          <div>${renderTableBlock(0, 4)}</div>
+          <div>${renderTableBlock(4, 7)}</div>
+        `;
+        rowsContainer.appendChild(gridWrap);
       }
     }
 
@@ -3017,7 +3245,7 @@
         });
 
         finalizeTrialSubmission(correctCount, 4);
-      } else {
+      } else if (currentLevel === 6) {
         const hasBlank = l6TypedAnswers.some(
           ans =>
             ans.checked.length === 0 ||
@@ -3057,6 +3285,44 @@
         });
 
         finalizeTrialSubmission(correctCount, 5);
+      } else {
+        const hasBlank = currentRows.some((item, idx) => {
+          if (item.isExample) return false;
+          const ans = l7TypedAnswers[idx];
+          const wholeMissing = item.whole > 0 && ans.whole.trim() === '';
+          return wholeMissing || ans.num.trim() === '' || ans.den.trim() === '' || ans.unit === '';
+        });
+        if (hasBlank) {
+          playSound('error');
+          showFeedback('Please fill in the whole number (if any), numerator, denominator, and k.g. unit for all 6 vegetables!', 'warning');
+          return;
+        }
+
+        let correctCount = 0;
+        currentRows.forEach((item, idx) => {
+          if (item.isExample) return;
+          const cellEl = document.getElementById(`l7-ans-${idx}`);
+          cellEl.classList.remove('correct', 'incorrect');
+
+          const ans = l7TypedAnswers[idx];
+          const wVal = ans.whole.trim() === '' ? 0 : parseInt(ans.whole.trim(), 10);
+          const nVal = parseInt(ans.num.trim(), 10);
+          const dVal = parseInt(ans.den.trim(), 10);
+          const unitOk = ans.unit === 'kg';
+
+          const userFracVal = dVal !== 0 ? nVal / dVal : -1;
+          const targetFracVal = item.num / item.den;
+          const isFracEqual = dVal !== 0 && Math.abs(userFracVal - targetFracVal) < 0.0001;
+
+          if (wVal === item.whole && isFracEqual && unitOk) {
+            correctCount++;
+            cellEl.classList.add('correct');
+          } else {
+            cellEl.classList.add('incorrect');
+          }
+        });
+
+        finalizeTrialSubmission(correctCount, 6);
       }
     }
 
@@ -3088,7 +3354,7 @@
         autoAdvanceTimeout = setTimeout(() => {
           setupLevel(currentLevel, nextTrialNum);
         }, 1600);
-      } else if (currentLevel < 6) {
+      } else if (currentLevel < 7) {
         const nextLevelNum = currentLevel + 1;
         const nextLevelTag = getLevelTag(nextLevelNum);
         showFeedback(
@@ -3120,7 +3386,7 @@
 
     function openFinalSummaryModal() {
       let totBestCorrect = 0;
-      for (let lvl = 1; lvl <= 6; lvl++) {
+      for (let lvl = 1; lvl <= 7; lvl++) {
         totBestCorrect += getLevelBestCorrect(lvl);
       }
       const totScoreStr = `${totBestCorrect}/${TOTAL_MAX_SCORE}-${Math.round((totBestCorrect / TOTAL_MAX_SCORE) * 100)}%`;
@@ -3133,6 +3399,7 @@
       document.getElementById('sumL4').textContent = formatLevelSummaryText(4);
       document.getElementById('sumL5').textContent = formatLevelSummaryText(5);
       document.getElementById('sumL6').textContent = formatLevelSummaryText(6);
+      document.getElementById('sumL7').textContent = formatLevelSummaryText(7);
       document.getElementById('sumTotal').textContent = totScoreStr;
 
       const statusEl = document.getElementById('sumSyncStatus');
@@ -3186,4 +3453,7 @@
   </script>
 </body>
 </html>
+    
+
+
   

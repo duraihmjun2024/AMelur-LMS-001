@@ -22,9 +22,9 @@
       -webkit-user-select: none;
     }
 
-    /* Horizontal Scrollable Virtual Ruler with Slider (Length Levels 4.1 - 4.4) */
+    /* Horizontal Scrollable Virtual Ruler with Slider & Pointer (Length Levels 4.1 - 4.4) */
     .virtual-ruler-panel {
-      background: #f8fafc;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
       border: 2px solid #94a3b8;
       border-radius: 12px;
       padding: 8px 10px;
@@ -32,16 +32,17 @@
     }
     .ruler-scroll-viewport {
       overflow-x: auto;
-      background: #ffffff;
+      background: #fffbeb;
       border: 1.5px solid #334155;
       border-radius: 6px;
       scrollbar-width: thin;
+      position: relative;
     }
     .ruler-strip {
       position: relative;
-      height: 62px;
-      min-width: 1120px;
-      background: #ffffff;
+      height: 66px;
+      min-width: 1260px;
+      background: linear-gradient(180deg, #fefce8 0%, #ffffff 45%, #fef9c3 100%);
       color: #0f172a;
       font-family: 'Inter', sans-serif;
     }
@@ -62,27 +63,51 @@
     .ruler-major-tick {
       position: absolute;
       top: 0;
-      width: 2px;
-      height: 26px;
+      width: 2.5px;
+      height: 27px;
       background: #0f172a;
     }
     .ruler-major-label {
       position: absolute;
-      top: 27px;
+      top: 29px;
       transform: translateX(-50%);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
       color: #0f172a;
       line-height: 1;
+      white-space: nowrap;
     }
     .ruler-frac-label {
       position: absolute;
-      top: 43px;
+      top: 46px;
       transform: translateX(-50%);
       font-size: 10px;
       font-weight: 700;
-      color: #475569;
+      color: #0369a1;
       line-height: 1;
+      white-space: nowrap;
+    }
+    .ruler-pointer-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2.5px;
+      background: #dc2626;
+      z-index: 15;
+      pointer-events: none;
+      box-shadow: 0 0 6px rgba(220, 38, 38, 0.55);
+      transition: left 0.05s linear;
+    }
+    .ruler-pointer-head {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 10px solid #dc2626;
     }
     .ruler-slider-row {
       display: flex;
@@ -92,7 +117,7 @@
     }
     .ruler-slider {
       flex: 1;
-      accent-color: #0284c7;
+      accent-color: #dc2626;
       cursor: pointer;
     }
 
@@ -254,6 +279,11 @@
       box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2);
     }
 
+    .answer-slot.locked-filled {
+      border-color: #db2777;
+      background-color: #fffafd;
+    }
+
     .answer-slot.correct {
       border-color: #16a34a;
       background-color: #f0fdf4;
@@ -264,6 +294,18 @@
       border-color: #dc2626;
       background-color: #fef2f2;
       animation: shake 0.38s ease-in-out;
+    }
+
+    .dropped-card-chip {
+      background: #eff6ff;
+      border: 1.5px solid #3b82f6;
+      border-radius: 7px;
+      padding: 2px 7px;
+      cursor: grab;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.15);
+    }
+    .dropped-card-chip:active {
+      cursor: grabbing;
     }
 
     /* Level 2 Place Cards */
@@ -841,7 +883,7 @@
         </div>
       </div>
 
-      <!-- Horizontal Virtual Ruler with Scroll Slider (shown for length levels 4.1 - 4.4) -->
+      <!-- Horizontal Virtual Ruler with Scroll Slider & Pointer (shown for length levels 4.1 - 4.4) -->
       <div id="virtualRulerContainer" class="mt-3"></div>
 
       <!-- Feedback Banner -->
@@ -962,44 +1004,228 @@
     </div>
   </div>
 
-
-
- <!-- Part-2 -->
-
-
-
-
-
-<script>
+  <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
     const TEACHER_SKIP_PASSWORD = "pups";
 
-    function renderLengthScalesForLevel(lvl) {
-      const topEl = document.getElementById('topScaleBar');
-      const botEl = document.getElementById('bottomScaleBar');
-      const frameEl = document.getElementById('workspaceFrame');
-      if (!topEl || !botEl || !frameEl) return;
+    /* =====================================================================
+       1. VIRTUAL SCROLLABLE RULER WITH SLIDER & POINTER (LENGTH LEVELS 4.1-4.4)
+       ===================================================================== */
+    let activeRulerMode = 'cm_m'; // 'mm_cm' | 'cm_m' | 'm_km'
+    let rulerPointerSteps = 0;
+
+    const RULER_MODES = {
+      mm_cm: {
+        label: 'm.m. & c.m.',
+        subUnit: 'm.m.',
+        mainUnit: 'c.m.',
+        subPerMain: 10,
+        maxMain: 30,
+        stepSize: 1, // 1 m.m. per step
+        pxPerStep: 4, // 300 steps * 4 = 1200px
+        minorEvery: 1,
+        midEvery: 5,
+        majorEvery: 10,
+        formatReadout(steps) {
+          const cm = Math.floor(steps / 10);
+          const mm = steps % 10;
+          return `${steps} m.m. = ${cm} c.m. ${mm} m.m.`;
+        }
+      },
+      cm_m: {
+        label: 'c.m. & m.',
+        subUnit: 'c.m.',
+        mainUnit: 'm.',
+        subPerMain: 100,
+        maxMain: 5,
+        stepSize: 5, // 5 c.m. per step -> 100 steps for 500 c.m. (5 m.)
+        pxPerStep: 12.5, // 100 steps * 12.5 = 1250px
+        minorEvery: 1, // 5 c.m.
+        midEvery: 10,  // 50 c.m. (1/2 m.)
+        majorEvery: 20, // 100 c.m. (1 m.)
+        formatReadout(steps) {
+          const totalCm = steps * 5;
+          const m = Math.floor(totalCm / 100);
+          const cm = totalCm % 100;
+          let fracStr = '';
+          if (cm === 25) fracStr = m > 0 ? ` (${m} ¼ m.)` : ` (¼ m.)`;
+          else if (cm === 50) fracStr = m > 0 ? ` (${m} ½ m.)` : ` (½ m.)`;
+          else if (cm === 75) fracStr = m > 0 ? ` (${m} ¾ m.)` : ` (¾ m.)`;
+          else if (cm === 0 && m > 0) fracStr = ` (${m} m.)`;
+          return `${totalCm} c.m. = ${m} m. ${cm} c.m.${fracStr}`;
+        }
+      },
+      m_km: {
+        label: 'm. & k.m.',
+        subUnit: 'm.',
+        mainUnit: 'k.m.',
+        subPerMain: 1000,
+        maxMain: 10,
+        stepSize: 50, // 50 m. per step -> 200 steps for 10,000 m. (10 k.m.)
+        pxPerStep: 8.5, // 200 steps * 8.5 = 1700px
+        minorEvery: 1,  // 50 m.
+        midEvery: 10,   // 500 m. (1/2 k.m.)
+        majorEvery: 20, // 1000 m. (1 k.m.)
+        formatReadout(steps) {
+          const totalM = steps * 50;
+          const km = Math.floor(totalM / 1000);
+          const m = totalM % 1000;
+          let fracStr = '';
+          if (m === 250) fracStr = km > 0 ? ` (${km} ¼ k.m.)` : ` (¼ k.m.)`;
+          else if (m === 500) fracStr = km > 0 ? ` (${km} ½ k.m.)` : ` (½ k.m.)`;
+          else if (m === 750) fracStr = km > 0 ? ` (${km} ¾ k.m.)` : ` (¾ k.m.)`;
+          else if (m === 0 && km > 0) fracStr = ` (${km} k.m.)`;
+          return `${totalM} m. = ${km} k.m. ${m} m.${fracStr}`;
+        }
+      }
+    };
+
+    function setVirtualRulerMode(mode) {
+      if (!RULER_MODES[mode]) return;
+      activeRulerMode = mode;
+      rulerPointerSteps = 0;
+      renderLengthScalesForLevel(currentLevel);
+    }
+
+    function updateRulerPointer(stepVal, shouldAutoScroll = true) {
+      const cfg = RULER_MODES[activeRulerMode];
+      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
+      rulerPointerSteps = Math.max(0, Math.min(maxSteps, parseInt(stepVal, 10) || 0));
+
+      const leftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
+      const pointerEl = document.getElementById('rulerPointerLine');
+      const readoutEl = document.getElementById('rulerPointerReadout');
+      const sliderEl = document.getElementById('rulerRangeSlider');
+      const viewportEl = document.getElementById('rulerScrollViewport');
+
+      if (pointerEl) pointerEl.style.left = `${leftPx}px`;
+      if (readoutEl) readoutEl.textContent = cfg.formatReadout(rulerPointerSteps);
+      if (sliderEl && parseInt(sliderEl.value, 10) !== rulerPointerSteps) {
+        sliderEl.value = String(rulerPointerSteps);
+      }
+
+      if (shouldAutoScroll && viewportEl) {
+        const viewW = viewportEl.clientWidth;
+        const targetScroll = Math.max(0, leftPx - viewW * 0.5);
+        viewportEl.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      }
+    }
+
+    function handleRulerStripClick(event) {
+      const stripEl = document.getElementById('rulerStripCanvas');
+      if (!stripEl) return;
+      const rect = stripEl.getBoundingClientRect();
+      const clickX = event.clientX - rect.left - 24;
+      const cfg = RULER_MODES[activeRulerMode];
+      const nearestStep = Math.round(clickX / cfg.pxPerStep);
+      updateRulerPointer(nearestStep, false);
+    }
+
+    function renderLengthScalesForLevel(lvl, resetDefaultMode = false) {
+      const container = document.getElementById('virtualRulerContainer');
+      if (!container) return;
 
       if (lvl > 4) {
-        topEl.classList.add('hidden');
-        botEl.classList.add('hidden');
-        frameEl.classList.remove('rounded-none', 'border-t-0', 'border-b-0');
-        frameEl.classList.add('rounded-2xl');
+        container.classList.add('hidden');
+        container.innerHTML = '';
         return;
       }
 
-      const unitLabel = lvl === 1 ? 'c.m. / m.' : 'm. / k.m.';
-      const ticksHTML = Array.from({ length: 10 }, (_, i) => {
-        const mark = lvl === 1 ? i * 25 : i;
-        return `<div class="scale-tick"><span class="scale-num">${mark}</span></div>`;
-      }).join('') + `<div class="scale-unit-tag">${unitLabel}</div>`;
+      if (resetDefaultMode) {
+        activeRulerMode = lvl === 1 ? 'cm_m' : 'm_km';
+        rulerPointerSteps = 0;
+      }
 
-      topEl.innerHTML = ticksHTML;
-      botEl.innerHTML = ticksHTML;
-      topEl.classList.remove('hidden');
-      botEl.classList.remove('hidden');
-      frameEl.classList.remove('rounded-2xl');
-      frameEl.classList.add('rounded-none', 'border-t-0', 'border-b-0');
+      container.classList.remove('hidden');
+      const cfg = RULER_MODES[activeRulerMode];
+      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
+      const totalWidthPx = 48 + maxSteps * cfg.pxPerStep;
+
+      let ticksHTML = '';
+      for (let s = 0; s <= maxSteps; s++) {
+        const x = 24 + s * cfg.pxPerStep;
+        if (s % cfg.majorEvery === 0) {
+          const mainVal = (s * cfg.stepSize) / cfg.subPerMain;
+          const subVal = s * cfg.stepSize;
+          ticksHTML += `
+            <div class="ruler-major-tick" style="left:${x}px;"></div>
+            <div class="ruler-major-label" style="left:${x}px;">${mainVal} ${cfg.mainUnit}</div>
+            <div class="ruler-frac-label" style="left:${x}px;">${subVal} ${cfg.subUnit}</div>
+          `;
+        } else if (s % cfg.midEvery === 0) {
+          const subVal = s * cfg.stepSize;
+          const fracTag = activeRulerMode === 'mm_cm' ? `${subVal}` : `½ (${subVal})`;
+          ticksHTML += `
+            <div class="ruler-mid-tick" style="left:${x}px;"></div>
+            <div class="ruler-frac-label" style="left:${x}px;">${fracTag}</div>
+          `;
+        } else {
+          ticksHTML += `<div class="ruler-minor-tick" style="left:${x}px;"></div>`;
+        }
+      }
+
+      const modeButtonsHTML = Object.entries(RULER_MODES).map(([key, mObj]) => {
+        const isActive = key === activeRulerMode;
+        const btnCls = isActive
+          ? 'bg-sky-600 text-white border-sky-700 shadow-sm'
+          : 'bg-white text-slate-700 border-slate-300 hover:bg-sky-50';
+        return `
+          <button
+            type="button"
+            onclick="setVirtualRulerMode('${key}')"
+            class="px-2.5 py-1 rounded-lg border text-xs font-extrabold transition cursor-pointer ${btnCls}"
+          >
+            ${mObj.label}
+          </button>
+        `;
+      }).join('');
+
+      const pointerLeftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
+
+      container.innerHTML = `
+        <div class="virtual-ruler-panel">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wide mr-1">Virtual Ruler:</span>
+              ${modeButtonsHTML}
+            </div>
+            <div class="bg-rose-50 border border-rose-300 text-rose-900 px-2.5 py-0.5 rounded-lg text-xs sm:text-sm font-extrabold font-mono">
+              Pointer: <span id="rulerPointerReadout">${cfg.formatReadout(rulerPointerSteps)}</span>
+            </div>
+          </div>
+
+          <div id="rulerScrollViewport" class="ruler-scroll-viewport">
+            <div
+              id="rulerStripCanvas"
+              onclick="handleRulerStripClick(event)"
+              class="ruler-strip cursor-crosshair"
+              style="width:${totalWidthPx}px; min-width:${totalWidthPx}px;"
+              title="Tap anywhere on the ruler or drag the slider below to move the pointer"
+            >
+              ${ticksHTML}
+              <div id="rulerPointerLine" class="ruler-pointer-line" style="left:${pointerLeftPx}px;">
+                <div class="ruler-pointer-head"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ruler-slider-row">
+            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">0</span>
+            <input
+              id="rulerRangeSlider"
+              type="range"
+              min="0"
+              max="${maxSteps}"
+              step="1"
+              value="${rulerPointerSteps}"
+              oninput="updateRulerPointer(this.value, true)"
+              aria-label="Slide virtual ruler pointer"
+              class="ruler-slider"
+            />
+            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">${cfg.maxMain} ${cfg.mainUnit}</span>
+          </div>
+        </div>
+      `;
     }
 
     function openSkipLevelModal() {
@@ -1064,6 +1290,7 @@
       return `
         <select
           ${disabledAttr}
+          onclick="event.stopPropagation()"
           onchange="${onChangeAttr}"
           aria-label="${ariaLabel}"
           class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
@@ -1177,7 +1404,7 @@
       '#60a5fa'
     ];
 
-    // Level4-M05-4.4 Story Themes with Tamil Nadu names & exact pronoun/verb agreement
+    // Level4-M05-4.4 Story Themes
     const LEVEL4_STORY_THEMES = [
       { traveller: 'Karthik',    possPron: 'his', subjPron: 'he',  place1: "uncle's house",  place2: "aunt's house",   destination: 'a waterfall' },
       { traveller: 'Senthamizh', possPron: 'his', subjPron: 'he',  place1: "grandpa's farm", place2: "cousin's house", destination: 'the river bridge' },
@@ -1315,27 +1542,54 @@
       `;
     }
 
-    function renderHexWeightSVG(label) {
-      const isLarge = label.includes('1 k.g.') || label.includes('500');
-      const isMed = label.includes('200');
-      const sizeClass = isLarge ? 'w-14 h-12' : isMed ? 'w-12 h-10' : 'w-10 h-8';
+    /* =====================================================================
+       4. 3D KG & GRAM STONES WITH BLACK INNER BACKGROUND & WHITE TEXT
+       ===================================================================== */
+    function render3DWeightStoneSVG(label, sizeClass) {
+      const uid = 'w3d_' + Math.random().toString(36).slice(2, 8);
       return `
-        <svg class="${sizeClass} mx-auto block" viewBox="0 0 80 68" fill="none" aria-label="${label}">
-          <polygon points="22,6 58,6 75,34 58,62 22,62 5,34" fill="#334155" stroke="#0f172a" stroke-width="3" />
-          <polygon points="25,13 55,13 68,34 55,55 25,55 12,34" fill="#475569" stroke="#94a3b8" stroke-width="1.5" />
-          <text x="40" y="38" text-anchor="middle" fill="#f8fafc" font-family="Inter, sans-serif" font-weight="800" font-size="13">${label}</text>
+        <svg class="${sizeClass} mx-auto block" viewBox="0 0 88 76" fill="none" aria-label="${label}">
+          <defs>
+            <linearGradient id="${uid}_rim" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#94a3b8" />
+              <stop offset="50%" stop-color="#475569" />
+              <stop offset="100%" stop-color="#1e293b" />
+            </linearGradient>
+            <linearGradient id="${uid}_inner" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#18181b" />
+              <stop offset="55%" stop-color="#09090b" />
+              <stop offset="100%" stop-color="#000000" />
+            </linearGradient>
+          </defs>
+          <!-- 3D Extruded Bottom Shadow Base -->
+          <polygon points="24,12 64,12 83,41 64,71 24,71 5,41" fill="#0f172a" />
+          <!-- 3D Metallic Bevel Outer Stone Body -->
+          <polygon points="24,5 64,5 83,35 64,65 24,65 5,35" fill="url(#${uid}_rim)" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round" />
+          <!-- Top Highlight Edge -->
+          <polyline points="8,34 25,7 63,7 80,34" fill="none" stroke="#e2e8f0" stroke-width="1.6" stroke-linecap="round" opacity="0.7" />
+          <!-- Recessed Black Inner Background -->
+          <polygon points="27,12 61,12 75,35 61,58 27,58 13,35" fill="url(#${uid}_inner)" stroke="#334155" stroke-width="1.5" stroke-linejoin="round" />
+          <!-- Crisp White Text -->
+          <text x="44" y="40" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="800" font-size="13.5" letter-spacing="0.2">${label}</text>
         </svg>
       `;
     }
 
+    function renderHexWeightSVG(label) {
+      const isLarge = label.includes('1 k.g.') || label.includes('500');
+      const isMed = label.includes('200');
+      const sizeClass = isLarge ? 'w-15 h-13' : isMed ? 'w-13 h-11' : 'w-11 h-9';
+      return render3DWeightStoneSVG(label, sizeClass);
+    }
+
     // Level6-M05-4.6 Basket Pool (5 questions per trial)
     const LEVEL6_WEIGHT_LIST = [
-      { id: '2kg',  label: '2 k.g.', grams: 2000, sizeClass: 'w-11 h-9 sm:w-12 sm:h-10' },
-      { id: '1kg',  label: '1 k.g.', grams: 1000, sizeClass: 'w-10 h-8 sm:w-11 sm:h-9'  },
-      { id: '500g', label: '500 g.', grams: 500,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'   },
-      { id: '200g', label: '200 g.', grams: 200,  sizeClass: 'w-9 h-7 sm:w-9 sm:h-8'    },
-      { id: '100g', label: '100 g.', grams: 100,  sizeClass: 'w-8 h-7 sm:w-9 sm:h-7'    },
-      { id: '50g',  label: '50 g.',  grams: 50,   sizeClass: 'w-8 h-6 sm:w-8 sm:h-7'    }
+      { id: '2kg',  label: '2 k.g.', grams: 2000, sizeClass: 'w-12 h-10 sm:w-13 sm:h-11' },
+      { id: '1kg',  label: '1 k.g.', grams: 1000, sizeClass: 'w-11 h-9 sm:w-12 sm:h-10'  },
+      { id: '500g', label: '500 g.', grams: 500,  sizeClass: 'w-10 h-9 sm:w-11 sm:h-9'   },
+      { id: '200g', label: '200 g.', grams: 200,  sizeClass: 'w-10 h-8 sm:w-10 sm:h-9'   },
+      { id: '100g', label: '100 g.', grams: 100,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'    },
+      { id: '50g',  label: '50 g.',  grams: 50,   sizeClass: 'w-9 h-7 sm:w-9 sm:h-8'     }
     ];
 
     const LEVEL6_POOL = [
@@ -1378,13 +1632,7 @@
     }
 
     function renderL6HexWeightSVG(wObj) {
-      return `
-        <svg class="${wObj.sizeClass} mx-auto block" viewBox="0 0 84 70" fill="none" aria-label="${wObj.label}">
-          <polygon points="23,6 61,6 79,35 61,64 23,64 5,35" fill="#334155" stroke="#0f172a" stroke-width="3" />
-          <polygon points="26,13 58,13 72,35 58,57 26,57 12,35" fill="#475569" stroke="#94a3b8" stroke-width="1.5" />
-          <text x="42" y="39" text-anchor="middle" fill="#f8fafc" font-family="Inter, sans-serif" font-weight="800" font-size="13.5">${wObj.label}</text>
-        </svg>
-      `;
+      return render3DWeightStoneSVG(wObj.label, wObj.sizeClass);
     }
 
     // Game & 3-Trial LMS Tracking State
@@ -1430,6 +1678,7 @@
 
     let selectedOptionId = null;
     let draggedOptionId = null;
+    let draggedFromSlotIndex = null;
     let levelCompleted = false;
 
     const LEVEL_MAX_QUESTIONS = { 1: 4, 2: 4, 3: 6, 4: 3, 5: 4, 6: 5 };
@@ -1688,11 +1937,13 @@
         { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
       ];
       selectedOptionId = null;
+      draggedOptionId = null;
+      draggedFromSlotIndex = null;
 
       document.getElementById('checkBtn').classList.remove('hidden');
       document.getElementById('clearBtn').classList.remove('hidden');
       hideFeedback();
-      renderLengthScalesForLevel(currentLevel);
+      renderLengthScalesForLevel(currentLevel, true);
 
       const headerEl = document.getElementById('textbookHeader');
       const badgeEl = document.getElementById('badgeActivityCode');
@@ -1705,9 +1956,7 @@
       const workspaceFrameEl = document.getElementById('workspaceFrame');
 
       gameMainEl.className = 'p-2.5 sm:p-4 bg-white';
-      workspaceFrameEl.className = currentLevel <= 4
-        ? 'border-2 border-slate-200 rounded-none border-t-0 border-b-0 p-2.5 sm:p-4 bg-slate-50/40 shadow-inner'
-        : 'border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner';
+      workspaceFrameEl.className = 'border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner';
 
       if (currentLevel === 1) {
         headerEl.className = 'textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
@@ -1717,7 +1966,7 @@
         hintEl.textContent = '100 c.m. = 1 m.';
         hintEl.className = 'text-xs font-semibold text-sky-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-sky-300';
         subHeaderEl.textContent =
-          `Level1-M05-4.1 (Trial ${currentTrial}/3): Drag or tap an answer card on the right to place it in the box, then select the unit (m.).`;
+          `Level1-M05-4.1 (Trial ${currentTrial}/3): Drag or tap an answer card on the right to place it in an empty box (tap or drag a placed card to move/remove it), then select the unit (m.).`;
 
         optionBankWrapper.classList.remove('hidden');
         rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-3 sm:gap-4';
@@ -1839,6 +2088,8 @@
         placedAnswers = [null, null, null, null];
         l1UnitAnswers = ['', '', '', ''];
         selectedOptionId = null;
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
       } else if (currentLevel === 2) {
         l2TypedAnswers = [
           { km: '', kmUnit: '', m: '', mUnit: '' },
@@ -2103,12 +2354,17 @@
               ondragover="handleDragOver(event, ${rowIndex})"
               ondragleave="handleDragLeave(${rowIndex})"
               ondrop="handleDrop(event, ${rowIndex})"
-              class="answer-slot px-2 sm:px-2.5 min-w-[122px] sm:min-w-[138px] h-14 sm:h-16 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${selectedOptionId && !placedItem ? 'ready-target' : ''}"
-              title="Place the answer card and choose the unit"
+              class="answer-slot px-2 sm:px-2.5 min-w-[126px] sm:min-w-[144px] h-14 sm:h-16 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${placedItem ? 'locked-filled' : (selectedOptionId ? 'ready-target' : '')}"
+              title="${placedItem ? 'Fixed in slot. Tap or drag this card to move/remove it.' : 'Drop or tap an answer card here'}"
             >
               ${
                 placedItem
-                  ? `<div class="animate-pop pointer-events-none">${renderFractionHTML(placedItem, '', true)}</div>`
+                  ? `<div
+                       draggable="${!levelCompleted}"
+                       ondragstart="handlePlacedCardDragStart(event, '${placedItem.id}', ${rowIndex})"
+                       ondragend="handleDragEnd()"
+                       class="dropped-card-chip animate-pop"
+                     >${renderFractionHTML(placedItem, '', true)}</div>`
                   : `<span class="text-pink-300 text-xs sm:text-sm font-semibold pointer-events-none">?</span>`
               }
               ${renderUnitDropdownHTML(unitVal, `updateL1Unit(${rowIndex}, this.value)`, disabledAttr, `Unit for ${rowItem.cm} c.m.`)}
@@ -2323,7 +2579,7 @@
             which was at a distance of <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v1, 'k.m.', true)}</span>
             away from ${possPron} house. From there, ${subjPron} travelled
             <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v3, 'k.m.', true)}</span>
-            by ${possPron} ${place1}'s
+            by ${possPron} ${place1}
             <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v3.id)}</span>
             to reach ${possPron} ${place2}. Then they all got into a
             <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v2.id)}</span>
@@ -2568,8 +2824,12 @@
       }
     }
 
+    /* =====================================================================
+       2. DROPPED CARDS LOCKED & MOVABLE ONLY BY USER (NO ACCIDENTAL OVERWRITE)
+       ===================================================================== */
     function handleOptionClick(optionId) {
       if (levelCompleted || currentLevel !== 1) return;
+      if (placedAnswers.includes(optionId)) return; // Already fixed in a slot
       hideFeedback();
       if (selectedOptionId === optionId) {
         selectedOptionId = null;
@@ -2583,6 +2843,24 @@
     function handleSlotClick(rowIndex) {
       if (levelCompleted || currentLevel !== 1) return;
       hideFeedback();
+
+      // If this slot already has a dropped card fixed inside it:
+      if (placedAnswers[rowIndex] !== null) {
+        if (selectedOptionId && placedAnswers[rowIndex] !== selectedOptionId) {
+          // Do NOT overwrite an occupied slot automatically
+          playSound('error');
+          showFeedback('This box already has a fixed card. Tap or drag that card out first if you want to change it.', 'warning');
+          return;
+        }
+        // User tapped their own placed card to pick it back up / remove it
+        placedAnswers[rowIndex] = null;
+        selectedOptionId = null;
+        playSound('remove');
+        renderBoard();
+        return;
+      }
+
+      // Slot is empty: place the user-selected option card
       if (selectedOptionId) {
         placedAnswers[rowIndex] = selectedOptionId;
         selectedOptionId = null;
@@ -2591,18 +2869,32 @@
         return;
       }
 
-      if (placedAnswers[rowIndex] !== null) {
-        placedAnswers[rowIndex] = null;
-        playSound('remove');
-        renderBoard();
-      } else {
-        showFeedback('Tap or drag an answer card from the right first.', 'info');
-      }
+      showFeedback('Tap or drag an answer card from the right into an empty box.', 'info');
     }
 
     function handleDragStart(e, optionId) {
+      if (placedAnswers.includes(optionId)) {
+        e.preventDefault();
+        return;
+      }
       draggedOptionId = optionId;
+      draggedFromSlotIndex = null;
       selectedOptionId = optionId;
+      if (e.dataTransfer) {
+        e.dataTransfer.setData('text/plain', optionId);
+        e.dataTransfer.effectAllowed = 'move';
+      }
+    }
+
+    function handlePlacedCardDragStart(e, optionId, fromRowIndex) {
+      if (levelCompleted || currentLevel !== 1) {
+        e.preventDefault();
+        return;
+      }
+      e.stopPropagation();
+      draggedOptionId = optionId;
+      draggedFromSlotIndex = fromRowIndex;
+      selectedOptionId = null;
       if (e.dataTransfer) {
         e.dataTransfer.setData('text/plain', optionId);
         e.dataTransfer.effectAllowed = 'move';
@@ -2611,14 +2903,18 @@
 
     function handleDragEnd() {
       draggedOptionId = null;
+      draggedFromSlotIndex = null;
       document.querySelectorAll('.answer-slot').forEach(el => el.classList.remove('drag-over'));
     }
 
     function handleDragOver(e, rowIndex) {
       if (currentLevel !== 1) return;
       e.preventDefault();
-      const slotEl = document.getElementById(`slot-${rowIndex}`);
-      if (slotEl) slotEl.classList.add('drag-over');
+      // Highlight only if slot is empty or is the origin slot
+      if (placedAnswers[rowIndex] === null || draggedFromSlotIndex === rowIndex) {
+        const slotEl = document.getElementById(`slot-${rowIndex}`);
+        if (slotEl) slotEl.classList.add('drag-over');
+      }
     }
 
     function handleDragLeave(rowIndex) {
@@ -2636,14 +2932,39 @@
       const droppedId = draggedOptionId || (e.dataTransfer && e.dataTransfer.getData('text/plain'));
       if (!droppedId) return;
 
-      const existingIndex = placedAnswers.indexOf(droppedId);
-      if (existingIndex !== -1) {
-        placedAnswers[existingIndex] = null;
+      // Dropped back onto its own slot -> keep fixed as-is
+      if (draggedFromSlotIndex === rowIndex) {
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
+        return;
+      }
+
+      // Prevent overwriting a box that already holds a fixed card
+      if (placedAnswers[rowIndex] !== null) {
+        playSound('error');
+        showFeedback('This box already has a fixed card. Move or tap it to remove first.', 'warning');
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
+        selectedOptionId = null;
+        renderBoard();
+        return;
+      }
+
+      // If user explicitly dragged their placed card from another slot, vacate old slot
+      if (draggedFromSlotIndex !== null && placedAnswers[draggedFromSlotIndex] === droppedId) {
+        placedAnswers[draggedFromSlotIndex] = null;
+      } else if (placedAnswers.includes(droppedId)) {
+        // Guard against duplicate placement if card is already fixed elsewhere
+        draggedOptionId = null;
+        draggedFromSlotIndex = null;
+        selectedOptionId = null;
+        return;
       }
 
       placedAnswers[rowIndex] = droppedId;
       selectedOptionId = null;
       draggedOptionId = null;
+      draggedFromSlotIndex = null;
       hideFeedback();
       playSound('place');
       renderBoard();

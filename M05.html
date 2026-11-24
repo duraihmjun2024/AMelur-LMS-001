@@ -232,7 +232,7 @@
       animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 3 Torchlight Silhouette */
+    /* Level 3 Joined Torchlight (Left Question Handle + Right Reflector Answer Head) */
     .torch-item {
       filter: drop-shadow(0 3px 5px rgba(15, 23, 42, 0.12));
       transition: transform 0.18s ease, filter 0.2s ease;
@@ -242,10 +242,33 @@
       transform: translateY(-1px);
     }
 
-    .torch-body-svg {
-      display: block;
-      width: 100%;
-      height: 52px;
+    .torch-handle-box {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      height: 46px;
+      background: #ffffff;
+      border: 2.5px solid #1e293b;
+      border-right: none;
+      border-radius: 23px 0 0 23px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 16px;
+      padding-right: 6px;
+      z-index: 2;
+    }
+
+    .torch-switch-dot {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 14px;
+      border-radius: 9999px;
+      background: #64748b;
+      border: 1.5px solid #1e293b;
     }
 
     .torch-body-label {
@@ -261,16 +284,17 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 152px;
-      height: 76px;
+      width: 158px;
+      height: 78px;
       flex-shrink: 0;
-      margin-left: -4px;
+      margin-left: -1px;
+      z-index: 3;
       transition: transform 0.2s ease;
     }
 
     @media (min-width: 640px) {
       .torch-head-wrap {
-        width: 164px;
+        width: 170px;
         height: 82px;
       }
     }
@@ -300,7 +324,7 @@
       align-items: center;
       justify-content: center;
       gap: 5px;
-      padding-left: 8px;
+      padding-left: 12px;
       padding-right: 4px;
     }
 
@@ -356,7 +380,7 @@
       font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.85;
+      line-height: 1.75;
     }
 
     .l4-table {
@@ -377,7 +401,7 @@
       font-weight: 800;
       border-bottom: 2px solid #94a3b8;
       border-right: 1.5px solid #cbd5e1;
-      padding: 10px 12px;
+      padding: 8px 10px;
       text-align: center;
     }
 
@@ -388,7 +412,7 @@
     .l4-table td {
       border-bottom: 1.5px solid #cbd5e1;
       border-right: 1.5px solid #cbd5e1;
-      padding: 10px 12px;
+      padding: 8px 10px;
       text-align: center;
       vertical-align: middle;
     }
@@ -471,7 +495,7 @@
       background: #ffffff;
     }
 
-    /* Level 6 Basket & Weight Checkbox Table */
+    /* Level 6 Compact Basket & Weight Checkbox Table (5 questions) */
     .l6-table {
       width: 100%;
       border-collapse: separate;
@@ -485,7 +509,7 @@
     .l6-table td {
       border-bottom: 1.5px solid #cbd5e1;
       border-right: 1.5px solid #cbd5e1;
-      padding: 12px 10px;
+      padding: 6px 8px;
       text-align: center;
       vertical-align: middle;
     }
@@ -496,14 +520,14 @@
       border-bottom: none;
     }
     .l6-weight-checkbox {
-      width: 26px;
-      height: 26px;
-      border: 2.5px solid #0284c7;
-      border-radius: 6px;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #0284c7;
+      border-radius: 5px;
       background-color: #ffffff;
       color: #16a34a;
       font-weight: 900;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1;
       display: inline-flex;
       align-items: center;
@@ -522,14 +546,14 @@
     }
     .l6-answer-pill {
       background: #ffffff;
-      border: 2.5px solid #f472b6;
-      border-radius: 12px;
-      padding: 6px 12px;
+      border: 2px solid #f472b6;
+      border-radius: 10px;
+      padding: 4px 8px;
       display: inline-flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       box-shadow: inset 0 2px 4px rgba(244, 114, 182, 0.1);
       transition: all 0.2s ease;
     }
@@ -668,13 +692,13 @@
     }
   </style>
 </head>
-<body class="flex flex-col items-center justify-center p-2 sm:p-4 md:p-6">
+<body class="flex flex-col items-center justify-center p-1.5 sm:p-3 md:p-4">
 
   <!-- Main LMS Game Container -->
   <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-sky-200 overflow-hidden">
 
     <!-- Top LMS Meta Bar -->
-    <div class="bg-slate-800 text-white px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+    <div class="bg-slate-800 text-white px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
       <div class="flex flex-wrap items-center gap-2">
         <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-0.5 rounded-md border border-slate-500 transition">
           ← Home
@@ -682,58 +706,58 @@
         <span class="bg-sky-500 text-white font-bold px-2.5 py-0.5 rounded-md tracking-wide">AMelur-LMS-001</span>
         <span class="text-slate-300 font-semibold" id="studentInfoBadge">Game M05 • Measurements</span>
       </div>
-      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-indigo-700 px-2.5 py-0.5 rounded-md text-indigo-100 font-bold border border-indigo-500" id="trialBadge">Trial 1/3</span>
-        <span class="bg-slate-700 px-2.5 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/24</span>
+      <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
+        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
+        <span class="bg-indigo-700 px-2 py-0.5 rounded-md text-indigo-100 font-bold border border-indigo-500" id="trialBadge">Trial 1/3</span>
+        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/26</span>
+        <!-- Discreet top-right arrow button for teacher use only -->
         <button
           id="adminSkipBtn"
           onclick="openSkipLevelModal()"
-          title="Next Level (Password required)"
-          aria-label="Go to next level"
-          class="bg-slate-700/70 hover:bg-slate-600 text-slate-200 font-bold px-2.5 py-0.5 rounded-md border border-slate-500 transition cursor-pointer text-xs sm:text-sm"
-        >Next Level →</button>
+          aria-label="Advance"
+          class="opacity-10 hover:opacity-80 focus:opacity-80 text-slate-400 font-bold px-1.5 py-0.5 rounded transition cursor-pointer text-xs select-none"
+        >→</button>
       </div>
     </div>
 
     <!-- Textbook Header (Switches cleanly across 4.1 - 4.6) -->
-    <header id="textbookHeader" class="textbook-header-l1 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3 sm:gap-4">
-        <div class="badge-l1 px-3 py-1 text-base sm:text-xl tracking-tight" id="badgeActivityCode">
+    <header id="textbookHeader" class="textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <div class="badge-l1 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight" id="badgeActivityCode">
           4.1
         </div>
-        <h1 id="mainQuestionTitle" class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+        <h1 id="mainQuestionTitle" class="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight">
           Write the length of the ribbon in metres.
         </h1>
       </div>
-      <span id="conversionHintBadge" class="text-xs sm:text-sm font-semibold text-sky-900 bg-white/80 px-3 py-1 rounded-full border border-sky-300">
+      <span id="conversionHintBadge" class="text-xs font-semibold text-sky-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-sky-300">
         100 c.m. = 1 m.
       </span>
     </header>
 
     <!-- Instruction Helper Pill -->
-    <div class="bg-sky-50/80 border-b border-sky-100 px-4 py-2 text-center text-xs sm:text-sm text-slate-700 font-medium" id="levelSubHeader">
-      Level1-M05-4.1 (Trial 1/3): Drag or tap a fraction card on the right to place it in the box, then select the unit (m.).
+    <div class="bg-sky-50/80 border-b border-sky-100 px-3 py-1.5 text-center text-xs text-slate-700 font-medium" id="levelSubHeader">
+      Level1-M05-4.1 (Trial 1/3): Drag or tap an answer card on the right to place it in the box, then select the unit (m.).
     </div>
 
     <!-- Game Workspace -->
-    <main class="p-3 sm:p-6 bg-white">
-      <div class="border-2 border-slate-200 rounded-2xl p-3 sm:p-5 bg-slate-50/40 shadow-inner">
-        <div id="workspaceGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+    <main id="gameMain" class="p-2.5 sm:p-4 bg-white">
+      <div id="workspaceFrame" class="border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner">
+        <div id="workspaceGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
 
           <!-- Left & Center Section: Questions + Answer Slots -->
-          <div id="rowsContainer" class="lg:col-span-8 flex flex-col justify-between gap-4 sm:gap-5">
+          <div id="rowsContainer" class="lg:col-span-8 flex flex-col justify-between gap-3 sm:gap-4">
             <!-- Dynamically populated rows -->
           </div>
 
           <!-- Right Section: Peach Option Bank with 4 Fraction Cards (Level 1 only) -->
           <div id="optionBankWrapper" class="lg:col-span-4 flex flex-col">
-            <div class="option-bank p-3 sm:p-4 flex-1 flex flex-col justify-center">
-              <div class="text-center text-xs font-bold text-orange-900/80 uppercase tracking-wider mb-2.5">
+            <div class="option-bank p-3 flex-1 flex flex-col justify-center">
+              <div class="text-center text-xs font-bold text-orange-900/80 uppercase tracking-wider mb-2">
                 Answer Cards (Options)
               </div>
-              <div id="optionsContainer" class="grid grid-cols-2 gap-3 sm:gap-3.5 place-items-center">
+              <div id="optionsContainer" class="grid grid-cols-2 gap-3 place-items-center">
                 <!-- Dynamically populated 4 fraction tiles in randomized positions -->
               </div>
             </div>
@@ -743,14 +767,14 @@
       </div>
 
       <!-- Feedback Banner -->
-      <div id="feedbackBanner" class="mt-4 hidden rounded-xl px-4 py-3 text-center font-bold text-sm sm:text-base transition-all"></div>
+      <div id="feedbackBanner" class="mt-2.5 hidden rounded-xl px-3.5 py-2 text-center font-bold text-xs sm:text-sm transition-all"></div>
 
       <!-- Action Buttons Bar -->
-      <div class="mt-5 flex flex-wrap items-center justify-center gap-3 sm:gap-3.5">
+      <div class="mt-3 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
         <button
           id="checkBtn"
           onclick="checkAnswers()"
-          class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
+          class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -761,7 +785,7 @@
         <button
           id="clearBtn"
           onclick="clearCurrentSlots()"
-          class="px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
+          class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -772,7 +796,7 @@
         <button
           id="trial2Btn"
           onclick="startTrial(2, true)"
-          class="px-4 py-3 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-sky-300"
+          class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-sky-300"
         >
           <span>Trial 2</span>
         </button>
@@ -780,17 +804,9 @@
         <button
           id="trial3Btn"
           onclick="startTrial(3, true)"
-          class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-purple-300"
+          class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-purple-300"
         >
           <span>Trial 3</span>
-        </button>
-
-        <button
-          id="nextLevelBtn"
-          onclick="openSkipLevelModal()"
-          class="px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-indigo-300"
-        >
-          <span id="nextLevelBtnText">Next Level →</span>
         </button>
       </div>
     </main>
@@ -869,13 +885,15 @@
   </div>
 
 
-    // Part-2
+
+ <!-- Part-2 -->
 
 
-  
+
+
+
 <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
-    // Password to skip directly to the next level using the Next Level button
     const TEACHER_SKIP_PASSWORD = "pups";
 
     function openSkipLevelModal() {
@@ -911,8 +929,10 @@
 
       playSound('place');
       closeSkipLevelModal();
-      recordTrialSnapshot(currentLevel, currentTrial, false);
-      syncTrialToGoogleSheet(currentLevel, currentTrial);
+      if (!levelCompleted) {
+        recordTrialSnapshot(currentLevel, currentTrial, 0, false);
+        syncTrialToGoogleSheet(currentLevel, currentTrial);
+      }
 
       if (currentLevel < 6) {
         setupLevel(currentLevel + 1, 1);
@@ -1051,12 +1071,14 @@
       '#60a5fa'
     ];
 
-    // Level4-M05-4.4 Story & Vehicle Pools
+    // Level4-M05-4.4 Story Themes with familiar Tamil Nadu names (>= 6 letters) & exact pronoun/verb agreement
     const LEVEL4_STORY_THEMES = [
-      { traveller: 'Ramu',  place1: "uncle's house",  place2: "aunt's house",   destination: 'a waterfall' },
-      { traveller: 'Anbu',  place1: "grandpa's farm", place2: "cousin's house", destination: 'the river bridge' },
-      { traveller: 'Mala',  place1: "teacher's home", place2: 'the library',    destination: 'the hill park' },
-      { traveller: 'Kavin', place1: "friend's house", place2: 'the temple',     destination: 'the lake park' }
+      { traveller: 'Karthik',    possPron: 'his', subjPron: 'he',  place1: "uncle's house",  place2: "aunt's house",   destination: 'a waterfall' },
+      { traveller: 'Senthamizh', possPron: 'his', subjPron: 'he',  place1: "grandpa's farm", place2: "cousin's house", destination: 'the river bridge' },
+      { traveller: 'Kavitha',    possPron: 'her', subjPron: 'she', place1: "teacher's home", place2: 'the library',    destination: 'the hill park' },
+      { traveller: 'Thamarai',   possPron: 'her', subjPron: 'she', place1: "friend's house", place2: 'the temple',     destination: 'the lake park' },
+      { traveller: 'Bharathi',   possPron: 'her', subjPron: 'she', place1: "aunt's house",   place2: "uncle's farm",   destination: 'the botanical garden' },
+      { traveller: 'Sundaram',   possPron: 'his', subjPron: 'he',  place1: "cousin's home",  place2: 'the museum',     destination: 'the dam view point' }
     ];
 
     const LEVEL4_VEHICLE_POOL = [
@@ -1071,7 +1093,7 @@
     function renderVehicleIconSVG(vehicleId) {
       if (vehicleId === 'bicycle') {
         return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bicycle">
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bicycle">
             <circle cx="20" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
             <circle cx="76" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
             <path d="M 20 42 L 42 42 L 58 21 L 34 21 Z" stroke="#dc2626" stroke-width="3.4" stroke-linejoin="round" />
@@ -1082,7 +1104,7 @@
       }
       if (vehicleId === 'car') {
         return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Car">
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Car">
             <path d="M 16 38 L 22 21 Q 24 17 29 17 H 64 Q 69 17 72 22 L 82 36 Q 85 38 85 43 V 46 H 12 V 42 Q 12 39 16 38 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="2.5" stroke-linejoin="round" />
             <path d="M 27 21 H 45 V 32 H 23 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
             <path d="M 49 21 H 63 L 71 32 H 49 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
@@ -1093,7 +1115,7 @@
       }
       if (vehicleId === 'motorcycle') {
         return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Motorcycle">
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Motorcycle">
             <circle cx="21" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
             <circle cx="76" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
             <path d="M 21 43 L 44 37 L 62 21 L 76 43" stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
@@ -1104,7 +1126,7 @@
       }
       if (vehicleId === 'scooter') {
         return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Scooter">
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Scooter">
             <circle cx="22" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
             <circle cx="74" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
             <path d="M 22 44 H 56 L 64 20 L 55 13 H 64" stroke="#0284c7" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
@@ -1114,7 +1136,7 @@
       }
       if (vehicleId === 'van') {
         return `
-          <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Van">
+          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Van">
             <path d="M 14 16 H 66 Q 72 16 75 23 L 84 35 V 46 H 14 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
             <rect x="20" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
             <rect x="39" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
@@ -1125,7 +1147,7 @@
         `;
       }
       return `
-        <svg class="w-16 h-11 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bus">
+        <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bus">
           <rect x="13" y="14" width="70" height="31" rx="6" fill="#16a34a" stroke="#14532d" stroke-width="2.5" />
           <rect x="19" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
           <rect x="35" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
@@ -1187,6 +1209,7 @@
       `;
     }
 
+    // Unified dark-slate stone appearance across all weights (1 k.g., 500 g., 200 g., 50 g.)
     function renderHexWeightSVG(label) {
       const isLarge = label.includes('1 k.g.') || label.includes('500');
       const isMed = label.includes('200');
@@ -1200,14 +1223,14 @@
       `;
     }
 
-    // Level6-M05-4.6 Basket Pool
+    // Level6-M05-4.6 Basket Pool (5 questions per trial, compact size)
     const LEVEL6_WEIGHT_LIST = [
-      { id: '2kg',  label: '2 k.g.',  grams: 2000, sizeClass: 'w-14 h-12 sm:w-16 sm:h-14' },
-      { id: '1kg',  label: '1 k.g.',  grams: 1000, sizeClass: 'w-13 h-11 sm:w-14 sm:h-12' },
-      { id: '500g', label: '500 g.',  grams: 500,  sizeClass: 'w-11 h-10 sm:w-12 sm:h-11' },
-      { id: '200g', label: '200 g.',  grams: 200,  sizeClass: 'w-10 h-9 sm:w-11 sm:h-9'  },
-      { id: '100g', label: '100 g.',  grams: 100,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'   },
-      { id: '50g',  label: '50 g.',   grams: 50,   sizeClass: 'w-8 h-7 sm:w-9 sm:h-7'    }
+      { id: '2kg',  label: '2 k.g.', grams: 2000, sizeClass: 'w-11 h-9 sm:w-12 sm:h-10' },
+      { id: '1kg',  label: '1 k.g.', grams: 1000, sizeClass: 'w-10 h-8 sm:w-11 sm:h-9'  },
+      { id: '500g', label: '500 g.', grams: 500,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'   },
+      { id: '200g', label: '200 g.', grams: 200,  sizeClass: 'w-9 h-7 sm:w-9 sm:h-8'    },
+      { id: '100g', label: '100 g.', grams: 100,  sizeClass: 'w-8 h-7 sm:w-9 sm:h-7'    },
+      { id: '50g',  label: '50 g.',  grams: 50,   sizeClass: 'w-8 h-6 sm:w-8 sm:h-7'    }
     ];
 
     const LEVEL6_POOL = [
@@ -1234,7 +1257,7 @@
       };
       const [c1, c2, c3] = fruitColors[itemId] || fruitColors.apples;
       return `
-        <svg class="w-24 h-16 mx-auto block" viewBox="0 0 120 78" fill="none" aria-label="${itemId}">
+        <svg class="w-16 h-11 mx-auto block" viewBox="0 0 120 78" fill="none" aria-label="${itemId}">
           <circle cx="38" cy="27" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
           <circle cx="56" cy="22" r="12" fill="${c2}" stroke="#7f1d1d" stroke-width="1.5" />
           <circle cx="76" cy="25" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
@@ -1249,6 +1272,7 @@
       `;
     }
 
+    // Uniform dark-slate stone appearance across all weights in 4.6 (2 k.g., 1 k.g., 500 g., 200 g., 100 g., 50 g.)
     function renderL6HexWeightSVG(wObj) {
       return `
         <svg class="${wObj.sizeClass} mx-auto block" viewBox="0 0 84 70" fill="none" aria-label="${wObj.label}">
@@ -1295,6 +1319,8 @@
     let l6TypedAnswers = [
       { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
       { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+      { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
       { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
     ];
 
@@ -1302,7 +1328,8 @@
     let draggedOptionId = null;
     let levelCompleted = false;
 
-    const LEVEL_MAX_QUESTIONS = { 1: 4, 2: 4, 3: 6, 4: 3, 5: 4, 6: 3 };
+    const LEVEL_MAX_QUESTIONS = { 1: 4, 2: 4, 3: 6, 4: 3, 5: 4, 6: 5 };
+    const TOTAL_MAX_SCORE = 26;
 
     function createEmptyLevelStats() {
       const stats = {};
@@ -1410,9 +1437,8 @@
       for (let lvl = 1; lvl <= 6; lvl++) {
         totBestCorrect += getLevelBestCorrect(lvl);
       }
-      document.getElementById('scoreCounter').textContent = `Score: ${totBestCorrect}/24`;
+      document.getElementById('scoreCounter').textContent = `Score: ${totBestCorrect}/${TOTAL_MAX_SCORE}`;
 
-      // Highlight active Trial button
       const t2Btn = document.getElementById('trial2Btn');
       const t3Btn = document.getElementById('trial3Btn');
       if (t2Btn) {
@@ -1422,11 +1448,6 @@
       if (t3Btn) {
         t3Btn.classList.toggle('ring-4', currentTrial === 3);
         t3Btn.classList.toggle('ring-purple-400', currentTrial === 3);
-      }
-
-      const nextLvlBtnText = document.getElementById('nextLevelBtnText');
-      if (nextLvlBtnText) {
-        nextLvlBtnText.textContent = currentLevel < 6 ? 'Next Level →' : 'Summary ✓';
       }
     }
 
@@ -1440,9 +1461,9 @@
     }
 
     function renderFractionHTML(item, unitLabel = 'm.', compact = false) {
-      const sizeClass = compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl';
-      const fracSize = compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base';
-      let html = `<div class="inline-flex items-center justify-center gap-1.5 text-slate-900 font-extrabold ${sizeClass}">`;
+      const sizeClass = compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl';
+      const fracSize = compact ? 'text-xs' : 'text-sm sm:text-base';
+      let html = `<div class="inline-flex items-center justify-center gap-1 text-slate-900 font-extrabold ${sizeClass}">`;
 
       if (item.whole) {
         html += `<span>${item.whole}</span>`;
@@ -1462,12 +1483,12 @@
       return html;
     }
 
-    function recordTrialSnapshot(lvl, trialNum, isCompleted) {
+    function recordTrialSnapshot(lvl, trialNum, earnedCorrect, isDone) {
       const elapsed = Math.max(1, Math.floor((Date.now() - levelStartTime) / 1000));
       const tObj = levelStats[lvl].trials[trialNum];
       tObj.seconds = elapsed;
-      if (isCompleted) {
-        tObj.correct = levelStats[lvl].total;
+      tObj.correct = earnedCorrect;
+      if (isDone) {
         tObj.done = true;
       }
       updateHeaderDisplay();
@@ -1486,7 +1507,7 @@
       for (let i = 1; i <= 6; i++) {
         totBestCorrect += getLevelBestCorrect(i);
       }
-      const totScoreStr = `${totBestCorrect}/24-${Math.round((totBestCorrect / 24) * 100)}%`;
+      const totScoreStr = `${totBestCorrect}/${TOTAL_MAX_SCORE}-${Math.round((totBestCorrect / TOTAL_MAX_SCORE) * 100)}%`;
 
       const payload = {
         action: 'saveGameData',
@@ -1517,8 +1538,8 @@
         clearTimeout(autoAdvanceTimeout);
         autoAdvanceTimeout = null;
       }
-      if (saveCurrentFirst && currentTrial !== targetTrial) {
-        recordTrialSnapshot(currentLevel, currentTrial, levelCompleted);
+      if (saveCurrentFirst && currentTrial !== targetTrial && !levelCompleted) {
+        recordTrialSnapshot(currentLevel, currentTrial, 0, false);
         syncTrialToGoogleSheet(currentLevel, currentTrial);
       }
       playSound('reset');
@@ -1560,11 +1581,14 @@
       l6TypedAnswers = [
         { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
         { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+        { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+        { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
         { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
       ];
       selectedOptionId = null;
 
       document.getElementById('checkBtn').classList.remove('hidden');
+      document.getElementById('clearBtn').classList.remove('hidden');
       hideFeedback();
 
       const headerEl = document.getElementById('textbookHeader');
@@ -1574,19 +1598,24 @@
       const subHeaderEl = document.getElementById('levelSubHeader');
       const optionBankWrapper = document.getElementById('optionBankWrapper');
       const rowsContainer = document.getElementById('rowsContainer');
+      const gameMainEl = document.getElementById('gameMain');
+      const workspaceFrameEl = document.getElementById('workspaceFrame');
+
+      gameMainEl.className = 'p-2.5 sm:p-4 bg-white';
+      workspaceFrameEl.className = 'border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner';
 
       if (currentLevel === 1) {
-        headerEl.className = 'textbook-header-l1 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l1 px-3 py-1 text-base sm:text-xl tracking-tight';
+        headerEl.className = 'textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l1 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
         badgeEl.textContent = '4.1';
         titleEl.textContent = 'Write the length of the ribbon in metres.';
         hintEl.textContent = '100 c.m. = 1 m.';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-sky-900 bg-white/80 px-3 py-1 rounded-full border border-sky-300';
+        hintEl.className = 'text-xs font-semibold text-sky-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-sky-300';
         subHeaderEl.textContent =
           `Level1-M05-4.1 (Trial ${currentTrial}/3): Drag or tap an answer card on the right to place it in the box, then select the unit (m.).`;
 
         optionBankWrapper.classList.remove('hidden');
-        rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-4 sm:gap-5';
+        rowsContainer.className = 'lg:col-span-8 flex flex-col justify-between gap-3 sm:gap-4';
 
         currentRows = shuffleArray(LEVEL1_POOL).slice(0, 4);
         optionTiles = shuffleArray(currentRows);
@@ -1594,12 +1623,12 @@
           optionTiles.reverse();
         }
       } else if (currentLevel === 2) {
-        headerEl.className = 'textbook-header-l2 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l2 px-3 py-1 text-base sm:text-xl tracking-tight';
+        headerEl.className = 'textbook-header-l2 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l2 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
         badgeEl.textContent = '4.2';
         titleEl.textContent = 'Write the distance between the two places in kilometres and metres.';
         hintEl.textContent = '1 k.m. = 1000 m.';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-amber-900 bg-white/85 px-3 py-1 rounded-full border border-amber-300';
+        hintEl.className = 'text-xs font-semibold text-amber-900 bg-white/85 px-2.5 py-0.5 rounded-full border border-amber-300';
         subHeaderEl.textContent =
           `Level2-M05-4.2 (Trial ${currentTrial}/3): Fill in the distance and choose the matching units (k.m. and m.) from each dropdown.`;
 
@@ -1614,17 +1643,17 @@
           ...randomDists[idx]
         }));
       } else if (currentLevel === 3) {
-        headerEl.className = 'textbook-header-l3 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l3 px-3 py-1 text-base sm:text-xl tracking-tight';
+        headerEl.className = 'textbook-header-l3 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l3 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
         badgeEl.textContent = '4.3';
         titleEl.textContent = 'Write the fractional form.';
         hintEl.textContent = '100 c.m. = 1 m. • 1000 m. = 1 k.m.';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-emerald-950 bg-white/85 px-3 py-1 rounded-full border border-emerald-300';
+        hintEl.className = 'text-xs font-semibold text-emerald-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-emerald-300';
         subHeaderEl.textContent =
-          `Level3-M05-4.3 (Trial ${currentTrial}/3): Enter the mixed fraction and choose the matching unit (m. or k.m.) from the dropdown.`;
+          `Level3-M05-4.3 (Trial ${currentTrial}/3): Enter the mixed fraction and choose the matching unit (m. or k.m.) inside each torchlight.`;
 
         optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5';
+        rowsContainer.className = 'lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4';
         optionTiles = [];
 
         currentRows = shuffleArray(LEVEL3_POOL).slice(0, 6).map((item, idx) => ({
@@ -1632,17 +1661,17 @@
           borderColor: L3_BUCKET_COLORS[idx % L3_BUCKET_COLORS.length]
         }));
       } else if (currentLevel === 4) {
-        headerEl.className = 'textbook-header-l4 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l4 px-3 py-1 text-base sm:text-xl tracking-tight';
+        headerEl.className = 'textbook-header-l4 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l4 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
         badgeEl.textContent = '4.4';
         titleEl.textContent = 'Answer the questions.';
         hintEl.textContent = '1 k.m. = 1000 m. • ¼ k.m. = 250 m.';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-pink-950 bg-white/85 px-3 py-1 rounded-full border border-pink-300';
+        hintEl.className = 'text-xs font-semibold text-pink-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-pink-300';
         subHeaderEl.textContent =
           `Level4-M05-4.4 (Trial ${currentTrial}/3): Select the unit in the 2nd column and fill in the distance in k.m. and m. in the 3rd column.`;
 
         optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-4';
+        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
         optionTiles = [];
 
         currentL4Story = LEVEL4_STORY_THEMES[Math.floor(Math.random() * LEVEL4_STORY_THEMES.length)];
@@ -1650,12 +1679,12 @@
         const otherVehicles = shuffleArray(LEVEL4_VEHICLE_POOL.slice(1)).slice(0, 2);
         currentRows = [baseBicycle, ...otherVehicles];
       } else if (currentLevel === 5) {
-        headerEl.className = 'textbook-header-l5 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l5 px-3 py-1 text-base sm:text-xl tracking-tight';
+        headerEl.className = 'textbook-header-l5 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l5 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight';
         badgeEl.textContent = '4.5';
         titleEl.textContent = 'Match.';
         hintEl.textContent = '1 k.g. = 1000 gram';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-sky-950 bg-white/85 px-3 py-1 rounded-full border border-sky-300';
+        hintEl.className = 'text-xs font-semibold text-sky-950 bg-white/85 px-2.5 py-0.5 rounded-full border border-sky-300';
         subHeaderEl.textContent =
           `Level5-M05-4.5 (Trial ${currentTrial}/3): Tap a vegetable on the left, its matching gram box in the middle, and its matching weight on the right.`;
 
@@ -1674,20 +1703,24 @@
         }
         currentRows = l5LeftItems;
       } else {
-        headerEl.className = 'textbook-header-l6 px-4 py-3.5 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-3';
-        badgeEl.className = 'badge-l6 px-3 py-1 text-base sm:text-xl tracking-tight';
+        // Level 6: Compact header/instructions so 5 basket rows fit in minimum lines
+        headerEl.className = 'textbook-header-l6 px-3 py-1.5 sm:px-4 sm:py-2 flex flex-wrap items-center justify-between gap-2';
+        badgeEl.className = 'badge-l6 px-2 py-0.5 text-sm sm:text-base tracking-tight';
         badgeEl.textContent = '4.6';
-        titleEl.textContent = 'Tick (✓) the required weights and write in kilograms and grams.';
+        titleEl.textContent = 'Tick (✓) required weights & write in k.g. and g.';
         hintEl.textContent = '1 k.g. = 1000 g.';
-        hintEl.className = 'text-xs sm:text-sm font-semibold text-orange-950 bg-white/85 px-3 py-1 rounded-full border border-orange-300';
+        hintEl.className = 'text-[11px] sm:text-xs font-semibold text-orange-950 bg-white/85 px-2 py-0.5 rounded-full border border-orange-300';
         subHeaderEl.textContent =
-          `Level6-M05-4.6 (Trial ${currentTrial}/3): Tick (✓) the boxes under the weights needed, then fill in the values and units (k.g. and g.).`;
+          `Level6-M05-4.6 (Trial ${currentTrial}/3): Tick (✓) the required weights and fill in k.g. and g.`;
+
+        gameMainEl.className = 'p-2 sm:p-3 bg-white';
+        workspaceFrameEl.className = 'border-2 border-slate-200 rounded-xl p-1.5 sm:p-2.5 bg-slate-50/40 shadow-inner';
 
         optionBankWrapper.classList.add('hidden');
         rowsContainer.className = 'lg:col-span-12';
         optionTiles = [];
 
-        currentRows = shuffleArray(LEVEL6_POOL).slice(0, 3);
+        currentRows = shuffleArray(LEVEL6_POOL).slice(0, 5);
       }
 
       updateHeaderDisplay();
@@ -1732,6 +1765,8 @@
         l6TypedAnswers = [
           { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
           { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
+          { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' },
           { checked: [], kg: '', kgUnit: '', g: '', gUnit: '' }
         ];
       }
@@ -1756,6 +1791,7 @@
     }
 
     function updateL6Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
       if (field === 'kgUnit' || field === 'gUnit') {
         l6TypedAnswers[rowIndex][field] = value;
       } else {
@@ -1768,12 +1804,14 @@
     }
 
     function updateL1Unit(rowIndex, value) {
+      if (levelCompleted) return;
       l1UnitAnswers[rowIndex] = value;
       const slotEl = document.getElementById(`slot-${rowIndex}`);
       if (slotEl) slotEl.classList.remove('correct', 'incorrect');
     }
 
     function updateL2Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
       if (field === 'kmUnit' || field === 'mUnit') {
         l2TypedAnswers[rowIndex][field] = value;
       } else {
@@ -1788,6 +1826,7 @@
     }
 
     function updateL3Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
       if (field === 'unit') {
         l3TypedAnswers[rowIndex].unit = value;
       } else {
@@ -1801,6 +1840,7 @@
     }
 
     function updateL4Answer(rowIndex, field, value) {
+      if (levelCompleted) return;
       if (field === 'col2Unit' || field === 'kmUnit' || field === 'mUnit') {
         l4TypedAnswers[rowIndex][field] = value;
       } else {
@@ -1999,12 +2039,12 @@
         currentRows.forEach((rowItem, rowIndex) => {
           const ans = l2TypedAnswers[rowIndex];
           const rowEl = document.createElement('div');
-          rowEl.className = 'grid grid-cols-1 sm:grid-cols-12 items-center gap-3 p-3 sm:px-5 sm:py-3.5 bg-white hover:bg-slate-50/60 transition';
+          rowEl.className = 'grid grid-cols-1 sm:grid-cols-12 items-center gap-2.5 p-2.5 sm:px-5 sm:py-3 bg-white hover:bg-slate-50/60 transition';
 
           rowEl.innerHTML = `
             <div class="sm:col-span-3 flex justify-center">
               <div
-                class="place-box w-full max-w-[175px] py-2.5 px-2.5 text-center text-sm sm:text-base"
+                class="place-box w-full max-w-[175px] py-2 px-2.5 text-center text-sm sm:text-base"
                 style="border-color: ${rowItem.leftBorder};"
               >
                 ${rowItem.left}
@@ -2012,12 +2052,12 @@
             </div>
 
             <div class="sm:col-span-6 flex flex-col items-center justify-center gap-1">
-              <div class="dist-pill-top w-full max-w-[210px] py-1.5 px-4 flex items-center justify-center">
+              <div class="dist-pill-top w-full max-w-[210px] py-1 px-4 flex items-center justify-center">
                 ${renderFractionHTML(rowItem, 'k.m.', true)}
               </div>
 
               <div class="w-full max-w-[235px] flex items-center justify-center my-0.5" aria-hidden="true">
-                <svg class="w-full h-4 text-emerald-500" viewBox="0 0 220 18" fill="none">
+                <svg class="w-full h-3.5 text-emerald-500" viewBox="0 0 220 18" fill="none">
                   <line x1="12" y1="9" x2="208" y2="9" stroke="currentColor" stroke-width="2.5" />
                   <polyline points="18,3 6,9 18,15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                   <polyline points="202,3 214,9 202,15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -2026,7 +2066,7 @@
 
               <div
                 id="l2-box-${rowIndex}"
-                class="dist-pill-bottom w-full max-w-[295px] py-1.5 px-2 flex flex-wrap items-center justify-center gap-1"
+                class="dist-pill-bottom w-full max-w-[295px] py-1 px-2 flex flex-wrap items-center justify-center gap-1"
               >
                 <input
                   type="text"
@@ -2037,7 +2077,7 @@
                   oninput="updateL2Answer(${rowIndex}, 'km', this.value)"
                   placeholder="?"
                   aria-label="Kilometres for ${rowItem.left} to ${rowItem.right}"
-                  class="km-m-input w-8 sm:w-9 h-8 text-sm sm:text-base"
+                  class="km-m-input w-8 sm:w-9 h-7 sm:h-8 text-sm sm:text-base"
                 />
                 ${renderUnitDropdownHTML(ans.kmUnit, `updateL2Answer(${rowIndex}, 'kmUnit', this.value)`, disabledAttr, `First unit for ${rowItem.left} to ${rowItem.right}`)}
                 <input
@@ -2049,7 +2089,7 @@
                   oninput="updateL2Answer(${rowIndex}, 'm', this.value)"
                   placeholder="?"
                   aria-label="Metres for ${rowItem.left} to ${rowItem.right}"
-                  class="km-m-input w-11 sm:w-12 h-8 text-sm sm:text-base"
+                  class="km-m-input w-11 sm:w-12 h-7 sm:h-8 text-sm sm:text-base"
                 />
                 ${renderUnitDropdownHTML(ans.mUnit, `updateL2Answer(${rowIndex}, 'mUnit', this.value)`, disabledAttr, `Second unit for ${rowItem.left} to ${rowItem.right}`)}
               </div>
@@ -2057,7 +2097,7 @@
 
             <div class="sm:col-span-3 flex justify-center">
               <div
-                class="place-box w-full max-w-[175px] py-2.5 px-2.5 text-center text-sm sm:text-base"
+                class="place-box w-full max-w-[175px] py-2 px-2.5 text-center text-sm sm:text-base"
                 style="border-color: ${rowItem.rightBorder};"
               >
                 ${rowItem.right}
@@ -2076,22 +2116,9 @@
           cardEl.className = 'torch-item flex items-center py-1';
 
           cardEl.innerHTML = `
-            <div class="relative flex-1 min-w-0 h-[52px] flex items-center justify-center">
-              <svg
-                class="torch-body-svg"
-                viewBox="0 0 220 52"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M 25 11 H 220 V 41 H 25 A 15 15 0 0 1 25 11 Z"
-                  fill="#ffffff"
-                  stroke="#1e293b"
-                  stroke-width="2.6"
-                  vector-effect="non-scaling-stroke"
-                />
-              </svg>
-              <span class="torch-body-label relative z-10 pl-3 pr-2 text-xs sm:text-sm md:text-base">
+            <div class="torch-handle-box">
+              <span class="torch-switch-dot" aria-hidden="true"></span>
+              <span class="torch-body-label text-xs sm:text-sm md:text-base">
                 ${rowItem.label}
               </span>
             </div>
@@ -2102,31 +2129,30 @@
             >
               <svg
                 class="torch-head-svg"
-                viewBox="0 0 164 82"
+                viewBox="0 0 170 82"
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
                 <path
-                  d="M 2 25 L 18 17 M 2 57 L 18 65"
-                  stroke="#1e293b"
-                  stroke-width="2.6"
-                  stroke-linecap="round"
-                  vector-effect="non-scaling-stroke"
-                />
-                <path
                   class="torch-head-fill torch-head-rim"
-                  d="M 16 17 L 146 6 Q 158 5 158 18 L 158 64 Q 158 77 146 76 L 16 65 Q 10 64 10 56 L 10 26 Q 10 18 16 17 Z"
+                  d="M 2 19 L 18 19 L 154 6 Q 165 5 165 18 L 165 64 Q 165 77 154 76 L 18 63 L 2 63 Z"
                   stroke="${rowItem.borderColor}"
                   stroke-width="6"
                   stroke-linejoin="round"
                   vector-effect="non-scaling-stroke"
                 />
                 <path
-                  d="M 16 17 L 146 6 Q 158 5 158 18 L 158 64 Q 158 77 146 76 L 16 65 Q 10 64 10 56 L 10 26 Q 10 18 16 17 Z"
+                  d="M 2 19 L 18 19 L 154 6 Q 165 5 165 18 L 165 64 Q 165 77 154 76 L 18 63 L 2 63"
                   fill="none"
                   stroke="#1e293b"
-                  stroke-width="2.6"
+                  stroke-width="2.5"
                   stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+                <line
+                  x1="18" y1="19" x2="18" y2="63"
+                  stroke="#1e293b"
+                  stroke-width="2.2"
                   vector-effect="non-scaling-stroke"
                 />
               </svg>
@@ -2182,22 +2208,23 @@
         const v1 = currentRows[0];
         const v2 = currentRows[1];
         const v3 = currentRows[2];
+        const { traveller, possPron, subjPron, place1, place2, destination } = currentL4Story;
 
         const storyEl = document.createElement('div');
-        storyEl.className = 'l4-story-box p-3.5 sm:p-4 text-sm sm:text-base';
+        storyEl.className = 'l4-story-box p-3 sm:p-3.5 text-xs sm:text-sm md:text-base';
         storyEl.innerHTML = `
           <p>
-            ${currentL4Story.traveller} visited his ${currentL4Story.place1} on a holiday by his
+            ${traveller} visited ${possPron} ${place1} on a holiday by ${possPron}
             <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v1.id)}</span>,
             which was at a distance of <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v1, 'k.m.', true)}</span>
-            away from his house. From there he travelled
+            away from ${possPron} house. From there, ${subjPron} travelled
             <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v3, 'k.m.', true)}</span>
-            by his ${currentL4Story.place1}'s
+            by ${possPron} ${place1}'s
             <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v3.id)}</span>
-            to reach his ${currentL4Story.place2}. Then they all got into a
+            to reach ${possPron} ${place2}. Then they all got into a
             <span class="inline-flex items-center align-middle mx-0.5">${renderVehicleIconSVG(v2.id)}</span>
             and travelled <span class="inline-flex items-center align-middle mx-1">${renderFractionHTML(v2, 'k.m.', true)}</span>
-            to reach ${currentL4Story.destination}. Write the distance travelled by ${currentL4Story.traveller} in each vehicle in kilometres and metres.
+            to reach ${destination}. Write the distance travelled by ${traveller} in each vehicle in kilometres and metres.
           </p>
         `;
         rowsContainer.appendChild(storyEl);
@@ -2225,7 +2252,7 @@
                   <div class="text-xs font-bold text-slate-600 mt-0.5">${vItem.label}</div>
                 </td>
                 ${col2HTML}
-                <td class="font-extrabold text-slate-800 text-base sm:text-lg">
+                <td class="font-extrabold text-slate-800 text-sm sm:text-base">
                   ${vItem.m} m.
                 </td>
               </tr>
@@ -2239,7 +2266,7 @@
                 </td>
                 ${col2HTML}
                 <td id="l4-cell-${idx}" class="l4-cell-status">
-                  <div class="inline-flex flex-wrap items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl border-2 border-sky-400 bg-white">
+                  <div class="inline-flex flex-wrap items-center justify-center gap-1.5 py-1 px-2 rounded-xl border-2 border-sky-400 bg-white">
                     <input
                       type="text"
                       inputmode="numeric"
@@ -2249,7 +2276,7 @@
                       oninput="updateL4Answer(${idx}, 'km', this.value)"
                       placeholder="?"
                       aria-label="Kilometres for ${vItem.label}"
-                      class="km-m-input w-9 sm:w-10 h-8 text-sm sm:text-base"
+                      class="km-m-input w-9 sm:w-10 h-7 sm:h-8 text-sm sm:text-base"
                     />
                     ${renderUnitDropdownHTML(ans.kmUnit, `updateL4Answer(${idx}, 'kmUnit', this.value)`, disabledAttr, `First unit for ${vItem.label}`)}
                     <input
@@ -2261,7 +2288,7 @@
                       oninput="updateL4Answer(${idx}, 'm', this.value)"
                       placeholder="?"
                       aria-label="Metres for ${vItem.label}"
-                      class="km-m-input w-12 sm:w-14 h-8 text-sm sm:text-base"
+                      class="km-m-input w-12 sm:w-14 h-7 sm:h-8 text-sm sm:text-base"
                     />
                     ${renderUnitDropdownHTML(ans.mUnit, `updateL4Answer(${idx}, 'mUnit', this.value)`, disabledAttr, `Second unit for ${vItem.label}`)}
                   </div>
@@ -2288,7 +2315,7 @@
       } else if (currentLevel === 5) {
         const boardDiv = document.createElement('div');
         boardDiv.id = 'l5MatchBoard';
-        boardDiv.className = 'relative bg-white border-2 border-sky-200 rounded-2xl p-3 sm:p-5';
+        boardDiv.className = 'relative bg-white border-2 border-sky-200 rounded-2xl p-3 sm:p-4';
 
         const leftColHTML = l5LeftItems.map(item => {
           const isSel = l5SelectedNode && l5SelectedNode.col === 'left' && l5SelectedNode.id === item.id;
@@ -2297,10 +2324,10 @@
             <div
               id="l5-left-${item.id}"
               onclick="handleL5NodeClick('left', '${item.id}')"
-              class="l5-node p-2.5 flex flex-col items-center justify-center gap-1.5 ${isSel ? 'selected' : ''} ${isMatched ? 'matched-left' : ''}"
+              class="l5-node p-2 flex flex-col items-center justify-center gap-1 ${isSel ? 'selected' : ''} ${isMatched ? 'matched-left' : ''}"
             >
               ${renderVegetableSVG(item.id)}
-              <div class="l5-veg-pill px-3 py-1">
+              <div class="l5-veg-pill px-2.5 py-0.5">
                 ${renderFractionHTML(item, 'k.g.', true)}
               </div>
             </div>
@@ -2315,7 +2342,7 @@
             <div
               id="l5-mid-${item.id}"
               onclick="handleL5NodeClick('mid', '${item.id}')"
-              class="l5-node l5-gram-pill px-3 py-3 text-center font-extrabold text-slate-800 text-sm sm:text-base ${isSel ? 'selected' : ''} ${(isMatchedLeft || isMatchedRight) ? 'matched-mid' : ''}"
+              class="l5-node l5-gram-pill px-3 py-2.5 text-center font-extrabold text-slate-800 text-sm sm:text-base ${isSel ? 'selected' : ''} ${(isMatchedLeft || isMatchedRight) ? 'matched-mid' : ''}"
             >
               ${item.grams} gram
             </div>
@@ -2330,7 +2357,7 @@
             <div
               id="l5-right-${item.id}"
               onclick="handleL5NodeClick('right', '${item.id}')"
-              class="l5-node l5-weight-box p-2 flex flex-col items-center justify-center gap-0.5 min-h-[96px] ${isSel ? 'selected' : ''} ${isMatched ? 'matched-right' : ''}"
+              class="l5-node l5-weight-box p-1.5 flex flex-col items-center justify-center gap-0.5 min-h-[88px] ${isSel ? 'selected' : ''} ${isMatched ? 'matched-right' : ''}"
             >
               ${weightsHTML}
             </div>
@@ -2340,13 +2367,13 @@
         boardDiv.innerHTML = `
           <svg id="l5MatchSvg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
           <div class="relative z-20 grid grid-cols-3 gap-6 sm:gap-12 items-center">
-            <div class="flex flex-col justify-between gap-3 sm:gap-4">
+            <div class="flex flex-col justify-between gap-2.5 sm:gap-3">
               ${leftColHTML}
             </div>
-            <div class="flex flex-col justify-around gap-6 sm:gap-10">
+            <div class="flex flex-col justify-around gap-5 sm:gap-8">
               ${midColHTML}
             </div>
-            <div class="flex flex-col justify-between gap-3 sm:gap-4">
+            <div class="flex flex-col justify-between gap-2.5 sm:gap-3">
               ${rightColHTML}
             </div>
           </div>
@@ -2355,6 +2382,7 @@
         rowsContainer.appendChild(boardDiv);
         requestAnimationFrame(() => drawL5Lines());
       } else {
+        // Level 6: Compact 5-question basket table
         const disabledAttr = levelCompleted ? 'disabled' : '';
         const wrapDiv = document.createElement('div');
         wrapDiv.className = 'overflow-x-auto';
@@ -2364,7 +2392,7 @@
           const weightsGridHTML = LEVEL6_WEIGHT_LIST.map(wObj => {
             const isChecked = ans.checked.includes(wObj.id);
             return `
-              <div class="flex flex-col items-center justify-end gap-1.5">
+              <div class="flex flex-col items-center justify-end gap-1">
                 <div onclick="toggleL6Weight(${rowIndex}, '${wObj.id}')" class="cursor-pointer">
                   ${renderL6HexWeightSVG(wObj)}
                 </div>
@@ -2383,18 +2411,18 @@
 
           return `
             <tr>
-              <td class="w-32 sm:w-44 bg-orange-50/30">
+              <td class="w-24 sm:w-32 bg-orange-50/30">
                 ${renderBasketSVG(item.id)}
-                <div class="mt-1">
+                <div class="mt-0.5">
                   ${renderFractionHTML(item, 'k.g.', true)}
                 </div>
               </td>
               <td>
-                <div class="flex flex-col items-center justify-center gap-3 py-1">
-                  <div class="grid grid-cols-6 gap-1.5 sm:gap-3 items-end w-full max-w-lg mx-auto">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <div class="grid grid-cols-6 gap-1 sm:gap-1.5 items-end flex-1 w-full">
                     ${weightsGridHTML}
                   </div>
-                  <div id="l6-pill-${rowIndex}" class="l6-answer-pill">
+                  <div id="l6-pill-${rowIndex}" class="l6-answer-pill shrink-0">
                     <input
                       type="text"
                       inputmode="numeric"
@@ -2404,9 +2432,9 @@
                       oninput="updateL6Answer(${rowIndex}, 'kg', this.value)"
                       placeholder="?"
                       aria-label="Kilograms for ${item.name}"
-                      class="km-m-input w-9 sm:w-10 h-8 text-sm sm:text-base"
+                      class="km-m-input w-8 sm:w-9 h-7 text-xs sm:text-sm"
                     />
-                    ${renderMassUnitDropdownHTML(ans.kgUnit, `updateL6Answer(${rowIndex}, 'kgUnit', this.value)`, disabledAttr, `First unit for ${item.name}`)}
+                    ${renderMassUnitDropdownHTML(ans.kgUnit, `updateL6Answer(${rowIndex}, 'kgUnit', this.value)`, disabledAttr, `First unit for ${item.name}`, 'text-xs px-0.5')}
                     <input
                       type="text"
                       inputmode="numeric"
@@ -2416,9 +2444,9 @@
                       oninput="updateL6Answer(${rowIndex}, 'g', this.value)"
                       placeholder="?"
                       aria-label="Grams for ${item.name}"
-                      class="km-m-input w-12 sm:w-14 h-8 text-sm sm:text-base"
+                      class="km-m-input w-11 sm:w-12 h-7 text-xs sm:text-sm"
                     />
-                    ${renderMassUnitDropdownHTML(ans.gUnit, `updateL6Answer(${rowIndex}, 'gUnit', this.value)`, disabledAttr, `Second unit for ${item.name}`)}
+                    ${renderMassUnitDropdownHTML(ans.gUnit, `updateL6Answer(${rowIndex}, 'gUnit', this.value)`, disabledAttr, `Second unit for ${item.name}`, 'text-xs px-0.5')}
                   </div>
                 </div>
               </td>
@@ -2541,7 +2569,7 @@
           }
         });
 
-        handleCheckOutcome(correctCount, 4);
+        finalizeTrialSubmission(correctCount, 4);
       } else if (currentLevel === 2) {
         const hasBlank = l2TypedAnswers.some(
           ans => ans.km.trim() === '' || ans.kmUnit === '' || ans.m.trim() === '' || ans.mUnit === ''
@@ -2569,7 +2597,7 @@
           }
         });
 
-        handleCheckOutcome(correctCount, 4);
+        finalizeTrialSubmission(correctCount, 4);
       } else if (currentLevel === 3) {
         const hasBlank = l3TypedAnswers.some(
           ans => ans.whole.trim() === '' || ans.num.trim() === '' || ans.den.trim() === '' || ans.unit === ''
@@ -2602,7 +2630,7 @@
           }
         });
 
-        handleCheckOutcome(correctCount, 6);
+        finalizeTrialSubmission(correctCount, 6);
       } else if (currentLevel === 4) {
         const hasCol2Blank = l4TypedAnswers.some(ans => ans.col2Unit === '');
         const fillableIndices = [1, 2];
@@ -2651,7 +2679,7 @@
           }
         });
 
-        handleCheckOutcome(correctCount, 3);
+        finalizeTrialSubmission(correctCount, 3);
       } else if (currentLevel === 5) {
         if (Object.keys(l5LeftToMid).length < 4 || Object.keys(l5MidToRight).length < 4) {
           playSound('error');
@@ -2680,7 +2708,7 @@
           }
         });
 
-        handleCheckOutcome(correctCount, 4);
+        finalizeTrialSubmission(correctCount, 4);
       } else {
         const hasBlank = l6TypedAnswers.some(
           ans =>
@@ -2692,7 +2720,7 @@
         );
         if (hasBlank) {
           playSound('error');
-          showFeedback('Please tick the required weights and fill in all values and units (k.g. and g.) for all 3 rows!', 'warning');
+          showFeedback('Please tick the required weights and fill in all values and units (k.g. and g.) for all 5 rows!', 'warning');
           return;
         }
 
@@ -2720,56 +2748,58 @@
           }
         });
 
-        handleCheckOutcome(correctCount, 3);
+        finalizeTrialSubmission(correctCount, 5);
       }
     }
 
-    function handleCheckOutcome(correctCount, targetTotal) {
-      if (correctCount === targetTotal) {
-        playSound('success');
-        levelCompleted = true;
-        recordTrialSnapshot(currentLevel, currentTrial, true);
-        syncTrialToGoogleSheet(currentLevel, currentTrial);
+    // Lock trial immediately on submission (accept wrong answers as final for that trial, save score & time, and auto-advance)
+    function finalizeTrialSubmission(correctCount, targetTotal) {
+      levelCompleted = true;
 
-        if (currentLevel !== 5) {
-          renderBoard();
-        }
-        document.getElementById('checkBtn').classList.add('hidden');
+      // Disable inputs and action buttons so the submitted trial cannot be retried
+      document.querySelectorAll('#rowsContainer input, #rowsContainer select, #rowsContainer button').forEach(el => {
+        el.disabled = true;
+      });
+      document.getElementById('checkBtn').classList.add('hidden');
+      document.getElementById('clearBtn').classList.add('hidden');
 
-        const levelTag = getLevelTag(currentLevel);
-        const trialTimeStr = formatSecondsHHMMSS(levelStats[currentLevel].trials[currentTrial].seconds);
+      recordTrialSnapshot(currentLevel, currentTrial, correctCount, true);
+      syncTrialToGoogleSheet(currentLevel, currentTrial);
 
-        if (currentTrial < 3) {
-          const nextTrialNum = currentTrial + 1;
-          showFeedback(
-            `${levelTag} Trial ${currentTrial}/3 saved (${targetTotal}/${targetTotal} in ${trialTimeStr})! Starting Trial ${nextTrialNum}/3 automatically...`,
-            'success'
-          );
-          autoAdvanceTimeout = setTimeout(() => {
-            setupLevel(currentLevel, nextTrialNum);
-          }, 1500);
-        } else if (currentLevel < 6) {
-          const nextLevelNum = currentLevel + 1;
-          const nextLevelTag = getLevelTag(nextLevelNum);
-          showFeedback(
-            `${levelTag} Trial 3/3 saved (${targetTotal}/${targetTotal} in ${trialTimeStr})! Moving to ${nextLevelTag} automatically...`,
-            'success'
-          );
-          autoAdvanceTimeout = setTimeout(() => {
-            setupLevel(nextLevelNum, 1);
-          }, 1500);
-        } else {
-          showFeedback(
-            `Awesome! All levels (4.1 through 4.6) and all 3 trials complete and saved!`,
-            'success'
-          );
-          autoAdvanceTimeout = setTimeout(() => {
-            openFinalSummaryModal();
-          }, 1200);
-        }
+      const isAllRight = correctCount === targetTotal;
+      playSound(isAllRight ? 'success' : 'error');
+
+      const levelTag = getLevelTag(currentLevel);
+      const trialTimeStr = formatSecondsHHMMSS(levelStats[currentLevel].trials[currentTrial].seconds);
+      const bannerType = isAllRight ? 'success' : 'error';
+
+      if (currentTrial < 3) {
+        const nextTrialNum = currentTrial + 1;
+        showFeedback(
+          `${levelTag} Trial ${currentTrial}/3 submitted: ${correctCount}/${targetTotal} (${trialTimeStr}). Moving to Trial ${nextTrialNum}/3...`,
+          bannerType
+        );
+        autoAdvanceTimeout = setTimeout(() => {
+          setupLevel(currentLevel, nextTrialNum);
+        }, 1600);
+      } else if (currentLevel < 6) {
+        const nextLevelNum = currentLevel + 1;
+        const nextLevelTag = getLevelTag(nextLevelNum);
+        showFeedback(
+          `${levelTag} Trial 3/3 submitted: ${correctCount}/${targetTotal} (${trialTimeStr}). Moving to ${nextLevelTag}...`,
+          bannerType
+        );
+        autoAdvanceTimeout = setTimeout(() => {
+          setupLevel(nextLevelNum, 1);
+        }, 1600);
       } else {
-        playSound('error');
-        showFeedback(`${correctCount} / ${targetTotal} correct. Check the highlighted red boxes and try again!`, 'error');
+        showFeedback(
+          `${levelTag} Trial 3/3 submitted: ${correctCount}/${targetTotal} (${trialTimeStr}). All levels completed!`,
+          bannerType
+        );
+        autoAdvanceTimeout = setTimeout(() => {
+          openFinalSummaryModal();
+        }, 1400);
       }
     }
 
@@ -2787,7 +2817,7 @@
       for (let lvl = 1; lvl <= 6; lvl++) {
         totBestCorrect += getLevelBestCorrect(lvl);
       }
-      const totScoreStr = `${totBestCorrect}/24-${Math.round((totBestCorrect / 24) * 100)}%`;
+      const totScoreStr = `${totBestCorrect}/${TOTAL_MAX_SCORE}-${Math.round((totBestCorrect / TOTAL_MAX_SCORE) * 100)}%`;
 
       document.getElementById('sumStudentId').textContent = lmsContext.studentId;
       document.getElementById('sumStudentName').textContent = lmsContext.name;

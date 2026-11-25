@@ -336,7 +336,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbLUtA8F5T9dRU9_DpromN3wx8Yp4DKQgaU_nl4BCA8hHNFOY3Jx8QK4MjzaAPfZPz/exec";
         let gameRecordsData = [];
         let userRecordsData = [];
         let isOverallExpanded = false;
@@ -1640,14 +1640,68 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
+        function getTodayISTDateKey() {
+            const parts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).formatToParts(new Date());
+            const y = parts.find(p => p.type === 'year')?.value || '';
+            const m = parts.find(p => p.type === 'month')?.value || '';
+            const d = parts.find(p => p.type === 'day')?.value || '';
+            return `${y}-${m}-${d}`;
+        }
+
+        function buildDailyBlockMessage(count, gameCode) {
+            const gCode = (gameCode || 'M05').trim().toUpperCase() || 'M05';
+            const n = Math.max(1, parseInt(count, 10) || 1);
+            return `You have already finished ${n} submissions including today's submission of ${gCode} game! Try again tomorrow`;
+        }
+
+        function getLocalDailyCount(emisNumber, studentId, gameCode) {
+            const todayKey = getTodayISTDateKey();
+            const gCode = (gameCode || 'M05').trim().toUpperCase();
+            const sid = (studentId || '').trim().toUpperCase();
+            const emis = (emisNumber || '').trim();
+            try {
+                const raw = localStorage.getItem(`dailySub_${todayKey}_${gCode}`);
+                const map = raw ? JSON.parse(raw) : {};
+                const byEmis = emis ? (map[`EMIS:${emis}`] || 0) : 0;
+                const bySid = sid ? (map[`SID:${sid}`] || 0) : 0;
+                return Math.max(byEmis, bySid);
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function launchSelectedGame(emisNumber, name, payload, autoTrialId) {
+            closeModal();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = false;
+            btn.innerText = "Submit & Launch Game";
+
+            let targetGameFile = 'Days.html';
+            if (currentGameCode === 'M03') {
+                targetGameFile = 'SkipCounter.html';
+            } else if (currentGameCode === 'M05') {
+                targetGameFile = 'M05.html';
+            } else if (currentGameCode === 'E04') {
+                targetGameFile = 'Months.html';
+            }
+
+            const queryParams = `gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&emisNumber=${encodeURIComponent(emisNumber)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(payload.whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
+            window.location.href = `${targetGameFile}?${queryParams}`;
+        }
+
         function handleRegistrationSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerText = "Saving...";
+            btn.disabled = true; btn.innerText = "Checking...";
 
             currentUserStudentId = document.getElementById('regStudentCode').value.trim().toUpperCase();
             const emisNumber = document.getElementById('regEmisNumber').value.trim();
-            currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase();
+            currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase() || 'M05';
             const name = document.getElementById('regFirstName').value.trim();
             const dob = document.getElementById('regDob').value.trim();
             const cell = document.getElementById('regCell').value.trim();
@@ -1668,27 +1722,49 @@
                 trialId: autoTrialId
             };
 
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST", mode: "no-cors",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams(payload).toString()
-            }).then(() => {
-                closeModal();
-                btn.disabled = false; btn.innerText = "Submit & Launch Game";
+            const checkUrl = `${GOOGLE_SCRIPT_URL}?action=checkDailyLimit&gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&emisNumber=${encodeURIComponent(emisNumber)}`;
 
-                let targetGameFile = 'Days.html';
-                if (currentGameCode === 'M03') {
-                    targetGameFile = 'SkipCounter.html';
-                } else if (currentGameCode === 'M05') {
-                    targetGameFile = 'M05.html';
-                } else if (currentGameCode === 'E04') {
-                    targetGameFile = 'Months.html';
-                }
+            fetch(checkUrl)
+                .then(res => res.json())
+                .then(limitData => {
+                    const localCount = getLocalDailyCount(emisNumber, currentUserStudentId, currentGameCode);
+                    const serverCount = limitData && typeof limitData.todayCount === 'number' ? limitData.todayCount : 0;
+                    const totalTodayCount = Math.max(localCount, serverCount);
 
-                const queryParams = `gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
-                
-                window.location.href = `${targetGameFile}?${queryParams}`;
-            });
+                    if ((limitData && limitData.blocked) || totalTodayCount >= 1) {
+                        btn.disabled = false;
+                        btn.innerText = "Submit & Launch Game";
+                        alert(buildDailyBlockMessage(Math.max(1, totalTodayCount), currentGameCode));
+                        return;
+                    }
+
+                    btn.innerText = "Saving...";
+                    fetch(GOOGLE_SCRIPT_URL, {
+                        method: "POST", mode: "no-cors",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: new URLSearchParams(payload).toString()
+                    }).then(() => {
+                        launchSelectedGame(emisNumber, name, payload, autoTrialId);
+                    });
+                })
+                .catch(() => {
+                    const localCount = getLocalDailyCount(emisNumber, currentUserStudentId, currentGameCode);
+                    if (localCount >= 1) {
+                        btn.disabled = false;
+                        btn.innerText = "Submit & Launch Game";
+                        alert(buildDailyBlockMessage(localCount, currentGameCode));
+                        return;
+                    }
+
+                    btn.innerText = "Saving...";
+                    fetch(GOOGLE_SCRIPT_URL, {
+                        method: "POST", mode: "no-cors",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: new URLSearchParams(payload).toString()
+                    }).then(() => {
+                        launchSelectedGame(emisNumber, name, payload, autoTrialId);
+                    });
+                });
         }
 
         window.onload = function() {

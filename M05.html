@@ -2,693 +2,599 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - Measurements (4.1 - 4.8) | AMelur-LMS-001</title>
-  <!-- Tailwind CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>M05 • Measurements — PUPS Anjalam Melur</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter & Noto Sans Tamil -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+Tamil:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Tone.js for gentle interactive sound feedback -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap');
+
     body {
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
-      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f8fafc;
       user-select: none;
       -webkit-user-select: none;
     }
 
-    /* Horizontal Scrollable Virtual Ruler with Slider & Pointer (Top of Length Levels 4.1 - 4.4) */
-    .virtual-ruler-panel {
-      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-      border: 2px solid #94a3b8;
-      border-radius: 12px;
-      padding: 8px 10px;
-      box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.06);
-    }
-    .ruler-scroll-viewport {
-      overflow-x: auto;
-      background: #fffbeb;
-      border: 1.5px solid #334155;
-      border-radius: 6px;
-      scrollbar-width: thin;
-      position: relative;
-    }
-    .ruler-strip {
-      position: relative;
-      height: 66px;
-      min-width: 1260px;
-      background: linear-gradient(180deg, #fefce8 0%, #ffffff 45%, #fef9c3 100%);
-      color: #0f172a;
-      font-family: 'Inter', sans-serif;
-    }
-    .ruler-minor-tick {
-      position: absolute;
-      top: 0;
-      width: 1px;
-      height: 10px;
-      background: #64748b;
-    }
-    .ruler-mid-tick {
-      position: absolute;
-      top: 0;
-      width: 1.5px;
-      height: 18px;
-      background: #1e293b;
-    }
-    .ruler-major-tick {
-      position: absolute;
-      top: 0;
-      width: 2.5px;
-      height: 27px;
-      background: #0f172a;
-    }
-    .ruler-major-label {
-      position: absolute;
-      top: 29px;
-      transform: translateX(-50%);
-      font-size: 12px;
-      font-weight: 800;
-      color: #0f172a;
-      line-height: 1;
-      white-space: nowrap;
-    }
-    .ruler-frac-label {
-      position: absolute;
-      top: 46px;
-      transform: translateX(-50%);
-      font-size: 10.5px;
-      font-weight: 700;
-      color: #0369a1;
-      line-height: 1;
-      white-space: nowrap;
-    }
-    .ruler-pointer-line {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 2.5px;
-      background: #dc2626;
-      z-index: 15;
-      pointer-events: none;
-      box-shadow: 0 0 6px rgba(220, 38, 38, 0.55);
-      transition: left 0.05s linear;
-    }
-    .ruler-pointer-head {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 10px solid #dc2626;
-    }
-    .ruler-slider-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 7px;
-    }
-    .ruler-slider {
-      flex: 1;
-      accent-color: #dc2626;
-      cursor: pointer;
-    }
-
-    /* Level Header Banners */
+    /* Level 1 Textbook Header (Light Blue) */
     .textbook-header-l1 {
-      background: linear-gradient(180deg, #b8e8fc 0%, #cceeff 65%, #e2f5fe 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(14, 116, 144, 0.12);
+      background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 100%);
+      border-bottom: 2px solid #7dd3fc;
     }
-    .textbook-header-l2 {
-      background: linear-gradient(180deg, #fef08a 0%, #fef9c3 65%, #fefce8 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(202, 138, 4, 0.14);
-    }
-    .textbook-header-l3 {
-      background: linear-gradient(180deg, #bbf7d0 0%, #dcfce7 65%, #f0fdf4 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(21, 128, 61, 0.14);
-    }
-    .textbook-header-l4 {
-      background: linear-gradient(180deg, #fbcfe8 0%, #fce7f3 65%, #fdf2f8 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(190, 24, 93, 0.14);
-    }
-    .textbook-header-l5 {
-      background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 65%, #f0f9ff 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.14);
-    }
-    .textbook-header-l6 {
-      background: linear-gradient(180deg, #fed7aa 0%, #ffedd5 65%, #fff7ed 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(194, 65, 12, 0.14);
-    }
-    .textbook-header-l7 {
-      background: linear-gradient(180deg, #c7d2fe 0%, #e0e7ff 65%, #eef2ff 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(67, 56, 202, 0.14);
-    }
-    .textbook-header-l8 {
-      background: linear-gradient(180deg, #fbcfe8 0%, #fae8ff 65%, #fdf4ff 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(162, 28, 175, 0.14);
+    .badge-l1 {
+      background-color: #ef4444;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(239, 68, 68, 0.28);
     }
 
-    /* Badges */
-    .badge-l1 {
-      background: #ffffff;
-      border: 2px solid #0284c7;
-      border-radius: 10px 10px 10px 2px;
-      color: #0369a1;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.15);
+    /* Level 2 Textbook Header (Warm Cream/Yellow) */
+    .textbook-header-l2 {
+      background: linear-gradient(180deg, #fef08a 0%, #fef9c3 100%);
+      border-bottom: 2px solid #facc15;
     }
     .badge-l2 {
-      background: #ffffff;
-      border: 2px solid #f59e0b;
-      border-radius: 10px 10px 10px 2px;
-      color: #d97706;
-      font-family: 'Inter', sans-serif;
+      background-color: #0284c7;
+      color: #ffffff;
       font-weight: 800;
-      box-shadow: 0 2px 4px rgba(245, 158, 11, 0.15);
-    }
-    .badge-l3 {
-      background: #ffffff;
-      border: 2px solid #16a34a;
-      border-radius: 10px 10px 10px 2px;
-      color: #15803d;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(22, 163, 74, 0.15);
-    }
-    .badge-l4 {
-      background: #ffffff;
-      border: 2px solid #db2777;
-      border-radius: 10px 10px 10px 2px;
-      color: #be185d;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(219, 39, 119, 0.16);
-    }
-    .badge-l5 {
-      background: #ffffff;
-      border: 2px solid #0284c7;
-      border-radius: 10px 10px 10px 2px;
-      color: #0369a1;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.16);
-    }
-    .badge-l6 {
-      background: #ffffff;
-      border: 2px solid #ea580c;
-      border-radius: 10px 10px 10px 2px;
-      color: #c2410c;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(234, 88, 12, 0.16);
-    }
-    .badge-l7 {
-      background: #ffffff;
-      border: 2px solid #4f46e5;
-      border-radius: 10px 10px 10px 2px;
-      color: #3730a3;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.16);
-    }
-    .badge-l8 {
-      background: #ffffff;
-      border: 2px solid #c026d3;
-      border-radius: 10px 10px 10px 2px;
-      color: #a21caf;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(192, 38, 211, 0.16);
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.28);
     }
 
-    /* Teal/Emerald 3D-bevel ribbon for Level 1 */
+    /* Level 3 Textbook Header (Mint Green) */
+    .textbook-header-l3 {
+      background: linear-gradient(180deg, #a7f3d0 0%, #d1fae5 100%);
+      border-bottom: 2px solid #34d399;
+    }
+    .badge-l3 {
+      background-color: #d97706;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(217, 119, 6, 0.28);
+    }
+
+    /* Level 4 Textbook Header (Soft Rose/Pink) */
+    .textbook-header-l4 {
+      background: linear-gradient(180deg, #fbcfe8 0%, #fce7f3 100%);
+      border-bottom: 2px solid #f472b6;
+    }
+    .badge-l4 {
+      background-color: #db2777;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(219, 39, 119, 0.28);
+    }
+
+    /* Level 5 Textbook Header (Sky Cyan) */
+    .textbook-header-l5 {
+      background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 100%);
+      border-bottom: 2px solid #38bdf8;
+    }
+    .badge-l5 {
+      background-color: #0284c7;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.28);
+    }
+
+    /* Level 6 Textbook Header (Peach/Orange) */
+    .textbook-header-l6 {
+      background: linear-gradient(180deg, #fed7aa 0%, #ffedd5 100%);
+      border-bottom: 2px solid #fb923c;
+    }
+    .badge-l6 {
+      background-color: #ea580c;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(234, 88, 12, 0.28);
+    }
+
+    /* Level 7 Textbook Header (Lavender/Indigo) */
+    .textbook-header-l7 {
+      background: linear-gradient(180deg, #c7d2fe 0%, #e0e7ff 100%);
+      border-bottom: 2px solid #818cf8;
+    }
+    .badge-l7 {
+      background-color: #4f46e5;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.28);
+    }
+
+    /* Level 8 Textbook Header (Fuchsia/Purple) */
+    .textbook-header-l8 {
+      background: linear-gradient(180deg, #f5d0fe 0%, #fae8ff 100%);
+      border-bottom: 2px solid #e879f9;
+    }
+    .badge-l8 {
+      background-color: #a21caf;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 4px rgba(162, 28, 175, 0.28);
+    }
+
+    /* Level 1 Pink Ribbon Bar */
     .ribbon-bar {
-      background: linear-gradient(180deg, #22997a 0%, #2cb591 30%, #249e7e 80%, #187a60 100%);
-      border: 2px solid #156b54;
-      border-radius: 6px;
-      box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.35), 0 3px 6px rgba(0, 0, 0, 0.14);
-      transition: min-width 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s ease;
+      background: linear-gradient(180deg, #f9a8d4 0%, #f472b6 52%, #ec4899 100%);
+      border: 2px solid #db2777;
+      border-radius: 0.25rem;
+      box-shadow: 0 3px 6px rgba(219, 39, 119, 0.2);
       position: relative;
-      overflow: visible;
-      width: fit-content;
-      max-width: 100%;
+      transition: width 0.3s ease;
     }
     .ribbon-bar::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 35%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 100%);
-      pointer-events: none;
-      border-radius: 4px 4px 0 0;
+      top: 3px;
+      left: 4px;
+      right: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 2px;
     }
     .ribbon-label {
-      color: #ffffff;
+      background-color: #f472b6;
+      border: 1.5px solid #9d174d;
+      color: #0f172a;
       font-weight: 800;
-      text-shadow:
-        -1.5px -1.5px 0 #114b3c,
-         1.5px -1.5px 0 #114b3c,
-        -1.5px  1.5px 0 #114b3c,
-         1.5px  1.5px 0 #114b3c,
-         0px    2px   3px rgba(0,0,0,0.45);
-      letter-spacing: 0.02em;
+      padding: 0.15rem 0.55rem;
+      border-radius: 0.2rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
       white-space: nowrap;
+      z-index: 2;
     }
 
-    /* Pink rounded answer drop zone (Level 1) */
+    /* Level 1 Answer Drop Slot (Left) */
     .answer-slot {
+      border: 2.5px solid #db2777;
       background-color: #ffffff;
-      border: 2.5px solid #f472b6;
-      border-radius: 10px;
-      box-shadow: inset 0 2px 4px rgba(244, 114, 182, 0.12);
+      border-radius: 0.375rem;
       transition: all 0.2s ease;
     }
-    .answer-slot.drag-over,
-    .answer-slot.ready-target {
-      border-color: #ec4899;
+    .answer-slot.drag-over {
       background-color: #fdf2f8;
-      transform: scale(1.04);
-      box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2);
+      border-style: dashed;
+      transform: scale(1.03);
+    }
+    .answer-slot.ready-target {
+      border-style: dashed;
+      background-color: #fff1f2;
+      animation: pulseBorder 1.2s infinite;
     }
     .answer-slot.locked-filled {
-      border-color: #db2777;
-      background-color: #fffafd;
+      background-color: #fffbfc;
+      border-style: solid;
     }
     .answer-slot.correct {
+      background-color: #dcfce7;
       border-color: #16a34a;
-      background-color: #f0fdf4;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
     }
     .answer-slot.incorrect {
+      background-color: #fee2e2;
       border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
     }
+
     .dropped-card-chip {
-      background: #eff6ff;
-      border: 1.5px solid #3b82f6;
-      border-radius: 7px;
-      padding: 2px 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.35rem;
+      border: 1.5px solid #0284c7;
+      background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.18);
       cursor: grab;
-      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.15);
     }
     .dropped-card-chip:active {
       cursor: grabbing;
     }
 
-    /* Level 2 Place Cards & Pills */
-    .place-box {
-      background: linear-gradient(180deg, #ffffff 0%, #fdf8ff 100%);
-      border-width: 2.5px;
-      border-style: solid;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      font-weight: 700;
-      color: #1e293b;
-    }
-    .dist-pill-top {
-      background: #ffffff;
-      border: 2px solid #3b82f6;
-      border-radius: 14px;
-      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.12);
-    }
-    .dist-pill-bottom {
-      background: #ffffff;
-      border: 2.5px solid #3b82f6;
-      border-radius: 14px;
-      box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
-      transition: all 0.2s ease;
-    }
-    .dist-pill-bottom.correct {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
-    }
-    .dist-pill-bottom.incorrect {
-      border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
+    @keyframes pulseBorder {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.35); }
+      50% { box-shadow: 0 0 0 5px rgba(219, 39, 119, 0); }
     }
 
-    /* Level 3 Joined Torchlight */
-    .torch-item {
-      filter: drop-shadow(0 3px 5px rgba(15, 23, 42, 0.12));
-      transition: transform 0.18s ease, filter 0.2s ease;
+    /* Level 1 Draggable/Tappable Answer Tiles (Right) */
+    .fraction-tile {
+      border: 2.5px solid #0284c7;
+      background-color: #ffffff;
+      border-radius: 0.375rem;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.14);
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
     }
-    .torch-item:hover {
-      transform: translateY(-1px);
+    .fraction-tile:hover:not(.used) {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 14px rgba(2, 132, 199, 0.24);
+    }
+    .fraction-tile:active:not(.used) {
+      cursor: grabbing;
+    }
+    .fraction-tile.selected {
+      background-color: #e0f2fe;
+      border-color: #0369a1;
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.35);
+      transform: scale(1.05);
+    }
+    .fraction-tile.used {
+      opacity: 0.25;
+      cursor: not-allowed;
+      pointer-events: none;
+      box-shadow: none;
+    }
+
+    /* Level 2 Place Boxes & Distance Pills */
+    .place-box {
+      border: 2.5px solid #38bdf8;
+      background-color: #ffffff;
+      border-radius: 0.375rem;
+      font-weight: 700;
+      color: #0f172a;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
+    }
+    .dist-pill-top {
+      border: 2.5px solid #4ade80;
+      background-color: #ffffff;
+      border-radius: 9999px;
+      box-shadow: 0 2px 6px rgba(74, 222, 128, 0.16);
+    }
+    .dist-pill-bottom {
+      border: 2.5px solid #38bdf8;
+      background-color: #ffffff;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(56, 189, 248, 0.16);
+    }
+    .dist-pill-bottom:focus-within {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+    }
+    .dist-pill-bottom.correct {
+      background-color: #dcfce7;
+      border-color: #16a34a;
+    }
+    .dist-pill-bottom.incorrect {
+      background-color: #fee2e2;
+      border-color: #dc2626;
+    }
+    .km-m-input {
+      border: 1.5px solid #94a3b8;
+      border-radius: 0.35rem;
+      text-align: center;
+      font-weight: 800;
+      color: #0f172a;
+      background-color: #f8fafc;
+      outline: none;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .km-m-input:focus {
+      border-color: #0284c7;
+      background-color: #ffffff;
+    }
+
+    /* Unit Dropdown Select */
+    .unit-select {
+      border: 1.5px solid #64748b;
+      border-radius: 0.35rem;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 800;
+      padding: 0.15rem 0.25rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .unit-select:focus {
+      border-color: #0284c7;
+      background-color: #ffffff;
+    }
+    .unit-select:disabled {
+      opacity: 0.85;
+      cursor: default;
+    }
+
+    /* Level 3 Torchlight Cards */
+    .torch-item {
+      filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.1));
     }
     .torch-handle-box {
       position: relative;
-      flex: 1;
-      min-width: 0;
-      height: 46px;
-      background: #ffffff;
+      background: linear-gradient(180deg, #94a3b8 0%, #64748b 50%, #475569 100%);
       border: 2.5px solid #1e293b;
       border-right: none;
-      border-radius: 23px 0 0 23px;
+      border-radius: 0.7rem 0 0 0.7rem;
+      min-height: 54px;
+      padding: 0.45rem 0.65rem 0.45rem 0.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-left: 16px;
-      padding-right: 6px;
-      z-index: 2;
+      flex: 1 1 46%;
+    }
+    .torch-handle-box::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      border-radius: 999px;
+      background-color: #334155;
     }
     .torch-switch-dot {
       position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 14px;
-      border-radius: 9999px;
-      background: #64748b;
-      border: 1.5px solid #1e293b;
+      top: 5px;
+      right: 12px;
+      width: 14px;
+      height: 5px;
+      border-radius: 999px;
+      background-color: #ef4444;
+      border: 1px solid #7f1d1d;
     }
     .torch-body-label {
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      color: #1e293b;
-      letter-spacing: 0.01em;
+      background-color: #ffffff;
+      border: 1.5px solid #1e293b;
+      border-radius: 0.35rem;
+      padding: 0.15rem 0.5rem;
+      font-weight: 800;
+      color: #0f172a;
       white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
     .torch-head-wrap {
       position: relative;
-      display: inline-flex;
+      flex: 1 1 54%;
+      min-height: 78px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 158px;
-      height: 78px;
-      flex-shrink: 0;
-      margin-left: -1px;
-      z-index: 3;
-      transition: transform 0.2s ease;
-    }
-    @media (min-width: 640px) {
-      .torch-head-wrap {
-        width: 170px;
-        height: 82px;
-      }
+      padding: 0.45rem 0.5rem 0.45rem 0.9rem;
     }
     .torch-head-svg {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      display: block;
+      z-index: 1;
       pointer-events: none;
     }
     .torch-head-fill {
       fill: #ffffff;
       transition: fill 0.2s ease;
     }
-    .torch-head-rim {
-      transition: stroke 0.2s ease;
+    .torch-head-wrap:focus-within .torch-head-fill {
+      fill: #fefce8;
+    }
+    .torch-head-wrap.correct .torch-head-fill {
+      fill: #dcfce7;
+    }
+    .torch-head-wrap.correct .torch-head-rim {
+      stroke: #16a34a;
+    }
+    .torch-head-wrap.incorrect .torch-head-fill {
+      fill: #fee2e2;
+    }
+    .torch-head-wrap.incorrect .torch-head-rim {
+      stroke: #dc2626;
     }
     .torch-head-content {
       position: relative;
-      z-index: 10;
+      z-index: 2;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      padding-left: 12px;
-      padding-right: 4px;
+      gap: 0.25rem;
     }
-    .torch-head-wrap.correct .torch-head-fill { fill: #f0fdf4; }
-    .torch-head-wrap.correct .torch-head-rim { stroke: #16a34a !important; }
-    .torch-head-wrap.incorrect .torch-head-fill { fill: #fef2f2; }
-    .torch-head-wrap.incorrect .torch-head-rim { stroke: #dc2626 !important; }
-    .torch-head-wrap.incorrect { animation: shake 0.38s ease-in-out; }
-
-    /* Unit dropdown styling with dotted units */
-    .unit-select {
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      font-weight: 800;
+    .frac-input {
+      border: 1.5px solid #64748b;
+      border-radius: 0.3rem;
       text-align: center;
-      border: 2px solid #cbd5e1;
-      border-radius: 7px;
-      background-color: #fff1f2;
-      color: #db2777;
+      font-weight: 800;
+      color: #0f172a;
+      background-color: #f8fafc;
       outline: none;
-      cursor: pointer;
-      transition: border-color 0.18s ease, background-color 0.18s ease;
     }
-    .unit-select:focus {
-      border-color: #ec4899;
+    .frac-input:focus {
+      border-color: #d97706;
       background-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.18);
-    }
-    .unit-select:disabled {
-      cursor: default;
-      opacity: 0.92;
     }
 
-    /* Level 4 Table & Story Box */
+    /* Level 4 Story & Table */
     .l4-story-box {
-      background: linear-gradient(180deg, #fffdfd 0%, #fdf2f8 100%);
+      background-color: #fff1f2;
       border: 2px solid #f472b6;
-      border-radius: 14px;
-      box-shadow: 0 3px 8px rgba(219, 39, 119, 0.08);
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      font-weight: 600;
+      border-radius: 0.85rem;
       color: #1e293b;
-      line-height: 1.75;
+      font-weight: 600;
+      line-height: 1.65;
     }
     .l4-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
+      border-collapse: collapse;
+      background-color: #ffffff;
       border: 2px solid #94a3b8;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
     }
     .l4-table th {
-      background: #f8fafc;
-      color: #0f172a;
-      font-family: 'Inter', sans-serif;
+      background-color: #fde047;
+      border: 2px solid #94a3b8;
+      color: #1e293b;
       font-weight: 800;
-      border-bottom: 2px solid #94a3b8;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 8px 10px;
+      padding: 0.45rem 0.6rem;
       text-align: center;
     }
-    .l4-table th:last-child { border-right: none; }
     .l4-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 8px 10px;
+      border: 2px solid #94a3b8;
+      padding: 0.45rem 0.5rem;
       text-align: center;
       vertical-align: middle;
     }
-    .l4-table td:last-child { border-right: none; }
-    .l4-table tr:last-child td { border-bottom: none; }
     .l4-cell-status.correct {
-      background-color: #f0fdf4 !important;
-      box-shadow: inset 0 0 0 2px #16a34a;
+      background-color: #dcfce7;
     }
     .l4-cell-status.incorrect {
-      background-color: #fef2f2 !important;
-      box-shadow: inset 0 0 0 2px #dc2626;
-      animation: shake 0.38s ease-in-out;
+      background-color: #fee2e2;
     }
 
-    /* Level 5 Matching nodes */
+    /* Level 5 Matching Columns & Connectors */
     .l5-node {
-      background: #ffffff;
       border: 2.5px solid #cbd5e1;
-      border-radius: 14px;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+      border-radius: 0.85rem;
+      background-color: #ffffff;
       cursor: pointer;
-      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
     }
     .l5-node:hover {
       transform: translateY(-1px);
-      border-color: #38bdf8;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
     }
     .l5-node.selected {
-      border-color: #ec4899 !important;
-      background-color: #fdf2f8;
-      box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.22);
-      transform: scale(1.03);
+      border-color: #0284c7;
+      background-color: #e0f2fe;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
     }
-    .l5-node.matched-left { border-color: #ec4899; background-color: #fffafd; }
-    .l5-node.matched-mid { border-color: #0284c7; background-color: #f0f9ff; }
-    .l5-node.matched-right { border-color: #10b981; background-color: #f0fdf4; }
+    .l5-node.matched-left {
+      border-color: #ec4899;
+      background-color: #fdf2f8;
+    }
+    .l5-node.matched-mid {
+      border-color: #0284c7;
+      background-color: #f0f9ff;
+    }
+    .l5-node.matched-right {
+      border-color: #0284c7;
+      background-color: #f0f9ff;
+    }
     .l5-node.correct {
       border-color: #16a34a !important;
-      background-color: #f0fdf4 !important;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
+      background-color: #dcfce7 !important;
     }
     .l5-node.incorrect {
       border-color: #dc2626 !important;
-      background-color: #fef2f2 !important;
-      animation: shake 0.38s ease-in-out;
+      background-color: #fee2e2 !important;
     }
     .l5-veg-pill {
-      background: #ffffff;
-      border: 2px solid #2dd4bf;
-      border-radius: 9px;
-      box-shadow: 0 2px 4px rgba(20, 184, 166, 0.14);
-    }
-    .l5-gram-pill {
-      background: #ffffff;
-      border: 2px solid #f43f5e;
-      border-radius: 9px;
-      box-shadow: 0 2px 4px rgba(244, 63, 94, 0.12);
-    }
-    .l5-weight-box {
-      border: 2px solid #34d399;
-      border-radius: 12px;
-      background: #ffffff;
-    }
-
-    /* Level 6 Compact Basket & Weight Checkbox Table */
-    .l6-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
-      border: 2px solid #cbd5e1;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.07);
-    }
-    .l6-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 6px 8px;
-      text-align: center;
-      vertical-align: middle;
-    }
-    .l6-table td:last-child { border-right: none; }
-    .l6-table tr:last-child td { border-bottom: none; }
-    .l6-weight-checkbox {
-      width: 22px;
-      height: 22px;
-      border: 2px solid #0284c7;
-      border-radius: 5px;
+      border: 2px solid #f472b6;
       background-color: #ffffff;
-      color: #16a34a;
-      font-weight: 900;
-      font-size: 14px;
-      line-height: 1;
+      border-radius: 9999px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+    }
+    .l5-gram-pill {
+      border-color: #ec4899;
+      border-radius: 9999px;
+    }
+    .l5-weight-box {
+      border-color: #38bdf8;
+    }
+
+    /* Level 6 Weights Selection & Table */
+    .l6-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border: 2px solid #94a3b8;
+    }
+    .l6-table td {
+      border: 2px solid #94a3b8;
+      padding: 0.28rem 0.4rem;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .l6-weight-checkbox {
+      width: 1.35rem;
+      height: 1.35rem;
+      border: 2px solid #64748b;
+      border-radius: 0.3rem;
+      background-color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #ffffff;
       cursor: pointer;
       transition: all 0.15s ease;
     }
     .l6-weight-checkbox:hover:not(:disabled) {
-      border-color: #0369a1;
-      background-color: #f0f9ff;
+      border-color: #ea580c;
       transform: scale(1.06);
     }
     .l6-weight-checkbox.checked {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
+      background-color: #ea580c;
+      border-color: #c2410c;
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(234, 88, 12, 0.3);
     }
     .l6-answer-pill {
-      background: #ffffff;
-      border: 2px solid #f472b6;
-      border-radius: 10px;
-      padding: 4px 8px;
+      border: 2px solid #38bdf8;
+      background-color: #f0f9ff;
+      border-radius: 0.65rem;
+      padding: 0.2rem 0.35rem;
       display: inline-flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      box-shadow: inset 0 2px 4px rgba(244, 114, 182, 0.1);
-      transition: all 0.2s ease;
+      gap: 0.25rem;
     }
     .l6-answer-pill.correct {
+      background-color: #dcfce7;
       border-color: #16a34a;
-      background-color: #f0fdf4;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
     }
     .l6-answer-pill.incorrect {
+      background-color: #fee2e2;
       border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
     }
 
-    /* Level 7 Vegetable Fractional Form Table */
+    /* Level 7 Vegetable Fractional Form Tables */
     .l7-prompt-banner {
-      background: linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%);
-      border: 2px solid #86efac;
-      border-radius: 12px;
-      padding: 10px 14px;
-      color: #0f172a;
-      font-weight: 700;
+      background-color: #eef2ff;
+      border: 2px solid #818cf8;
+      border-radius: 0.85rem;
+      padding: 0.75rem 1rem;
+      color: #1e1b4b;
+      font-weight: 600;
     }
     .l7-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
+      border-collapse: collapse;
+      background-color: #ffffff;
       border: 2px solid #f472b6;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
     }
     .l7-table th {
-      background: #f9a8d4;
-      color: #0f172a;
+      background-color: #fdf2f8;
+      border: 2px solid #f472b6;
+      color: #be185d;
       font-weight: 800;
-      font-size: 0.85rem;
-      border-bottom: 2px solid #ec4899;
-      border-right: 1.5px solid #f472b6;
-      padding: 7px 8px;
+      padding: 0.45rem 0.5rem;
       text-align: center;
+      font-size: 0.85rem;
     }
-    .l7-table th:last-child { border-right: none; }
     .l7-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 7px 8px;
+      border: 2px solid #f472b6;
+      padding: 0.4rem 0.45rem;
       text-align: center;
       vertical-align: middle;
     }
-    .l7-table td:last-child { border-right: none; }
-    .l7-table tr:last-child td { border-bottom: none; }
     .l7-ans-cell.correct {
-      background-color: #f0fdf4 !important;
-      box-shadow: inset 0 0 0 2px #16a34a;
+      background-color: #dcfce7;
     }
     .l7-ans-cell.incorrect {
-      background-color: #fef2f2 !important;
-      box-shadow: inset 0 0 0 2px #dc2626;
-      animation: shake 0.38s ease-in-out;
+      background-color: #fee2e2;
     }
 
-    /* Level 8 Choose the Correct Answer Cards */
+    /* Level 8 Multiple Choice Evaluation Cards */
     .l8-q-card {
-      background: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 10px 12px;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+      background-color: #ffffff;
+      border: 2px solid #e879f9;
+      border-radius: 0.9rem;
+      padding: 0.75rem 0.85rem;
+      box-shadow: 0 2px 6px rgba(162, 28, 175, 0.08);
       transition: border-color 0.2s ease, background-color 0.2s ease;
     }
     .l8-q-card.correct {
@@ -698,712 +604,627 @@
     .l8-q-card.incorrect {
       border-color: #dc2626;
       background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
     }
     .l8-opt-btn {
-      background: #f8fafc;
       border: 2px solid #cbd5e1;
-      border-radius: 10px;
-      padding: 6px 8px;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      background-color: #f8fafc;
+      border-radius: 0.65rem;
+      padding: 0.45rem 0.55rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      min-height: 46px;
+      gap: 0.45rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      min-height: 3.1rem;
     }
     .l8-opt-btn:hover:not(:disabled) {
       border-color: #c026d3;
-      background: #fdf4ff;
+      background-color: #fdf4ff;
       transform: translateY(-1px);
     }
     .l8-opt-btn.selected {
-      border-color: #c026d3;
-      background: #fae8ff;
-      box-shadow: 0 0 0 3px rgba(192, 38, 211, 0.22);
+      border-color: #a21caf;
+      background-color: #fae8ff;
+      box-shadow: 0 0 0 2.5px rgba(192, 38, 211, 0.28);
     }
     .l8-opt-btn.correct {
       border-color: #16a34a !important;
-      background: #dcfce7 !important;
+      background-color: #dcfce7 !important;
     }
     .l8-opt-btn.incorrect {
       border-color: #dc2626 !important;
-      background: #fee2e2 !important;
+      background-color: #fee2e2 !important;
+    }
+    .scale-stone-wrap {
+      transform: scale(0.76);
+      transform-origin: center bottom;
+      margin: 0 -6px;
     }
 
-    /* Numeric inputs */
-    .frac-input, .km-m-input {
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      text-align: center;
-      border: 2px solid #cbd5e1;
-      border-radius: 6px;
-      background-color: #f8fafc;
-      color: #ec4899;
-      outline: none;
-      transition: border-color 0.18s ease, background-color 0.18s ease;
-      user-select: text;
-      -webkit-user-select: text;
-    }
-    .frac-input:focus, .km-m-input:focus {
-      border-color: #ec4899;
-      background-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.18);
-    }
-    .frac-input::placeholder, .km-m-input::placeholder {
-      color: #cbd5e1;
-      font-weight: 600;
-    }
-
-    /* Soft peach/orange option container for Stage 1 */
-    .option-bank {
-      background: linear-gradient(180deg, #ffedd5 0%, #fed7aa 100%);
-      border: 2px solid #fb923c;
-      border-radius: 14px;
-      box-shadow: inset 0 2px 8px rgba(251, 146, 60, 0.18);
-    }
-    .fraction-tile {
-      background: #ffffff;
-      border: 2px solid #60a5fa;
-      border-radius: 10px;
-      box-shadow: 0 3px 6px rgba(37, 99, 235, 0.12);
-      cursor: grab;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, opacity 0.2s ease;
-    }
-    .fraction-tile:hover:not(.used) {
-      transform: translateY(-2px);
-      border-color: #2563eb;
-      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
-    }
-    .fraction-tile:active:not(.used) {
-      cursor: grabbing;
-      transform: scale(0.97);
-    }
-    .fraction-tile.selected {
-      border-color: #2563eb;
-      background-color: #eff6ff;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
-      transform: scale(1.05);
-    }
-    .fraction-tile.used {
-      opacity: 0.32;
-      cursor: default;
-      pointer-events: none;
-      border-style: dashed;
-    }
-
-    /* Stacked fraction formatting */
+    /* Stacked Fraction Styling */
     .frac {
       display: inline-flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      vertical-align: middle;
       line-height: 1.05;
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
+      font-weight: 800;
     }
     .frac-num {
-      padding: 0 4px 2px 4px;
-      border-bottom: 2px solid #1e293b;
+      border-bottom: 2px solid #db2777;
+      padding: 0 4px 1px;
     }
     .frac-den {
-      padding: 2px 4px 0 4px;
+      padding: 1px 4px 0;
     }
 
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      50% { transform: translateX(6px); }
-      75% { transform: translateX(-4px); }
-    }
     @keyframes popIn {
-      0% { transform: scale(0.85); opacity: 0; }
+      0% { transform: scale(0.8); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
     .animate-pop {
-      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Collapsible Reference Ruler Panel */
+    .ruler-drawer {
+      background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+      border-bottom: 2px solid #f59e0b;
+    }
+    .ruler-card {
+      background-color: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
     }
   </style>
 </head>
-<body class="flex flex-col items-center justify-center p-1.5 sm:p-3 md:p-4">
 
-  <!-- Main LMS Game Container -->
-  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-sky-200 overflow-hidden">
 
-    <!-- Top LMS Meta Bar -->
-    <div class="bg-slate-800 text-white px-3 py-1.5 flex items-center justify-between gap-2 text-xs sm:text-sm">
-      <div class="flex flex-wrap items-center gap-2 min-w-0">
-        <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-0.5 rounded-md border border-slate-500 transition">
-          ← Home
+
+<body class="min-h-screen flex flex-col justify-between">
+
+  <div class="w-full max-w-[1440px] mx-auto px-2 py-2 sm:px-4 sm:py-3 flex-grow flex flex-col gap-2.5 sm:gap-3">
+
+    <!-- Compact Top LMS Status & Trial Bar -->
+    <div class="bg-slate-900 text-white rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2 shadow-sm">
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+        <a
+          href="index.html"
+          class="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700 transition shrink-0"
+        >
+          <span>← Home</span>
         </a>
-        <span class="bg-sky-500 text-white font-bold px-2.5 py-0.5 rounded-md tracking-wide">AMelur-LMS-001</span>
-        <span class="text-slate-300 font-semibold truncate" id="studentInfoBadge">Game M05 • Measurements</span>
+        <span id="studentInfoBadge" class="text-xs sm:text-sm font-bold text-slate-100 truncate">
+          Level1-M05-4.1 • Measurements
+        </span>
       </div>
-      <div class="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 shrink-0">
-        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
-        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-indigo-700 px-2 py-0.5 rounded-md text-indigo-100 font-bold border border-indigo-500" id="trialBadge">Trial 1/3</span>
-        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/36</span>
+
+      <div class="flex items-center flex-wrap gap-1.5 sm:gap-2 text-xs font-bold">
         <button
           type="button"
-          id="adminSkipBtn"
-          onclick="openSkipLevelModal()"
-          aria-label="Advance"
-          class="opacity-45 hover:opacity-100 focus:opacity-100 bg-slate-700/80 text-slate-300 hover:text-white border border-slate-500/50 font-extrabold px-2 py-0.5 rounded transition cursor-pointer text-xs select-none"
-        >→</button>
-      </div>
-    </div>
-
-    <!-- Textbook Header -->
-    <header id="textbookHeader" class="textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5 sm:gap-3">
-        <div class="badge-l1 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight" id="badgeActivityCode">
-          4.1
-        </div>
-        <h1 id="mainQuestionTitle" class="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight">
-          Write the length of the ribbon in metres.
-        </h1>
-      </div>
-      <span id="conversionHintBadge" class="text-xs font-semibold text-sky-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-sky-300">
-        100 c.m. = 1 m.
-      </span>
-    </header>
-
-    <!-- Instruction Helper Pill -->
-    <div class="bg-sky-50/80 border-b border-sky-100 px-3 py-1.5 text-center text-xs text-slate-700 font-medium" id="levelSubHeader">
-      Level1-M05-4.1 (Trial 1/3): Drag or tap an answer card on the right to place it in the box, then select the unit (m.).
-    </div>
-
-    <!-- Game Workspace -->
-    <main id="gameMain" class="p-2.5 sm:p-4 bg-white">
-      <!-- Horizontal Virtual Ruler with Scroll Slider & Pointer (Top for Length levels 4.1 - 4.4) -->
-      <div id="virtualRulerContainer" class="mb-3"></div>
-
-      <div id="workspaceFrame" class="border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner">
-        <div id="workspaceGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-
-          <!-- Left & Center Section -->
-          <div id="rowsContainer" class="lg:col-span-8 flex flex-col justify-between gap-3 sm:gap-4"></div>
-
-          <!-- Right Section: Peach Option Bank (Level 1 only) -->
-          <div id="optionBankWrapper" class="lg:col-span-4 flex flex-col">
-            <div class="option-bank p-3 flex-1 flex flex-col justify-center">
-              <div class="text-center text-xs font-bold text-orange-900/80 uppercase tracking-wider mb-2">
-                Answer Cards (Options)
-              </div>
-              <div id="optionsContainer" class="grid grid-cols-2 gap-3 place-items-center"></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Feedback Banner -->
-      <div id="feedbackBanner" class="mt-2.5 hidden rounded-xl px-3.5 py-2 text-center font-bold text-xs sm:text-sm transition-all"></div>
-
-      <!-- Action Buttons Bar -->
-      <div class="mt-3 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-        <button
-          id="checkBtn"
-          onclick="checkAnswers()"
-          class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
+          onclick="toggleRulerDrawer()"
+          id="rulerToggleBtn"
+          class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-2.5 py-1 rounded-md transition cursor-pointer"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>Check Answers</span>
+          📏 Ruler
         </button>
-
+        <span id="levelDisplay" class="bg-indigo-600 text-white px-2.5 py-1 rounded-md">Level1-M05-4.1 (1/8)</span>
+        <span id="trialBadge" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-md">Trial 1/3</span>
         <button
-          id="clearBtn"
-          onclick="clearCurrentSlots()"
-          class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          <span>Clear</span>
-        </button>
-
-        <button
+          type="button"
           id="trial2Btn"
-          onclick="startTrial(2, true)"
-          class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-sky-300"
+          onclick="startTrial(2)"
+          class="bg-sky-600 hover:bg-sky-500 text-white px-2.5 py-1 rounded-md transition cursor-pointer"
         >
-          <span>Trial 2</span>
+          Trial 2
         </button>
-
         <button
+          type="button"
           id="trial3Btn"
-          onclick="startTrial(3, true)"
-          class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-purple-300"
+          onclick="startTrial(3)"
+          class="bg-purple-600 hover:bg-purple-500 text-white px-2.5 py-1 rounded-md transition cursor-pointer"
         >
-          <span>Trial 3</span>
+          Trial 3
+        </button>
+        <span id="scoreCounter" class="bg-emerald-600 text-white px-2.5 py-1 rounded-md">Score: 0/36</span>
+        <span id="timerDisplay" class="bg-slate-800 text-amber-300 px-2.5 py-1 rounded-md border border-slate-700 font-mono">00:00:00</span>
+      </div>
+    </div>
+
+    <!-- Collapsible Visual Reference Scales Drawer -->
+    <div id="rulerDrawer" class="hidden ruler-drawer rounded-xl p-3 sm:p-4 shadow-sm">
+      <div class="flex items-center justify-between mb-2.5">
+        <div class="text-xs sm:text-sm font-extrabold text-amber-950">
+          📏 Visual Measurement Reference Scales (Tap any card to highlight)
+        </div>
+        <button
+          type="button"
+          onclick="toggleRulerDrawer()"
+          class="text-xs font-bold bg-amber-900 text-white px-2.5 py-1 rounded-md hover:bg-amber-800 cursor-pointer"
+        >
+          Hide ✕
         </button>
       </div>
-    </main>
+      <div id="rulerScalesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3"></div>
+    </div>
+
+    <!-- Main Textbook Activity Card -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex-grow flex flex-col justify-between">
+
+      <!-- Colored Textbook Activity Header -->
+      <div id="textbookHeader" class="textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <span id="badgeActivityCode" class="badge-l1 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight">4.1</span>
+          <h1 id="mainQuestionTitle" class="text-sm sm:text-lg md:text-xl font-extrabold text-slate-900">
+            Write the length of the ribbon in metres.
+          </h1>
+        </div>
+        <span id="conversionHintBadge" class="text-xs font-semibold text-sky-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-sky-300">
+          100 c.m. = 1 m.
+        </span>
+      </div>
+
+      <!-- Sub-instruction & Feedback Banner -->
+      <div class="px-3 pt-2.5 sm:px-5">
+        <p id="levelSubHeader" class="text-xs sm:text-sm text-slate-600 font-medium">
+          Level1-M05-4.1 (Trial 1/3): Drag or tap an answer card on the right to place it in an empty box (tap or drag a placed card to move/remove it), then select the unit (m.).
+        </p>
+        <div id="feedbackBanner" class="hidden mt-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold"></div>
+      </div>
+
+      <!-- Interactive Workspace -->
+      <main id="gameMain" class="p-2.5 sm:p-4 bg-white">
+        <div id="workspaceFrame" class="border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
+
+            <!-- Left / Main Activity Area -->
+            <div id="rowsContainer" class="lg:col-span-8 flex flex-col justify-between gap-3 sm:gap-4"></div>
+
+            <!-- Right Answer Bank (Level 1) -->
+            <div id="optionBankWrapper" class="lg:col-span-4 flex flex-col justify-center items-center py-2 px-2 sm:px-4">
+              <div id="optionsContainer" class="grid grid-cols-2 gap-3 sm:gap-4 place-items-center w-full max-w-[260px]"></div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+
+      <!-- Bottom Action Controls -->
+      <div class="px-3 py-2.5 sm:px-5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+        <div class="text-xs text-slate-500 font-medium">
+          PUPS Anjalam Melur • AMelur-LMS-001 (3 Trials per Level • 8 Levels)
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button
+            type="button"
+            id="clearBtn"
+            onclick="clearCurrentSlots()"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 transition cursor-pointer"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            id="checkBtn"
+            onclick="checkAnswers()"
+            class="px-5 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition cursor-pointer"
+          >
+            Check Answer
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- LMS Completion & Submission Summary Modal -->
+  <!-- Final Completion Summary Modal -->
   <div id="completionModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-300 text-center space-y-4">
-      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-extrabold">
-        ★
-      </div>
-      <h2 class="text-xl font-extrabold text-slate-900">Congratulations!</h2>
-      <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        You have completed all levels of M05 (Level1-M05-4.1 through Level8-M05-4.8) across all 3 trials!
-      </p>
-
-      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Student ID:</span> <span class="font-bold text-indigo-700" id="sumStudentId">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Name:</span> <span class="font-bold text-slate-800" id="sumStudentName">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level1-M05-4.1:</span> <span class="font-bold text-blue-700" id="sumL1">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level2-M05-4.2:</span> <span class="font-bold text-purple-700" id="sumL2">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level3-M05-4.3:</span> <span class="font-bold text-emerald-700" id="sumL3">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level4-M05-4.4:</span> <span class="font-bold text-pink-700" id="sumL4">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level5-M05-4.5:</span> <span class="font-bold text-sky-700" id="sumL5">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level6-M05-4.6:</span> <span class="font-bold text-orange-700" id="sumL6">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level7-M05-4.7:</span> <span class="font-bold text-indigo-700" id="sumL7">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level8-M05-4.8:</span> <span class="font-bold text-fuchsia-700" id="sumL8">--</span></div>
-        <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saved to AMelur-LMS-001 Leaderboard ✓</span></div>
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h2 class="text-base sm:text-lg font-extrabold text-indigo-900">🎉 M05 Measurements Summary</h2>
+        <span id="sumStudentId" class="text-xs font-extrabold bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full">---</span>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-        <button onclick="playAgainFullGame()" class="flex-1 py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm cursor-pointer">
+      <div class="text-xs sm:text-sm text-slate-700 space-y-1.5">
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Student:</span>
+          <span id="sumStudentName" class="font-bold text-slate-900">---</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level1-M05-4.1:</span>
+          <span id="sumL1" class="font-bold text-sky-700">0/4</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level2-M05-4.2:</span>
+          <span id="sumL2" class="font-bold text-amber-700">0/4</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level3-M05-4.3:</span>
+          <span id="sumL3" class="font-bold text-emerald-700">0/6</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level4-M05-4.4:</span>
+          <span id="sumL4" class="font-bold text-pink-700">0/3</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level5-M05-4.5:</span>
+          <span id="sumL5" class="font-bold text-cyan-700">0/4</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level6-M05-4.6:</span>
+          <span id="sumL6" class="font-bold text-orange-700">0/5</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level7-M05-4.7:</span>
+          <span id="sumL7" class="font-bold text-indigo-700">0/6</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold text-slate-500">Level8-M05-4.8:</span>
+          <span id="sumL8" class="font-bold text-fuchsia-700">0/4</span>
+        </div>
+        <div class="flex justify-between border-t pt-2 text-sm sm:text-base">
+          <span class="font-extrabold text-slate-800">Overall Best Score:</span>
+          <span id="sumTotal" class="font-extrabold text-emerald-600">0/36-0%</span>
+        </div>
+        <div class="pt-1 text-xs">
+          <span id="sumSyncStatus" class="font-bold text-slate-500">Ready</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button
+          type="button"
+          onclick="playAgainFullGame()"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition cursor-pointer"
+        >
           Play Again
         </button>
-        <a href="index.html" class="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm text-center">
-          Home
+        <a
+          href="index.html"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition"
+        >
+          Back to Home
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Password Modal to Skip Directly to Next Level -->
-  <div id="skipPasswordModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-slate-300 text-center space-y-3.5">
-      <div class="w-11 h-11 bg-slate-100 text-slate-700 rounded-full flex items-center justify-center mx-auto text-xl font-extrabold">
-        →
-      </div>
-      <h3 class="text-lg font-extrabold text-slate-900">Next Level</h3>
-      <p class="text-xs sm:text-sm text-slate-600 font-medium" id="skipModalSubText">
-        Enter password to go to the next level.
-      </p>
-      <input
-        type="password"
-        id="skipPasswordInput"
-        placeholder="Password"
-        onkeydown="if(event.key === 'Enter') verifySkipPassword()"
-        class="w-full px-3.5 py-2.5 text-center font-bold text-slate-800 border-2 border-slate-300 focus:border-indigo-500 rounded-xl outline-none"
-      />
-      <div id="skipPasswordError" class="hidden text-xs font-bold text-rose-600">
-        Incorrect password. Please try again.
-      </div>
-      <div class="flex gap-2.5 pt-1">
-        <button
-          onclick="closeSkipLevelModal()"
-          class="flex-1 py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm cursor-pointer"
-        >
-          Cancel
-        </button>
-        <button
-          onclick="verifySkipPassword()"
-          class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer"
-        >
-          Go →
-        </button>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
-    const TEACHER_SKIP_PASSWORD = "pups";
-
-    /* =====================================================================
-       1. VIRTUAL SCROLLABLE RULER WITH SLIDER & POINTER (LENGTH LEVELS 4.1-4.4)
-       ===================================================================== */
-    let activeRulerMode = 'cm_m'; // 'mm_cm' | 'cm_m' | 'm_km'
-    let rulerPointerSteps = 0;
-
-    const RULER_MODES = {
-      mm_cm: {
-        label: 'm.m. & c.m.',
-        subUnit: 'm.m.',
-        mainUnit: 'c.m.',
-        subPerMain: 10,
-        maxMain: 30,
-        stepSize: 1,
-        pxPerStep: 4,
-        minorEvery: 1,
-        midEvery: 5,
-        majorEvery: 10,
-        formatReadout(steps) {
-          const cm = Math.floor(steps / 10);
-          const mm = steps % 10;
-          return `${steps} m.m. = ${cm} c.m. ${mm} m.m.`;
-        }
-      },
-      cm_m: {
-        label: 'c.m. & m.',
-        subUnit: 'c.m.',
-        mainUnit: 'm.',
-        subPerMain: 100,
-        maxMain: 5,
-        stepSize: 5,
-        pxPerStep: 12.5,
-        minorEvery: 1,
-        midEvery: 10,
-        majorEvery: 20,
-        formatReadout(steps) {
-          const totalCm = steps * 5;
-          const m = Math.floor(totalCm / 100);
-          const cm = totalCm % 100;
-          let fracStr = '';
-          if (cm === 25) fracStr = m > 0 ? ` (${m} ¼ m.)` : ` (¼ m.)`;
-          else if (cm === 50) fracStr = m > 0 ? ` (${m} ½ m.)` : ` (½ m.)`;
-          else if (cm === 75) fracStr = m > 0 ? ` (${m} ¾ m.)` : ` (¾ m.)`;
-          else if (cm === 0 && m > 0) fracStr = ` (${m} m.)`;
-          return `${totalCm} c.m. = ${m} m. ${cm} c.m.${fracStr}`;
-        }
-      },
-      m_km: {
-        label: 'm. & k.m.',
-        subUnit: 'm.',
-        mainUnit: 'k.m.',
-        subPerMain: 1000,
-        maxMain: 10,
-        stepSize: 50,
-        pxPerStep: 8.5,
-        minorEvery: 1,
-        midEvery: 10,
-        majorEvery: 20,
-        formatReadout(steps) {
-          const totalM = steps * 50;
-          const km = Math.floor(totalM / 1000);
-          const m = totalM % 1000;
-          let fracStr = '';
-          if (m === 250) fracStr = km > 0 ? ` (${km} ¼ k.m.)` : ` (¼ k.m.)`;
-          else if (m === 500) fracStr = km > 0 ? ` (${km} ½ k.m.)` : ` (½ k.m.)`;
-          else if (m === 750) fracStr = km > 0 ? ` (${km} ¾ k.m.)` : ` (¾ k.m.)`;
-          else if (m === 0 && km > 0) fracStr = ` (${km} k.m.)`;
-          return `${totalM} m. = ${km} k.m. ${m} m.${fracStr}`;
-        }
-      }
-    };
-
-    function setVirtualRulerMode(mode) {
-      if (!RULER_MODES[mode]) return;
-      activeRulerMode = mode;
-      rulerPointerSteps = 0;
-      renderLengthScalesForLevel(currentLevel);
-    }
-
-    function updateRulerPointer(stepVal, shouldAutoScroll = true) {
-      const cfg = RULER_MODES[activeRulerMode];
-      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
-      rulerPointerSteps = Math.max(0, Math.min(maxSteps, parseInt(stepVal, 10) || 0));
-
-      const leftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
-      const pointerEl = document.getElementById('rulerPointerLine');
-      const readoutEl = document.getElementById('rulerPointerReadout');
-      const sliderEl = document.getElementById('rulerRangeSlider');
-      const viewportEl = document.getElementById('rulerScrollViewport');
-
-      if (pointerEl) pointerEl.style.left = `${leftPx}px`;
-      if (readoutEl) readoutEl.textContent = cfg.formatReadout(rulerPointerSteps);
-      if (sliderEl && parseInt(sliderEl.value, 10) !== rulerPointerSteps) {
-        sliderEl.value = String(rulerPointerSteps);
-      }
-
-      if (shouldAutoScroll && viewportEl) {
-        const viewW = viewportEl.clientWidth;
-        const targetScroll = Math.max(0, leftPx - viewW * 0.5);
-        viewportEl.scrollTo({ left: targetScroll, behavior: 'smooth' });
-      }
-    }
-
-    function handleRulerStripClick(event) {
-      const stripEl = document.getElementById('rulerStripCanvas');
-      if (!stripEl) return;
-      const rect = stripEl.getBoundingClientRect();
-      const clickX = event.clientX - rect.left - 24;
-      const cfg = RULER_MODES[activeRulerMode];
-      const nearestStep = Math.round(clickX / cfg.pxPerStep);
-      updateRulerPointer(nearestStep, false);
-    }
-
-    function renderLengthScalesForLevel(lvl, resetDefaultMode = false) {
-      const container = document.getElementById('virtualRulerContainer');
-      if (!container) return;
-
-      if (lvl > 4) {
-        container.classList.add('hidden');
-        container.innerHTML = '';
-        return;
-      }
-
-      if (resetDefaultMode) {
-        activeRulerMode = lvl === 1 ? 'cm_m' : 'm_km';
-        rulerPointerSteps = 0;
-      }
-
-      container.classList.remove('hidden');
-      const cfg = RULER_MODES[activeRulerMode];
-      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
-      const totalWidthPx = 48 + maxSteps * cfg.pxPerStep;
-
-      let ticksHTML = '';
-      for (let s = 0; s <= maxSteps; s++) {
-        const x = 24 + s * cfg.pxPerStep;
-        if (s % cfg.majorEvery === 0) {
-          const mainVal = (s * cfg.stepSize) / cfg.subPerMain;
-          const subVal = s * cfg.stepSize;
-          const topLabel = s === 0 ? `0 (${cfg.mainUnit})` : `${mainVal}`;
-          const botLabel = s === 0 ? `0 (${cfg.subUnit})` : `${subVal}`;
-          ticksHTML += `
-            <div class="ruler-major-tick" style="left:${x}px;"></div>
-            <div class="ruler-major-label" style="left:${x}px;">${topLabel}</div>
-            <div class="ruler-frac-label" style="left:${x}px;">${botLabel}</div>
-          `;
-        } else if (s % cfg.midEvery === 0) {
-          const subVal = s * cfg.stepSize;
-          let midText = '';
-          if (activeRulerMode === 'mm_cm') {
-            const halfCmVal = (s * cfg.stepSize) / 10;
-            midText = `${halfCmVal}`;
-          } else {
-            midText = `${subVal}`;
-          }
-          ticksHTML += `
-            <div class="ruler-mid-tick" style="left:${x}px;"></div>
-            <div class="ruler-frac-label" style="left:${x}px;">${midText}</div>
-          `;
-        } else {
-          ticksHTML += `<div class="ruler-minor-tick" style="left:${x}px;"></div>`;
-        }
-      }
-
-      const modeButtonsHTML = Object.entries(RULER_MODES).map(([key, mObj]) => {
-        const isActive = key === activeRulerMode;
-        const btnCls = isActive
-          ? 'bg-sky-600 text-white border-sky-700 shadow-sm'
-          : 'bg-white text-slate-700 border-slate-300 hover:bg-sky-50';
-        return `
-          <button
-            type="button"
-            onclick="setVirtualRulerMode('${key}')"
-            class="px-2.5 py-1 rounded-lg border text-xs font-extrabold transition cursor-pointer ${btnCls}"
-          >
-            ${mObj.label}
-          </button>
-        `;
-      }).join('');
-
-      const pointerLeftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
-
-      container.innerHTML = `
-        <div class="virtual-ruler-panel">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wide mr-1">Virtual Ruler:</span>
-              ${modeButtonsHTML}
-            </div>
-            <div class="bg-rose-50 border border-rose-300 text-rose-900 px-2.5 py-0.5 rounded-lg text-xs sm:text-sm font-extrabold font-mono">
-              Pointer: <span id="rulerPointerReadout">${cfg.formatReadout(rulerPointerSteps)}</span>
-            </div>
-          </div>
-
-          <div id="rulerScrollViewport" class="ruler-scroll-viewport">
-            <div
-              id="rulerStripCanvas"
-              onclick="handleRulerStripClick(event)"
-              class="ruler-strip cursor-crosshair"
-              style="width:${totalWidthPx}px; min-width:${totalWidthPx}px;"
-              title="Tap anywhere on the ruler or drag the slider below to move the pointer"
-            >
-              ${ticksHTML}
-              <div id="rulerPointerLine" class="ruler-pointer-line" style="left:${pointerLeftPx}px;">
-                <div class="ruler-pointer-head"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ruler-slider-row">
-            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">0</span>
-            <input
-              id="rulerRangeSlider"
-              type="range"
-              min="0"
-              max="${maxSteps}"
-              step="1"
-              value="${rulerPointerSteps}"
-              oninput="updateRulerPointer(this.value, true)"
-              aria-label="Slide virtual ruler pointer"
-              class="ruler-slider"
-            />
-            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">${cfg.maxMain} ${cfg.mainUnit}</span>
-          </div>
-        </div>
-      `;
-    }
-
-    function openSkipLevelModal() {
-      const modal = document.getElementById('skipPasswordModal');
-      const input = document.getElementById('skipPasswordInput');
-      const err = document.getElementById('skipPasswordError');
-      const sub = document.getElementById('skipModalSubText');
-
-      err.classList.add('hidden');
-      input.value = '';
-      if (currentLevel < 8) {
-        sub.textContent = `Enter password to move from Level ${currentLevel} to Level ${currentLevel + 1}.`;
-      } else {
-        sub.textContent = 'You are on the final level (Level8-M05-4.8). Enter password to open summary.';
-      }
-      modal.classList.remove('hidden');
-      setTimeout(() => input.focus(), 50);
-    }
-
-    function closeSkipLevelModal() {
-      document.getElementById('skipPasswordModal').classList.add('hidden');
-    }
-
-    function verifySkipPassword() {
-      const entered = document.getElementById('skipPasswordInput').value.trim();
-      const err = document.getElementById('skipPasswordError');
-
-      if (entered.toLowerCase() !== TEACHER_SKIP_PASSWORD.toLowerCase()) {
-        playSound('error');
-        err.classList.remove('hidden');
-        return;
-      }
-
-      playSound('place');
-      closeSkipLevelModal();
-      if (!levelCompleted) {
-        recordTrialSnapshot(currentLevel, currentTrial, 0, false);
-        syncTrialToGoogleSheet(currentLevel, currentTrial);
-      }
-
-      if (currentLevel < 8) {
-        setupLevel(currentLevel + 1, 1);
-      } else {
-        levelCompleted = true;
-        openFinalSummaryModal();
-      }
-    }
-
-    const ENGLISH_UNIT_OPTIONS = [
-      { value: 'mm', label: 'm.m.' },
-      { value: 'cm', label: 'c.m.' },
-      { value: 'm',  label: 'm.'   },
-      { value: 'km', label: 'k.m.' }
-    ];
-
-    function renderUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
-      const opts = ENGLISH_UNIT_OPTIONS.map(opt => {
-        const sel = selectedValue === opt.value ? 'selected' : '';
-        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
-      }).join('');
-      return `
-        <select
-          ${disabledAttr}
-          onclick="event.stopPropagation()"
-          onchange="${onChangeAttr}"
-          aria-label="${ariaLabel}"
-          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
-        >
-          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
-          ${opts}
-        </select>
-      `;
-    }
-
-    const MASS_UNIT_OPTIONS = [
-      { value: 'mg', label: 'm.g.' },
-      { value: 'g',  label: 'g.'   },
-      { value: 'kg', label: 'k.g.' }
-    ];
-
-    function renderMassUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
-      const opts = MASS_UNIT_OPTIONS.map(opt => {
-        const sel = selectedValue === opt.value ? 'selected' : '';
-        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
-      }).join('');
-      return `
-        <select
-          ${disabledAttr}
-          onchange="${onChangeAttr}"
-          aria-label="${ariaLabel}"
-          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
-        >
-          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
-          ${opts}
-        </select>
-      `;
-    }
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbLUtA8F5T9dRU9_DpromN3wx8Yp4DKQgaU_nl4BCA8hHNFOY3Jx8QK4MjzaAPfZPz/exec';
 
     const urlParams = new URLSearchParams(window.location.search);
     const lmsContext = {
-      gameCode: (urlParams.get('gameCode') || 'M05').trim().toUpperCase(),
+      gameCode: (urlParams.get('gameCode') || 'M05').trim().toUpperCase() || 'M05',
       studentId: (urlParams.get('studentId') || 'GUEST').trim().toUpperCase(),
+      emisNumber: (urlParams.get('emisNumber') || '').trim(),
       name: (urlParams.get('name') || 'Student').trim(),
       school: (urlParams.get('school') || 'PUPS Anjalam Melur').trim(),
       whatsapp: (urlParams.get('whatsapp') || '').trim(),
       trialId: (urlParams.get('trialId') || '1').trim()
     };
 
+    let dailyLimitBlocked = false;
+    let dailySubmissionCount = 0;
+
+    function getTodayISTKeyM05() {
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(new Date());
+      const y = parts.find(p => p.type === 'year')?.value || '';
+      const m = parts.find(p => p.type === 'month')?.value || '';
+      const d = parts.find(p => p.type === 'day')?.value || '';
+      return `${y}-${m}-${d}`;
+    }
+
+    function getDailyStorageKeyM05() {
+      return `m05_daily_sub_${getTodayISTKeyM05()}_${lmsContext.gameCode || 'M05'}`;
+    }
+
+    function getLocalDailySubmissionCountM05() {
+      try {
+        const raw = localStorage.getItem(getDailyStorageKeyM05());
+        const data = raw ? JSON.parse(raw) : {};
+        const bySid = lmsContext.studentId && lmsContext.studentId !== 'GUEST' ? (data[`SID:${lmsContext.studentId}`] || 0) : 0;
+        const byEmis = lmsContext.emisNumber ? (data[`EMIS:${lmsContext.emisNumber}`] || 0) : 0;
+        return Math.max(bySid, byEmis);
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function incrementLocalDailySubmissionCountM05() {
+      try {
+        const key = getDailyStorageKeyM05();
+        const raw = localStorage.getItem(key);
+        const data = raw ? JSON.parse(raw) : {};
+        const nextCount = Math.max(1, getLocalDailySubmissionCountM05() + 1);
+        if (lmsContext.studentId && lmsContext.studentId !== 'GUEST') {
+          data[`SID:${lmsContext.studentId}`] = nextCount;
+        }
+        if (lmsContext.emisNumber) {
+          data[`EMIS:${lmsContext.emisNumber}`] = nextCount;
+        }
+        localStorage.setItem(key, JSON.stringify(data));
+        return nextCount;
+      } catch (e) {
+        return 1;
+      }
+    }
+
+    function formatDailyBlockMessageM05(count) {
+      const gCode = lmsContext.gameCode || 'M05';
+      const n = Math.max(1, parseInt(count, 10) || 1);
+      return `You have already finished ${n} submissions including today's submission of ${gCode} game! Try again tomorrow`;
+    }
+
+    function enforceDailyGameLockUI(count) {
+      dailyLimitBlocked = true;
+      dailySubmissionCount = Math.max(1, parseInt(count, 10) || 1);
+      if (autoAdvanceTimeout) {
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = null;
+      }
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      const msg = formatDailyBlockMessageM05(dailySubmissionCount);
+      document.querySelectorAll('#rowsContainer input, #rowsContainer select, #rowsContainer button, #checkBtn, #clearBtn, #trial2Btn, #trial3Btn').forEach(el => {
+        el.disabled = true;
+      });
+      document.getElementById('checkBtn').classList.add('hidden');
+      document.getElementById('clearBtn').classList.add('hidden');
+      showFeedback(msg, 'error');
+      alert(msg);
+    }
+
+    async function checkAndEnforceDailyLimitM05() {
+      if (lmsContext.studentId === 'GUEST' && !lmsContext.emisNumber) return false;
+      const localCount = getLocalDailySubmissionCountM05();
+      try {
+        const url = `${GOOGLE_SCRIPT_URL}?action=checkDailyLimit&gameCode=${encodeURIComponent(lmsContext.gameCode || 'M05')}&studentId=${encodeURIComponent(lmsContext.studentId)}&emisNumber=${encodeURIComponent(lmsContext.emisNumber)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const serverCount = data && typeof data.todayCount === 'number' ? data.todayCount : 0;
+        const maxCount = Math.max(localCount, serverCount);
+        if ((data && data.blocked) || maxCount >= 1) {
+          enforceDailyGameLockUI(maxCount);
+          return true;
+        }
+      } catch (e) {
+        if (localCount >= 1) {
+          enforceDailyGameLockUI(localCount);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /* =====================================================================
+       1. UNIT DROPDOWNS & COLLAPSIBLE VISUAL MEASUREMENT SCALES DRAWER
+       ===================================================================== */
+    function renderUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClass = '') {
+      return `
+        <select
+          ${disabledAttr}
+          onchange="${onChangeAttr}"
+          aria-label="${ariaLabel}"
+          class="unit-select ${extraClass}"
+        >
+          <option value="" ${selectedValue === '' ? 'selected' : ''}>unit</option>
+          <option value="m" ${selectedValue === 'm' ? 'selected' : ''}>m.</option>
+          <option value="km" ${selectedValue === 'km' ? 'selected' : ''}>k.m.</option>
+        </select>
+      `;
+    }
+
+    function renderMassUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClass = '') {
+      return `
+        <select
+          ${disabledAttr}
+          onchange="${onChangeAttr}"
+          aria-label="${ariaLabel}"
+          class="unit-select ${extraClass}"
+        >
+          <option value="" ${selectedValue === '' ? 'selected' : ''}>unit</option>
+          <option value="kg" ${selectedValue === 'kg' ? 'selected' : ''}>k.g.</option>
+          <option value="g" ${selectedValue === 'g' ? 'selected' : ''}>g.</option>
+        </select>
+      `;
+    }
+
+    const LENGTH_SCALE_CARDS = [
+      {
+        id: 'scale_100cm',
+        title: '100 c.m. = 1 m.',
+        subtitle: 'Tap fraction to see c.m.',
+        ticks: ['0', '25', '50', '75', '100'],
+        parts: [
+          { label: '¼ m.', cm: '25 c.m.', span: 1, color: '#fde047', text: '#713f12' },
+          { label: '½ m.', cm: '50 c.m.', span: 1, color: '#86efac', text: '#14532d' },
+          { label: '¾ m.', cm: '75 c.m.', span: 1, color: '#93c5fd', text: '#1e3a8a' },
+          { label: '1 m.', cm: '100 c.m.', span: 1, color: '#f9a8d4', text: '#831843' }
+        ]
+      },
+      {
+        id: 'scale_1km_4',
+        title: '1 k.m. = 1000 m. (Quarters)',
+        subtitle: '1000 m. split into 4 equal parts',
+        ticks: ['0', '250', '500', '750', '1000'],
+        parts: [
+          { label: '¼ k.m.', cm: '250 m.', span: 1, color: '#fed7aa', text: '#7c2d12' },
+          { label: '½ k.m.', cm: '500 m.', span: 1, color: '#bbf7d0', text: '#14532d' },
+          { label: '¾ k.m.', cm: '750 m.', span: 1, color: '#bae6fd', text: '#0c4a6e' },
+          { label: '1 k.m.', cm: '1000 m.', span: 1, color: '#fbcfe8', text: '#831843' }
+        ]
+      },
+      {
+        id: 'scale_1km_2',
+        title: '1 k.m. = 1000 m. (Halves)',
+        subtitle: '1000 m. split into 2 equal parts',
+        ticks: ['0', '500', '1000'],
+        parts: [
+          { label: '½ k.m.', cm: '500 m.', span: 1, color: '#a7f3d0', text: '#064e3b' },
+          { label: '1 k.m.', cm: '1000 m.', span: 1, color: '#c7d2fe', text: '#312e81' }
+        ]
+      },
+      {
+        id: 'scale_1kg',
+        title: '1 k.g. = 1000 g. (Mass)',
+        subtitle: '1000 g. split into 4 equal parts',
+        ticks: ['0', '250', '500', '750', '1000'],
+        parts: [
+          { label: '¼ k.g.', cm: '250 g.', span: 1, color: '#fde68a', text: '#78350f' },
+          { label: '½ k.g.', cm: '500 g.', span: 1, color: '#86efac', text: '#14532d' },
+          { label: '¾ k.g.', cm: '750 g.', span: 1, color: '#93c5fd', text: '#1e3a8a' },
+          { label: '1 k.g.', cm: '1000 g.', span: 1, color: '#f5d0fe', text: '#701a75' }
+        ]
+      }
+    ];
+
+    let activeScaleMode = {};
+
+    function toggleRulerDrawer(forceOpen = null) {
+      const drawer = document.getElementById('rulerDrawer');
+      const btn = document.getElementById('rulerToggleBtn');
+      if (!drawer) return;
+      const shouldOpen = forceOpen !== null ? forceOpen : drawer.classList.contains('hidden');
+      drawer.classList.toggle('hidden', !shouldOpen);
+      if (btn) {
+        btn.classList.toggle('ring-2', shouldOpen);
+        btn.classList.toggle('ring-white', shouldOpen);
+      }
+      if (shouldOpen) {
+        renderLengthScalesForLevel(currentLevel, false);
+      }
+    }
+
+    function toggleScalePartDisplay(cardId, idx) {
+      const key = `${cardId}_${idx}`;
+      activeScaleMode[key] = !activeScaleMode[key];
+      renderLengthScalesForLevel(currentLevel, false);
+    }
+
+    function renderLengthScalesForLevel(lvl, autoOpenForL1) {
+      const drawer = document.getElementById('rulerDrawer');
+      const grid = document.getElementById('rulerScalesGrid');
+      if (!drawer || !grid) return;
+
+      if (typeof autoOpenForL1 === 'boolean') {
+        drawer.classList.toggle('hidden', !autoOpenForL1);
+      }
+
+      const relevantCards =
+        lvl === 1
+          ? [LENGTH_SCALE_CARDS[0]]
+          : lvl === 2 || lvl === 3 || lvl === 4
+          ? [LENGTH_SCALE_CARDS[1], LENGTH_SCALE_CARDS[2], LENGTH_SCALE_CARDS[0]]
+          : [LENGTH_SCALE_CARDS[3], LENGTH_SCALE_CARDS[1]];
+
+      grid.className =
+        relevantCards.length === 1
+          ? 'grid grid-cols-1 gap-3'
+          : relevantCards.length === 2
+          ? 'grid grid-cols-1 md:grid-cols-2 gap-3'
+          : 'grid grid-cols-1 md:grid-cols-3 gap-3';
+
+      grid.innerHTML = relevantCards
+        .map(card => {
+          const ticksHTML = card.ticks
+            .map(t => `<span>${t}</span>`)
+            .join('');
+
+          const segmentsHTML = card.parts
+            .map((p, idx) => {
+              const showConverted = Boolean(activeScaleMode[`${card.id}_${idx}`]);
+              const displayLabel = showConverted ? p.cm : p.label;
+              const badgeTag = showConverted ? p.label : p.cm;
+              return `
+                <button
+                  type="button"
+                  onclick="toggleScalePartDisplay('${card.id}', ${idx})"
+                  style="flex: ${p.span}; background-color: ${p.color}; color: ${p.text};"
+                  class="h-11 sm:h-12 border-r last:border-r-0 border-slate-700/40 flex flex-col items-center justify-center px-1 cursor-pointer hover:brightness-95 transition"
+                  title="Tap to toggle ${p.label} ↔ ${p.cm}"
+                >
+                  <span class="text-xs sm:text-sm font-extrabold leading-none">${displayLabel}</span>
+                  <span class="text-[10px] font-bold opacity-80 mt-0.5">${badgeTag}</span>
+                </button>
+              `;
+            })
+            .join('');
+
+          return `
+            <div class="ruler-card p-2.5 sm:p-3">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-xs sm:text-sm font-extrabold text-slate-900">${card.title}</span>
+                <span class="text-[11px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">${card.subtitle}</span>
+              </div>
+              <div class="flex justify-between text-[11px] font-bold text-slate-600 px-0.5 mb-1 font-mono">
+                ${ticksHTML}
+              </div>
+              <div class="flex w-full rounded-lg overflow-hidden border-2 border-slate-800">
+                ${segmentsHTML}
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    // Question Pools
     const LEVEL1_POOL = [
-      { id: 'c25',  cm: 25,  whole: '',  num: '1', den: '4' },
-      { id: 'c50',  cm: 50,  whole: '',  num: '1', den: '2' },
-      { id: 'c75',  cm: 75,  whole: '',  num: '3', den: '4' },
-      { id: 'c100', cm: 100, whole: '1', num: '',  den: ''  },
-      { id: 'c125', cm: 125, whole: '1', num: '1', den: '4' },
-      { id: 'c150', cm: 150, whole: '1', num: '1', den: '2' },
-      { id: 'c175', cm: 175, whole: '1', num: '3', den: '4' },
-      { id: 'c200', cm: 200, whole: '2', num: '',  den: ''  },
-      { id: 'c225', cm: 225, whole: '2', num: '1', den: '4' },
-      { id: 'c250', cm: 250, whole: '2', num: '1', den: '2' },
-      { id: 'c275', cm: 275, whole: '2', num: '3', den: '4' },
-      { id: 'c300', cm: 300, whole: '3', num: '',  den: ''  }
+      { id: 'r_1_4', cm: 25, whole: '', num: 1, den: 4 },
+      { id: 'r_1_2', cm: 50, whole: '', num: 1, den: 2 },
+      { id: 'r_3_4', cm: 75, whole: '', num: 3, den: 4 },
+      { id: 'r_1',   cm: 100, whole: 1, num: 0, den: 0 },
+      { id: 'r_1_1_4', cm: 125, whole: 1, num: 1, den: 4 },
+      { id: 'r_1_1_2', cm: 150, whole: 1, num: 1, den: 2 },
+      { id: 'r_1_3_4', cm: 175, whole: 1, num: 3, den: 4 },
+      { id: 'r_2',   cm: 200, whole: 2, num: 0, den: 0 },
+      { id: 'r_2_1_4', cm: 225, whole: 2, num: 1, den: 4 },
+      { id: 'r_2_1_2', cm: 250, whole: 2, num: 1, den: 2 },
+      { id: 'r_2_3_4', cm: 275, whole: 2, num: 3, den: 4 },
+      { id: 'r_3',   cm: 300, whole: 3, num: 0, den: 0 }
     ];
 
     const PLACE_PAIRS = [
-      { left: 'Pon Nagar',      right: 'Koodal Nagar',   leftBorder: '#c026d3', rightBorder: '#ec4899' },
-      { left: 'Pasumai Nagar',  right: 'Thendral Nagar', leftBorder: '#4d7c0f', rightBorder: '#7e22ce' },
-      { left: 'Valar Nagar',    right: 'Anbu Nagar',     leftBorder: '#ca8a04', rightBorder: '#0284c7' },
-      { left: 'Muthu Nagar',    right: 'Pothigai Nagar', leftBorder: '#f43f5e', rightBorder: '#f97316' },
-      { left: 'Kaveri Nagar',   right: 'Mullai Nagar',   leftBorder: '#0d9488', rightBorder: '#6366f1' },
-      { left: 'Marutham Nagar', right: 'Kurinji Nagar',  leftBorder: '#16a34a', rightBorder: '#db2777' }
+      { left: 'Trichy',      right: 'Madurai',   leftBorder: '#4ade80', rightBorder: '#38bdf8' },
+      { left: 'Chennai',     right: 'Salem',     leftBorder: '#facc15', rightBorder: '#38bdf8' },
+      { left: 'Coimbatore',  right: 'Pollachi',  leftBorder: '#4ade80', rightBorder: '#38bdf8' },
+      { left: 'Thanjavur',   right: 'Kumbakonam',leftBorder: '#facc15', rightBorder: '#38bdf8' },
+      { left: 'Tirunelveli', right: 'Tenkasi',   leftBorder: '#4ade80', rightBorder: '#38bdf8' },
+      { left: 'Erode',       right: 'Gobichetti',leftBorder: '#facc15', rightBorder: '#38bdf8' },
+      { left: 'Dindigul',    right: 'Palani',    leftBorder: '#4ade80', rightBorder: '#38bdf8' },
+      { left: 'Vellore',     right: 'Ranipet',   leftBorder: '#facc15', rightBorder: '#38bdf8' }
     ];
 
     const LEVEL2_DIST_POOL = [
-      { whole: 1, num: 1, den: 2, km: 1, m: 500 },
-      { whole: 1, num: 1, den: 4, km: 1, m: 250 },
-      { whole: 2, num: 3, den: 4, km: 2, m: 750 },
-      { whole: 3, num: 1, den: 2, km: 3, m: 500 },
       { whole: 2, num: 1, den: 4, km: 2, m: 250 },
-      { whole: 3, num: 3, den: 4, km: 3, m: 750 },
-      { whole: 4, num: 1, den: 2, km: 4, m: 500 },
-      { whole: 4, num: 1, den: 4, km: 4, m: 250 },
-      { whole: 1, num: 3, den: 4, km: 1, m: 750 },
-      { whole: 5, num: 1, den: 2, km: 5, m: 500 },
-      { whole: 2, num: 1, den: 2, km: 2, m: 500 },
-      { whole: 4, num: 3, den: 4, km: 4, m: 750 }
+      { whole: 3, num: 1, den: 2, km: 3, m: 500 },
+      { whole: 4, num: 3, den: 4, km: 4, m: 750 },
+      { whole: 5, num: 1, den: 4, km: 5, m: 250 },
+      { whole: 6, num: 1, den: 2, km: 6, m: 500 },
+      { whole: 7, num: 3, den: 4, km: 7, m: 750 },
+      { whole: 8, num: 1, den: 4, km: 8, m: 250 },
+      { whole: 9, num: 1, den: 2, km: 9, m: 500 }
     ];
 
     const LEVEL3_POOL = [
-      { label: '1 m. 50 c.m.',   unit: 'm',  whole: 1, num: 1, den: 2 },
       { label: '2 m. 25 c.m.',   unit: 'm',  whole: 2, num: 1, den: 4 },
-      { label: '3 m. 75 c.m.',   unit: 'm',  whole: 3, num: 3, den: 4 },
+      { label: '5 m. 50 c.m.',   unit: 'm',  whole: 5, num: 1, den: 2 },
+      { label: '7 m. 75 c.m.',   unit: 'm',  whole: 7, num: 3, den:
+
+
+
+
+
+
+{ label: '3 m. 75 c.m.',   unit: 'm',  whole: 3, num: 3, den: 4 },
       { label: '4 m. 50 c.m.',   unit: 'm',  whole: 4, num: 1, den: 2 },
       { label: '5 k.m. 750 m.',  unit: 'km', whole: 5, num: 3, den: 4 },
       { label: '7 k.m. 500 m.',  unit: 'km', whole: 7, num: 1, den: 2 },
@@ -1560,9 +1381,6 @@
       `;
     }
 
-    /* =====================================================================
-       4. 3D KG & GRAM STONES WITH BLACK BG (IDENTICAL SIZES IN 4.5, 4.6 & 4.8)
-       ===================================================================== */
     function render3DWeightStoneSVG(label, sizeClass, scaleFactor = 1.25) {
       const uid = 'w3d_' + Math.random().toString(36).slice(2, 8);
       return `
@@ -1665,9 +1483,6 @@
       { name: 'Radish',       kg: 3, g: 500, whole: 3, num: 1, den: 2 }
     ];
 
-    /* =====================================================================
-       5. LEVEL 4.8 DATA & RENDERERS (BALANCE SCALE, STONES, MILK, BUCKET)
-       ===================================================================== */
     const LEVEL8_SCALE_ITEMS = [
       {
         id: 'papaya',
@@ -1735,23 +1550,18 @@
             <ellipse cx="180" cy="105" rx="44" ry="7" fill="#eab308" stroke="#854d0e" stroke-width="2.2" />
             <path d="M 74 34 Q 180 18 286 34" stroke="#eab308" stroke-width="6" stroke-linecap="round" fill="none" />
             <circle cx="180" cy="24" r="6" fill="#fef08a" stroke="#854d0e" stroke-width="2" />
-            <!-- Left Pan Ropes -->
             <line x1="76" y1="34" x2="40" y2="78" stroke="#d97706" stroke-width="1.8" />
             <line x1="76" y1="34" x2="112" y2="78" stroke="#d97706" stroke-width="1.8" />
             <line x1="76" y1="34" x2="76" y2="78" stroke="#b45309" stroke-width="1.5" />
-            <!-- Right Pan Ropes -->
             <line x1="284" y1="34" x2="248" y2="78" stroke="#d97706" stroke-width="1.8" />
             <line x1="284" y1="34" x2="320" y2="78" stroke="#d97706" stroke-width="1.8" />
             <line x1="284" y1="34" x2="284" y2="78" stroke="#b45309" stroke-width="1.5" />
-            <!-- Left & Right Pans -->
             <path d="M 34 78 Q 76 92 118 78 Z" fill="#facc15" stroke="#854d0e" stroke-width="2.2" stroke-linejoin="round" />
             <path d="M 242 78 Q 284 92 326 78 Z" fill="#facc15" stroke="#854d0e" stroke-width="2.2" stroke-linejoin="round" />
           </svg>
-          <!-- Stones sitting on left pan -->
           <div class="flex items-center justify-center gap-1.5 -mt-12 pl-2 pr-36 pointer-events-none">
             ${stonesHTML}
           </div>
-          <!-- Produce sitting on right pan -->
           <div class="flex items-center justify-center -mt-9 pl-40 pr-2 pointer-events-none">
             ${renderScaleProduceSVG(scaleItem)}
           </div>
@@ -1894,14 +1704,9 @@
       ];
     }
 
-
-
-
-
-
-// Game & 3-Trial LMS Tracking State
-    let currentLevel = 1; // 1 = 4.1, 2 = 4.2, 3 = 4.3, 4 = 4.4, 5 = 4.5, 6 = 4.6, 7 = 4.7, 8 = 4.8
-    let currentTrial = 1; // 1, 2, or 3 per level
+    // Game & 3-Trial LMS Tracking State
+    let currentLevel = 1;
+    let currentTrial = 1;
     let currentRows = [];
     let currentL4Story = LEVEL4_STORY_THEMES[0];
     let currentL7ChildName = 'Naveen';
@@ -2026,7 +1831,7 @@
       if (timerInterval) clearInterval(timerInterval);
       levelStartTime = Date.now();
       timerInterval = setInterval(() => {
-        if (!levelCompleted) {
+        if (!levelCompleted && !dailyLimitBlocked) {
           const elapsed = Math.floor((Date.now() - levelStartTime) / 1000);
           levelStats[currentLevel].trials[currentTrial].seconds = elapsed;
           document.getElementById('timerDisplay').textContent = formatSecondsHHMMSS(getAllLevelsTotalElapsed());
@@ -2116,7 +1921,11 @@
     }
 
     function syncTrialToGoogleSheet(lvl, trialNum) {
-      if (lmsContext.studentId === 'GUEST') return;
+      if (lmsContext.studentId === 'GUEST' && !lmsContext.emisNumber) return;
+      if (dailyLimitBlocked) {
+        enforceDailyGameLockUI(dailySubmissionCount);
+        return;
+      }
 
       const tObj = levelStats[lvl].trials[trialNum];
       const maxQ = levelStats[lvl].total;
@@ -2133,6 +1942,7 @@
         action: 'saveGameData',
         gameCode: lmsContext.gameCode,
         studentId: lmsContext.studentId,
+        emisNumber: lmsContext.emisNumber,
         name: lmsContext.name,
         school: lmsContext.school,
         whatsapp: lmsContext.whatsapp,
@@ -2145,6 +1955,9 @@
         score: totScoreStr
       };
 
+      const updatedLocalCount = incrementLocalDailySubmissionCountM05();
+      dailySubmissionCount = updatedLocalCount;
+
       fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -2154,6 +1967,10 @@
     }
 
     function startTrial(targetTrial, saveCurrentFirst = true) {
+      if (dailyLimitBlocked) {
+        enforceDailyGameLockUI(dailySubmissionCount);
+        return;
+      }
       if (autoAdvanceTimeout) {
         clearTimeout(autoAdvanceTimeout);
         autoAdvanceTimeout = null;
@@ -2388,7 +2205,7 @@
     }
 
     function clearCurrentSlots() {
-      if (levelCompleted) return;
+      if (levelCompleted || dailyLimitBlocked) return;
       playSound('remove');
       if (currentLevel === 1) {
         placedAnswers = [null, null, null, null];
@@ -2440,7 +2257,7 @@
     }
 
     function selectL8Option(qIndex, optId) {
-      if (levelCompleted || currentLevel !== 8) return;
+      if (levelCompleted || currentLevel !== 8 || dailyLimitBlocked) return;
       l8SelectedAnswers[qIndex] = optId;
       playSound('place');
       hideFeedback();
@@ -2448,7 +2265,7 @@
     }
 
     function updateL7Answer(rowIndex, field, value) {
-      if (levelCompleted) return;
+      if (levelCompleted || dailyLimitBlocked) return;
       if (field === 'unit') {
         l7TypedAnswers[rowIndex].unit = value;
       } else {
@@ -2460,7 +2277,7 @@
     }
 
     function toggleL6Weight(rowIndex, weightId) {
-      if (levelCompleted || currentLevel !== 6) return;
+      if (levelCompleted || currentLevel !== 6 || dailyLimitBlocked) return;
       const arr = l6TypedAnswers[rowIndex].checked;
       const pos = arr.indexOf(weightId);
       if (pos === -1) {
@@ -2476,7 +2293,7 @@
     }
 
     function updateL6Answer(rowIndex, field, value) {
-      if (levelCompleted) return;
+      if (levelCompleted || dailyLimitBlocked) return;
       if (field === 'kgUnit' || field === 'gUnit') {
         l6TypedAnswers[rowIndex][field] = value;
       } else {
@@ -2489,14 +2306,14 @@
     }
 
     function updateL1Unit(rowIndex, value) {
-      if (levelCompleted) return;
+      if (levelCompleted || dailyLimitBlocked) return;
       l1UnitAnswers[rowIndex] = value;
       const slotEl = document.getElementById(`slot-${rowIndex}`);
       if (slotEl) slotEl.classList.remove('correct', 'incorrect');
     }
 
     function updateL2Answer(rowIndex, field, value) {
-      if (levelCompleted) return;
+      if (levelCompleted || dailyLimitBlocked) return;
       if (field === 'kmUnit' || field === 'mUnit') {
         l2TypedAnswers[rowIndex][field] = value;
       } else {
@@ -2511,7 +2328,7 @@
     }
 
     function updateL3Answer(rowIndex, field, value) {
-      if (levelCompleted) return;
+      if (levelCompleted || dailyLimitBlocked) return;
       if (field === 'unit') {
         l3TypedAnswers[rowIndex].unit = value;
       } else {
@@ -2525,7 +2342,7 @@
     }
 
     function updateL4Answer(rowIndex, field, value) {
-      if (levelCompleted) return;
+      if (levelCompleted || dailyLimitBlocked) return;
       if (field === 'col2Unit' || field === 'kmUnit' || field === 'mUnit') {
         l4TypedAnswers[rowIndex][field] = value;
       } else {
@@ -2540,7 +2357,7 @@
     }
 
     function handleL5NodeClick(col, id) {
-      if (levelCompleted || currentLevel !== 5) return;
+      if (levelCompleted || currentLevel !== 5 || dailyLimitBlocked) return;
       hideFeedback();
 
       if (!l5SelectedNode) {
@@ -2652,7 +2469,7 @@
 
       if (currentLevel === 1) {
         const maxCm = Math.max(...currentRows.map(r => r.cm));
-        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const disabledAttr = (levelCompleted || dailyLimitBlocked) ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
           const rawPercent = (rowItem.cm / maxCm) * 100;
@@ -2690,7 +2507,7 @@
               ${
                 placedItem
                   ? `<div
-                       draggable="${!levelCompleted}"
+                       draggable="${!levelCompleted && !dailyLimitBlocked}"
                        ondragstart="handlePlacedCardDragStart(event, '${placedItem.id}', ${rowIndex})"
                        ondragend="handleDragEnd()"
                        class="dropped-card-chip animate-pop"
@@ -2711,11 +2528,11 @@
           const staggerClass = idx % 2 === 1 ? 'sm:mt-3' : '';
 
           const tileEl = document.createElement('div');
-          tileEl.draggable = !isUsed && !levelCompleted;
+          tileEl.draggable = !isUsed && !levelCompleted && !dailyLimitBlocked;
           tileEl.className = `fraction-tile w-24 sm:w-28 h-16 sm:h-20 flex items-center justify-center ${staggerClass} ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}`;
           tileEl.innerHTML = renderFractionHTML(optItem, '', false);
 
-          if (!isUsed && !levelCompleted) {
+          if (!isUsed && !levelCompleted && !dailyLimitBlocked) {
             tileEl.onclick = () => handleOptionClick(optItem.id);
             tileEl.ondragstart = (e) => handleDragStart(e, optItem.id);
             tileEl.ondragend = () => handleDragEnd();
@@ -2724,7 +2541,7 @@
           optionsContainer.appendChild(tileEl);
         });
       } else if (currentLevel === 2) {
-        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const disabledAttr = (levelCompleted || dailyLimitBlocked) ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
           const ans = l2TypedAnswers[rowIndex];
@@ -2798,7 +2615,7 @@
           rowsContainer.appendChild(rowEl);
         });
       } else if (currentLevel === 3) {
-        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const disabledAttr = (levelCompleted || dailyLimitBlocked) ? 'disabled' : '';
 
         currentRows.forEach((rowItem, rowIndex) => {
           const ans = l3TypedAnswers[rowIndex];
@@ -2894,7 +2711,7 @@
           rowsContainer.appendChild(cardEl);
         });
       } else if (currentLevel === 4) {
-        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const disabledAttr = (levelCompleted || dailyLimitBlocked) ? 'disabled' : '';
         const v1 = currentRows[0];
         const v2 = currentRows[1];
         const v3 = currentRows[2];
@@ -3071,7 +2888,7 @@
         rowsContainer.appendChild(boardDiv);
         requestAnimationFrame(() => drawL5Lines());
       } else if (currentLevel === 6) {
-        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const disabledAttr = (levelCompleted || dailyLimitBlocked) ? 'disabled' : '';
         const wrapDiv = document.createElement('div');
         wrapDiv.className = 'overflow-x-auto';
 
@@ -3151,7 +2968,7 @@
         `;
         rowsContainer.appendChild(wrapDiv);
       } else if (currentLevel === 7) {
-        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const disabledAttr = (levelCompleted || dailyLimitBlocked) ? 'disabled' : '';
 
         const bannerEl = document.createElement('div');
         bannerEl.className = 'l7-prompt-banner text-xs sm:text-sm md:text-base leading-relaxed';
@@ -3259,7 +3076,7 @@
         `;
         rowsContainer.appendChild(gridWrap);
       } else {
-        const disabledAttr = levelCompleted ? 'disabled' : '';
+        const disabledAttr = (levelCompleted || dailyLimitBlocked) ? 'disabled' : '';
         const optLetters = ['a)', 'b)', 'c)', 'd)'];
 
         currentRows.forEach((qItem, qIdx) => {
@@ -3325,7 +3142,7 @@
        2. DROPPED CARDS LOCKED & MOVABLE ONLY BY USER (NO ACCIDENTAL OVERWRITE)
        ===================================================================== */
     function handleOptionClick(optionId) {
-      if (levelCompleted || currentLevel !== 1) return;
+      if (levelCompleted || currentLevel !== 1 || dailyLimitBlocked) return;
       if (placedAnswers.includes(optionId)) return;
       hideFeedback();
       if (selectedOptionId === optionId) {
@@ -3338,7 +3155,7 @@
     }
 
     function handleSlotClick(rowIndex) {
-      if (levelCompleted || currentLevel !== 1) return;
+      if (levelCompleted || currentLevel !== 1 || dailyLimitBlocked) return;
       hideFeedback();
 
       if (placedAnswers[rowIndex] !== null) {
@@ -3366,7 +3183,7 @@
     }
 
     function handleDragStart(e, optionId) {
-      if (placedAnswers.includes(optionId)) {
+      if (placedAnswers.includes(optionId) || dailyLimitBlocked) {
         e.preventDefault();
         return;
       }
@@ -3380,7 +3197,7 @@
     }
 
     function handlePlacedCardDragStart(e, optionId, fromRowIndex) {
-      if (levelCompleted || currentLevel !== 1) {
+      if (levelCompleted || currentLevel !== 1 || dailyLimitBlocked) {
         e.preventDefault();
         return;
       }
@@ -3401,7 +3218,7 @@
     }
 
     function handleDragOver(e, rowIndex) {
-      if (currentLevel !== 1) return;
+      if (currentLevel !== 1 || dailyLimitBlocked) return;
       e.preventDefault();
       if (placedAnswers[rowIndex] === null || draggedFromSlotIndex === rowIndex) {
         const slotEl = document.getElementById(`slot-${rowIndex}`);
@@ -3415,7 +3232,7 @@
     }
 
     function handleDrop(e, rowIndex) {
-      if (currentLevel !== 1) return;
+      if (currentLevel !== 1 || dailyLimitBlocked) return;
       e.preventDefault();
       if (levelCompleted) return;
       const slotEl = document.getElementById(`slot-${rowIndex}`);
@@ -3459,6 +3276,10 @@
     }
 
     function checkAnswers() {
+      if (dailyLimitBlocked) {
+        enforceDailyGameLockUI(dailySubmissionCount);
+        return;
+      }
       if (levelCompleted) return;
 
       if (currentLevel === 1) {
@@ -3816,7 +3637,9 @@
       document.getElementById('completionModal').classList.remove('hidden');
     }
 
-    function playAgainFullGame() {
+    async function playAgainFullGame() {
+      const blocked = await checkAndEnforceDailyLimitM05();
+      if (blocked) return;
       levelStats = createEmptyLevelStats();
       document.getElementById('completionModal').classList.add('hidden');
       setupLevel(1, 1);
@@ -3849,9 +3672,10 @@
       if (currentLevel === 5) drawL5Lines();
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       setupLevel(1, 1);
+      await checkAndEnforceDailyLimitM05();
     });
   </script>
 </body>
-</html>    
+</html>

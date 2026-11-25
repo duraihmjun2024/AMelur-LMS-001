@@ -2,3818 +2,915 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game M05 - Measurements (4.1 - 4.8) | AMelur-LMS-001</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter & Noto Sans Tamil -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+Tamil:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Tone.js for gentle interactive sound feedback -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AMelur-LMS-001 • PUPS Anjalam Melur</title>
   <style>
+    :root {
+      --bg: #0b1120;
+      --panel: #111827;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #0ea5e9;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      overflow-x: hidden;
+    }
     body {
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
-      min-height: 100vh;
-      user-select: none;
-      -webkit-user-select: none;
+      display: flex;
+      flex-direction: column;
+      padding: 6px;
+      gap: 6px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 10px;
+      flex-shrink: 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .badge {
+      background: var(--accent);
+      color: #031525;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .fs-btn {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+    }
+    .fs-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .main-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+    }
+    .school-title {
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .school-title h1 {
+      font-size: 1.1rem;
+      color: #38bdf8;
+      margin-bottom: 2px;
+    }
+    .school-title p {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .field.full { grid-column: 1 / -1; }
+    label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+    input, select {
+      width: 100%;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .game-btn {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff;
+      border: 1px solid #38bdf8;
+      border-radius: 10px;
+      padding: 10px 8px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+    .game-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .game-btn.secondary {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border-color: var(--border);
+      color: #e2e8f0;
+    }
+    .game-btn small {
+      font-size: 0.72rem;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+    .status-box {
+      display: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .status-box.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid var(--red);
+      color: #fca5a5;
+    }
+    .status-box.info {
+      display: block;
+      background: rgba(14, 165, 233, 0.16);
+      border: 1px solid var(--accent);
+      color: #7dd3fc;
+    }
+    @media (max-width: 480px) {
+      .form-grid, .game-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="badge">AMelur-LMS-001</span>
+      <span>PUPS, Anjalam Melur</span>
+    </div>
+    <div class="top-actions">
+      <button type="button" id="fsToggleBtn" class="fs-btn" title="Toggle Fullscreen">[ ]</button>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+    <section class="login-card">
+      <div class="school-title">
+        <h1>Welcome to PUPS, Anjalam Melur</h1>
+        <p>Tamil Nadu, India • Student Learning Portal</p>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="emisInput">Student EMIS ID</label>
+          <input type="text" id="emisInput" inputmode="numeric" maxlength="15" placeholder="Enter EMIS ID" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="classSelect">Class</label>
+          <select id="classSelect">
+            <option value="5">Class 5</option>
+            <option value="4">Class 4</option>
+            <option value="3">Class 3</option>
+            <option value="2">Class 2</option>
+            <option value="1">Class 1</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="studentNameInput">Student Name</label>
+          <input type="text" id="studentNameInput" placeholder="Enter Student Name" autocomplete="off" />
+        </div>
+      </div>
+
+      <div id="statusBox" class="status-box"></div>
+
+      <div class="game-grid">
+        <button type="button" class="game-btn" onclick="launchGame('M05', 'M05.html')">
+          <span>Game M05 • Measurements</span>
+          <small>Length &amp; Weight (4.1 – 4.6)</small>
+        </button>
+        <button type="button" class="game-btn secondary" onclick="launchGame('Days', 'Days.html')">
+          <span>Days of the Week</span>
+          <small>Calendar Practice</small>
+        </button>
+        <button type="button" class="game-btn secondary" onclick="launchGame('Keyboard', 'Keyboard.html')">
+          <span>Keyboard Skills</span>
+          <small>Typing &amp; Letters</small>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_DEPLOYED_WEB_APP_URL/exec";
+
+    function enterFullscreen() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (el.requestFullscreen) {
+          el.requestFullscreen().catch(() => {});
+        } else if (el.webkitRequestFullscreen) {
+          el.webkitRequestFullscreen();
+        }
+      }
     }
 
-    /* Horizontal Scrollable Virtual Ruler with Slider & Pointer (Top of Length Levels 4.1 - 4.4) */
-    .virtual-ruler-panel {
-      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-      border: 2px solid #94a3b8;
-      border-radius: 12px;
-      padding: 8px 10px;
-      box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.06);
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        enterFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
     }
-    .ruler-scroll-viewport {
-      overflow-x: auto;
-      background: #fffbeb;
-      border: 1.5px solid #334155;
+
+    function updateFsIcon() {
+      const btn = document.getElementById("fsToggleBtn");
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      btn.textContent = isFs ? "[×]" : "[ ]";
+    }
+
+    document.getElementById("fsToggleBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleFullscreen();
+    });
+
+    document.addEventListener("fullscreenchange", updateFsIcon);
+    document.addEventListener("webkitfullscreenchange", updateFsIcon);
+
+    // Auto-request fullscreen on first user interaction
+    document.addEventListener("pointerdown", function autoFsOnce() {
+      enterFullscreen();
+      document.removeEventListener("pointerdown", autoFsOnce);
+    }, { once: true });
+
+    function getTodayIST() {
+      const now = new Date();
+      const istOffset = 5.5 * 60 * 60 * 1000;
+      const ist = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + istOffset);
+      return ist.toISOString().slice(0, 10);
+    }
+
+    function showStatus(msg, type) {
+      const box = document.getElementById("statusBox");
+      box.textContent = msg;
+      box.className = "status-box " + type;
+    }
+
+    async function launchGame(gameCode, targetPage) {
+      enterFullscreen();
+      const emis = document.getElementById("emisInput").value.trim();
+      const studentName = document.getElementById("studentNameInput").value.trim();
+      const studentClass = document.getElementById("classSelect").value;
+
+      if (!emis) {
+        showStatus("Please enter Student EMIS ID.", "error");
+        document.getElementById("emisInput").focus();
+        return;
+      }
+      if (!studentName) {
+        showStatus("Please enter Student Name.", "error");
+        document.getElementById("studentNameInput").focus();
+        return;
+      }
+
+      const today = getTodayIST();
+      const localKey = `emisLock_${emis}_${gameCode}_${today}`;
+      if (localStorage.getItem(localKey) === "DONE") {
+        showStatus(`You have already finished today's submission of ${gameCode} game! Try again tomorrow.`, "error");
+        return;
+      }
+
+      showStatus("Checking EMIS eligibility & starting game...", "info");
+
+      try {
+        if (SCRIPT_URL && !SCRIPT_URL.includes("YOUR_DEPLOYED_WEB_APP_URL")) {
+          const res = await fetch(`${SCRIPT_URL}?action=checkLock&emis=${encodeURIComponent(emis)}&game=${encodeURIComponent(gameCode)}&date=${encodeURIComponent(today)}`);
+          const data = await res.json();
+          if (data && data.locked) {
+            localStorage.setItem(localKey, "DONE");
+            showStatus(data.message || `You have already finished today's submission of ${gameCode} game! Try again tomorrow.`, "error");
+            return;
+          }
+        }
+      } catch (err) {
+        // Proceed if offline or script check unreachable
+      }
+
+      const params = new URLSearchParams({
+        emis: emis,
+        name: studentName,
+        cls: studentClass,
+        game: gameCode,
+        level: "1",
+        fs: "1"
+      });
+
+      window.location.href = `${targetPage}?${params.toString()}`;
+    }
+
+    // Restore last entered student info convenience
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedEmis = sessionStorage.getItem("amelur_emis");
+      const savedName = sessionStorage.getItem("amelur_name");
+      const savedCls = sessionStorage.getItem("amelur_cls");
+      if (savedEmis) document.getElementById("emisInput").value = savedEmis;
+      if (savedName) document.getElementById("studentNameInput").value = savedName;
+      if (savedCls) document.getElementById("classSelect").value = savedCls;
+    });
+  </script>
+</body>
+
+  
+  
+  
+  
+<style>
+    :root {
+      --bg: #080d16;
+      --panel: #101724;
+      --card: #162032;
+      --border: #28364d;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --purple: #8b5cf6;
+      --pink: #ec4899;
+      --red: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      overflow-x: hidden;
+    }
+    body {
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Compact Top Bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 8px;
+    }
+    .top-left, .top-right {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .pill-btn {
+      background: #1b263b;
+      color: var(--text);
+      border: 1px solid var(--border);
       border-radius: 6px;
-      scrollbar-width: thin;
-      position: relative;
-    }
-    .ruler-strip {
-      position: relative;
-      height: 66px;
-      min-width: 1260px;
-      background: linear-gradient(180deg, #fefce8 0%, #ffffff 45%, #fef9c3 100%);
-      color: #0f172a;
-      font-family: 'Inter', sans-serif;
-    }
-    .ruler-minor-tick {
-      position: absolute;
-      top: 0;
-      width: 1px;
-      height: 10px;
-      background: #64748b;
-    }
-    .ruler-mid-tick {
-      position: absolute;
-      top: 0;
-      width: 1.5px;
-      height: 18px;
-      background: #1e293b;
-    }
-    .ruler-major-tick {
-      position: absolute;
-      top: 0;
-      width: 2.5px;
-      height: 27px;
-      background: #0f172a;
-    }
-    .ruler-major-label {
-      position: absolute;
-      top: 29px;
-      transform: translateX(-50%);
-      font-size: 12px;
-      font-weight: 800;
-      color: #0f172a;
-      line-height: 1;
-      white-space: nowrap;
-    }
-    .ruler-frac-label {
-      position: absolute;
-      top: 46px;
-      transform: translateX(-50%);
-      font-size: 10.5px;
+      padding: 3px 8px;
+      font-size: 0.78rem;
       font-weight: 700;
-      color: #0369a1;
-      line-height: 1;
-      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 1.2;
     }
-    .ruler-pointer-line {
+    .pill-btn:hover { border-color: var(--accent); }
+    .brand-tag {
+      background: #1d4ed8;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .meta-text {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      padding: 2px 4px;
+    }
+    .timer-badge {
+      background: #172554;
+      color: #93c5fd;
+      border: 1px solid #1e40af;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .level-badge {
+      background: #422006;
+      color: #fbbf24;
+      border: 1px solid #92400e;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .trial-badge {
+      background: #4c1d95;
+      color: #ddd6fe;
+      border: 1px solid #6d28d9;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .score-badge {
+      background: #064e3b;
+      color: #6ee7b7;
+      border: 1px solid #047857;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .fs-btn {
+      background: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .fs-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .skip-arrow {
+      background: transparent;
+      color: rgba(148, 163, 184, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .skip-arrow:hover { color: rgba(248, 250, 252, 0.75); border-color: rgba(148, 163, 184, 0.45); }
+
+    /* Main Board Container */
+    .board {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .q-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .q-num {
+      background: #0369a1;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .q-text {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+    .fact-chip {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .sub-hint {
+      font-size: 0.74rem;
+      color: var(--muted);
+      border-top: 1px dashed #263349;
+      padding-top: 3px;
+    }
+
+    /* Compact Virtual Ruler */
+    .ruler-box {
+      background: #0b1220;
+      border: 1px solid #23324a;
+      border-radius: 8px;
+      padding: 5px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ruler-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .ruler-modes {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .ruler-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.4px;
+    }
+    .mode-btn {
+      background: #151f32;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .mode-btn.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: #38bdf8;
+    }
+    .pointer-readout {
+      background: #2a1426;
+      border: 1px solid #9d174d;
+      color: #fbcfe8;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .ruler-track-wrap {
+      position: relative;
+      height: 36px;
+      background: linear-gradient(90deg, #172554 0%, #1e293b 50%, #272010 100%);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .ruler-ticks {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 6px 2px;
+      font-size: 0.66rem;
+      color: #cbd5e1;
+      pointer-events: none;
+    }
+    .ruler-needle {
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 2.5px;
-      background: #dc2626;
-      z-index: 15;
+      width: 2px;
+      background: #ef4444;
+      left: 13%;
       pointer-events: none;
-      box-shadow: 0 0 6px rgba(220, 38, 38, 0.55);
-      transition: left 0.05s linear;
-    }
-    .ruler-pointer-head {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 10px solid #dc2626;
     }
     .ruler-slider-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-top: 7px;
+      gap: 6px;
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      font-weight: 700;
     }
-    .ruler-slider {
+    .ruler-slider-row input[type="range"] {
       flex: 1;
-      accent-color: #dc2626;
+      accent-color: #ef4444;
+      height: 6px;
       cursor: pointer;
     }
 
-    /* Level Header Banners */
-    .textbook-header-l1 {
-      background: linear-gradient(180deg, #b8e8fc 0%, #cceeff 65%, #e2f5fe 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(14, 116, 144, 0.12);
+    /* Activity Grid: Left Compact Rows + Right Answer Cards Panel */
+    .activity-area {
+      display: grid;
+      grid-template-columns: 1.65fr 0.85fr;
+      gap: 8px;
+      align-items: stretch;
     }
-    .textbook-header-l2 {
-      background: linear-gradient(180deg, #fef08a 0%, #fef9c3 65%, #fefce8 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(202, 138, 4, 0.14);
+    .rows-column {
+      background: #0c1322;
+      border: 1px solid #223047;
+      border-radius: 8px;
+      padding: 5px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .textbook-header-l3 {
-      background: linear-gradient(180deg, #bbf7d0 0%, #dcfce7 65%, #f0fdf4 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(21, 128, 61, 0.14);
+    .work-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 1.25fr) minmax(72px, 0.85fr) minmax(64px, 0.72fr);
+      align-items: center;
+      gap: 6px;
+      min-height: 32px;
     }
-    .textbook-header-l4 {
-      background: linear-gradient(180deg, #fbcfe8 0%, #fce7f3 65%, #fdf2f8 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(190, 24, 93, 0.14);
-    }
-    .textbook-header-l5 {
-      background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 65%, #f0f9ff 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.14);
-    }
-    .textbook-header-l6 {
-      background: linear-gradient(180deg, #fed7aa 0%, #ffedd5 65%, #fff7ed 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(194, 65, 12, 0.14);
-    }
-    .textbook-header-l7 {
-      background: linear-gradient(180deg, #c7d2fe 0%, #e0e7ff 65%, #eef2ff 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(67, 56, 202, 0.14);
-    }
-    .textbook-header-l8 {
-      background: linear-gradient(180deg, #fbcfe8 0%, #fae8ff 65%, #fdf4ff 100%);
-      border-bottom: 3px dashed #ffffff;
-      box-shadow: 0 2px 6px rgba(162, 28, 175, 0.14);
-    }
-
-    /* Badges */
-    .badge-l1 {
-      background: #ffffff;
-      border: 2px solid #0284c7;
-      border-radius: 10px 10px 10px 2px;
-      color: #0369a1;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.15);
-    }
-    .badge-l2 {
-      background: #ffffff;
-      border: 2px solid #f59e0b;
-      border-radius: 10px 10px 10px 2px;
-      color: #d97706;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(245, 158, 11, 0.15);
-    }
-    .badge-l3 {
-      background: #ffffff;
-      border: 2px solid #16a34a;
-      border-radius: 10px 10px 10px 2px;
-      color: #15803d;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(22, 163, 74, 0.15);
-    }
-    .badge-l4 {
-      background: #ffffff;
-      border: 2px solid #db2777;
-      border-radius: 10px 10px 10px 2px;
-      color: #be185d;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(219, 39, 119, 0.16);
-    }
-    .badge-l5 {
-      background: #ffffff;
-      border: 2px solid #0284c7;
-      border-radius: 10px 10px 10px 2px;
-      color: #0369a1;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.16);
-    }
-    .badge-l6 {
-      background: #ffffff;
-      border: 2px solid #ea580c;
-      border-radius: 10px 10px 10px 2px;
-      color: #c2410c;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(234, 88, 12, 0.16);
-    }
-    .badge-l7 {
-      background: #ffffff;
-      border: 2px solid #4f46e5;
-      border-radius: 10px 10px 10px 2px;
-      color: #3730a3;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.16);
-    }
-    .badge-l8 {
-      background: #ffffff;
-      border: 2px solid #c026d3;
-      border-radius: 10px 10px 10px 2px;
-      color: #a21caf;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      box-shadow: 0 2px 4px rgba(192, 38, 211, 0.16);
-    }
-
-    /* Teal/Emerald 3D-bevel ribbon for Level 1 */
-    .ribbon-bar {
-      background: linear-gradient(180deg, #22997a 0%, #2cb591 30%, #249e7e 80%, #187a60 100%);
-      border: 2px solid #156b54;
-      border-radius: 6px;
-      box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.35), 0 3px 6px rgba(0, 0, 0, 0.14);
-      transition: min-width 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s ease;
-      position: relative;
-      overflow: visible;
-      width: fit-content;
-      max-width: 100%;
-    }
-    .ribbon-bar::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 35%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 100%);
-      pointer-events: none;
-      border-radius: 4px 4px 0 0;
-    }
-    .ribbon-label {
+    .stimulus-chip {
+      background: linear-gradient(90deg, #047857, #10b981);
       color: #ffffff;
       font-weight: 800;
-      text-shadow:
-        -1.5px -1.5px 0 #114b3c,
-         1.5px -1.5px 0 #114b3c,
-        -1.5px  1.5px 0 #114b3c,
-         1.5px  1.5px 0 #114b3c,
-         0px    2px   3px rgba(0,0,0,0.45);
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-    }
-
-    /* Pink rounded answer drop zone (Level 1) */
-    .answer-slot {
-      background-color: #ffffff;
-      border: 2.5px solid #f472b6;
-      border-radius: 10px;
-      box-shadow: inset 0 2px 4px rgba(244, 114, 182, 0.12);
-      transition: all 0.2s ease;
-    }
-    .answer-slot.drag-over,
-    .answer-slot.ready-target {
-      border-color: #ec4899;
-      background-color: #fdf2f8;
-      transform: scale(1.04);
-      box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2);
-    }
-    .answer-slot.locked-filled {
-      border-color: #db2777;
-      background-color: #fffafd;
-    }
-    .answer-slot.correct {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
-    }
-    .answer-slot.incorrect {
-      border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
-    }
-    .dropped-card-chip {
-      background: #eff6ff;
-      border: 1.5px solid #3b82f6;
+      font-size: 0.84rem;
+      padding: 4px 10px;
       border-radius: 7px;
-      padding: 2px 7px;
-      cursor: grab;
-      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.15);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
-    .dropped-card-chip:active {
-      cursor: grabbing;
-    }
-
-    /* Level 2 Place Cards & Pills */
-    .place-box {
-      background: linear-gradient(180deg, #ffffff 0%, #fdf8ff 100%);
-      border-width: 2.5px;
-      border-style: solid;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      font-weight: 700;
-      color: #1e293b;
-    }
-    .dist-pill-top {
-      background: #ffffff;
-      border: 2px solid #3b82f6;
-      border-radius: 14px;
-      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.12);
-    }
-    .dist-pill-bottom {
-      background: #ffffff;
-      border: 2.5px solid #3b82f6;
-      border-radius: 14px;
-      box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
-      transition: all 0.2s ease;
-    }
-    .dist-pill-bottom.correct {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
-    }
-    .dist-pill-bottom.incorrect {
-      border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
-    }
-
-    /* Level 3 Joined Torchlight */
-    .torch-item {
-      filter: drop-shadow(0 3px 5px rgba(15, 23, 42, 0.12));
-      transition: transform 0.18s ease, filter 0.2s ease;
-    }
-    .torch-item:hover {
-      transform: translateY(-1px);
-    }
-    .torch-handle-box {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-      height: 46px;
-      background: #ffffff;
-      border: 2.5px solid #1e293b;
-      border-right: none;
-      border-radius: 23px 0 0 23px;
+    .drop-slot {
+      min-height: 30px;
+      background: #141b2d;
+      border: 1.5px solid #9d174d;
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-left: 16px;
-      padding-right: 6px;
-      z-index: 2;
-    }
-    .torch-switch-dot {
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 14px;
-      border-radius: 9999px;
-      background: #64748b;
-      border: 1.5px solid #1e293b;
-    }
-    .torch-body-label {
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      color: #1e293b;
-      letter-spacing: 0.01em;
-      white-space: nowrap;
-    }
-    .torch-head-wrap {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 158px;
-      height: 78px;
-      flex-shrink: 0;
-      margin-left: -1px;
-      z-index: 3;
-      transition: transform 0.2s ease;
-    }
-    @media (min-width: 640px) {
-      .torch-head-wrap {
-        width: 170px;
-        height: 82px;
-      }
-    }
-    .torch-head-svg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-      pointer-events: none;
-    }
-    .torch-head-fill {
-      fill: #ffffff;
-      transition: fill 0.2s ease;
-    }
-    .torch-head-rim {
-      transition: stroke 0.2s ease;
-    }
-    .torch-head-content {
-      position: relative;
-      z-index: 10;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      padding-left: 12px;
-      padding-right: 4px;
-    }
-    .torch-head-wrap.correct .torch-head-fill { fill: #f0fdf4; }
-    .torch-head-wrap.correct .torch-head-rim { stroke: #16a34a !important; }
-    .torch-head-wrap.incorrect .torch-head-fill { fill: #fef2f2; }
-    .torch-head-wrap.incorrect .torch-head-rim { stroke: #dc2626 !important; }
-    .torch-head-wrap.incorrect { animation: shake 0.38s ease-in-out; }
-
-    /* Unit dropdown styling with dotted units */
-    .unit-select {
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
+      font-size: 0.84rem;
       font-weight: 800;
-      text-align: center;
-      border: 2px solid #cbd5e1;
-      border-radius: 7px;
-      background-color: #fff1f2;
-      color: #db2777;
-      outline: none;
+      color: #e2e8f0;
       cursor: pointer;
-      transition: border-color 0.18s ease, background-color 0.18s ease;
+      padding: 2px 6px;
+      transition: border-color 0.12s ease, background 0.12s ease;
     }
-    .unit-select:focus {
-      border-color: #ec4899;
-      background-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.18);
-    }
-    .unit-select:disabled {
-      cursor: default;
-      opacity: 0.92;
-    }
-
-    /* Level 4 Table & Story Box */
-    .l4-story-box {
-      background: linear-gradient(180deg, #fffdfd 0%, #fdf2f8 100%);
-      border: 2px solid #f472b6;
-      border-radius: 14px;
-      box-shadow: 0 3px 8px rgba(219, 39, 119, 0.08);
-      font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
-      font-weight: 600;
-      color: #1e293b;
-      line-height: 1.75;
-    }
-    .l4-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
-      border: 2px solid #94a3b8;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
-    }
-    .l4-table th {
-      background: #f8fafc;
-      color: #0f172a;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      border-bottom: 2px solid #94a3b8;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 8px 10px;
-      text-align: center;
-    }
-    .l4-table th:last-child { border-right: none; }
-    .l4-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 8px 10px;
-      text-align: center;
-      vertical-align: middle;
-    }
-    .l4-table td:last-child { border-right: none; }
-    .l4-table tr:last-child td { border-bottom: none; }
-    .l4-cell-status.correct {
-      background-color: #f0fdf4 !important;
-      box-shadow: inset 0 0 0 2px #16a34a;
-    }
-    .l4-cell-status.incorrect {
-      background-color: #fef2f2 !important;
-      box-shadow: inset 0 0 0 2px #dc2626;
-      animation: shake 0.38s ease-in-out;
-    }
-
-    /* Level 5 Matching nodes */
-    .l5-node {
-      background: #ffffff;
-      border: 2.5px solid #cbd5e1;
-      border-radius: 14px;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
-      cursor: pointer;
-      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
-    }
-    .l5-node:hover {
-      transform: translateY(-1px);
+    .drop-slot.selected {
       border-color: #38bdf8;
+      background: #0c2a42;
     }
-    .l5-node.selected {
-      border-color: #ec4899 !important;
-      background-color: #fdf2f8;
-      box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.22);
-      transform: scale(1.03);
+    .drop-slot.filled {
+      border-color: #10b981;
+      background: #06392c;
+      color: #a7f3d0;
     }
-    .l5-node.matched-left { border-color: #ec4899; background-color: #fffafd; }
-    .l5-node.matched-mid { border-color: #0284c7; background-color: #f0f9ff; }
-    .l5-node.matched-right { border-color: #10b981; background-color: #f0fdf4; }
-    .l5-node.correct {
-      border-color: #16a34a !important;
-      background-color: #f0fdf4 !important;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
+    .drop-slot.correct {
+      border-color: #22c55e;
+      background: #052e16;
+      color: #86efac;
     }
-    .l5-node.incorrect {
-      border-color: #dc2626 !important;
-      background-color: #fef2f2 !important;
-      animation: shake 0.38s ease-in-out;
+    .drop-slot.wrong {
+      border-color: #ef4444;
+      background: #450a0a;
+      color: #fca5a5;
     }
-    .l5-veg-pill {
-      background: #ffffff;
-      border: 2px solid #2dd4bf;
-      border-radius: 9px;
-      box-shadow: 0 2px 4px rgba(20, 184, 166, 0.14);
-    }
-    .l5-gram-pill {
-      background: #ffffff;
-      border: 2px solid #f43f5e;
-      border-radius: 9px;
-      box-shadow: 0 2px 4px rgba(244, 63, 94, 0.12);
-    }
-    .l5-weight-box {
-      border: 2px solid #34d399;
-      border-radius: 12px;
-      background: #ffffff;
-    }
-
-    /* Level 6 Compact Basket & Weight Checkbox Table */
-    .l6-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
-      border: 2px solid #cbd5e1;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.07);
-    }
-    .l6-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 6px 8px;
-      text-align: center;
-      vertical-align: middle;
-    }
-    .l6-table td:last-child { border-right: none; }
-    .l6-table tr:last-child td { border-bottom: none; }
-    .l6-weight-checkbox {
-      width: 22px;
-      height: 22px;
-      border: 2px solid #0284c7;
-      border-radius: 5px;
-      background-color: #ffffff;
-      color: #16a34a;
-      font-weight: 900;
-      font-size: 14px;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .l6-weight-checkbox:hover:not(:disabled) {
-      border-color: #0369a1;
-      background-color: #f0f9ff;
-      transform: scale(1.06);
-    }
-    .l6-weight-checkbox.checked {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
-    }
-    .l6-answer-pill {
-      background: #ffffff;
-      border: 2px solid #f472b6;
-      border-radius: 10px;
-      padding: 4px 8px;
-      display: inline-flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      box-shadow: inset 0 2px 4px rgba(244, 114, 182, 0.1);
-      transition: all 0.2s ease;
-    }
-    .l6-answer-pill.correct {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
-    }
-    .l6-answer-pill.incorrect {
-      border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
-    }
-
-    /* Level 7 Vegetable Fractional Form Table */
-    .l7-prompt-banner {
-      background: linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%);
-      border: 2px solid #86efac;
-      border-radius: 12px;
-      padding: 10px 14px;
-      color: #0f172a;
-      font-weight: 700;
-    }
-    .l7-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #ffffff;
-      border: 2px solid #f472b6;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
-    }
-    .l7-table th {
-      background: #f9a8d4;
-      color: #0f172a;
+    .unit-select {
+      height: 30px;
+      background: #1a1728;
+      color: #f472b6;
+      border: 1.5px solid #831843;
+      border-radius: 7px;
+      font-size: 0.8rem;
       font-weight: 800;
-      font-size: 0.85rem;
-      border-bottom: 2px solid #ec4899;
-      border-right: 1.5px solid #f472b6;
-      padding: 7px 8px;
-      text-align: center;
-    }
-    .l7-table th:last-child { border-right: none; }
-    .l7-table td {
-      border-bottom: 1.5px solid #cbd5e1;
-      border-right: 1.5px solid #cbd5e1;
-      padding: 7px 8px;
-      text-align: center;
-      vertical-align: middle;
-    }
-    .l7-table td:last-child { border-right: none; }
-    .l7-table tr:last-child td { border-bottom: none; }
-    .l7-ans-cell.correct {
-      background-color: #f0fdf4 !important;
-      box-shadow: inset 0 0 0 2px #16a34a;
-    }
-    .l7-ans-cell.incorrect {
-      background-color: #fef2f2 !important;
-      box-shadow: inset 0 0 0 2px #dc2626;
-      animation: shake 0.38s ease-in-out;
+      padding: 0 6px;
+      cursor: pointer;
+      outline: none;
     }
 
-    /* Level 8 Choose the Correct Answer Cards */
-    .l8-q-card {
-      background: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 10px 12px;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-      transition: border-color 0.2s ease, background-color 0.2s ease;
-    }
-    .l8-q-card.correct {
-      border-color: #16a34a;
-      background-color: #f0fdf4;
-    }
-    .l8-q-card.incorrect {
-      border-color: #dc2626;
-      background-color: #fef2f2;
-      animation: shake 0.38s ease-in-out;
-    }
-    .l8-opt-btn {
-      background: #f8fafc;
-      border: 2px solid #cbd5e1;
+    /* Right Answer Cards Panel */
+    .options-panel {
+      background: #241506;
+      border: 1.5px solid #92400e;
       border-radius: 10px;
-      padding: 6px 8px;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-height: 210px;
+    }
+    .options-heading {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #f59e0b;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+      align-content: start;
+      flex: 1;
+    }
+    .ans-card {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: #ffffff;
+      border: 1px solid #60a5fa;
+      border-radius: 7px;
+      padding: 6px 6px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.1s ease, opacity 0.12s ease;
+    }
+    .ans-card:hover { transform: scale(1.02); }
+    .ans-card.used {
+      opacity: 0.32;
+      pointer-events: none;
+    }
+
+    /* Bottom Action Bar */
+    .actions-bar {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      min-height: 46px;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-top: 2px;
     }
-    .l8-opt-btn:hover:not(:disabled) {
-      border-color: #c026d3;
-      background: #fdf4ff;
-      transform: translateY(-1px);
-    }
-    .l8-opt-btn.selected {
-      border-color: #c026d3;
-      background: #fae8ff;
-      box-shadow: 0 0 0 3px rgba(192, 38, 211, 0.22);
-    }
-    .l8-opt-btn.correct {
-      border-color: #16a34a !important;
-      background: #dcfce7 !important;
-    }
-    .l8-opt-btn.incorrect {
-      border-color: #dc2626 !important;
-      background: #fee2e2 !important;
-    }
-
-    /* Numeric inputs */
-    .frac-input, .km-m-input {
-      font-family: 'Inter', sans-serif;
+    .act-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.84rem;
       font-weight: 800;
-      text-align: center;
-      border: 2px solid #cbd5e1;
-      border-radius: 6px;
-      background-color: #f8fafc;
-      color: #ec4899;
-      outline: none;
-      transition: border-color 0.18s ease, background-color 0.18s ease;
-      user-select: text;
-      -webkit-user-select: text;
-    }
-    .frac-input:focus, .km-m-input:focus {
-      border-color: #ec4899;
-      background-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.18);
-    }
-    .frac-input::placeholder, .km-m-input::placeholder {
-      color: #cbd5e1;
-      font-weight: 600;
-    }
-
-    /* Soft peach/orange option container for Stage 1 */
-    .option-bank {
-      background: linear-gradient(180deg, #ffedd5 0%, #fed7aa 100%);
-      border: 2px solid #fb923c;
-      border-radius: 14px;
-      box-shadow: inset 0 2px 8px rgba(251, 146, 60, 0.18);
-    }
-    .fraction-tile {
-      background: #ffffff;
-      border: 2px solid #60a5fa;
-      border-radius: 10px;
-      box-shadow: 0 3px 6px rgba(37, 99, 235, 0.12);
-      cursor: grab;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, opacity 0.2s ease;
-    }
-    .fraction-tile:hover:not(.used) {
-      transform: translateY(-2px);
-      border-color: #2563eb;
-      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
-    }
-    .fraction-tile:active:not(.used) {
-      cursor: grabbing;
-      transform: scale(0.97);
-    }
-    .fraction-tile.selected {
-      border-color: #2563eb;
-      background-color: #eff6ff;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
-      transform: scale(1.05);
-    }
-    .fraction-tile.used {
-      opacity: 0.32;
-      cursor: default;
-      pointer-events: none;
-      border-style: dashed;
-    }
-
-    /* Stacked fraction formatting */
-    .frac {
+      color: #fff;
+      cursor: pointer;
       display: inline-flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      line-height: 1.05;
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
+      gap: 5px;
     }
-    .frac-num {
-      padding: 0 4px 2px 4px;
-      border-bottom: 2px solid #1e293b;
-    }
-    .frac-den {
-      padding: 2px 4px 0 4px;
-    }
+    .btn-check { background: #10b981; }
+    .btn-clear { background: #f59e0b; color: #111827; }
+    .btn-trial2 { background: #0284c7; }
+    .btn-trial3 { background: #7c3aed; }
+    .act-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      50% { transform: translateX(6px); }
-      75% { transform: translateX(-4px); }
+    .feedback-banner {
+      display: none;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 5px 8px;
+      border-radius: 7px;
     }
-    @keyframes popIn {
-      0% { transform: scale(0.85); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .animate-pop {
-      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    .feedback-banner.show { display: block; }
+    .feedback-banner.ok { background: rgba(16, 185, 129, 0.18); color: #6ee7b7; border: 1px solid #10b981; }
+    .feedback-banner.warn { background: rgba(245, 158, 11, 0.18); color: #fcd34d; border: 1px solid #f59e0b; }
+
+    @media (max-width: 720px) {
+      .activity-area { grid-template-columns: 1fr; }
+      .options-panel { min-height: 110px; }
+      .cards-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
-<body class="flex flex-col items-center justify-center p-1.5 sm:p-3 md:p-4">
-
-  <!-- Main LMS Game Container -->
-  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-sky-200 overflow-hidden">
-
-    <!-- Top LMS Meta Bar -->
-    <div class="bg-slate-800 text-white px-3 py-1.5 flex items-center justify-between gap-2 text-xs sm:text-sm">
-      <div class="flex flex-wrap items-center gap-2 min-w-0">
-        <a href="index_3.html" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-0.5 rounded-md border border-slate-500 transition">
-          ← Home
-        </a>
-        <span class="bg-sky-500 text-white font-bold px-2.5 py-0.5 rounded-md tracking-wide">AMelur-LMS-001</span>
-        <span class="text-slate-300 font-semibold truncate" id="studentInfoBadge">Game M05 • Measurements</span>
-      </div>
-      <div class="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 shrink-0">
-        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-sky-300 font-mono font-bold" id="timerDisplay">00:00:00</span>
-        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-amber-300 font-bold" id="levelDisplay">Level1-M05-4.1</span>
-        <span class="bg-indigo-700 px-2 py-0.5 rounded-md text-indigo-100 font-bold border border-indigo-500" id="trialBadge">Trial 1/3</span>
-        <span class="bg-slate-700 px-2 py-0.5 rounded-md text-emerald-300 font-bold" id="scoreCounter">Score: 0/36</span>
-        <button
-          type="button"
-          id="adminSkipBtn"
-          onclick="openSkipLevelModal()"
-          aria-label="Advance"
-          class="opacity-45 hover:opacity-100 focus:opacity-100 bg-slate-700/80 text-slate-300 hover:text-white border border-slate-500/50 font-extrabold px-2 py-0.5 rounded transition cursor-pointer text-xs select-none"
-        >→</button>
-      </div>
+<body>
+  <header class="topbar">
+    <div class="top-left">
+      <a href="index.html" class="pill-btn">← Home</a>
+      <span class="brand-tag">AMelur-LMS-001</span>
+      <span id="studentMeta" class="meta-text">Game M05 • Student</span>
     </div>
+    <div class="top-right">
+      <span id="timerText" class="timer-badge">00:00:00</span>
+      <span id="levelBadge" class="level-badge">Level1-M05-4.1</span>
+      <span id="trialBadge" class="trial-badge">Trial 1/3</span>
+      <span id="scoreBadge" class="score-badge">Score: 0/96</span>
+      <button type="button" id="fsBtn" class="fs-btn" title="Fullscreen">[ ]</button>
+      <button type="button" id="skipArrowBtn" class="skip-arrow" title="Skip Level">→</button>
+    </div>
+  </header>
 
-    <!-- Same-Day EMIS Submission Lock Banner -->
-    <div id="dailyLockBanner" class="hidden bg-rose-100 border-b-2 border-rose-400 text-rose-950 px-4 py-3 text-center font-extrabold text-xs sm:text-sm"></div>
-
-    <!-- Textbook Header -->
-    <header id="textbookHeader" class="textbook-header-l1 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5 sm:gap-3">
-        <div class="badge-l1 px-2.5 py-0.5 text-sm sm:text-lg tracking-tight" id="badgeActivityCode">
-          4.1
-        </div>
-        <h1 id="mainQuestionTitle" class="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight">
-          Write the length of the ribbon in metres.
-        </h1>
+  <main class="board">
+    <div class="q-header">
+      <div class="q-title-wrap">
+        <span id="qCode" class="q-num">4.1</span>
+        <span id="qPrompt" class="q-text">Write the length of the ribbon in metres.</span>
       </div>
-      <span id="conversionHintBadge" class="text-xs font-semibold text-sky-900 bg-white/80 px-2.5 py-0.5 rounded-full border border-sky-300">
-        100 c.m. = 1 m.
-      </span>
-    </header>
-
-    <!-- Instruction Helper Pill -->
-    <div class="bg-sky-50/80 border-b border-sky-100 px-3 py-1.5 text-center text-xs text-slate-700 font-medium" id="levelSubHeader">
+      <span id="qFact" class="fact-chip">100 c.m. = 1 m.</span>
+    </div>
+    <div id="subHint" class="sub-hint">
       Level1-M05-4.1 (Trial 1/3): Drag or tap an answer card on the right to place it in the box, then select the unit (m.).
     </div>
 
-    <!-- Game Workspace -->
-    <main id="gameMain" class="p-2.5 sm:p-4 bg-white">
-      <!-- Horizontal Virtual Ruler with Scroll Slider & Pointer (Top for Length levels 4.1 - 4.4) -->
-      <div id="virtualRulerContainer" class="mb-3"></div>
-
-      <div id="workspaceFrame" class="border-2 border-slate-200 rounded-2xl p-2.5 sm:p-4 bg-slate-50/40 shadow-inner">
-        <div id="workspaceGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-
-          <!-- Left & Center Section -->
-          <div id="rowsContainer" class="lg:col-span-8 flex flex-col justify-between gap-3 sm:gap-4"></div>
-
-          <!-- Right Section: Peach Option Bank (Level 1 only) -->
-          <div id="optionBankWrapper" class="lg:col-span-4 flex flex-col">
-            <div class="option-bank p-3 flex-1 flex flex-col justify-center">
-              <div class="text-center text-xs font-bold text-orange-900/80 uppercase tracking-wider mb-2">
-                Answer Cards (Options)
-              </div>
-              <div id="optionsContainer" class="grid grid-cols-2 gap-3 place-items-center"></div>
-            </div>
-          </div>
-
+    <section class="ruler-box">
+      <div class="ruler-top">
+        <div class="ruler-modes">
+          <span class="ruler-label">VIRTUAL RULER:</span>
+          <button type="button" class="mode-btn" data-mode="mm-cm">m.m. &amp; c.m.</button>
+          <button type="button" class="mode-btn active" data-mode="cm-m">c.m. &amp; m.</button>
+          <button type="button" class="mode-btn" data-mode="m-km">m. &amp; k.m.</button>
         </div>
+        <div id="pointerReadout" class="pointer-readout">Pointer: 65 c.m. = 0 m. 65 c.m.</div>
       </div>
-
-      <!-- Feedback Banner -->
-      <div id="feedbackBanner" class="mt-2.5 hidden rounded-xl px-3.5 py-2 text-center font-bold text-xs sm:text-sm transition-all"></div>
-
-      <!-- Action Buttons Bar -->
-      <div class="mt-3 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-        <button
-          id="checkBtn"
-          onclick="checkAnswers()"
-          class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>Check Answers</span>
-        </button>
-
-        <button
-          id="clearBtn"
-          onclick="clearCurrentSlots()"
-          class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          <span>Clear</span>
-        </button>
-
-        <button
-          id="trial2Btn"
-          onclick="startTrial(2, true)"
-          class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-sky-300"
-        >
-          <span>Trial 2</span>
-        </button>
-
-        <button
-          id="trial3Btn"
-          onclick="startTrial(3, true)"
-          class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer ring-2 ring-purple-300"
-        >
-          <span>Trial 3</span>
-        </button>
+      <div id="rulerTrack" class="ruler-track-wrap">
+        <div class="ruler-ticks">
+          <span>0 (m.)<br/>0 (c.m.)</span>
+          <span>50</span>
+          <span>1<br/>100</span>
+          <span>150</span>
+          <span>2<br/>200</span>
+          <span>250</span>
+          <span>3<br/>300</span>
+          <span>350</span>
+          <span>4<br/>400</span>
+          <span>450</span>
+          <span>5<br/>500</span>
+        </div>
+        <div id="rulerNeedle" class="ruler-needle"></div>
       </div>
-    </main>
-  </div>
-
-  <!-- LMS Completion & Submission Summary Modal -->
-  <div id="completionModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-300 text-center space-y-4">
-      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-extrabold">
-        ★
+      <div class="ruler-slider-row">
+        <span>0</span>
+        <input type="range" id="rulerSlider" min="0" max="500" value="65" />
+        <span>5 m.</span>
       </div>
-      <h2 class="text-xl font-extrabold text-slate-900">Congratulations!</h2>
-      <p class="text-sm text-slate-600 font-medium" id="completionSubText">
-        You have completed all levels of M05 (Level1-M05-4.1 through Level8-M05-4.8) across all 3 trials!
-      </p>
+    </section>
 
-      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left text-xs sm:text-sm space-y-1.5">
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Student ID:</span> <span class="font-bold text-indigo-700" id="sumStudentId">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">EMIS Number:</span> <span class="font-bold text-indigo-700" id="sumEmisNumber">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Name:</span> <span class="font-bold text-slate-800" id="sumStudentName">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level1-M05-4.1:</span> <span class="font-bold text-blue-700" id="sumL1">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level2-M05-4.2:</span> <span class="font-bold text-purple-700" id="sumL2">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level3-M05-4.3:</span> <span class="font-bold text-emerald-700" id="sumL3">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level4-M05-4.4:</span> <span class="font-bold text-pink-700" id="sumL4">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level5-M05-4.5:</span> <span class="font-bold text-sky-700" id="sumL5">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level6-M05-4.6:</span> <span class="font-bold text-orange-700" id="sumL6">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level7-M05-4.7:</span> <span class="font-bold text-indigo-700" id="sumL7">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">Level8-M05-4.8:</span> <span class="font-bold text-fuchsia-700" id="sumL8">--</span></div>
-        <div class="flex justify-between border-t pt-1.5"><span class="text-slate-700 font-bold">Total Score:</span> <span class="font-extrabold text-emerald-600" id="sumTotal">--</span></div>
-        <div class="flex justify-between"><span class="text-slate-500 font-semibold">LMS Status:</span> <span class="font-bold text-amber-600" id="sumSyncStatus">Saved to AMelur-LMS-001 Leaderboard ✓</span></div>
-      </div>
+    <section class="activity-area">
+      <div id="rowsContainer" class="rows-column"></div>
 
-      <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-        <a href="index_3.html" class="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm text-center">
-          Home
-        </a>
-      </div>
+      <aside class="options-panel">
+        <div class="options-heading">ANSWER CARDS (OPTIONS)</div>
+        <div id="answerCardsPanel" class="cards-grid"></div>
+      </aside>
+    </section>
+
+    <div id="feedbackBanner" class="feedback-banner"></div>
+
+    <div class="actions-bar">
+      <button type="button" id="checkBtn" class="act-btn btn-check">✓ Check Answers</button>
+      <button type="button" id="clearBtn" class="act-btn btn-clear">✕ Clear</button>
+      <button type="button" id="trial2Btn" class="act-btn btn-trial2">Trial 2</button>
+      <button type="button" id="trial3Btn" class="act-btn btn-trial3">Trial 3</button>
     </div>
-  </div>
-
-  <!-- Password Modal to Skip Directly to Next Level -->
-  <div id="skipPasswordModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-slate-300 text-center space-y-3.5">
-      <div class="w-11 h-11 bg-slate-100 text-slate-700 rounded-full flex items-center justify-center mx-auto text-xl font-extrabold">
-        →
-      </div>
-      <h3 class="text-lg font-extrabold text-slate-900">Next Level</h3>
-      <p class="text-xs sm:text-sm text-slate-600 font-medium" id="skipModalSubText">
-        Enter password to go to the next level.
-      </p>
-      <input
-        type="password"
-        id="skipPasswordInput"
-        placeholder="Password"
-        onkeydown="if(event.key === 'Enter') verifySkipPassword()"
-        class="w-full px-3.5 py-2.5 text-center font-bold text-slate-800 border-2 border-slate-300 focus:border-indigo-500 rounded-xl outline-none"
-      />
-      <div id="skipPasswordError" class="hidden text-xs font-bold text-rose-600">
-        Incorrect password. Please try again.
-      </div>
-      <div class="flex gap-2.5 pt-1">
-        <button
-          onclick="closeSkipLevelModal()"
-          class="flex-1 py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm cursor-pointer"
-        >
-          Cancel
-        </button>
-        <button
-          onclick="verifySkipPassword()"
-          class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer"
-        >
-          Go →
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5yBWfQ4h9LUHxvXVAr4jK2asylBXDdMekbj1KdtBy5txIAX5jdRy4n4GWcff6Zoal/exec";
-    const TEACHER_SKIP_PASSWORD = "pups";
-
-    /* =====================================================================
-       1. VIRTUAL SCROLLABLE RULER WITH SLIDER & POINTER (LENGTH LEVELS 4.1-4.4)
-       ===================================================================== */
-    let activeRulerMode = 'cm_m'; // 'mm_cm' | 'cm_m' | 'm_km'
-    let rulerPointerSteps = 0;
-
-    const RULER_MODES = {
-      mm_cm: {
-        label: 'm.m. & c.m.',
-        subUnit: 'm.m.',
-        mainUnit: 'c.m.',
-        subPerMain: 10,
-        maxMain: 30,
-        stepSize: 1,
-        pxPerStep: 4,
-        minorEvery: 1,
-        midEvery: 5,
-        majorEvery: 10,
-        formatReadout(steps) {
-          const cm = Math.floor(steps / 10);
-          const mm = steps % 10;
-          return `${steps} m.m. = ${cm} c.m. ${mm} m.m.`;
-        }
-      },
-      cm_m: {
-        label: 'c.m. & m.',
-        subUnit: 'c.m.',
-        mainUnit: 'm.',
-        subPerMain: 100,
-        maxMain: 5,
-        stepSize: 5,
-        pxPerStep: 12.5,
-        minorEvery: 1,
-        midEvery: 10,
-        majorEvery: 20,
-        formatReadout(steps) {
-          const totalCm = steps * 5;
-          const m = Math.floor(totalCm / 100);
-          const cm = totalCm % 100;
-          let fracStr = '';
-          if (cm === 25) fracStr = m > 0 ? ` (${m} ¼ m.)` : ` (¼ m.)`;
-          else if (cm === 50) fracStr = m > 0 ? ` (${m} ½ m.)` : ` (½ m.)`;
-          else if (cm === 75) fracStr = m > 0 ? ` (${m} ¾ m.)` : ` (¾ m.)`;
-          else if (cm === 0 && m > 0) fracStr = ` (${m} m.)`;
-          return `${totalCm} c.m. = ${m} m. ${cm} c.m.${fracStr}`;
-        }
-      },
-      m_km: {
-        label: 'm. & k.m.',
-        subUnit: 'm.',
-        mainUnit: 'k.m.',
-        subPerMain: 1000,
-        maxMain: 10,
-        stepSize: 50,
-        pxPerStep: 8.5,
-        minorEvery: 1,
-        midEvery: 10,
-        majorEvery: 20,
-        formatReadout(steps) {
-          const totalM = steps * 50;
-          const km = Math.floor(totalM / 1000);
-          const m = totalM % 1000;
-          let fracStr = '';
-          if (m === 250) fracStr = km > 0 ? ` (${km} ¼ k.m.)` : ` (¼ k.m.)`;
-          else if (m === 500) fracStr = km > 0 ? ` (${km} ½ k.m.)` : ` (½ k.m.)`;
-          else if (m === 750) fracStr = km > 0 ? ` (${km} ¾ k.m.)` : ` (¾ k.m.)`;
-          else if (m === 0 && km > 0) fracStr = ` (${km} k.m.)`;
-          return `${totalM} m. = ${km} k.m. ${m} m.${fracStr}`;
-        }
-      }
-    };
-
-    function setVirtualRulerMode(mode) {
-      if (!RULER_MODES[mode]) return;
-      activeRulerMode = mode;
-      rulerPointerSteps = 0;
-      renderLengthScalesForLevel(currentLevel);
-    }
-
-    function updateRulerPointer(stepVal, shouldAutoScroll = true) {
-      const cfg = RULER_MODES[activeRulerMode];
-      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
-      rulerPointerSteps = Math.max(0, Math.min(maxSteps, parseInt(stepVal, 10) || 0));
-
-      const leftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
-      const pointerEl = document.getElementById('rulerPointerLine');
-      const readoutEl = document.getElementById('rulerPointerReadout');
-      const sliderEl = document.getElementById('rulerRangeSlider');
-      const viewportEl = document.getElementById('rulerScrollViewport');
-
-      if (pointerEl) pointerEl.style.left = `${leftPx}px`;
-      if (readoutEl) readoutEl.textContent = cfg.formatReadout(rulerPointerSteps);
-      if (sliderEl && parseInt(sliderEl.value, 10) !== rulerPointerSteps) {
-        sliderEl.value = String(rulerPointerSteps);
-      }
-
-      if (shouldAutoScroll && viewportEl) {
-        const viewW = viewportEl.clientWidth;
-        const targetScroll = Math.max(0, leftPx - viewW * 0.5);
-        viewportEl.scrollTo({ left: targetScroll, behavior: 'smooth' });
-      }
-    }
-
-    function handleRulerStripClick(event) {
-      const stripEl = document.getElementById('rulerStripCanvas');
-      if (!stripEl) return;
-      const rect = stripEl.getBoundingClientRect();
-      const clickX = event.clientX - rect.left - 24;
-      const cfg = RULER_MODES[activeRulerMode];
-      const nearestStep = Math.round(clickX / cfg.pxPerStep);
-      updateRulerPointer(nearestStep, false);
-    }
-
-    function renderLengthScalesForLevel(lvl, resetDefaultMode = false) {
-      const container = document.getElementById('virtualRulerContainer');
-      if (!container) return;
-
-      if (lvl > 4) {
-        container.classList.add('hidden');
-        container.innerHTML = '';
-        return;
-      }
-
-      if (resetDefaultMode) {
-        activeRulerMode = lvl === 1 ? 'cm_m' : 'm_km';
-        rulerPointerSteps = 0;
-      }
-
-      container.classList.remove('hidden');
-      const cfg = RULER_MODES[activeRulerMode];
-      const maxSteps = Math.round((cfg.maxMain * cfg.subPerMain) / cfg.stepSize);
-      const totalWidthPx = 48 + maxSteps * cfg.pxPerStep;
-
-      let ticksHTML = '';
-      for (let s = 0; s <= maxSteps; s++) {
-        const x = 24 + s * cfg.pxPerStep;
-        if (s % cfg.majorEvery === 0) {
-          const mainVal = (s * cfg.stepSize) / cfg.subPerMain;
-          const subVal = s * cfg.stepSize;
-          const topLabel = s === 0 ? `0 (${cfg.mainUnit})` : `${mainVal}`;
-          const botLabel = s === 0 ? `0 (${cfg.subUnit})` : `${subVal}`;
-          ticksHTML += `
-            <div class="ruler-major-tick" style="left:${x}px;"></div>
-            <div class="ruler-major-label" style="left:${x}px;">${topLabel}</div>
-            <div class="ruler-frac-label" style="left:${x}px;">${botLabel}</div>
-          `;
-        } else if (s % cfg.midEvery === 0) {
-          const subVal = s * cfg.stepSize;
-          let midText = '';
-          if (activeRulerMode === 'mm_cm') {
-            const halfCmVal = (s * cfg.stepSize) / 10;
-            midText = `${halfCmVal}`;
-          } else {
-            midText = `${subVal}`;
-          }
-          ticksHTML += `
-            <div class="ruler-mid-tick" style="left:${x}px;"></div>
-            <div class="ruler-frac-label" style="left:${x}px;">${midText}</div>
-          `;
-        } else {
-          ticksHTML += `<div class="ruler-minor-tick" style="left:${x}px;"></div>`;
-        }
-      }
-
-      const modeButtonsHTML = Object.entries(RULER_MODES).map(([key, mObj]) => {
-        const isActive = key === activeRulerMode;
-        const btnCls = isActive
-          ? 'bg-sky-600 text-white border-sky-700 shadow-sm'
-          : 'bg-white text-slate-700 border-slate-300 hover:bg-sky-50';
-        return `
-          <button
-            type="button"
-            onclick="setVirtualRulerMode('${key}')"
-            class="px-2.5 py-1 rounded-lg border text-xs font-extrabold transition cursor-pointer ${btnCls}"
-          >
-            ${mObj.label}
-          </button>
-        `;
-      }).join('');
-
-      const pointerLeftPx = 24 + rulerPointerSteps * cfg.pxPerStep;
-
-      container.innerHTML = `
-        <div class="virtual-ruler-panel">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wide mr-1">Virtual Ruler:</span>
-              ${modeButtonsHTML}
-            </div>
-            <div class="bg-rose-50 border border-rose-300 text-rose-900 px-2.5 py-0.5 rounded-lg text-xs sm:text-sm font-extrabold font-mono">
-              Pointer: <span id="rulerPointerReadout">${cfg.formatReadout(rulerPointerSteps)}</span>
-            </div>
-          </div>
-
-          <div id="rulerScrollViewport" class="ruler-scroll-viewport">
-            <div
-              id="rulerStripCanvas"
-              onclick="handleRulerStripClick(event)"
-              class="ruler-strip cursor-crosshair"
-              style="width:${totalWidthPx}px; min-width:${totalWidthPx}px;"
-              title="Tap anywhere on the ruler or drag the slider below to move the pointer"
-            >
-              ${ticksHTML}
-              <div id="rulerPointerLine" class="ruler-pointer-line" style="left:${pointerLeftPx}px;">
-                <div class="ruler-pointer-head"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ruler-slider-row">
-            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">0</span>
-            <input
-              id="rulerRangeSlider"
-              type="range"
-              min="0"
-              max="${maxSteps}"
-              step="1"
-              value="${rulerPointerSteps}"
-              oninput="updateRulerPointer(this.value, true)"
-              aria-label="Slide virtual ruler pointer"
-              class="ruler-slider"
-            />
-            <span class="text-[11px] font-extrabold text-slate-600 shrink-0">${cfg.maxMain} ${cfg.mainUnit}</span>
-          </div>
-        </div>
-      `;
-    }
-
-    function openSkipLevelModal() {
-      const modal = document.getElementById('skipPasswordModal');
-      const input = document.getElementById('skipPasswordInput');
-      const err = document.getElementById('skipPasswordError');
-      const sub = document.getElementById('skipModalSubText');
-
-      err.classList.add('hidden');
-      input.value = '';
-      if (currentLevel < 8) {
-        sub.textContent = `Enter password to move from Level ${currentLevel} to Level ${currentLevel + 1}.`;
-      } else {
-        sub.textContent = 'You are on the final level (Level8-M05-4.8). Enter password to open summary.';
-      }
-      modal.classList.remove('hidden');
-      setTimeout(() => input.focus(), 50);
-    }
-
-    function closeSkipLevelModal() {
-      document.getElementById('skipPasswordModal').classList.add('hidden');
-    }
-
-    function verifySkipPassword() {
-      const entered = document.getElementById('skipPasswordInput').value.trim();
-      const err = document.getElementById('skipPasswordError');
-
-      if (entered.toLowerCase() !== TEACHER_SKIP_PASSWORD.toLowerCase()) {
-        playSound('error');
-        err.classList.remove('hidden');
-        return;
-      }
-
-      playSound('place');
-      closeSkipLevelModal();
-      if (!levelCompleted) {
-        recordTrialSnapshot(currentLevel, currentTrial, 0, false);
-        syncTrialToGoogleSheet(currentLevel, currentTrial);
-      }
-
-      if (currentLevel < 8) {
-        setupLevel(currentLevel + 1, 1);
-      } else {
-        levelCompleted = true;
-        openFinalSummaryModal();
-      }
-    }
-
-    const ENGLISH_UNIT_OPTIONS = [
-      { value: 'mm', label: 'm.m.' },
-      { value: 'cm', label: 'c.m.' },
-      { value: 'm',  label: 'm.'   },
-      { value: 'km', label: 'k.m.' }
-    ];
-
-    function renderUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
-      const opts = ENGLISH_UNIT_OPTIONS.map(opt => {
-        const sel = selectedValue === opt.value ? 'selected' : '';
-        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
-      }).join('');
-      return `
-        <select
-          ${disabledAttr}
-          onclick="event.stopPropagation()"
-          onchange="${onChangeAttr}"
-          aria-label="${ariaLabel}"
-          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
-        >
-          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
-          ${opts}
-        </select>
-      `;
-    }
-
-    const MASS_UNIT_OPTIONS = [
-      { value: 'mg', label: 'm.g.' },
-      { value: 'g',  label: 'g.'   },
-      { value: 'kg', label: 'k.g.' }
-    ];
-
-    function renderMassUnitDropdownHTML(selectedValue, onChangeAttr, disabledAttr, ariaLabel, extraClasses = '') {
-      const opts = MASS_UNIT_OPTIONS.map(opt => {
-        const sel = selectedValue === opt.value ? 'selected' : '';
-        return `<option value="${opt.value}" ${sel}>${opt.label}</option>`;
-      }).join('');
-      return `
-        <select
-          ${disabledAttr}
-          onchange="${onChangeAttr}"
-          aria-label="${ariaLabel}"
-          class="unit-select px-1 py-0.5 text-xs sm:text-sm ${extraClasses}"
-        >
-          <option value="" ${!selectedValue ? 'selected' : ''}>unit</option>
-          ${opts}
-        </select>
-      `;
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let savedSessionObj = null;
-    try {
-      savedSessionObj = JSON.parse(localStorage.getItem('amelur_active_session') || 'null');
-    } catch (e) {}
-
-    const lmsContext = {
-      gameCode: (urlParams.get('gameCode') || (savedSessionObj && savedSessionObj.gameCode) || 'M05').trim().toUpperCase(),
-      studentId: (urlParams.get('studentId') || (savedSessionObj && savedSessionObj.studentId) || 'GUEST').trim().toUpperCase(),
-      emisNumber: (urlParams.get('emisNumber') || (savedSessionObj && savedSessionObj.emisNumber) || '').trim(),
-      name: (urlParams.get('name') || (savedSessionObj && savedSessionObj.studentName) || 'Student').trim(),
-      school: (urlParams.get('school') || 'PUPS Anjalam Melur').trim(),
-      whatsapp: (urlParams.get('whatsapp') || '').trim(),
-      trialId: (urlParams.get('trialId') || '1').trim()
-    };
-
-    const LEVEL1_POOL = [
-      { id: 'c25',  cm: 25,  whole: '',  num: '1', den: '4' },
-      { id: 'c50',  cm: 50,  whole: '',  num: '1', den: '2' },
-      { id: 'c75',  cm: 75,  whole: '',  num: '3', den: '4' },
-      { id: 'c100', cm: 100, whole: '1', num: '',  den: ''  },
-      { id: 'c125', cm: 125, whole: '1', num: '1', den: '4' },
-      { id: 'c150', cm: 150, whole: '1', num: '1', den: '2' },
-      { id: 'c175', cm: 175, whole: '1', num: '3', den: '4' },
-      { id: 'c200', cm: 200, whole: '2', num: '',  den: ''  },
-      { id: 'c225', cm: 225, whole: '2', num: '1', den: '4' },
-      { id: 'c250', cm: 250, whole: '2', num: '1', den: '2' },
-      { id: 'c275', cm: 275, whole: '2', num: '3', den: '4' },
-      { id: 'c300', cm: 300, whole: '3', num: '',  den: ''  }
-    ];
-
-    const PLACE_PAIRS = [
-      { left: 'Pon Nagar',      right: 'Koodal Nagar',   leftBorder: '#c026d3', rightBorder: '#ec4899' },
-      { left: 'Pasumai Nagar',  right: 'Thendral Nagar', leftBorder: '#4d7c0f', rightBorder: '#7e22ce' },
-      { left: 'Valar Nagar',    right: 'Anbu Nagar',     leftBorder: '#ca8a04', rightBorder: '#0284c7' },
-      { left: 'Muthu Nagar',    right: 'Pothigai Nagar', leftBorder: '#f43f5e', rightBorder: '#f97316' },
-      { left: 'Kaveri Nagar',   right: 'Mullai Nagar',   leftBorder: '#0d9488', rightBorder: '#6366f1' },
-      { left: 'Marutham Nagar', right: 'Kurinji Nagar',  leftBorder: '#16a34a', rightBorder: '#db2777' }
-    ];
-
-    const LEVEL2_DIST_POOL = [
-      { whole: 1, num: 1, den: 2, km: 1, m: 500 },
-      { whole: 1, num: 1, den: 4, km: 1, m: 250 },
-      { whole: 2, num: 3, den: 4, km: 2, m: 750 },
-      { whole: 3, num: 1, den: 2, km: 3, m: 500 },
-      { whole: 2, num: 1, den: 4, km: 2, m: 250 },
-      { whole: 3, num: 3, den: 4, km: 3, m: 750 },
-      { whole: 4, num: 1, den: 2, km: 4, m: 500 },
-      { whole: 4, num: 1, den: 4, km: 4, m: 250 },
-      { whole: 1, num: 3, den: 4, km: 1, m: 750 },
-      { whole: 5, num: 1, den: 2, km: 5, m: 500 },
-      { whole: 2, num: 1, den: 2, km: 2, m: 500 },
-      { whole: 4, num: 3, den: 4, km: 4, m: 750 }
-    ];
-
-    const LEVEL3_POOL = [
-      { label: '1 m. 50 c.m.',   unit: 'm',  whole: 1, num: 1, den: 2 },
-      { label: '2 m. 25 c.m.',   unit: 'm',  whole: 2, num: 1, den: 4 },
-      { label: '3 m. 75 c.m.',   unit: 'm',  whole: 3, num: 3, den: 4 },
-      { label: '4 m. 50 c.m.',   unit: 'm',  whole: 4, num: 1, den: 2 },
-      { label: '5 k.m. 750 m.',  unit: 'km', whole: 5, num: 3, den: 4 },
-      { label: '7 k.m. 500 m.',  unit: 'km', whole: 7, num: 1, den: 2 },
-      { label: '9 k.m. 250 m.',  unit: 'km', whole: 9, num: 1, den: 4 },
-      { label: '6 k.m. 250 m.',  unit: 'km', whole: 6, num: 1, den: 4 },
-      { label: '8 k.m. 750 m.',  unit: 'km', whole: 8, num: 3, den: 4 },
-      { label: '4 k.m. 500 m.',  unit: 'km', whole: 4, num: 1, den: 2 },
-      { label: '6 m. 25 c.m.',   unit: 'm',  whole: 6, num: 1, den: 4 },
-      { label: '8 m. 75 c.m.',   unit: 'm',  whole: 8, num: 3, den: 4 }
-    ];
-
-    const L3_BUCKET_COLORS = [
-      '#f59e0b',
-      '#f87171',
-      '#ef4444',
-      '#84cc16',
-      '#c084fc',
-      '#60a5fa'
-    ];
-
-    const LEVEL4_STORY_THEMES = [
-      { traveller: 'Karthik',    possPron: 'his', subjPron: 'he',  place1: "uncle's house",  place2: "aunt's house",   destination: 'a waterfall' },
-      { traveller: 'Senthamizh', possPron: 'his', subjPron: 'he',  place1: "grandpa's farm", place2: "cousin's house", destination: 'the river bridge' },
-      { traveller: 'Kavitha',    possPron: 'her', subjPron: 'she', place1: "teacher's home", place2: 'the library',    destination: 'the hill park' },
-      { traveller: 'Thamarai',   possPron: 'her', subjPron: 'she', place1: "friend's house", place2: 'the temple',     destination: 'the lake park' },
-      { traveller: 'Bharathi',   possPron: 'her', subjPron: 'she', place1: "aunt's house",   place2: "uncle's farm",   destination: 'the botanical garden' },
-      { traveller: 'Sundaram',   possPron: 'his', subjPron: 'he',  place1: "cousin's home",  place2: 'the museum',     destination: 'the dam view point' }
-    ];
-
-    const LEVEL4_VEHICLE_POOL = [
-      { id: 'bicycle',    label: 'Bicycle',    whole: '',  num: '1', den: '4', km: 0, m: 250, givenInTable: true  },
-      { id: 'car',        label: 'Car',        whole: '3', num: '',  den: '',  km: 3, m: 0,   givenInTable: false },
-      { id: 'motorcycle', label: 'Motorcycle', whole: '2', num: '1', den: '2', km: 2, m: 500, givenInTable: false },
-      { id: 'scooter',    label: 'Scooter',    whole: '1', num: '3', den: '4', km: 1, m: 750, givenInTable: false },
-      { id: 'van',        label: 'Van',        whole: '4', num: '1', den: '4', km: 4, m: 250, givenInTable: false },
-      { id: 'bus',        label: 'Bus',        whole: '6', num: '3', den: '4', km: 6, m: 750, givenInTable: false }
-    ];
-
-    function renderVehicleIconSVG(vehicleId) {
-      if (vehicleId === 'bicycle') {
-        return `
-          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bicycle">
-            <circle cx="20" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
-            <circle cx="76" cy="42" r="13" stroke="#1e293b" stroke-width="3.2" fill="#f8fafc" />
-            <path d="M 20 42 L 42 42 L 58 21 L 34 21 Z" stroke="#dc2626" stroke-width="3.4" stroke-linejoin="round" />
-            <path d="M 42 42 L 32 16 M 58 21 L 76 42 M 58 21 L 54 11 H 63" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-            <rect x="25" y="14" width="13" height="4" rx="2" fill="#0f172a" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'car') {
-        return `
-          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Car">
-            <path d="M 16 38 L 22 21 Q 24 17 29 17 H 64 Q 69 17 72 22 L 82 36 Q 85 38 85 43 V 46 H 12 V 42 Q 12 39 16 38 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="2.5" stroke-linejoin="round" />
-            <path d="M 27 21 H 45 V 32 H 23 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
-            <path d="M 49 21 H 63 L 71 32 H 49 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.8" />
-            <circle cx="27" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
-            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2.5" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'motorcycle') {
-        return `
-          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Motorcycle">
-            <circle cx="21" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
-            <circle cx="76" cy="43" r="12" stroke="#1e293b" stroke-width="3.2" fill="#f1f5f9" />
-            <path d="M 21 43 L 44 37 L 62 21 L 76 43" stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M 32 31 H 53 L 64 24 L 54 36 H 38 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="2.2" stroke-linejoin="round" />
-            <path d="M 58 21 L 53 12 H 60" stroke="#0f172a" stroke-width="2.8" stroke-linecap="round" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'scooter') {
-        return `
-          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Scooter">
-            <circle cx="22" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
-            <circle cx="74" cy="44" r="10" stroke="#1e293b" stroke-width="3" fill="#f8fafc" />
-            <path d="M 22 44 H 56 L 64 20 L 55 13 H 64" stroke="#0284c7" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M 34 38 L 42 25 H 58 L 56 38 Z" fill="#38bdf8" stroke="#0369a1" stroke-width="2.2" />
-          </svg>
-        `;
-      }
-      if (vehicleId === 'van') {
-        return `
-          <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Van">
-            <path d="M 14 16 H 66 Q 72 16 75 23 L 84 35 V 46 H 14 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
-            <rect x="20" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
-            <rect x="39" y="21" width="15" height="11" rx="2" fill="#fef3c7" stroke="#1e293b" stroke-width="1.6" />
-            <path d="M 58 21 H 66 L 73 32 H 58 Z" fill="#bae6fd" stroke="#1e293b" stroke-width="1.6" />
-            <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-            <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-          </svg>
-        `;
-      }
-      return `
-        <svg class="w-14 h-9 mx-auto block" viewBox="0 0 96 60" fill="none" aria-label="Bus">
-          <rect x="13" y="14" width="70" height="31" rx="6" fill="#16a34a" stroke="#14532d" stroke-width="2.5" />
-          <rect x="19" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
-          <rect x="35" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
-          <rect x="51" y="20" width="12" height="11" rx="2" fill="#dcfce7" stroke="#1e293b" stroke-width="1.5" />
-          <rect x="67" y="20" width="11" height="11" rx="2" fill="#bae6fd" stroke="#1e293b" stroke-width="1.5" />
-          <circle cx="28" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-          <circle cx="70" cy="46" r="8" fill="#1e293b" stroke="#e2e8f0" stroke-width="2.5" />
-        </svg>
-      `;
-    }
-
-    const LEVEL5_MATCH_ITEMS = [
-      { id: 'yam',         name: 'Elephant Yam',        whole: '1', num: '',  den: '',  grams: 1000, weights: ['1 k.g.'] },
-      { id: 'chayote',     name: 'Chayote (Chow Chow)', whole: '',  num: '1', den: '4', grams: 250,  weights: ['200 g.', '50 g.'] },
-      { id: 'cabbage',     name: 'Cabbage',             whole: '',  num: '1', den: '2', grams: 500,  weights: ['500 g.'] },
-      { id: 'cauliflower', name: 'Cauliflower',         whole: '',  num: '3', den: '4', grams: 750,  weights: ['500 g.', '200 g.', '50 g.'] }
-    ];
-
-    function renderVegetableSVG(vegId) {
-      if (vegId === 'yam') {
-        return `
-          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Elephant Yam">
-            <ellipse cx="48" cy="36" rx="34" ry="24" fill="#854d0e" stroke="#422006" stroke-width="2.5" />
-            <ellipse cx="48" cy="31" rx="22" ry="12" fill="#a16207" />
-            <ellipse cx="48" cy="31" rx="11" ry="6" fill="#5c2d0c" />
-            <circle cx="28" cy="42" r="2.2" fill="#422006" />
-            <circle cx="67" cy="40" r="2.2" fill="#422006" />
-            <circle cx="48" cy="49" r="2" fill="#422006" />
-          </svg>
-        `;
-      }
-      if (vegId === 'chayote') {
-        return `
-          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Chayote">
-            <path d="M 18 35 C 18 19, 44 15, 68 21 C 80 24, 83 31, 82 36 C 81 43, 74 49, 60 51 C 38 54, 18 49, 18 35 Z" fill="#bef264" stroke="#4d7c0f" stroke-width="2.5" />
-            <path d="M 24 31 C 40 27, 58 28, 76 32" stroke="#84cc16" stroke-width="2" stroke-linecap="round" />
-            <path d="M 24 40 C 42 43, 58 42, 74 39" stroke="#84cc16" stroke-width="2" stroke-linecap="round" />
-          </svg>
-        `;
-      }
-      if (vegId === 'cabbage') {
-        return `
-          <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Cabbage">
-            <circle cx="48" cy="35" r="25" fill="#86efac" stroke="#15803d" stroke-width="2.5" />
-            <path d="M 32 22 C 42 15, 58 18, 64 30 C 56 38, 39 39, 31 31" stroke="#22c55e" stroke-width="2.2" fill="#bbf7d0" />
-            <path d="M 25 38 C 32 49, 55 54, 69 42" stroke="#16a34a" stroke-width="2.2" fill="none" />
-          </svg>
-        `;
-      }
-      return `
-        <svg class="w-16 h-12 mx-auto block" viewBox="0 0 96 68" fill="none" aria-label="Cauliflower">
-          <path d="M 22 42 C 18 52, 34 60, 48 58 C 62 60, 78 52, 74 42" fill="#22c55e" stroke="#15803d" stroke-width="2.3" />
-          <circle cx="34" cy="33" r="13" fill="#fefce8" stroke="#cbd5e1" stroke-width="2" />
-          <circle cx="62" cy="33" r="13" fill="#fefce8" stroke="#cbd5e1" stroke-width="2" />
-          <circle cx="48" cy="24" r="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
-          <circle cx="48" cy="37" r="13" fill="#fef9c3" stroke="#cbd5e1" stroke-width="1.8" />
-        </svg>
-      `;
-    }
-
-    /* =====================================================================
-       4. 3D KG & GRAM STONES WITH BLACK BG (IDENTICAL SIZES IN 4.5, 4.6 & 4.8)
-       ===================================================================== */
-    function render3DWeightStoneSVG(label, sizeClass, scaleFactor = 1.25) {
-      const uid = 'w3d_' + Math.random().toString(36).slice(2, 8);
-      return `
-        <div class="inline-flex items-center justify-center bg-black rounded-lg p-0.5" style="transform: scale(${scaleFactor}); transform-origin: center;">
-          <svg class="${sizeClass} mx-auto block bg-black rounded-md" viewBox="0 0 88 76" fill="none" aria-label="${label}">
-            <defs>
-              <linearGradient id="${uid}_rim" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#94a3b8" />
-                <stop offset="50%" stop-color="#475569" />
-                <stop offset="100%" stop-color="#1e293b" />
-              </linearGradient>
-              <linearGradient id="${uid}_inner" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#09090b" />
-                <stop offset="55%" stop-color="#000000" />
-                <stop offset="100%" stop-color="#000000" />
-              </linearGradient>
-            </defs>
-            <polygon points="24,12 64,12 83,41 64,71 24,71 5,41" fill="#000000" />
-            <polygon points="24,5 64,5 83,35 64,65 24,65 5,35" fill="url(#${uid}_rim)" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round" />
-            <polyline points="8,34 25,7 63,7 80,34" fill="none" stroke="#e2e8f0" stroke-width="1.6" stroke-linecap="round" opacity="0.75" />
-            <polygon points="27,12 61,12 75,35 61,58 27,58 13,35" fill="url(#${uid}_inner)" stroke="#334155" stroke-width="1.5" stroke-linejoin="round" />
-            <text x="44" y="40" text-anchor="middle" fill="#ffffff" font-family="Inter, sans-serif" font-weight="800" font-size="14" letter-spacing="0.2">${label}</text>
-          </svg>
-        </div>
-      `;
-    }
-
-    const LEVEL6_WEIGHT_LIST = [
-      { id: '2kg',  label: '2 k.g.', grams: 2000, sizeClass: 'w-12 h-10 sm:w-13 sm:h-11' },
-      { id: '1kg',  label: '1 k.g.', grams: 1000, sizeClass: 'w-11 h-9 sm:w-12 sm:h-10'  },
-      { id: '500g', label: '500 g.', grams: 500,  sizeClass: 'w-10 h-9 sm:w-11 sm:h-9'   },
-      { id: '200g', label: '200 g.', grams: 200,  sizeClass: 'w-10 h-8 sm:w-10 sm:h-9'   },
-      { id: '100g', label: '100 g.', grams: 100,  sizeClass: 'w-9 h-8 sm:w-10 sm:h-8'    },
-      { id: '50g',  label: '50 g.',  grams: 50,   sizeClass: 'w-9 h-7 sm:w-9 sm:h-8'     }
-    ];
-
-    function renderHexWeightSVG(label) {
-      const matchedSpec = LEVEL6_WEIGHT_LIST.find(w => w.label === label);
-      const sizeClass = matchedSpec ? matchedSpec.sizeClass : 'w-11 h-9 sm:w-12 sm:h-10';
-      return render3DWeightStoneSVG(label, sizeClass, 1.25);
-    }
-
-    const LEVEL6_POOL = [
-      { id: 'apples',   name: 'Apples Basket',   whole: '3', num: '3', den: '4', kg: 3, g: 750, reqWeights: ['2kg', '1kg', '500g', '200g', '50g'] },
-      { id: 'oranges',  name: 'Oranges Basket',  whole: '2', num: '1', den: '4', kg: 2, g: 250, reqWeights: ['2kg', '200g', '50g'] },
-      { id: 'mangoes',  name: 'Mangoes Basket',  whole: '1', num: '3', den: '4', kg: 1, g: 750, reqWeights: ['1kg', '500g', '200g', '50g'] },
-      { id: 'tomatoes', name: 'Tomatoes Basket', whole: '2', num: '1', den: '2', kg: 2, g: 500, reqWeights: ['2kg', '500g'] },
-      { id: 'guavas',   name: 'Guavas Basket',   whole: '3', num: '1', den: '2', kg: 3, g: 500, reqWeights: ['2kg', '1kg', '500g'] },
-      { id: 'lemons',   name: 'Lemons Basket',   whole: '1', num: '1', den: '4', kg: 1, g: 250, reqWeights: ['1kg', '200g', '50g'] },
-      { id: 'bananas',  name: 'Bananas Basket',  whole: '3', num: '1', den: '4', kg: 3, g: 250, reqWeights: ['2kg', '1kg', '200g', '50g'] },
-      { id: 'potatoes', name: 'Potatoes Basket', whole: '2', num: '3', den: '4', kg: 2, g: 750, reqWeights: ['2kg', '500g', '200g', '50g'] }
-    ];
-
-    function renderBasketSVG(itemId) {
-      const fruitColors = {
-        apples:   ['#dc2626', '#ef4444', '#b91c1c'],
-        oranges:  ['#f97316', '#fb923c', '#ea580c'],
-        mangoes:  ['#facc15', '#eab308', '#f59e0b'],
-        tomatoes: ['#ef4444', '#dc2626', '#f87171'],
-        guavas:   ['#4ade80', '#22c55e', '#86efac'],
-        lemons:   ['#fde047', '#facc15', '#fef08a'],
-        bananas:  ['#fde047', '#eab308', '#fef08a'],
-        potatoes: ['#d97706', '#b45309', '#f59e0b']
-      };
-      const [c1, c2, c3] = fruitColors[itemId] || fruitColors.apples;
-      return `
-        <svg class="w-16 h-11 mx-auto block" viewBox="0 0 120 78" fill="none" aria-label="${itemId}">
-          <circle cx="38" cy="27" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="56" cy="22" r="12" fill="${c2}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="76" cy="25" r="11" fill="${c1}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="46" cy="34" r="11" fill="${c3}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="66" cy="33" r="11" fill="${c2}" stroke="#7f1d1d" stroke-width="1.5" />
-          <circle cx="85" cy="34" r="10" fill="${c3}" stroke="#7f1d1d" stroke-width="1.5" />
-          <path d="M 18 38 H 102 L 90 68 Q 88 72 82 72 H 38 Q 32 72 30 68 Z" fill="#d97706" stroke="#78350f" stroke-width="2.5" stroke-linejoin="round" />
-          <rect x="15" y="35" width="90" height="7" rx="3.5" fill="#b45309" stroke="#78350f" stroke-width="2" />
-          <path d="M 24 50 H 96 M 27 60 H 93" stroke="#92400e" stroke-width="2" />
-          <path d="M 40 42 L 44 71 M 60 42 V 71 M 80 42 L 76 71" stroke="#92400e" stroke-width="2" />
-        </svg>
-      `;
-    }
-
-    function renderL6HexWeightSVG(wObj) {
-      return render3DWeightStoneSVG(wObj.label, wObj.sizeClass, 1.25);
-    }
-
-    const LEVEL7_CHILD_NAMES = ['Naveen', 'Kavya', 'Arjun', 'Divya', 'Karthik', 'Meenakshi'];
-
-    const LEVEL7_VEG_POOL = [
-      { name: 'Garlic',       kg: 1, g: 250, whole: 1, num: 1, den: 4 },
-      { name: 'Potatoes',     kg: 2, g: 500, whole: 2, num: 1, den: 2 },
-      { name: 'Onions',       kg: 3, g: 250, whole: 3, num: 1, den: 4 },
-      { name: "Lady's finger",kg: 0, g: 750, whole: 0, num: 3, den: 4 },
-      { name: 'Beans',        kg: 1, g: 500, whole: 1, num: 1, den: 2 },
-      { name: 'Brinjal',      kg: 2, g: 250, whole: 2, num: 1, den: 4 },
-      { name: 'Tomatoes',     kg: 4, g: 750, whole: 4, num: 3, den: 4 },
-      { name: 'Chillies',     kg: 0, g: 250, whole: 0, num: 1, den: 4 },
-      { name: 'Carrots',      kg: 1, g: 750, whole: 1, num: 3, den: 4 },
-      { name: 'Beetroot',     kg: 2, g: 750, whole: 2, num: 3, den: 4 },
-      { name: 'Drumstick',    kg: 0, g: 500, whole: 0, num: 1, den: 2 },
-      { name: 'Radish',       kg: 3, g: 500, whole: 3, num: 1, den: 2 }
-    ];
-
-    /* =====================================================================
-       5. LEVEL 4.8 DATA & RENDERERS (BALANCE SCALE, STONES, MILK, BUCKET)
-       ===================================================================== */
-    const LEVEL8_SCALE_ITEMS = [
-      {
-        id: 'papaya',
-        name: 'papaya',
-        stones: ['1 k.g.', '200 g.', '50 g.'],
-        whole: 1, num: 1, den: 4,
-        color1: '#fb923c', color2: '#facc15', stroke: '#c2410c'
-      },
-      {
-        id: 'pineapple',
-        name: 'pineapple',
-        stones: ['1 k.g.', '500 g.'],
-        whole: 1, num: 1, den: 2,
-        color1: '#eab308', color2: '#facc15', stroke: '#854d0e'
-      },
-      {
-        id: 'pumpkin',
-        name: 'pumpkin',
-        stones: ['1 k.g.', '500 g.', '200 g.', '50 g.'],
-        whole: 1, num: 3, den: 4,
-        color1: '#f97316', color2: '#fb923c', stroke: '#9a3412'
-      },
-      {
-        id: 'watermelon',
-        name: 'watermelon',
-        stones: ['2 k.g.', '500 g.'],
-        whole: 2, num: 1, den: 2,
-        color1: '#16a34a', color2: '#4ade80', stroke: '#14532d'
-      },
-      {
-        id: 'jackfruit',
-        name: 'jackfruit',
-        stones: ['2 k.g.', '200 g.', '50 g.'],
-        whole: 2, num: 1, den: 4,
-        color1: '#84cc16', color2: '#bef264', stroke: '#3f6212'
-      },
-      {
-        id: 'muskmelon',
-        name: 'muskmelon',
-        stones: ['1 k.g.'],
-        whole: 1, num: 0, den: 0,
-        color1: '#f59e0b', color2: '#fde047', stroke: '#92400e'
-      }
-    ];
-
-    function renderScaleProduceSVG(item) {
-      return `
-        <svg class="w-11 h-9 inline-block align-middle" viewBox="0 0 80 60" fill="none" aria-label="${item.name}">
-          <ellipse cx="40" cy="33" rx="27" ry="17" fill="${item.color1}" stroke="${item.stroke}" stroke-width="2.5" />
-          <ellipse cx="40" cy="30" rx="17" ry="9" fill="${item.color2}" opacity="0.65" />
-          <path d="M 65 30 Q 74 26 76 31 Q 72 36 65 35" fill="${item.color1}" stroke="${item.stroke}" stroke-width="2" />
-        </svg>
-      `;
-    }
-
-    function renderBalanceScaleSVG(scaleItem) {
-      const stonesHTML = scaleItem.stones
-        .map(stLabel => `<div class="scale-stone-wrap">${renderHexWeightSVG(stLabel)}</div>`)
-        .join('');
-
-      return `
-        <div class="relative w-full max-w-[360px] mx-auto pt-1 pb-2 select-none">
-          <svg class="w-full h-24 block" viewBox="0 0 360 115" fill="none" aria-label="Balance scale">
-            <line x1="180" y1="12" x2="180" y2="104" stroke="#ca8a04" stroke-width="6" stroke-linecap="round" />
-            <ellipse cx="180" cy="105" rx="44" ry="7" fill="#eab308" stroke="#854d0e" stroke-width="2.2" />
-            <path d="M 74 34 Q 180 18 286 34" stroke="#eab308" stroke-width="6" stroke-linecap="round" fill="none" />
-            <circle cx="180" cy="24" r="6" fill="#fef08a" stroke="#854d0e" stroke-width="2" />
-            <!-- Left Pan Ropes -->
-            <line x1="76" y1="34" x2="40" y2="78" stroke="#d97706" stroke-width="1.8" />
-            <line x1="76" y1="34" x2="112" y2="78" stroke="#d97706" stroke-width="1.8" />
-            <line x1="76" y1="34" x2="76" y2="78" stroke="#b45309" stroke-width="1.5" />
-            <!-- Right Pan Ropes -->
-            <line x1="284" y1="34" x2="248" y2="78" stroke="#d97706" stroke-width="1.8" />
-            <line x1="284" y1="34" x2="320" y2="78" stroke="#d97706" stroke-width="1.8" />
-            <line x1="284" y1="34" x2="284" y2="78" stroke="#b45309" stroke-width="1.5" />
-            <!-- Left & Right Pans -->
-            <path d="M 34 78 Q 76 92 118 78 Z" fill="#facc15" stroke="#854d0e" stroke-width="2.2" stroke-linejoin="round" />
-            <path d="M 242 78 Q 284 92 326 78 Z" fill="#facc15" stroke="#854d0e" stroke-width="2.2" stroke-linejoin="round" />
-          </svg>
-          <!-- Stones sitting on left pan -->
-          <div class="flex items-center justify-center gap-1.5 -mt-12 pl-2 pr-36 pointer-events-none">
-            ${stonesHTML}
-          </div>
-          <!-- Produce sitting on right pan -->
-          <div class="flex items-center justify-center -mt-9 pl-40 pr-2 pointer-events-none">
-            ${renderScaleProduceSVG(scaleItem)}
-          </div>
-        </div>
-      `;
-    }
-
-    const LEVEL8_Q2_POOL = [
-      {
-        correctId: 'b_200_50',
-        choices: [
-          { id: 'a_500_34', stones: ['500 g.'],             frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' },
-          { id: 'b_200_50', stones: ['200 g.', '50 g.'],   frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' },
-          { id: 'c_500_200',stones: ['500 g.', '200 g.'],  frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' },
-          { id: 'd_200_50q',stones: ['200 g.', '50 g.'],   frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' }
-        ]
-      },
-      {
-        correctId: 'a_500_12',
-        choices: [
-          { id: 'a_500_12', stones: ['500 g.'],            frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' },
-          { id: 'b_200_34', stones: ['200 g.', '50 g.'],   frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' },
-          { id: 'c_500_14', stones: ['500 g.', '200 g.'],  frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' },
-          { id: 'd_200_12', stones: ['200 g.'],            frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' }
-        ]
-      },
-      {
-        correctId: 'c_500_200_50',
-        choices: [
-          { id: 'a_500_14',     stones: ['500 g.'],               frac: { whole: '', num: 1, den: 4 }, unit: 'k.g.' },
-          { id: 'b_200_12',     stones: ['200 g.'],               frac: { whole: '', num: 1, den: 2 }, unit: 'k.g.' },
-          { id: 'c_500_200_50', stones: ['500 g.', '200 g.', '50 g.'], frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' },
-          { id: 'd_200_50_34',  stones: ['200 g.', '50 g.'],      frac: { whole: '', num: 3, den: 4 }, unit: 'k.g.' }
-        ]
-      }
-    ];
-
-    const LEVEL8_Q3_POOL = [
-      { name: 'Arun',    mornL: 1, mornMl: 0,   eveFrac: { whole: '', num: 1, den: 2 }, eveMl: 500, totalL: 1, totalMl: 500 },
-      { name: 'Priya',   mornL: 1, mornMl: 0,   eveFrac: { whole: '', num: 1, den: 4 }, eveMl: 250, totalL: 1, totalMl: 250 },
-      { name: 'Senthil', mornL: 1, mornMl: 0,   eveFrac: { whole: '', num: 3, den: 4 }, eveMl: 750, totalL: 1, totalMl: 750 },
-      { name: 'Meena',   mornL: 2, mornMl: 0,   eveFrac: { whole: '', num: 1, den: 2 }, eveMl: 500, totalL: 2, totalMl: 500 }
-    ];
-
-    const LEVEL8_Q4_POOL = [
-      { capL: 10, capMl: 750, frac: { whole: 10, num: 3, den: 4 }, unit: 'ℓ' },
-      { capL: 10, capMl: 500, frac: { whole: 10, num: 1, den: 2 }, unit: 'ℓ' },
-      { capL: 8,  capMl: 250, frac: { whole: 8,  num: 1, den: 4 }, unit: 'ℓ' },
-      { capL: 6,  capMl: 750, frac: { whole: 6,  num: 3, den: 4 }, unit: 'ℓ' }
-    ];
-
-    function buildLevel8Questions() {
-      const chosenScale = LEVEL8_SCALE_ITEMS[Math.floor(Math.random() * LEVEL8_SCALE_ITEMS.length)];
-      const q1Correct = {
-        id: 'q1_ans',
-        frac: {
-          whole: chosenScale.whole > 0 ? chosenScale.whole : '',
-          num: chosenScale.num > 0 ? chosenScale.num : '',
-          den: chosenScale.den > 0 ? chosenScale.den : ''
-        },
-        unit: 'k.g.'
-      };
-      const q1Distractors = [
-        { id: 'q1_d1', frac: { whole: 1, num: '', den: '' }, unit: 'k.g.' },
-        { id: 'q1_d2', frac: { whole: 1, num: 1, den: 4 }, unit: 'k.g.' },
-        { id: 'q1_d3', frac: { whole: 1, num: 1, den: 2 }, unit: 'k.g.' },
-        { id: 'q1_d4', frac: { whole: 1, num: 3, den: 4 }, unit: 'k.g.' },
-        { id: 'q1_d5', frac: { whole: 2, num: 1, den: 2 }, unit: 'k.g.' }
-      ].filter(d => {
-        const sameWhole = String(d.frac.whole) === String(q1Correct.frac.whole);
-        const sameNum = String(d.frac.num) === String(q1Correct.frac.num);
-        const sameDen = String(d.frac.den) === String(q1Correct.frac.den);
-        return !(sameWhole && sameNum && sameDen);
-      });
-      const q1Options = shuffleArray([q1Correct, ...shuffleArray(q1Distractors).slice(0, 3)]);
-
-      const q2Template = LEVEL8_Q2_POOL[Math.floor(Math.random() * LEVEL8_Q2_POOL.length)];
-      const q2Options = shuffleArray(q2Template.choices);
-
-      const q3Data = LEVEL8_Q3_POOL[Math.floor(Math.random() * LEVEL8_Q3_POOL.length)];
-      const q3CorrectId = 'q3_ans';
-      const q3Options = shuffleArray([
-        { id: 'q3_ans', text: '1000 mℓ' },
-        { id: 'q3_b',   text: `${q3Data.totalL} ℓ 250 mℓ` },
-        { id: 'q3_c',   text: `${q3Data.totalL} ℓ 500 mℓ` },
-        { id: 'q3_d',   text: `${q3Data.totalL} ℓ 750 mℓ` }
-      ]).map((opt, i) => {
-        const expected = `${q3Data.totalL} ℓ ${q3Data.totalMl} mℓ`;
-        if (opt.text === expected && opt.id !== q3CorrectId) {
-          return { ...opt, text: `${q3Data.totalL} ℓ 250 mℓ` };
-        }
-        return i === 0 && opt.id === q3CorrectId ? { ...opt, text: expected } : opt;
-      });
-
-      const q4Data = LEVEL8_Q4_POOL[Math.floor(Math.random() * LEVEL8_Q4_POOL.length)];
-      const q4CorrectId = 'q4_ans';
-      const q4Options = shuffleArray([
-        { id: 'q4_ans', frac: { whole: q4Data.capL, num: q4Data.frac.num, den: q4Data.frac.den }, unit: 'ℓ' },
-        { id: 'q4_b',   frac: { whole: q4Data.capL, num: 1, den: 4 }, unit: 'ℓ' },
-        { id: 'q4_c',   frac: { whole: q4Data.capL, num: 1, den: 2 }, unit: 'ℓ' },
-        { id: 'q4_d',   frac: { whole: q4Data.capL, num: 3, den: 4 }, unit: 'ℓ' }
-      ]).map(opt => {
-        if (opt.id !== q4CorrectId && opt.frac.num === q4Data.frac.num && opt.frac.den === q4Data.frac.den) {
-          const altNum = q4Data.frac.num === 1 ? 3 : 1;
-          return { ...opt, frac: { whole: q4Data.capL, num: altNum, den: 4 } };
-        }
-        return opt;
-      });
-
-      return [
-        {
-          numLabel: '1)',
-          type: 'scale',
-          scaleItem: chosenScale,
-          promptHTML: `${renderScaleProduceSVG(chosenScale)} What is the weight of the ${chosenScale.name}?`,
-          correctId: q1Correct.id,
-          options: q1Options
-        },
-        {
-          numLabel: '2)',
-          type: 'stones',
-          promptHTML: 'Which one is correct?',
-          correctId: q2Template.correctId,
-          options: q2Options
-        },
-        {
-          numLabel: '3)',
-          type: 'text',
-          promptHTML: `If ${q3Data.name}'s family buys ${q3Data.mornL} litre of milk in the morning and ${renderFractionHTML(q3Data.eveFrac, '', true)} litre of milk in the evening, what is the quantity of milk bought in a day?`,
-          correctId: q3CorrectId,
-          options: q3Options
-        },
-        {
-          numLabel: '4)',
-          type: 'frac_l',
-          promptHTML: `We can express the capacity of a bucket which is ${q4Data.capL} ℓ ${q4Data.capMl} mℓ as,`,
-          correctId: q4CorrectId,
-          options: q4Options
-        }
-      ];
-    }
-
-
-
-
-let currentLevel = 1; // 1..8 => Level1-M05-4.1 .. Level8-M05-4.8
-    let currentTrial = 1; // 1..3 => Trial 1/3, Trial 2/3, Trial 3/3
-    let levelCompleted = false;
-    let isSubmitting = false;
-
-    let dailyEmisBlocked = false;
-    let dailyEmisBlockMessage = "";
-
-    const MAX_POINTS_PER_LEVEL = 12;
-    const TOTAL_MAX_POINTS = MAX_POINTS_PER_LEVEL * 8; // 96 points across 8 levels
-
-    const levelBestScores = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 };
-    const trialRecords = [];
-    const trialStartTimes = {};
-
-    let elapsedSeconds = 0;
-    let timerInterval = null;
-    let currentScore = 0;
-    let currentStage = 1; // Level 1: 1 (Stage 1: 6 q, Stage 2: 6 q)
-    let questions = [];
-    let selectedOptionId = null;
-    let draggedOptionId = null;
-    let l1DraggedSlotIndex = null;
-
-    // Level 2 state (4 rows: 2 given, 2 blanks)
-    let l2Answers = [];
-    let l2CheckedResults = [];
-
-    // Level 3 state (6 torchlights: 3 m/cm, 3 km/m)
-    let l3Answers = [];
-    let l3CheckedResults = [];
-
-    // Level 4 state (1 story + 6-row table)
-    let l4Story = null;
-    let l4Rows = [];
-    let l4CheckedResults = [];
-
-    // Level 5 state (3-column matching: 4 items each)
-    let l5LeftOrder = [];
-    let l5MidOrder = [];
-    let l5RightOrder = [];
-    let l5Selected = null; // { col: 'left'|'mid'|'right', id: string }
-    let l5UserLinks = {}; // leftId -> { midId, rightId }
-    let l5CheckedResults = {}; // leftId -> 'correct'|'incorrect'|null
-
-    // Level 6 state (5 basket rows x 6 weight checkboxes + kg/g/fraction answers)
-    let l6Rows = [];
-    let l6CheckedResults = [];
-
-    // Level 7 state (1 prompt banner + 5 vegetable rows)
-    let l7Prompt = null;
-    let l7Rows = [];
-    let l7CheckedResults = [];
-
-    // Level 8 state (4 choose-the-correct-answer questions)
-    let l8Questions = [];
-    let l8Selected = {}; // qIndex -> optionId
-    let l8CheckedResults = {}; // qIndex -> 'correct'|'incorrect'|null
-
-    let audioCtx = null;
-    let isMuted = false;
-
-    /* =====================================================================
-       SAME-DAY EMIS SUBMISSION LIMIT LOCK FOR M05
-       ===================================================================== */
-    function getTodayISTDateKey() {
-      const now = new Date();
-      const ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
-      const y = ist.getUTCFullYear();
-      const m = String(ist.getUTCMonth() + 1).padStart(2, '0');
-      const d = String(ist.getUTCDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-
-    function getEmisLockStorageKey() {
-      const cleanEmis = (lmsContext.emisNumber || '').trim().toUpperCase();
-      if (!cleanEmis) return null;
-      return `amelur_daily_lock_${cleanEmis}_${lmsContext.gameCode}_${getTodayISTDateKey()}`;
-    }
-
-    function applyDailyEmisLockUI(msg) {
-      dailyEmisBlocked = true;
-      dailyEmisBlockMessage = msg || "You have already finished 4 submissions and today's submission of M05 game! Try again tomorrow";
-
-      const banner = document.getElementById('dailyLockBanner');
-      if (banner) {
-        banner.textContent = dailyEmisBlockMessage;
-        banner.classList.remove('hidden');
-      }
-
-      const checkBtn = document.getElementById('checkBtn');
-      const clearBtn = document.getElementById('clearBtn');
-      const t2Btn = document.getElementById('trial2Btn');
-      const t3Btn = document.getElementById('trial3Btn');
-      if (checkBtn) checkBtn.disabled = true;
-      if (clearBtn) clearBtn.disabled = true;
-      if (t2Btn) t2Btn.disabled = true;
-      if (t3Btn) t3Btn.disabled = true;
-
-      showFeedback(dailyEmisBlockMessage, 'error');
-    }
-
-    function markEmisSubmittedToday() {
-      const key = getEmisLockStorageKey();
-      if (key) {
-        try {
-          localStorage.setItem(key, JSON.stringify({
-            emisNumber: lmsContext.emisNumber,
-            gameCode: lmsContext.gameCode,
-            dateIST: getTodayISTDateKey(),
-            lockedAt: new Date().toISOString()
-          }));
-        } catch (e) {}
-      }
-      applyDailyEmisLockUI("You have already finished 4 submissions and today's submission of M05 game! Try again tomorrow");
-    }
-
-    function checkAlreadySubmittedTodayViaSheet() {
-      const localKey = getEmisLockStorageKey();
-      if (localKey) {
-        try {
-          if (localStorage.getItem(localKey)) {
-            applyDailyEmisLockUI("You have already finished 4 submissions and today's submission of M05 game! Try again tomorrow");
-            return;
-          }
-        } catch (e) {}
-      }
-
-      const cleanEmis = (lmsContext.emisNumber || '').trim();
-      if (!cleanEmis || !GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) return;
-
-      const checkUrl =
-        `${GOOGLE_SCRIPT_URL}?action=checkDailySubmission` +
-        `&emisNumber=${encodeURIComponent(cleanEmis)}` +
-        `&gameCode=${encodeURIComponent(lmsContext.gameCode)}` +
-        `&dateIST=${encodeURIComponent(getTodayISTDateKey())}` +
-        `&t=${Date.now()}`;
-
-      fetch(checkUrl, { method: 'GET' })
-        .then(res => res.text())
-        .then(txt => {
-          let data = null;
-          try { data = JSON.parse(txt); } catch (e) {}
-          if (data && (data.alreadySubmittedToday === true || data.locked === true || data.existsToday === true)) {
-            if (localKey) {
-              try { localStorage.setItem(localKey, '1'); } catch (e) {}
-            }
-            applyDailyEmisLockUI(
-              data.message || "You have already finished 4 submissions and today's submission of M05 game! Try again tomorrow"
-            );
-          }
-        })
-        .catch(() => {});
-    }
-
-    function getLevelName(lvl) {
-      const codes = {
-        1: 'Level1-M05-4.1',
-        2: 'Level2-M05-4.2',
-        3: 'Level3-M05-4.3',
-        4: 'Level4-M05-4.4',
-        5: 'Level5-M05-4.5',
-        6: 'Level6-M05-4.6',
-        7: 'Level7-M05-4.7',
-        8: 'Level8-M05-4.8'
-      };
-      return codes[lvl] || `Level${lvl}-M05-4.${lvl}`;
-    }
-
-    function getShortCode(lvl) {
-      return `4.${lvl}`;
-    }
-
-    function playSound(type) {
-      if (isMuted) return;
-      try {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        if (type === 'place') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(520, now);
-          osc.frequency.exponentialRampToValueAtTime(680, now + 0.08);
-          gain.gain.setValueAtTime(0.12, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-          osc.start(now);
-          osc.stop(now + 0.09);
-        } else if (type === 'correct') {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(523.25, now);
-          osc.frequency.setValueAtTime(659.25, now + 0.09);
-          osc.frequency.setValueAtTime(783.99, now + 0.18);
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
-          osc.start(now);
-          osc.stop(now + 0.32);
-        } else if (type === 'error') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(220, now);
-          osc.frequency.linearRampToValueAtTime(165, now + 0.22);
-          gain.gain.setValueAtTime(0.12, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
-          osc.start(now);
-          osc.stop(now + 0.24);
-        } else if (type === 'levelup') {
-          osc.type = 'triangle';
-          [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-            osc.frequency.setValueAtTime(freq, now + idx * 0.09);
-          });
-          gain.gain.setValueAtTime(0.16, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-          osc.start(now);
-          osc.stop(now + 0.45);
-        }
-      } catch (e) {}
-    }
-
-    function formatTime(sec) {
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      const s = sec % 60;
-      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
-
-    function startTimer() {
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        elapsedSeconds++;
-        document.getElementById('timerDisplay').textContent = formatTime(elapsedSeconds);
-      }, 1000);
-    }
-
-    function shuffleArray(arr) {
-      const copy = [...arr];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-
-    function renderFractionHTML(item, sizeClass = 'text-base sm:text-lg', showParentheses = false) {
-      const hasWhole = item.whole !== '' && item.whole !== null && item.whole !== undefined;
-      const hasFrac = item.num !== '' && item.num !== null && item.num !== undefined &&
-                      item.den !== '' && item.den !== null && item.den !== undefined;
-
-      let inner = '';
-      if (hasWhole && hasFrac) {
-        inner = `
-          <span class="inline-flex items-center gap-1 ${sizeClass}">
-            <span>${item.whole}</span>
-            <span class="frac text-[0.78em]">
-              <span class="frac-num">${item.num}</span>
-              <span class="frac-den">${item.den}</span>
-            </span>
-          </span>
-        `;
-      } else if (hasWhole) {
-        inner = `<span class="${sizeClass} font-bold">${item.whole}</span>`;
-      } else if (hasFrac) {
-        inner = `
-          <span class="frac ${sizeClass}">
-            <span class="frac-num">${item.num}</span>
-            <span class="frac-den">${item.den}</span>
-          </span>
-        `;
-      }
-
-      return showParentheses ? `<span class="inline-flex items-center">(${inner})</span>` : inner;
-    }
-
-    function renderFractionInputsHTML(prefix, idx, dataObj, disabledAttr, compact = false) {
-      const wCls = compact ? 'w-8 h-8 text-sm' : 'w-9 h-9 sm:w-10 sm:h-10 text-sm sm:text-base';
-      const nCls = compact ? 'w-7 h-6 text-xs' : 'w-8 h-7 sm:w-9 sm:h-7 text-xs sm:text-sm';
-      const dCls = compact ? 'w-7 h-6 text-xs' : 'w-8 h-7 sm:w-9 sm:h-7 text-xs sm:text-sm';
-
-      return `
-        <div class="inline-flex items-center gap-1">
-          <input
-            type="text"
-            inputmode="numeric"
-            maxlength="2"
-            ${disabledAttr}
-            value="${dataObj.whole}"
-            placeholder=" "
-            aria-label="Whole number ${idx + 1}"
-            oninput="updateFracInput('${prefix}', ${idx}, 'whole', this.value)"
-            class="frac-input ${wCls}"
-          />
-          <div class="inline-flex flex-col items-center gap-0.5">
-            <input
-              type="text"
-              inputmode="numeric"
-              maxlength="2"
-              ${disabledAttr}
-              value="${dataObj.num}"
-              placeholder=" "
-              aria-label="Numerator ${idx + 1}"
-              oninput="updateFracInput('${prefix}', ${idx}, 'num', this.value)"
-              class="frac-input ${nCls}"
-            />
-            <span class="w-full h-[2px] bg-slate-800 rounded"></span>
-            <input
-              type="text"
-              inputmode="numeric"
-              maxlength="2"
-              ${disabledAttr}
-              value="${dataObj.den}"
-              placeholder=" "
-              aria-label="Denominator ${idx + 1}"
-              oninput="updateFracInput('${prefix}', ${idx}, 'den', this.value)"
-              class="frac-input ${dCls}"
-            />
-          </div>
-        </div>
-      `;
-    }
-
-    function updateFracInput(prefix, idx, field, rawVal) {
-      const cleaned = rawVal.replace(/[^0-9]/g, '');
-      if (prefix === 'l4') {
-        l4Rows[idx].userFrac[field] = cleaned;
-        l4CheckedResults[idx] = null;
-        renderLevel4();
-      } else if (prefix === 'l6') {
-        l6Rows[idx].userFrac[field] = cleaned;
-        l6CheckedResults[idx] = null;
-        renderLevel6();
-      } else if (prefix === 'l7') {
-        l7Rows[idx].userFrac[field] = cleaned;
-        l7CheckedResults[idx] = null;
-        renderLevel7();
-      }
-    }
-
-    function getRibbonWidthPx(cm) {
-      return Math.round(92 + (cm / 300) * 190);
-    }
-
-    function generateStage1Questions() {
-      const chosen = shuffleArray(LEVEL1_POOL).slice(0, 6);
-      const distractors = shuffleArray(
-        LEVEL1_POOL.filter(item => !chosen.some(c => c.id === item.id))
-      ).slice(0, 2);
-
-      const options = shuffleArray([...chosen, ...distractors]).map((item, idx) => ({
-        ...item,
-        optionId: `opt_${idx}_${item.id}`
-      }));
-
-      return chosen.map((item, idx) => ({
-        qNum: idx + 1,
-        target: item,
-        placedOptionId: null,
-        selectedUnit: '',
-        status: null
-      }));
-    }
-
-    function generateStage2Questions() {
-      const chosen = shuffleArray(LEVEL1_POOL).slice(0, 6);
-      return chosen.map((item, idx) => ({
-        qNum: idx + 1,
-        target: item,
-        userWhole: '',
-        userNum: '',
-        userDen: '',
-        selectedUnit: '',
-        status: null
-      }));
-    }
-
-    function generateLevel2Data() {
-      const pairs = shuffleArray(PLACE_PAIRS).slice(0, 4);
-      const dists = shuffleArray(LEVEL2_DIST_POOL).slice(0, 4);
-
-      return pairs.map((pair, idx) => {
-        const d = dists[idx];
-        const isBlank = idx >= 2;
-        return {
-          idx,
-          leftPlace: pair.left,
-          rightPlace: pair.right,
-          leftBorder: pair.leftBorder,
-          rightBorder: pair.rightBorder,
-          whole: d.whole,
-          num: d.num,
-          den: d.den,
-          km: d.km,
-          m: d.m,
-          isBlank,
-          userKm: '',
-          userM: '',
-          status: null
-        };
-      });
-    }
-
-    function generateLevel3Data() {
-      const chosen = shuffleArray(LEVEL3_POOL).slice(0, 6);
-      const colors = shuffleArray(L3_BUCKET_COLORS);
-      return chosen.map((item, idx) => ({
-        idx,
-        label: item.label,
-        unit: item.unit,
-        whole: item.whole,
-        num: item.num,
-        den: item.den,
-        bucketColor: colors[idx % colors.length],
-        userWhole: '',
-        userNum: '',
-        userDen: '',
-        userUnit: '',
-        status: null
-      }));
-    }
-
-    function generateLevel4Data() {
-      const theme = LEVEL4_STORY_THEMES[Math.floor(Math.random() * LEVEL4_STORY_THEMES.length)];
-      const chosenVehicles = shuffleArray(LEVEL4_VEHICLE_POOL).slice(0, 6);
-      const rows = chosenVehicles.map((v, idx) => {
-        const isFirstRow = idx === 0;
-        return {
-          ...v,
-          idx,
-          givenInTable: isFirstRow,
-          userWhole: '',
-          userNum: '',
-          userDen: '',
-          userUnit: isFirstRow ? 'km' : '',
-          userKm: isFirstRow ? String(v.km) : '',
-          userM: isFirstRow ? String(v.m) : ''
-        };
-      });
-      return { story: theme, rows };
-    }
-
-    function generateLevel5Data() {
-      l5LeftOrder = shuffleArray(LEVEL5_MATCH_ITEMS).map(i => i.id);
-      l5MidOrder = shuffleArray(LEVEL5_MATCH_ITEMS).map(i => i.id);
-      l5RightOrder = shuffleArray(LEVEL5_MATCH_ITEMS).map(i => i.id);
-      l5Selected = null;
-      l5UserLinks = {};
-      l5CheckedResults = {};
-    }
-
-    function generateLevel6Data() {
-      const chosen = shuffleArray(LEVEL6_POOL).slice(0, 5);
-      return chosen.map((item, idx) => ({
-        ...item,
-        idx,
-        selectedWeights: [],
-        userKg: '',
-        userG: '',
-        userFrac: { whole: '', num: '', den: '' }
-      }));
-    }
-
-    function generateLevel7Data() {
-      const childName = LEVEL7_CHILD_NAMES[Math.floor(Math.random() * LEVEL7_CHILD_NAMES.length)];
-      const chosen = shuffleArray(LEVEL7_VEG_POOL).slice(0, 5);
-      return {
-        prompt: { childName },
-        rows: chosen.map((v, idx) => ({
-          ...v,
-          idx,
-          userFrac: { whole: '', num: '', den: '' }
-        }))
-      };
-    }
-
-    function renderLevelHeader(lvl) {
-      const header = document.getElementById('textbookHeader');
-      const badge = document.getElementById('badgeActivityCode');
-      const title = document.getElementById('mainQuestionTitle');
-      const hint = document.getElementById('conversionHintBadge');
-      const subHeader = document.getElementById('levelSubHeader');
-
-      const headerClasses = [
-        'textbook-header-l1', 'textbook-header-l2', 'textbook-header-l3', 'textbook-header-l4',
-        'textbook-header-l5', 'textbook-header-l6', 'textbook-header-l7', 'textbook-header-l8'
-      ];
-      const badgeClasses = [
-        'badge-l1', 'badge-l2', 'badge-l3', 'badge-l4',
-        'badge-l5', 'badge-l6', 'badge-l7', 'badge-l8'
-      ];
-
-      header.className = `px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between gap-2 ${headerClasses[lvl - 1]}`;
-      badge.className = `px-2.5 py-0.5 text-sm sm:text-lg tracking-tight ${badgeClasses[lvl - 1]}`;
-      badge.textContent = getShortCode(lvl);
-
-      if (lvl === 1) {
-        if (currentStage === 1) {
-          title.textContent = 'Write the length of the ribbon in metres.';
-          hint.textContent = '100 c.m. = 1 m.';
-          subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Drag or tap an answer card on the right to place it in the box, then select the unit (m.).`;
-        } else {
-          title.textContent = 'Write the length of the ribbon in metres.';
-          hint.textContent = '100 c.m. = 1 m.';
-          subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Type the whole number and/or fraction in metres, then select the unit (m.).`;
-        }
-      } else if (lvl === 2) {
-        title.textContent = 'Distance between places in fractional form and k.m., m.';
-        hint.textContent = '1000 m. = 1 k.m.';
-        subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Fill in the missing distances in k.m. and m. (1000 m. = 1 k.m.).`;
-      } else if (lvl === 3) {
-        title.textContent = 'Write the given measurements in fractional form.';
-        hint.textContent = '100 c.m. = 1 m.  •  1000 m. = 1 k.m.';
-        subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Write each measurement as a mixed fraction and choose its unit (m. or k.m.).`;
-      } else if (lvl === 4) {
-        title.textContent = 'Write the distances covered by vehicles in fractional form and k.m., m.';
-        hint.textContent = '1000 m. = 1 k.m.';
-        subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Read the story and complete the table with fractional distance, unit, k.m., and m.`;
-      } else if (lvl === 5) {
-        title.textContent = 'Match the weights of vegetables with grams and standard weights.';
-        hint.textContent = '1 k.g. = 1000 g.  •  ¼ = 250 g.  •  ½ = 500 g.  •  ¾ = 750 g.';
-        subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Tap one card in each column (Vegetable → Grams → Weight Stone) to link all 4 sets.`;
-      } else if (lvl === 6) {
-        title.textContent = 'Select the weight stones and write weight in k.g., g. and fraction.';
-        hint.textContent = '1 k.g. = 1000 g.  •  ¼ = 250 g.  •  ½ = 500 g.  •  ¾ = 750 g.';
-        subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Check the weight stones for each basket and fill in k.g., g., and fraction of k.g.`;
-      } else if (lvl === 7) {
-        title.textContent = 'Write the weights of vegetables in fractional form.';
-        hint.textContent = '1 k.g. = 1000 g.  •  ¼ = 250 g.  •  ½ = 500 g.  •  ¾ = 750 g.';
-        subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Express each vegetable weight in k.g. as a fraction or mixed fraction.`;
-      } else if (lvl === 8) {
-        title.textContent = 'Choose the correct answer.';
-        hint.textContent = 'Weight & Capacity • 1 k.g. = 1000 g. • 1 ℓ = 1000 mℓ';
-        subHeader.textContent = `${getLevelName(lvl)} (Trial ${currentTrial}/3): Select the correct option for each of the 4 questions.`;
-      }
-    }
-
-    function updateHeaderMeta() {
-      document.getElementById('studentInfoBadge').textContent =
-        `Game ${lmsContext.gameCode} • ${lmsContext.name} (${lmsContext.studentId})`;
-      document.getElementById('levelDisplay').textContent = getLevelName(currentLevel);
-      document.getElementById('trialBadge').textContent = `Trial ${currentTrial}/3`;
-
-      const cumulativeScore = Object.values(levelBestScores).reduce((a, b) => a + b, 0);
-      document.getElementById('scoreCounter').textContent = `Score: ${cumulativeScore}/${TOTAL_MAX_POINTS}`;
-
-      const t2Btn = document.getElementById('trial2Btn');
-      const t3Btn = document.getElementById('trial3Btn');
-      t2Btn.classList.toggle('opacity-50', currentTrial === 2);
-      t3Btn.classList.toggle('opacity-50', currentTrial === 3);
-    }
-
-    function setupLevel(lvl, trialNum = 1, resetTimer = false) {
-      if (dailyEmisBlocked) {
-        showFeedback(dailyEmisBlockMessage, 'error');
-        return;
-      }
-
-      currentLevel = lvl;
-      currentTrial = trialNum;
-      levelCompleted = false;
-      currentScore = 0;
-      selectedOptionId = null;
-      draggedOptionId = null;
-      l1DraggedSlotIndex = null;
-      trialStartTimes[`${lvl}_${trialNum}`] = Date.now();
-
-      if (resetTimer) {
-        elapsedSeconds = 0;
-        document.getElementById('timerDisplay').textContent = formatTime(elapsedSeconds);
-      }
-
-      hideFeedback();
-      renderLengthScalesForLevel(lvl, true);
-
-      const rowsContainer = document.getElementById('rowsContainer');
-      const optionBankWrapper = document.getElementById('optionBankWrapper');
-      const workspaceGrid = document.getElementById('workspaceGrid');
-
-      if (lvl === 1) {
-        currentStage = trialNum === 1 ? 1 : 2;
-        questions = currentStage === 1 ? generateStage1Questions() : generateStage2Questions();
-        optionBankWrapper.classList.toggle('hidden', currentStage === 2);
-        rowsContainer.className = currentStage === 1
-          ? 'lg:col-span-8 flex flex-col justify-between gap-2.5 sm:gap-3'
-          : 'lg:col-span-12 flex flex-col justify-between gap-2.5 sm:gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        renderLevel1();
-      } else if (lvl === 2) {
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col justify-between gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        l2Answers = generateLevel2Data();
-        l2CheckedResults = [null, null, null, null];
-        renderLevel2();
-      } else if (lvl === 3) {
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col justify-between gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        l3Answers = generateLevel3Data();
-        l3CheckedResults = [null, null, null, null, null, null];
-        renderLevel3();
-      } else if (lvl === 4) {
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        const l4Data = generateLevel4Data();
-        l4Story = l4Data.story;
-        l4Rows = l4Data.rows;
-        l4CheckedResults = [null, null, null, null, null, null];
-        renderLevel4();
-      } else if (lvl === 5) {
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        generateLevel5Data();
-        renderLevel5();
-      } else if (lvl === 6) {
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        l6Rows = generateLevel6Data();
-        l6CheckedResults = [null, null, null, null, null];
-        renderLevel6();
-      } else if (lvl === 7) {
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        const l7Data = generateLevel7Data();
-        l7Prompt = l7Data.prompt;
-        l7Rows = l7Data.rows;
-        l7CheckedResults = [null, null, null, null, null];
-        renderLevel7();
-      } else if (lvl === 8) {
-        optionBankWrapper.classList.add('hidden');
-        rowsContainer.className = 'lg:col-span-12 flex flex-col gap-3';
-        workspaceGrid.className = 'grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch';
-        l8Questions = buildLevel8Questions();
-        l8Selected = {};
-        l8CheckedResults = {};
-        renderLevel8();
-      }
-
-      renderLevelHeader(lvl);
-      updateHeaderMeta();
-    }
-
-    function renderLevel1() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      const optionsContainer = document.getElementById('optionsContainer');
-      rowsContainer.innerHTML = '';
-      optionsContainer.innerHTML = '';
-
-      const usedOptionIds = new Set(questions.map(q => q.placedOptionId).filter(Boolean));
-      const disabledAttr = levelCompleted ? 'disabled' : '';
-
-      questions.forEach((q, idx) => {
-        const rowEl = document.createElement('div');
-        rowEl.className = 'flex items-center justify-between gap-2.5 sm:gap-4 py-1';
-
-        const ribbonWrap = document.createElement('div');
-        ribbonWrap.className = 'flex-1 min-w-0 flex items-center';
-        const ribbon = document.createElement('div');
-        ribbon.className = 'ribbon-bar h-11 sm:h-12 px-4 flex items-center justify-center';
-        ribbon.style.minWidth = `${getRibbonWidthPx(q.target.cm)}px`;
-        ribbon.innerHTML = `<span class="ribbon-label text-sm sm:text-base">${q.target.cm} c.m.</span>`;
-        ribbonWrap.appendChild(ribbon);
-
-        const rightAnswerGroup = document.createElement('div');
-        rightAnswerGroup.className = 'flex items-center gap-1.5 sm:gap-2 shrink-0';
-
-        if (currentStage === 1) {
-          const slot = document.createElement('div');
-          slot.className = 'answer-slot w-24 sm:w-28 h-12 sm:h-13 flex items-center justify-center px-1.5 cursor-pointer relative';
-          slot.dataset.qIndex = idx;
-
-          if (q.placedOptionId) {
-            slot.classList.add('locked-filled');
-            const opt = questions[0].optionsPool.find(o => o.optionId === q.placedOptionId);
-            if (opt) {
-              const chip = document.createElement('div');
-              chip.className = 'dropped-card-chip flex items-center justify-center w-full h-full';
-              chip.draggable = !levelCompleted;
-              chip.innerHTML = renderFractionHTML(opt, 'text-sm sm:text-base');
-              chip.addEventListener('dragstart', (e) => {
-                if (levelCompleted) return;
-                l1DraggedSlotIndex = idx;
-                draggedOptionId = null;
-                e.dataTransfer.setData('text/plain', `slot:${idx}`);
-                e.dataTransfer.effectAllowed = 'move';
-              });
-              slot.appendChild(chip);
-            }
-          } else {
-            slot.innerHTML = `<span class="text-slate-300 text-xs font-bold select-none">___</span>`;
-          }
-
-          if (q.status === 'correct') slot.classList.add('correct');
-          if (q.status === 'incorrect') slot.classList.add('incorrect');
-
-          slot.addEventListener('dragover', (e) => {
-            if (levelCompleted) return;
-            e.preventDefault();
-            e.dataTransfer.dropEffect = l1DraggedSlotIndex !== null ? 'move' : 'copy';
-            slot.classList.add('drag-over');
-          });
-          slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
-          slot.addEventListener('drop', (e) => {
-            e.preventDefault();
-            slot.classList.remove('drag-over');
-            if (levelCompleted) return;
-            if (l1DraggedSlotIndex !== null) {
-              moveCardBetweenSlots(l1DraggedSlotIndex, idx);
-              l1DraggedSlotIndex = null;
-            } else {
-              const optId = e.dataTransfer.getData('text/plain') || draggedOptionId;
-              if (optId && !optId.startsWith('slot:')) handlePlaceOptionInSlot(optId, idx);
-            }
-            draggedOptionId = null;
-          });
-          slot.addEventListener('click', () => {
-            if (levelCompleted) return;
-            if (selectedOptionId) {
-              handlePlaceOptionInSlot(selectedOptionId, idx);
-            } else if (q.placedOptionId) {
-              q.placedOptionId = null;
-              q.status = null;
-              playSound('place');
-              renderLevel1();
-            }
-          });
-
-          rightAnswerGroup.appendChild(slot);
-        } else {
-          const box = document.createElement('div');
-          box.className = `answer-slot px-2 h-12 sm:h-13 flex items-center justify-center ${q.status === 'correct' ? 'correct' : q.status === 'incorrect' ? 'incorrect' : ''}`;
-          box.innerHTML = `
-            <div class="inline-flex items-center gap-1">
-              <input
-                type="text"
-                inputmode="numeric"
-                maxlength="2"
-                ${disabledAttr}
-                value="${q.userWhole}"
-                placeholder=" "
-                oninput="updateL1Stage2Input(${idx}, 'userWhole', this.value)"
-                class="frac-input w-9 h-9 text-sm sm:text-base"
-              />
-              <div class="inline-flex flex-col items-center gap-0.5">
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="2"
-                  ${disabledAttr}
-                  value="${q.userNum}"
-                  placeholder=" "
-                  oninput="updateL1Stage2Input(${idx}, 'userNum', this.value)"
-                  class="frac-input w-8 h-6 text-xs sm:text-sm"
-                />
-                <span class="w-full h-[2px] bg-slate-800 rounded"></span>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="2"
-                  ${disabledAttr}
-                  value="${q.userDen}"
-                  placeholder=" "
-                  oninput="updateL1Stage2Input(${idx}, 'userDen', this.value)"
-                  class="frac-input w-8 h-6 text-xs sm:text-sm"
-                />
-              </div>
-            </div>
-          `;
-          rightAnswerGroup.appendChild(box);
-        }
-
-        const unitSelectHTML = renderUnitDropdownHTML(
-          q.selectedUnit,
-          `updateL1Unit(${idx}, this.value)`,
-          disabledAttr,
-          `Unit for question ${idx + 1}`,
-          'h-10 px-1.5'
-        );
-        const unitWrapper = document.createElement('div');
-        unitWrapper.innerHTML = unitSelectHTML;
-        rightAnswerGroup.appendChild(unitWrapper.firstElementChild);
-
-        rowEl.appendChild(ribbonWrap);
-        rowEl.appendChild(rightAnswerGroup);
-        rowsContainer.appendChild(rowEl);
-      });
-
-      if (currentStage === 1 && questions[0] && questions[0].optionsPool) {
-        questions[0].optionsPool.forEach(opt => {
-          const tile = document.createElement('div');
-          const isUsed = usedOptionIds.has(opt.optionId);
-          const isSelected = selectedOptionId === opt.optionId;
-          tile.className = `fraction-tile w-full max-w-[118px] h-14 sm:h-15 flex items-center justify-center px-2 ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}`;
-          tile.draggable = !isUsed && !levelCompleted;
-          tile.innerHTML = renderFractionHTML(opt, 'text-sm sm:text-base');
-
-          tile.addEventListener('dragstart', (e) => {
-            if (isUsed || levelCompleted) return;
-            draggedOptionId = opt.optionId;
-            l1DraggedSlotIndex = null;
-            e.dataTransfer.setData('text/plain', opt.optionId);
-            e.dataTransfer.effectAllowed = 'copy';
-          });
-          tile.addEventListener('click', () => {
-            if (isUsed || levelCompleted) return;
-            selectedOptionId = selectedOptionId === opt.optionId ? null : opt.optionId;
-            playSound('place');
-            renderLevel1();
-          });
-
-          optionsContainer.appendChild(tile);
-        });
-      }
-    }
-
-    function updateL1Stage2Input(idx, field, val) {
-      questions[idx][field] = val.replace(/[^0-9]/g, '');
-      questions[idx].status = null;
-    }
-
-    function updateL1Unit(idx, val) {
-      questions[idx].selectedUnit = val;
-      questions[idx].status = null;
-    }
-
-    function handlePlaceOptionInSlot(optId, slotIdx) {
-      const q = questions[slotIdx];
-      if (!q) return;
-      q.placedOptionId = optId;
-      q.status = null;
-      selectedOptionId = null;
-      playSound('place');
-      renderLevel1();
-    }
-
-    function moveCardBetweenSlots(fromIdx, toIdx) {
-      if (fromIdx === toIdx) return;
-      const fromQ = questions[fromIdx];
-      const toQ = questions[toIdx];
-      if (!fromQ || !toQ || !fromQ.placedOptionId) return;
-      const temp = toQ.placedOptionId;
-      toQ.placedOptionId = fromQ.placedOptionId;
-      fromQ.placedOptionId = temp;
-      fromQ.status = null;
-      toQ.status = null;
-      playSound('place');
-      renderLevel1();
-    }
-
-    function renderLevel2() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.innerHTML = '';
-      const disabledAttr = levelCompleted ? 'disabled' : '';
-
-      l2Answers.forEach((row, idx) => {
-        const res = l2CheckedResults[idx];
-        const statusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-        const rowEl = document.createElement('div');
-        rowEl.className = 'flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-4 py-1';
-
-        const leftBox = `<div class="place-box px-3 py-2 text-xs sm:text-sm min-w-[125px] sm:min-w-[148px] text-center" style="border-color:${row.leftBorder};">${row.leftPlace}</div>`;
-        const rightBox = `<div class="place-box px-3 py-2 text-xs sm:text-sm min-w-[125px] sm:min-w-[148px] text-center" style="border-color:${row.rightBorder};">${row.rightPlace}</div>`;
-
-        const connector = `
-          <div class="flex items-center flex-1 min-w-[90px]">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-800 shrink-0"></span>
-            <span class="flex-1 h-[2px] bg-slate-700"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-800 shrink-0"></span>
-          </div>
-        `;
-
-        const fracDisplay = `
-          <div class="inline-flex items-center gap-1 font-extrabold text-slate-900 text-base sm:text-lg px-2">
-            <span>${row.whole}</span>
-            <span class="frac text-xs sm:text-sm">
-              <span class="frac-num">${row.num}</span>
-              <span class="frac-den">${row.den}</span>
-            </span>
-            <span class="text-xs sm:text-sm font-bold text-slate-700 ml-0.5">k.m.</span>
-          </div>
-        `;
-
-        let rightSideHTML = '';
-        if (!row.isBlank) {
-          rightSideHTML = `
-            <div class="dist-pill-top px-3.5 py-2 text-xs sm:text-sm font-extrabold text-slate-900 min-w-[130px] text-center">
-              ${row.km} k.m. &nbsp; ${row.m} m.
-            </div>
-          `;
-        } else {
-          rightSideHTML = `
-            <div class="dist-pill-bottom px-2.5 py-1.5 flex items-center gap-1.5 ${statusCls}">
-              <input
-                type="text"
-                inputmode="numeric"
-                maxlength="2"
-                ${disabledAttr}
-                value="${row.userKm}"
-                placeholder=" "
-                oninput="updateL2Input(${idx}, 'userKm', this.value)"
-                class="km-m-input w-9 h-8 text-sm"
-              />
-              <span class="text-xs font-extrabold text-slate-800">k.m.</span>
-              <input
-                type="text"
-                inputmode="numeric"
-                maxlength="3"
-                ${disabledAttr}
-                value="${row.userM}"
-                placeholder=" "
-                oninput="updateL2Input(${idx}, 'userM', this.value)"
-                class="km-m-input w-12 h-8 text-sm"
-              />
-              <span class="text-xs font-extrabold text-slate-800">m.</span>
-            </div>
-          `;
-        }
-
-        rowEl.innerHTML = `
-          <div class="flex items-center gap-2 flex-1 min-w-0">
-            ${leftBox}
-            ${connector}
-            ${rightBox}
-          </div>
-          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-            ${fracDisplay}
-            ${rightSideHTML}
-          </div>
-        `;
-        rowsContainer.appendChild(rowEl);
-      });
-    }
-
-    function updateL2Input(idx, field, val) {
-      l2Answers[idx][field] = val.replace(/[^0-9]/g, '');
-      l2CheckedResults[idx] = null;
-    }
-
-    function renderLevel3() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.innerHTML = '';
-      const disabledAttr = levelCompleted ? 'disabled' : '';
-
-      const grid = document.createElement('div');
-      grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4';
-
-      l3Answers.forEach((item, idx) => {
-        const res = l3CheckedResults[idx];
-        const headStatusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-        const unitSelectHTML = renderUnitDropdownHTML(
-          item.userUnit,
-          `updateL3Unit(${idx}, this.value)`,
-          disabledAttr,
-          `Unit for torchlight ${idx + 1}`,
-          'h-8 px-1 text-xs'
-        );
-
-        const card = document.createElement('div');
-        card.className = 'torch-item flex items-center w-full';
-        card.innerHTML = `
-          <div class="torch-handle-box">
-            <span class="torch-switch-dot"></span>
-            <span class="torch-body-label text-xs sm:text-sm">${item.label}</span>
-          </div>
-          <div class="torch-head-wrap ${headStatusCls}">
-            <svg class="torch-head-svg" viewBox="0 0 180 86" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M 0 19 L 44 19 L 76 4 L 166 4 Q 177 4 177 15 L 177 71 Q 177 82 166 82 L 76 82 L 44 67 L 0 67 Z" class="torch-head-fill" />
-              <path d="M 0 19 L 44 19 L 76 4 L 166 4 Q 177 4 177 15 L 177 71 Q 177 82 166 82 L 76 82 L 44 67 L 0 67"
-                    fill="none" stroke="#1e293b" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
-              <line x1="76" y1="5" x2="76" y2="81" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 3" />
-              <path d="M 167 4 Q 177 4 177 15 L 177 71 Q 177 82 167 82"
-                    fill="none" stroke="${item.bucketColor}" stroke-width="6.5" stroke-linecap="round" class="torch-head-rim" />
-            </svg>
-            <div class="torch-head-content">
-              <input
-                type="text"
-                inputmode="numeric"
-                maxlength="2"
-                ${disabledAttr}
-                value="${item.userWhole}"
-                placeholder=" "
-                oninput="updateL3Input(${idx}, 'userWhole', this.value)"
-                class="frac-input w-8 h-8 text-xs sm:text-sm"
-              />
-              <div class="inline-flex flex-col items-center gap-0.5">
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="2"
-                  ${disabledAttr}
-                  value="${item.userNum}"
-                  placeholder=" "
-                  oninput="updateL3Input(${idx}, 'userNum', this.value)"
-                  class="frac-input w-7 h-5 text-[11px]"
-                />
-                <span class="w-full h-[1.5px] bg-slate-800 rounded"></span>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="2"
-                  ${disabledAttr}
-                  value="${item.userDen}"
-                  placeholder=" "
-                  oninput="updateL3Input(${idx}, 'userDen', this.value)"
-                  class="frac-input w-7 h-5 text-[11px]"
-                />
-              </div>
-              ${unitSelectHTML}
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      rowsContainer.appendChild(grid);
-    }
-
-    function updateL3Input(idx, field, val) {
-      l3Answers[idx][field] = val.replace(/[^0-9]/g, '');
-      l3CheckedResults[idx] = null;
-    }
-
-    function updateL3Unit(idx, val) {
-      l3Answers[idx].userUnit = val;
-      l3CheckedResults[idx] = null;
-    }
-
-    function renderLevel4() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.innerHTML = '';
-      const disabledAttr = levelCompleted ? 'disabled' : '';
-      const s = l4Story;
-
-      const storyBox = document.createElement('div');
-      storyBox.className = 'l4-story-box px-4 py-3 text-xs sm:text-sm';
-      storyBox.innerHTML = `
-        ${s.traveller} went to ${s.possPron} ${s.place1} by bicycle and covered a distance of
-        <span class="font-extrabold text-pink-700">${renderFractionHTML({ whole: '', num: '1', den: '4' }, 'text-sm')}</span> k.m.
-        Then ${s.subjPron} went to ${s.place2} by motorcycle and covered a distance of
-        <span class="font-extrabold text-pink-700">${renderFractionHTML({ whole: '2', num: '1', den: '2' }, 'text-sm')}</span> k.m.
-        Finally ${s.subjPron} went to ${s.destination} by car and covered a distance of
-        <span class="font-extrabold text-pink-700">3</span> k.m.
-      `;
-      rowsContainer.appendChild(storyBox);
-
-      const tableWrap = document.createElement('div');
-      tableWrap.className = 'overflow-x-auto';
-
-      const bodyRowsHTML = l4Rows.map((row, idx) => {
-        const res = l4CheckedResults[idx];
-        const statusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-        const unitDropdown = renderUnitDropdownHTML(
-          row.userUnit,
-          `updateL4Unit(${idx}, this.value)`,
-          row.givenInTable || levelCompleted ? 'disabled' : '',
-          `Unit for row ${idx + 1}`,
-          'h-8 px-1 text-xs'
-        );
-
-        const fracCellContent = row.givenInTable
-          ? `<span class="font-extrabold text-slate-900 text-sm">${renderFractionHTML(row, 'text-sm')}</span>`
-          : renderFractionInputsHTML('l4', idx, row.userFrac, disabledAttr, true);
-
-        const kmCellContent = row.givenInTable
-          ? `<span class="font-extrabold text-slate-900 text-sm">${row.km}</span>`
-          : `<input type="text" inputmode="numeric" maxlength="2" ${disabledAttr} value="${row.userKm}" placeholder=" " oninput="updateL4KmM(${idx}, 'userKm', this.value)" class="km-m-input w-10 h-8 text-xs sm:text-sm" />`;
-
-        const mCellContent = row.givenInTable
-          ? `<span class="font-extrabold text-slate-900 text-sm">${row.m}</span>`
-          : `<input type="text" inputmode="numeric" maxlength="3" ${disabledAttr} value="${row.userM}" placeholder=" " oninput="updateL4KmM(${idx}, 'userM', this.value)" class="km-m-input w-12 h-8 text-xs sm:text-sm" />`;
-
-        return `
-          <tr class="${statusCls}">
-            <td class="l4-cell-status ${statusCls}">
-              <div class="flex flex-col items-center justify-center gap-0.5">
-                ${renderVehicleIconSVG(row.id)}
-                <span class="text-[11px] font-bold text-slate-700">${row.label}</span>
-              </div>
-            </td>
-            <td class="l4-cell-status ${statusCls}">
-              <div class="inline-flex items-center justify-center gap-1.5">
-                ${fracCellContent}
-                ${unitDropdown}
-              </div>
-            </td>
-            <td class="l4-cell-status ${statusCls}">${kmCellContent}</td>
-            <td class="l4-cell-status ${statusCls}">${mCellContent}</td>
-          </tr>
-        `;
-      }).join('');
-
-      tableWrap.innerHTML = `
-        <table class="l4-table text-xs sm:text-sm">
-          <thead>
-            <tr>
-              <th>Vehicle</th>
-              <th>Distance in fraction</th>
-              <th>k.m.</th>
-              <th>m.</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${bodyRowsHTML}
-          </tbody>
-        </table>
-      `;
-      rowsContainer.appendChild(tableWrap);
-    }
-
-    function updateL4Unit(idx, val) {
-      l4Rows[idx].userUnit = val;
-      l4CheckedResults[idx] = null;
-    }
-
-    function updateL4KmM(idx, field, val) {
-      l4Rows[idx][field] = val.replace(/[^0-9]/g, '');
-      l4CheckedResults[idx] = null;
-    }
-
-    function getLinkedLeftIdForCol(col, id) {
-      for (const [leftId, link] of Object.entries(l5UserLinks)) {
-        if (col === 'left' && leftId === id) return leftId;
-        if (col === 'mid' && link.midId === id) return leftId;
-        if (col === 'right' && link.rightId === id) return leftId;
-      }
-      return null;
-    }
-
-    function renderLevel5() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.innerHTML = '';
-
-      const grid = document.createElement('div');
-      grid.className = 'grid grid-cols-3 gap-2.5 sm:gap-5 items-stretch';
-
-      const col1 = document.createElement('div');
-      col1.className = 'flex flex-col justify-between gap-2.5';
-      l5LeftOrder.forEach(itemId => {
-        const item = LEVEL5_MATCH_ITEMS.find(i => i.id === itemId);
-        const isSel = l5Selected && l5Selected.col === 'left' && l5Selected.id === itemId;
-        const isLinked = Boolean(l5UserLinks[itemId]);
-        const res = l5CheckedResults[itemId];
-        const statusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `l5-node p-2 flex flex-col items-center justify-center gap-1 min-h-[96px] ${isSel ? 'selected' : ''} ${isLinked ? 'matched-left' : ''} ${statusCls}`;
-        btn.innerHTML = `
-          <div class="l5-veg-pill px-2 py-0.5 text-xs sm:text-sm font-extrabold text-slate-900">
-            ${renderFractionHTML(item, 'text-xs sm:text-sm')} k.g.
-          </div>
-          ${renderVegetableSVG(item.id)}
-        `;
-        btn.onclick = () => handleL5Select('left', itemId);
-        col1.appendChild(btn);
-      });
-
-      const col2 = document.createElement('div');
-      col2.className = 'flex flex-col justify-between gap-2.5';
-      l5MidOrder.forEach(itemId => {
-        const item = LEVEL5_MATCH_ITEMS.find(i => i.id === itemId);
-        const isSel = l5Selected && l5Selected.col === 'mid' && l5Selected.id === itemId;
-        const linkedLeftId = getLinkedLeftIdForCol('mid', itemId);
-        const res = linkedLeftId ? l5CheckedResults[linkedLeftId] : null;
-        const statusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `l5-node p-2 flex items-center justify-center min-h-[96px] ${isSel ? 'selected' : ''} ${linkedLeftId ? 'matched-mid' : ''} ${statusCls}`;
-        btn.innerHTML = `
-          <div class="l5-gram-pill px-3 py-1.5 text-sm sm:text-base font-extrabold text-slate-900">
-            ${item.grams} g.
-          </div>
-        `;
-        btn.onclick = () => handleL5Select('mid', itemId);
-        col2.appendChild(btn);
-      });
-
-      const col3 = document.createElement('div');
-      col3.className = 'flex flex-col justify-between gap-2.5';
-      l5RightOrder.forEach(itemId => {
-        const item = LEVEL5_MATCH_ITEMS.find(i => i.id === itemId);
-        const isSel = l5Selected && l5Selected.col === 'right' && l5Selected.id === itemId;
-        const linkedLeftId = getLinkedLeftIdForCol('right', itemId);
-        const res = linkedLeftId ? l5CheckedResults[linkedLeftId] : null;
-        const statusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-
-        const stoneIcons = item.weights.map(wLabel => renderHexWeightSVG(wLabel)).join('');
-        const stoneLabels = item.weights.join(' + ');
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `l5-node l5-weight-box p-2 flex flex-col items-center justify-center gap-1 min-h-[96px] ${isSel ? 'selected' : ''} ${linkedLeftId ? 'matched-right' : ''} ${statusCls}`;
-        btn.innerHTML = `
-          <div class="flex flex-wrap items-center justify-center gap-1">${stoneIcons}</div>
-          <span class="text-[11px] font-extrabold text-slate-700">${stoneLabels}</span>
-        `;
-        btn.onclick = () => handleL5Select('right', itemId);
-        col3.appendChild(btn);
-      });
-
-      grid.appendChild(col1);
-      grid.appendChild(col2);
-      grid.appendChild(col3);
-      rowsContainer.appendChild(grid);
-
-      const linksCount = Object.values(l5UserLinks).filter(l => l.midId && l.rightId).length;
-      const statusBar = document.createElement('div');
-      statusBar.className = 'text-xs font-bold text-slate-600 text-center';
-      statusBar.textContent = `Completed sets matched: ${linksCount} / 4`;
-      rowsContainer.appendChild(statusBar);
-    }
-
-    function handleL5Select(col, id) {
-      if (levelCompleted) return;
-      playSound('place');
-
-      if (!l5Selected) {
-        l5Selected = { col, id };
-        renderLevel5();
-        return;
-      }
-
-      if (l5Selected.col === col && l5Selected.id === id) {
-        l5Selected = null;
-        renderLevel5();
-        return;
-      }
-
-      if (l5Selected.col === col) {
-        l5Selected = { col, id };
-        renderLevel5();
-        return;
-      }
-
-      const a = l5Selected;
-      const b = { col, id };
-      const pairMap = { [a.col]: a.id, [b.col]: b.id };
-
-      let targetLeftId = pairMap.left || null;
-      if (!targetLeftId && pairMap.mid) targetLeftId = getLinkedLeftIdForCol('mid', pairMap.mid);
-      if (!targetLeftId && pairMap.right) targetLeftId = getLinkedLeftIdForCol('right', pairMap.right);
-
-      if (!targetLeftId) {
-        l5Selected = b;
-        renderLevel5();
-        return;
-      }
-
-      if (!l5UserLinks[targetLeftId]) {
-        l5UserLinks[targetLeftId] = { midId: null, rightId: null };
-      }
-
-      if (pairMap.mid) {
-        for (const [k, v] of Object.entries(l5UserLinks)) {
-          if (k !== targetLeftId && v.midId === pairMap.mid) v.midId = null;
-        }
-        l5UserLinks[targetLeftId].midId = pairMap.mid;
-      }
-      if (pairMap.right) {
-        for (const [k, v] of Object.entries(l5UserLinks)) {
-          if (k !== targetLeftId && v.rightId === pairMap.right) v.rightId = null;
-        }
-        l5UserLinks[targetLeftId].rightId = pairMap.right;
-      }
-
-      l5CheckedResults[targetLeftId] = null;
-      l5Selected = null;
-      renderLevel5();
-    }
-
-    function renderLevel6() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.innerHTML = '';
-      const disabledAttr = levelCompleted ? 'disabled' : '';
-
-      const tableWrap = document.createElement('div');
-      tableWrap.className = 'overflow-x-auto';
-
-      const bodyHTML = l6Rows.map((row, rIdx) => {
-        const res = l6CheckedResults[rIdx];
-        const statusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-
-        const stoneCellsHTML = LEVEL6_WEIGHT_LIST.map(wObj => {
-          const isChecked = row.selectedWeights.includes(wObj.id);
-          return `
-            <td>
-              <div class="flex flex-col items-center justify-center gap-1">
-                ${renderL6HexWeightSVG(wObj)}
-                <button
-                  type="button"
-                  ${disabledAttr}
-                  onclick="toggleL6Weight(${rIdx}, '${wObj.id}')"
-                  aria-label="Select ${wObj.label} for ${row.name}"
-                  class="l6-weight-checkbox ${isChecked ? 'checked' : ''}"
-                >${isChecked ? '✓' : ''}</button>
-              </div>
-            </td>
-          `;
-        }).join('');
-
-        return `
-          <tr>
-            <td class="${statusCls}">
-              <div class="flex flex-col items-center justify-center gap-0.5 min-w-[78px]">
-                ${renderBasketSVG(row.id)}
-                <span class="text-[11px] font-bold text-slate-700">${row.name}</span>
-              </div>
-            </td>
-            ${stoneCellsHTML}
-            <td class="${statusCls}">
-              <div class="l6-answer-pill ${statusCls} inline-flex items-center gap-1.5">
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="2"
-                  ${disabledAttr}
-                  value="${row.userKg}"
-                  placeholder=" "
-                  oninput="updateL6KgG(${rIdx}, 'userKg', this.value)"
-                  class="km-m-input w-8 h-8 text-xs sm:text-sm"
-                />
-                <span class="text-xs font-extrabold text-slate-800">k.g.</span>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="3"
-                  ${disabledAttr}
-                  value="${row.userG}"
-                  placeholder=" "
-                  oninput="updateL6KgG(${rIdx}, 'userG', this.value)"
-                  class="km-m-input w-11 h-8 text-xs sm:text-sm"
-                />
-                <span class="text-xs font-extrabold text-slate-800">g.</span>
-                <span class="text-xs font-extrabold text-slate-600 mx-0.5">=</span>
-                ${renderFractionInputsHTML('l6', rIdx, row.userFrac, disabledAttr, true)}
-                <span class="text-xs font-extrabold text-slate-800">k.g.</span>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      tableWrap.innerHTML = `
-        <table class="l6-table text-xs sm:text-sm">
-          <tbody>
-            ${bodyHTML}
-          </tbody>
-        </table>
-      `;
-      rowsContainer.appendChild(tableWrap);
-    }
-
-    function toggleL6Weight(rowIdx, weightId) {
-      if (levelCompleted) return;
-      playSound('place');
-      const arr = l6Rows[rowIdx].selectedWeights;
-      const pos = arr.indexOf(weightId);
-      if (pos >= 0) arr.splice(pos, 1);
-      else arr.push(weightId);
-      l6CheckedResults[rowIdx] = null;
-      renderLevel6();
-    }
-
-    function updateL6KgG(rowIdx, field, val) {
-      l6Rows[rowIdx][field] = val.replace(/[^0-9]/g, '');
-      l6CheckedResults[rowIdx] = null;
-    }
-
-    function renderLevel7() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.innerHTML = '';
-      const disabledAttr = levelCompleted ? 'disabled' : '';
-
-      const banner = document.createElement('div');
-      banner.className = 'l7-prompt-banner text-xs sm:text-sm';
-      banner.textContent = `${l7Prompt.childName} went to a vegetable shop and bought the following vegetables. Express their weights in fractional form.`;
-      rowsContainer.appendChild(banner);
-
-      const tableWrap = document.createElement('div');
-      tableWrap.className = 'overflow-x-auto';
-
-      const rowsHTML = l7Rows.map((row, idx) => {
-        const res = l7CheckedResults[idx];
-        const statusCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-        const weightText = row.kg > 0
-          ? `${row.kg} k.g. ${row.g} g.`
-          : `${row.g} g.`;
-
-        return `
-          <tr>
-            <td class="font-bold text-slate-800 text-xs sm:text-sm">${row.name}</td>
-            <td class="font-extrabold text-slate-900 text-xs sm:text-sm">${weightText}</td>
-            <td class="l7-ans-cell ${statusCls}">
-              <div class="inline-flex items-center justify-center gap-1.5">
-                ${renderFractionInputsHTML('l7', idx, row.userFrac, disabledAttr, true)}
-                <span class="text-xs font-extrabold text-slate-800">k.g.</span>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      tableWrap.innerHTML = `
-        <table class="l7-table text-xs sm:text-sm">
-          <thead>
-            <tr>
-              <th>Vegetables</th>
-              <th>Weight</th>
-              <th>Fractional form</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHTML}
-          </tbody>
-        </table>
-      `;
-      rowsContainer.appendChild(tableWrap);
-    }
-
-    function renderLevel8OptionContent(q, opt) {
-      if (q.type === 'scale' || q.type === 'frac_l') {
-        return `
-          <span class="font-extrabold text-slate-900 text-xs sm:text-sm inline-flex items-center gap-1">
-            ${renderFractionHTML(opt.frac, 'text-xs sm:text-sm')}
-            <span>${opt.unit}</span>
-          </span>
-        `;
-      }
-      if (q.type === 'stones') {
-        const stonesHTML = opt.stones.map(st => renderHexWeightSVG(st)).join('');
-        return `
-          <div class="flex flex-col items-center justify-center gap-0.5">
-            <div class="flex items-center justify-center gap-1">${stonesHTML}</div>
-            <span class="font-extrabold text-slate-900 text-[11px] sm:text-xs inline-flex items-center gap-0.5">
-              ${renderFractionHTML(opt.frac, 'text-[11px] sm:text-xs')}
-              <span>${opt.unit}</span>
-            </span>
-          </div>
-        `;
-      }
-      return `<span class="font-extrabold text-slate-900 text-xs sm:text-sm">${opt.text}</span>`;
-    }
-
-    function renderLevel8() {
-      const rowsContainer = document.getElementById('rowsContainer');
-      rowsContainer.innerHTML = '';
-
-      const grid = document.createElement('div');
-      grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-3.5';
-
-      l8Questions.forEach((q, qIdx) => {
-        const res = l8CheckedResults[qIdx];
-        const cardCls = res === 'correct' ? 'correct' : res === 'incorrect' ? 'incorrect' : '';
-        const chosenId = l8Selected[qIdx];
-
-        const scaleBlock = q.type === 'scale' && q.scaleItem ? renderBalanceScaleSVG(q.scaleItem) : '';
-
-        const optsHTML = q.options.map((opt, oIdx) => {
-          const letter = ['A', 'B', 'C', 'D'][oIdx] || '';
-          const isSel = chosenId === opt.id;
-          let btnCls = isSel ? 'selected' : '';
-          if (res === 'correct' && opt.id === q.correctId) btnCls = 'correct';
-          if (res === 'incorrect' && isSel && opt.id !== q.correctId) btnCls = 'incorrect';
-
-          return `
-            <button
-              type="button"
-              ${levelCompleted ? 'disabled' : ''}
-              onclick="selectL8Option(${qIdx}, '${opt.id}')"
-              class="l8-opt-btn ${btnCls}"
-            >
-              <span class="text-xs font-extrabold text-fuchsia-700 shrink-0">${letter})</span>
-              ${renderLevel8OptionContent(q, opt)}
-            </button>
-          `;
-        }).join('');
-
-        const card = document.createElement('div');
-        card.className = `l8-q-card ${cardCls} flex flex-col justify-between gap-2.5`;
-        card.innerHTML = `
-          <div>
-            <div class="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
-              <span class="text-fuchsia-700 mr-1">${q.numLabel}</span>
-              ${q.promptHTML}
-            </div>
-            ${scaleBlock}
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            ${optsHTML}
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      rowsContainer.appendChild(grid);
-    }
-
-    function selectL8Option(qIdx, optId) {
-      if (levelCompleted) return;
-      playSound('place');
-      l8Selected[qIdx] = optId;
-      l8CheckedResults[qIdx] = null;
-      renderLevel8();
-    }
-
-    function isFractionMatch(uWhole, uNum, uDen, target) {
-      const w = (uWhole || '').trim();
-      const n = (uNum || '').trim();
-      const d = (uDen || '').trim();
-
-      if (w !== '' && n === '' && d === '') {
-        return target.whole !== '' && target.num === '' && target.den === '' && w === String(target.whole);
-      }
-      if (w === '' && n !== '' && d !== '') {
-        return target.whole === '' && n === String(target.num) && d === String(target.den);
-      }
-      if (w !== '' && n !== '' && d !== '') {
-        return target.whole !== '' && w === String(target.whole) && n === String(target.num) && d === String(target.den);
-      }
-      return false;
-    }
-
-    function checkAnswers() {
-      if (dailyEmisBlocked) {
-        showFeedback(dailyEmisBlockMessage, 'error');
-        return;
-      }
-      if (levelCompleted || isSubmitting) return;
-
-      let levelScore = 0;
-
-      if (currentLevel === 1) {
-        if (currentStage === 1) {
-          questions.forEach(q => {
-            const placedOpt = q.placedOptionId
-              ? questions[0].optionsPool.find(o => o.optionId === q.placedOptionId)
-              : null;
-            const fracOk = placedOpt && placedOpt.id === q.target.id;
-            const unitOk = q.selectedUnit === 'm';
-            if (fracOk && unitOk) {
-              q.status = 'correct';
-              levelScore += 2;
-            } else {
-              q.status = 'incorrect';
-            }
-          });
-        } else {
-          questions.forEach(q => {
-            const fracOk = isFractionMatch(q.userWhole, q.userNum, q.userDen, q.target);
-            const unitOk = q.selectedUnit === 'm';
-            if (fracOk && unitOk) {
-              q.status = 'correct';
-              levelScore += 2;
-            } else {
-              q.status = 'incorrect';
-            }
-          });
-        }
-        renderLevel1();
-      } else if (currentLevel === 2) {
-        l2CheckedResults = l2Answers.map(row => {
-          if (!row.isBlank) {
-            levelScore += 3;
-            return 'correct';
-          }
-          const kmNum = parseInt(row.userKm, 10);
-          const mNum = parseInt(row.userM, 10);
-          const ok = !Number.isNaN(kmNum) && !Number.isNaN(mNum) && kmNum === row.km && mNum === row.m;
-          if (ok) levelScore += 3;
-          return ok ? 'correct' : 'incorrect';
-        });
-        renderLevel2();
-      } else if (currentLevel === 3) {
-        l3CheckedResults = l3Answers.map(item => {
-          const fracOk = isFractionMatch(item.userWhole, item.userNum, item.userDen, item);
-          const unitOk = item.userUnit === item.unit;
-          const ok = fracOk && unitOk;
-          if (ok) levelScore += 2;
-          return ok ? 'correct' : 'incorrect';
-        });
-        renderLevel3();
-      } else if (currentLevel === 4) {
-        l4CheckedResults = l4Rows.map(row => {
-          if (row.givenInTable) {
-            levelScore += 2;
-            return 'correct';
-          }
-          const fracOk = isFractionMatch(row.userFrac.whole, row.userFrac.num, row.userFrac.den, row);
-          const unitOk = row.userUnit === 'km';
-          const kmVal = parseInt(row.userKm, 10);
-          const mVal = parseInt(row.userM, 10);
-          const kmMOok = !Number.isNaN(kmVal) && !Number.isNaN(mVal) && kmVal === row.km && mVal === row.m;
-          const ok = fracOk && unitOk && kmMOok;
-          if (ok) levelScore += 2;
-          return ok ? 'correct' : 'incorrect';
-        });
-        renderLevel4();
-      } else if (currentLevel === 5) {
-        l5CheckedResults = {};
-        LEVEL5_MATCH_ITEMS.forEach(item => {
-          const link = l5UserLinks[item.id];
-          const ok = Boolean(link && link.midId === item.id && link.rightId === item.id);
-          l5CheckedResults[item.id] = ok ? 'correct' : 'incorrect';
-          if (ok) levelScore += 3;
-        });
-        renderLevel5();
-      } else if (currentLevel === 6) {
-        l6CheckedResults = l6Rows.map(row => {
-          const selSorted = [...row.selectedWeights].sort();
-          const reqSorted = [...row.reqWeights].sort();
-          const stonesOk = selSorted.length === reqSorted.length && selSorted.every((v, i) => v === reqSorted[i]);
-
-          const kgVal = parseInt(row.userKg, 10);
-          const gVal = parseInt(row.userG, 10);
-          const kgGOk = !Number.isNaN(kgVal) && !Number.isNaN(gVal) && kgVal === row.kg && gVal === row.g;
-          const fracOk = isFractionMatch(row.userFrac.whole, row.userFrac.num, row.userFrac.den, row);
-
-          const ok = stonesOk && kgGOk && fracOk;
-          if (ok) levelScore += 2.4;
-          return ok ? 'correct' : 'incorrect';
-        });
-        levelScore = Math.round(levelScore);
-        renderLevel6();
-      } else if (currentLevel === 7) {
-        l7CheckedResults = l7Rows.map(row => {
-          const ok = isFractionMatch(row.userFrac.whole, row.userFrac.num, row.userFrac.den, row);
-          if (ok) levelScore += 2.4;
-          return ok ? 'correct' : 'incorrect';
-        });
-        levelScore = Math.round(levelScore);
-        renderLevel7();
-      } else if (currentLevel === 8) {
-        l8CheckedResults = {};
-        l8Questions.forEach((q, idx) => {
-          const ok = l8Selected[idx] === q.correctId;
-          l8CheckedResults[idx] = ok ? 'correct' : 'incorrect';
-          if (ok) levelScore += 3;
-        });
-        renderLevel8();
-      }
-
-      currentScore = Math.min(MAX_POINTS_PER_LEVEL, levelScore);
-      if (currentScore > (levelBestScores[currentLevel] || 0)) {
-        levelBestScores[currentLevel] = currentScore;
-      }
-
-      const isPerfect = currentScore === MAX_POINTS_PER_LEVEL;
-      playSound(isPerfect ? 'correct' : 'error');
-
-      showFeedback(
-        isPerfect
-          ? `Perfect! ${getLevelName(currentLevel)} (Trial ${currentTrial}/3): ${currentScore}/${MAX_POINTS_PER_LEVEL} points.`
-          : `${getLevelName(currentLevel)} (Trial ${currentTrial}/3): ${currentScore}/${MAX_POINTS_PER_LEVEL} points recorded.`,
-        isPerfect ? 'success' : 'warning'
-      );
-
-      recordTrialSnapshot(currentLevel, currentTrial, currentScore, isPerfect);
-      syncTrialToGoogleSheet(currentLevel, currentTrial);
-
-      if (currentTrial < 3) {
-        setTimeout(() => {
-          if (!levelCompleted && !dailyEmisBlocked) {
-            setupLevel(currentLevel, currentTrial + 1, false);
-          }
-        }, 900);
-      } else {
-        levelCompleted = true;
-        updateHeaderMeta();
-        if (currentLevel < 8) {
-          setTimeout(() => {
-            if (!dailyEmisBlocked) {
-              playSound('levelup');
-              setupLevel(currentLevel + 1, 1, false);
-            }
-          }, 950);
-        } else {
-          setTimeout(() => {
-            if (!dailyEmisBlocked) {
-              playSound('levelup');
-              openFinalSummaryModal();
-            }
-          }, 950);
-        }
-      }
-    }
-
-    function startTrial(trialNum, resetLevelScore = true) {
-      if (dailyEmisBlocked) {
-        showFeedback(dailyEmisBlockMessage, 'error');
-        return;
-      }
-      if (resetLevelScore) {
-        levelBestScores[currentLevel] = 0;
-      }
-      playSound('place');
-      setupLevel(currentLevel, trialNum, false);
-    }
-
-    function clearCurrentSlots() {
-      if (dailyEmisBlocked) {
-        showFeedback(dailyEmisBlockMessage, 'error');
-        return;
-      }
-      if (levelCompleted) return;
-      playSound('place');
-      selectedOptionId = null;
-      draggedOptionId = null;
-      l1DraggedSlotIndex = null;
-      hideFeedback();
-
-      if (currentLevel === 1) {
-        questions.forEach(q => {
-          q.placedOptionId = null;
-          q.userWhole = '';
-          q.userNum = '';
-          q.userDen = '';
-          q.selectedUnit = '';
-          q.status = null;
-        });
-        renderLevel1();
-      } else if (currentLevel === 2) {
-        l2Answers.forEach(r => {
-          if (r.isBlank) {
-            r.userKm = '';
-            r.userM = '';
-          }
-        });
-        l2CheckedResults = [null, null, null, null];
-        renderLevel2();
-      } else if (currentLevel === 3) {
-        l3Answers.forEach(item => {
-          item.userWhole = '';
-          item.userNum = '';
-          item.userDen = '';
-          item.userUnit = '';
-        });
-        l3CheckedResults = [null, null, null, null, null, null];
-        renderLevel3();
-      } else if (currentLevel === 4) {
-        l4Rows.forEach(r => {
-          if (!r.givenInTable) {
-            r.userFrac = { whole: '', num: '', den: '' };
-            r.userUnit = '';
-            r.userKm = '';
-            r.userM = '';
-          }
-        });
-        l4CheckedResults = [null, null, null, null, null, null];
-        renderLevel4();
-      } else if (currentLevel === 5) {
-        l5Selected = null;
-        l5UserLinks = {};
-        l5CheckedResults = {};
-        renderLevel5();
-      } else if (currentLevel === 6) {
-        l6Rows.forEach(r => {
-          r.selectedWeights = [];
-          r.userKg = '';
-          r.userG = '';
-          r.userFrac = { whole: '', num: '', den: '' };
-        });
-        l6CheckedResults = [null, null, null, null, null];
-        renderLevel6();
-      } else if (currentLevel === 7) {
-        l7Rows.forEach(r => {
-          r.userFrac = { whole: '', num: '', den: '' };
-        });
-        l7CheckedResults = [null, null, null, null, null];
-        renderLevel7();
-      } else if (currentLevel === 8) {
-        l8Selected = {};
-        l8CheckedResults = {};
-        renderLevel8();
-      }
-    }
-
-    function showFeedback(message, type) {
-      const banner = document.getElementById('feedbackBanner');
-      banner.textContent = message;
-      banner.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'border-emerald-300', 'bg-rose-100', 'text-rose-900', 'border-rose-300', 'bg-amber-100', 'text-amber-900', 'border-amber-300');
-      banner.classList.add('border');
-
-      if (type === 'success') {
-        banner.classList.add('bg-emerald-100', 'text-emerald-900', 'border-emerald-300');
-      } else if (type === 'warning') {
-        banner.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
-      } else {
-        banner.classList.add('bg-rose-100', 'text-rose-900', 'border-rose-300');
-      }
-    }
-
-    function hideFeedback() {
-      const banner = document.getElementById('feedbackBanner');
-      banner.classList.add('hidden');
-      banner.textContent = '';
-    }
-
-    function recordTrialSnapshot(lvl, trialNum, scorePts, passed) {
-      const startTs = trialStartTimes[`${lvl}_${trialNum}`] || Date.now();
-      const durationSec = Math.max(1, Math.round((Date.now() - startTs) / 1000));
-      trialRecords.push({
-        gameCode: lmsContext.gameCode,
-        level: getLevelName(lvl),
-        trial: trialNum,
-        studentId: lmsContext.studentId,
-        emisNumber: lmsContext.emisNumber,
-        studentName: lmsContext.name,
-        school: lmsContext.school,
-        whatsapp: lmsContext.whatsapp,
-        score: scorePts,
-        maxScore: MAX_POINTS_PER_LEVEL,
-        passed,
-        durationSec,
-        totalElapsedSec: elapsedSeconds,
-        timestamp: new Date().toISOString()
-      });
-    }
-
-    function syncTrialToGoogleSheet(lvl, trialNum) {
-      const statusEl = document.getElementById('sumSyncStatus');
-      const cumulativeBest = Object.values(levelBestScores).reduce((a, b) => a + b, 0);
-
-      const payload = {
-        action: 'saveGameData',
-        gameCode: lmsContext.gameCode,
-        level: getLevelName(lvl),
-        trial: trialNum,
-        studentId: lmsContext.studentId,
-        emisNumber: lmsContext.emisNumber,
-        studentName: lmsContext.name,
-        school: lmsContext.school,
-        whatsapp: lmsContext.whatsapp,
-        score: currentScore,
-        maxScore: MAX_POINTS_PER_LEVEL,
-        cumulativeBestScore: cumulativeBest,
-        totalMaxScore: TOTAL_MAX_POINTS,
-        durationSec: elapsedSeconds,
-        timestamp: new Date().toISOString(),
-        trials: trialRecords
-      };
-
-      try {
-        localStorage.setItem('amelur_lms_m05_latest', JSON.stringify(payload));
-      } catch (e) {}
-
-      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) {
-        isSubmitting = true;
-        if (statusEl) {
-          statusEl.textContent = 'Syncing to Google Sheet...';
-          statusEl.className = 'font-bold text-amber-600';
-        }
-
-        fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        })
-          .then(() => {
-            isSubmitting = false;
-            markEmisSubmittedToday();
-            if (statusEl) {
-              statusEl.textContent = 'Saved to AMelur-LMS-001 Leaderboard ✓';
-              statusEl.className = 'font-bold text-emerald-600';
-            }
-          })
-          .catch(() => {
-            isSubmitting = false;
-            markEmisSubmittedToday();
-            if (statusEl) {
-              statusEl.textContent = 'Saved locally (offline/CORS)';
-              statusEl.className = 'font-bold text-amber-600';
-            }
-          });
-      } else {
-        markEmisSubmittedToday();
-      }
-    }
-
-    function openFinalSummaryModal() {
-      const totalBest = Object.values(levelBestScores).reduce((a, b) => a + b, 0);
-      document.getElementById('sumStudentId').textContent = lmsContext.studentId;
-      document.getElementById('sumEmisNumber').textContent = lmsContext.emisNumber || '--';
-      document.getElementById('sumStudentName').textContent = lmsContext.name;
-      document.getElementById('sumL1').textContent = `${levelBestScores[1]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumL2').textContent = `${levelBestScores[2]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumL3').textContent = `${levelBestScores[3]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumL4').textContent = `${levelBestScores[4]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumL5').textContent = `${levelBestScores[5]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumL6').textContent = `${levelBestScores[6]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumL7').textContent = `${levelBestScores[7]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumL8').textContent = `${levelBestScores[8]}/${MAX_POINTS_PER_LEVEL}`;
-      document.getElementById('sumTotal').textContent = `${totalBest} / ${TOTAL_MAX_POINTS} (${formatTime(elapsedSeconds)})`;
-
-      document.getElementById('completionModal').classList.remove('hidden');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      startTimer();
-      setupLevel(1, 1, true);
-      checkAlreadySubmittedTodayViaSheet();
-    });
-  </script>
-</body>
-</html>
-
-    
+  </main>

@@ -98,11 +98,16 @@
 
             <!-- 3. STUDENT ENTRY POINT & LINKED GAME DASHBOARD -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
-                <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                <div class="flex flex-wrap justify-between items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                     <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
                         <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student Entry Point (All Games Master Table)
                     </h2>
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked table</span>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openStudentRegistration('', currentGameCode)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-right-to-bracket"></i> Student Login / Check Stu_ID
+                        </button>
+                        <span class="hidden sm:inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked table</span>
+                    </div>
                 </div>
                 <div id="studentEntryGridsContainer" class="space-y-3"></div>
             </section>
@@ -273,63 +278,152 @@
     </div>
 
     <!-- REGISTRATION & LOGIN MODAL -->
-    <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl max-w-md w-full p-5 shadow-2xl border border-slate-100 space-y-3">
-            <h3 id="modalTitle" class="text-sm font-bold text-indigo-700 border-b pb-2">📋 Student Login &amp; Registration</h3>
+    <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 z-50 overflow-y-auto">
+        <div class="bg-white rounded-xl max-w-lg w-full p-5 shadow-2xl border border-slate-100 space-y-3 my-auto max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-2">
+                <h3 id="modalTitle" class="text-sm font-bold text-indigo-700">📋 Student Login &amp; ID Verification</h3>
+                <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 font-bold text-base px-1">&times;</button>
+            </div>
+
             <form id="userRegForm" class="space-y-3 text-xs" onsubmit="handleRegistrationSubmit(event)">
                 
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Student Code (Grid ID)</label>
-                        <input type="text" id="regStudentCode" readonly class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-slate-100 uppercase">
+                <!-- STEP 1: IDENTIFIERS TO BUILD STU_ID -->
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2.5">
+                    <div class="text-[11px] font-extrabold text-indigo-800 uppercase">Step 1: Generate / Enter Student ID (Stu_ID)</div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Std (1 Digit) *</label>
+                            <select id="regStd" onchange="updateGeneratedStudentId()" required class="w-full border rounded-lg p-2 font-bold bg-white">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Gender (B/G) *</label>
+                            <select id="regGender" onchange="updateGeneratedStudentId()" required class="w-full border rounded-lg p-2 font-bold bg-white">
+                                <option value="B">B (Boy)</option>
+                                <option value="G">G (Girl)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Gender Sl.No (2D) *</label>
+                            <input type="text" id="regGenderSlNo" maxlength="2" oninput="updateGeneratedStudentId()" required placeholder="01" class="w-full border rounded-lg p-2 font-bold uppercase bg-white">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Student EMIS No (10 Digits) *</label>
-                        <input type="text" id="regEmisNumber" maxlength="10" required placeholder="10-Digit EMIS No" class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-indigo-50">
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Student Name *</label>
+                            <input type="text" id="regFirstName" oninput="updateGeneratedStudentId()" required placeholder="Student Name" class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Father's Name *</label>
+                            <input type="text" id="regFatherName" oninput="updateGeneratedStudentId()" required placeholder="Father's Name" class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Mother's Name *</label>
+                            <input type="text" id="regMotherName" required placeholder="Mother's Name" class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">DOB (DD/MM/YYYY) *</label>
+                            <input type="text" id="regDob" maxlength="10" oninput="updateGeneratedStudentId()" required placeholder="DD/MM/YYYY" class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <label class="block font-bold text-indigo-900 mb-1">
+                            Combined Stu_ID <span class="font-normal text-slate-500">(Std + B/G + SlNo + Stu1st + Father1st + DD + MM)</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="regStudentCode" maxlength="10" required placeholder="e.g. 5B01KD1508" class="w-full border-2 border-indigo-300 rounded-lg p-2 font-extrabold text-indigo-800 bg-indigo-50 uppercase tracking-wider">
+                            <button type="button" onclick="checkStudentIdInDatabase()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold whitespace-nowrap shadow-sm">
+                                <i class="fa-solid fa-magnifying-glass mr-1"></i>Check Stu_ID
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Student Name *</label>
-                        <input type="text" id="regFirstName" required placeholder="Student Name" class="w-full border rounded-lg p-2">
+                <!-- STEP 2A: EXISTING STUDENT REPORT & PENDING GAME SELECTOR -->
+                <div id="existingStudentSection" class="hidden space-y-2.5 bg-emerald-50 border border-emerald-300 rounded-lg p-3">
+                    <div class="flex items-center justify-between border-b border-emerald-200 pb-1.5">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase text-emerald-700">Student Found in Database</div>
+                            <div id="foundStudentDisplayName" class="text-sm font-extrabold text-slate-900">--</div>
+                        </div>
+                        <span id="foundStudentIdBadge" class="px-2.5 py-1 bg-emerald-700 text-white font-extrabold rounded text-xs">--</span>
                     </div>
+
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">DOB (DD/MM/YYYY) *</label>
-                        <input type="text" id="regDob" maxlength="10" required placeholder="DD/MM/YYYY" class="w-full border rounded-lg p-2">
+                        <div class="text-[11px] font-bold text-slate-800 mb-1">📊 Previous Game Reports Abstract:</div>
+                        <div id="previousReportsAbstract" class="bg-white border border-emerald-200 rounded-lg p-2 max-h-36 overflow-y-auto text-[11px] space-y-1"></div>
+                    </div>
+
+                    <div id="availableGamesWrapper" class="space-y-1.5">
+                        <label class="block font-bold text-slate-800">🎮 Choose an Available Pending Game:</label>
+                        <select id="pendingGameSelect" onchange="syncSelectedGame(this.value)" class="w-full border-2 border-emerald-500 rounded-lg p-2 font-extrabold text-emerald-900 bg-white uppercase"></select>
+                    </div>
+
+                    <div id="noPendingGamesBanner" class="hidden bg-amber-100 border-2 border-amber-400 text-amber-950 rounded-lg p-3 text-center space-y-2">
+                        <div class="font-extrabold text-xs">
+                            <i class="fa-solid fa-circle-check text-emerald-700 mr-1"></i>
+                            <span id="noPendingGamesText">All available games are already completed for this student! Please exit to let the next user play.</span>
+                        </div>
+                        <button type="button" onclick="closeModal()" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs shadow">
+                            Exit for Next User
+                        </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Cell No (10 digits) *</label>
-                        <input type="tel" id="regCell" maxlength="10" required placeholder="10-Digit Cell No" class="w-full border rounded-lg p-2">
+                <!-- STEP 2B: NEW STUDENT REGISTRATION DETAILS -->
+                <div id="newStudentFieldsSection" class="hidden space-y-2.5 bg-amber-50/70 border border-amber-200 rounded-lg p-3">
+                    <div class="text-[11px] font-extrabold text-amber-900 uppercase">New Student Details (Not yet in database)</div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Student EMIS No (10 Digits) *</label>
+                            <input type="text" id="regEmisNumber" maxlength="10" placeholder="10-Digit EMIS No" class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Choose Game *</label>
+                            <select id="newStudentGameSelect" onchange="syncSelectedGame(this.value)" class="w-full border rounded-lg p-2 font-bold text-emerald-800 bg-white uppercase"></select>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">WhatsApp No *</label>
-                        <input type="tel" id="regWhatsapp" required placeholder="+91..." class="w-full border rounded-lg p-2">
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Cell No (10 digits) *</label>
+                            <input type="tel" id="regCell" maxlength="10" placeholder="10-Digit Cell No" class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">WhatsApp No *</label>
+                            <input type="tel" id="regWhatsapp" placeholder="+91..." class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Institution</label>
+                            <input type="text" id="regSchool" value="PUPS Anjalam Melur" class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Place *</label>
+                            <input type="text" id="regPlace" placeholder="Place" class="w-full border rounded-lg p-2 bg-white">
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Institution</label>
-                        <input type="text" id="regSchool" value="PUPS Anjalam Melur" class="w-full border rounded-lg p-2">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Place *</label>
-                        <input type="text" id="regPlace" required placeholder="Place" class="w-full border rounded-lg p-2">
-                    </div>
-                </div>
+                <input type="hidden" id="regGameCode" value="M05">
 
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Selected Game Code</label>
-                    <input type="text" id="regGameCode" readonly class="w-full border rounded-lg p-2 font-bold text-emerald-700 bg-emerald-50 uppercase">
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg bg-slate-200 font-bold">Cancel</button>
-                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Submit &amp; Launch Game</button>
+                <div class="flex justify-end space-x-2 pt-2 border-t">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg bg-slate-200 font-bold">Cancel / Exit</button>
+                    <button type="submit" id="submitBtn" class="hidden px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Launch Selected Game</button>
                 </div>
             </form>
         </div>
@@ -343,6 +437,7 @@
         let isClassExpanded = false;
         let currentUserStudentId = "1B01";
         let currentGameCode = "M05";
+        let isExistingVerifiedUser = false;
         let expandedGameCodes = new Set(["M05", "E04"]);
         let expandedSubmissionClasses = new Set(["1"]);
         let isUnavailableGamesExpanded = false;
@@ -666,7 +761,7 @@
                 if (!gameStudentCounts[gCode]) return;
                 const rawSid = String(r.studentId || '').trim().toUpperCase();
                 if (!rawSid) return;
-                const baseCode = rawSid.split('_')[0];
+                const baseCode = rawSid.split('_')[0].slice(0, 4);
                 gameStudentCounts[gCode][baseCode] = (gameStudentCounts[gCode][baseCode] || 0) + 1;
             });
 
@@ -1019,16 +1114,220 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
+        /* =====================================================================
+           STUDENT ID GENERATION, DATABASE CHECK & GAME AVAILABILITY FLOW
+           Format: Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2)
+           ===================================================================== */
+        function updateGeneratedStudentId() {
+            const std = (document.getElementById('regStd').value || '').trim().toUpperCase().slice(0, 1);
+            const gender = (document.getElementById('regGender').value || '').trim().toUpperCase().slice(0, 1);
+            const rawSl = (document.getElementById('regGenderSlNo').value || '').replace(/\D/g, '').slice(0, 2);
+            const slNo = rawSl ? rawSl.padStart(2, '0') : '';
+
+            const stuName = (document.getElementById('regFirstName').value || '').trim().replace(/[^a-zA-Z]/g, '');
+            const stuInitial = stuName ? stuName.charAt(0).toUpperCase() : '';
+
+            const fatherName = (document.getElementById('regFatherName').value || '').trim().replace(/[^a-zA-Z]/g, '');
+            const fatherInitial = fatherName ? fatherName.charAt(0).toUpperCase() : '';
+
+            const dobStr = (document.getElementById('regDob').value || '').trim();
+            const dobMatch = dobStr.match(/^(\d{1,2})[\/\-\.](\d{1,2})/);
+            const dd = dobMatch ? dobMatch[1].padStart(2, '0') : '';
+            const mm = dobMatch ? dobMatch[2].padStart(2, '0') : '';
+
+            const combined = `${std}${gender}${slNo}${stuInitial}${fatherInitial}${dd}${mm}`;
+            if (combined.length >= 4) {
+                document.getElementById('regStudentCode').value = combined;
+            }
+        }
+
+        function syncSelectedGame(gCode) {
+            const cleaned = String(gCode || '').trim().toUpperCase();
+            currentGameCode = cleaned;
+            document.getElementById('regGameCode').value = cleaned;
+        }
+
+        function setNewStudentRequiredFields(isRequired) {
+            ['regEmisNumber', 'regCell', 'regWhatsapp', 'regPlace'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.required = isRequired;
+            });
+        }
+
+        function findStudentInDatabase(stuId) {
+            const target = String(stuId || '').trim().toUpperCase();
+            if (!target) return null;
+
+            const userMatch = userRecordsData.find(u => {
+                const uId = String(u.studentId || u.studentCode || '').trim().toUpperCase();
+                return uId === target || (target.length >= 4 && uId.startsWith(target));
+            });
+
+            const gameMatches = gameRecordsData.filter(g => {
+                const gId = String(g.studentId || '').trim().toUpperCase();
+                return gId === target || gId.startsWith(target + "_") || (target.length >= 4 && gId.startsWith(target));
+            });
+
+            if (!userMatch && gameMatches.length === 0) return null;
+
+            const resolvedName = (userMatch && (userMatch.name || userMatch.firstName))
+                || (gameMatches[0] && gameMatches[0].name)
+                || document.getElementById('regFirstName').value.trim()
+                || target;
+
+            const resolvedId = (userMatch && (userMatch.studentId || userMatch.studentCode))
+                || (gameMatches[0] && gameMatches[0].studentId)
+                || target;
+
+            return {
+                studentId: String(resolvedId).trim().toUpperCase(),
+                name: resolvedName,
+                userRecord: userMatch || null,
+                gameRecords: gameMatches
+            };
+        }
+
+        function checkStudentIdInDatabase() {
+            const stuIdInput = document.getElementById('regStudentCode');
+            const stuId = stuIdInput.value.trim().toUpperCase();
+            if (!stuId) {
+                alert("Please enter or generate a Student ID (Stu_ID) first.");
+                stuIdInput.focus();
+                return;
+            }
+
+            const existingSection = document.getElementById('existingStudentSection');
+            const newSection = document.getElementById('newStudentFieldsSection');
+            const submitBtn = document.getElementById('submitBtn');
+            const preferredGame = (document.getElementById('regGameCode').value || currentGameCode || 'M05').trim().toUpperCase();
+
+            const found = findStudentInDatabase(stuId);
+
+            if (found) {
+                isExistingVerifiedUser = true;
+                setNewStudentRequiredFields(false);
+                newSection.classList.add('hidden');
+                existingSection.classList.remove('hidden');
+
+                document.getElementById('foundStudentDisplayName').textContent = found.name;
+                document.getElementById('foundStudentIdBadge').textContent = found.studentId;
+                if (!document.getElementById('regFirstName').value.trim()) {
+                    document.getElementById('regFirstName').value = found.name;
+                }
+
+                // Build Previous Game Reports Abstract
+                const abstractEl = document.getElementById('previousReportsAbstract');
+                const playedGamesSet = new Set();
+
+                if (found.gameRecords.length === 0) {
+                    abstractEl.innerHTML = `<div class="text-slate-500 italic py-1">Student is registered, with 0 games played so far.</div>`;
+                } else {
+                    const scores = found.gameRecords.map(r => parseScoreValue(r.score));
+                    const bestPct = Math.round(Math.max(...scores));
+                    const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+
+                    let rowsHtml = `<div class="flex flex-wrap justify-between bg-indigo-50 text-indigo-900 font-bold px-2 py-1 rounded mb-1">
+                        <span>Games Played: ${found.gameRecords.length}</span>
+                        <span>Best: ${bestPct}%</span>
+                        <span>Avg: ${avgPct}%</span>
+                    </div>`;
+
+                    found.gameRecords.forEach(r => {
+                        const gCode = String(r.gameCode || '').trim().toUpperCase();
+                        if (gCode) playedGamesSet.add(gCode);
+                        const totSecs = parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time);
+                        rowsHtml += `<div class="flex items-center justify-between border-b border-slate-100 py-1 px-1">
+                            <span class="font-extrabold text-indigo-700">${gCode || 'GAME'}</span>
+                            <span class="font-bold text-emerald-700">${formatScoreDisplay(r.score)}</span>
+                            <span class="font-mono text-slate-600">${formatSecondsToHHMMSS(totSecs)}</span>
+                            <span class="text-[10px] text-slate-400">${r.submittedAt || ''}</span>
+                        </div>`;
+                    });
+                    abstractEl.innerHTML = rowsHtml;
+                }
+
+                // Filter available pending games for this student
+                const pendingGames = READY_GAMES.filter(g => !playedGamesSet.has(g));
+                const availWrapper = document.getElementById('availableGamesWrapper');
+                const noPendingBanner = document.getElementById('noPendingGamesBanner');
+                const pendingSelect = document.getElementById('pendingGameSelect');
+
+                if (pendingGames.length === 0) {
+                    availWrapper.classList.add('hidden');
+                    submitBtn.classList.add('hidden');
+                    noPendingBanner.classList.remove('hidden');
+                    document.getElementById('noPendingGamesText').textContent =
+                        `No pending games available for ${found.name} (${found.studentId})! Please exit to let the next user play.`;
+                } else {
+                    noPendingBanner.classList.add('hidden');
+                    availWrapper.classList.remove('hidden');
+                    submitBtn.classList.remove('hidden');
+                    submitBtn.innerText = "Launch Selected Game";
+
+                    pendingSelect.innerHTML = pendingGames.map(g =>
+                        `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g} (Available)</option>`
+                    ).join('');
+
+                    const chosenGame = pendingGames.includes(preferredGame) ? preferredGame : pendingGames[0];
+                    pendingSelect.value = chosenGame;
+                    syncSelectedGame(chosenGame);
+                }
+            } else {
+                // New Student Flow
+                isExistingVerifiedUser = false;
+                existingSection.classList.add('hidden');
+                newSection.classList.remove('hidden');
+                setNewStudentRequiredFields(true);
+
+                const newGameSel = document.getElementById('newStudentGameSelect');
+                newGameSel.innerHTML = READY_GAMES.map(g =>
+                    `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g}</option>`
+                ).join('');
+                const chosenGame = READY_GAMES.includes(preferredGame) ? preferredGame : READY_GAMES[0];
+                newGameSel.value = chosenGame;
+                syncSelectedGame(chosenGame);
+
+                submitBtn.classList.remove('hidden');
+                submitBtn.innerText = "Save & Launch Game";
+            }
+        }
+
         function openStudentRegistration(studentId, gameCode) {
-            const targetGame = gameCode || currentGameCode;
-            document.getElementById('regStudentCode').value = studentId;
-            document.getElementById('regEmisNumber').value = "";
+            const targetGame = (gameCode || currentGameCode || 'M05').trim().toUpperCase();
+            isExistingVerifiedUser = false;
+
             document.getElementById('regGameCode').value = targetGame;
+            document.getElementById('regStudentCode').value = studentId || "";
+            document.getElementById('regEmisNumber').value = "";
             document.getElementById('regFirstName').value = "";
+            document.getElementById('regFatherName').value = "";
+            document.getElementById('regMotherName').value = "";
             document.getElementById('regDob').value = "";
             document.getElementById('regCell').value = "";
             document.getElementById('regWhatsapp').value = "";
+
+            // Pre-fill Std, Gender, and Gender Sl.No if clicked from a grid cell like "5B01"
+            const codeMatch = String(studentId || '').trim().toUpperCase().match(/^([1-5])([BG])(\d{2})/);
+            if (codeMatch) {
+                document.getElementById('regStd').value = codeMatch[1];
+                document.getElementById('regGender').value = codeMatch[2];
+                document.getElementById('regGenderSlNo').value = codeMatch[3];
+            } else {
+                document.getElementById('regStd').value = "1";
+                document.getElementById('regGender').value = "B";
+                document.getElementById('regGenderSlNo').value = "";
+            }
+
+            document.getElementById('existingStudentSection').classList.add('hidden');
+            document.getElementById('newStudentFieldsSection').classList.add('hidden');
+            document.getElementById('submitBtn').classList.add('hidden');
+            setNewStudentRequiredFields(false);
+
             document.getElementById('studentModal').classList.remove('hidden');
+
+            if (studentId) {
+                checkStudentIdInDatabase();
+            }
         }
 
         function closeModal() {
@@ -1561,7 +1860,7 @@
             const cleanSheet = String(sheetId).trim().toUpperCase();
             const cleanHome = String(homeId).trim().toUpperCase();
             if (exactOnly) return cleanSheet === cleanHome;
-            return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_");
+            return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_") || (cleanHome.length === 4 && cleanSheet.startsWith(cleanHome));
         }
 
         function computeCohortMetrics(recs, rollCount) {
@@ -1640,19 +1939,52 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
+        function launchGamePage(studentId, name, schoolPlace, whatsapp, trialId, gameCode) {
+            let targetGameFile = 'Days.html';
+            if (gameCode === 'M03') {
+                targetGameFile = 'SkipCounter.html';
+            } else if (gameCode === 'M05') {
+                targetGameFile = 'M05.html';
+            } else if (gameCode === 'E04') {
+                targetGameFile = 'Months.html';
+            }
+
+            const queryParams = `gameCode=${encodeURIComponent(gameCode)}&studentId=${encodeURIComponent(studentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(schoolPlace)}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(trialId)}`;
+            window.location.href = `${targetGameFile}?${queryParams}`;
+        }
+
         function handleRegistrationSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerText = "Saving...";
+            btn.disabled = true;
+            btn.innerText = "Launching...";
 
             currentUserStudentId = document.getElementById('regStudentCode').value.trim().toUpperCase();
-            const emisNumber = document.getElementById('regEmisNumber').value.trim();
             currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase();
             const name = document.getElementById('regFirstName').value.trim();
+            const fatherName = document.getElementById('regFatherName').value.trim();
+            const motherName = document.getElementById('regMotherName').value.trim();
             const dob = document.getElementById('regDob').value.trim();
+            const autoTrialId = "1";
+
+            // Existing verified student: launch selected pending game immediately
+            if (isExistingVerifiedUser) {
+                const found = findStudentInDatabase(currentUserStudentId);
+                const uRec = (found && found.userRecord) || {};
+                const schoolStr = uRec.school ? `${uRec.school}${uRec.place ? ', ' + uRec.place : ''}, India` : "PUPS Anjalam Melur, India";
+                const whatsappStr = uRec.whatsapp || "";
+                closeModal();
+                btn.disabled = false;
+                launchGamePage(currentUserStudentId, (found && found.name) || name, schoolStr, whatsappStr, autoTrialId, currentGameCode);
+                return;
+            }
+
+            // New student: save user registration details (including Father's Name & Mother's Name) then launch
+            const emisNumber = document.getElementById('regEmisNumber').value.trim();
             const cell = document.getElementById('regCell').value.trim();
             const whatsapp = document.getElementById('regWhatsapp').value.trim();
-            const autoTrialId = "1";
+            const school = document.getElementById('regSchool').value.trim();
+            const place = document.getElementById('regPlace').value.trim();
 
             const payload = {
                 action: "saveUserData",
@@ -1660,10 +1992,12 @@
                 emisNumber: emisNumber,
                 dob: dob,
                 name: name,
+                fatherName: fatherName,
+                motherName: motherName,
                 cell: cell,
                 whatsapp: whatsapp,
-                school: document.getElementById('regSchool').value.trim(),
-                place: document.getElementById('regPlace').value.trim(),
+                school: school,
+                place: place,
                 country: "India",
                 trialId: autoTrialId
             };
@@ -1674,20 +2008,9 @@
                 body: new URLSearchParams(payload).toString()
             }).then(() => {
                 closeModal();
-                btn.disabled = false; btn.innerText = "Submit & Launch Game";
-
-                let targetGameFile = 'Days.html';
-                if (currentGameCode === 'M03') {
-                    targetGameFile = 'SkipCounter.html';
-                } else if (currentGameCode === 'M05') {
-                    targetGameFile = 'M05.html';
-                } else if (currentGameCode === 'E04') {
-                    targetGameFile = 'Months.html';
-                }
-
-                const queryParams = `gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
-                
-                window.location.href = `${targetGameFile}?${queryParams}`;
+                btn.disabled = false;
+                btn.innerText = "Save & Launch Game";
+                launchGamePage(currentUserStudentId, name, `${school}, ${place}, India`, whatsapp, autoTrialId, currentGameCode);
             });
         }
 

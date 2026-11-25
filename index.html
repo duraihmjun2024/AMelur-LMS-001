@@ -94,15 +94,22 @@
             <button onclick="navAction('More')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">More</button>
         </nav>
 
+        <div id="portalNoticeBanner" class="hidden rounded-xl border px-4 py-3 text-xs font-bold shadow-sm"></div>
+
         <main class="space-y-4">
 
             <!-- 3. STUDENT ENTRY POINT & LINKED GAME DASHBOARD -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
-                <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                <div class="flex flex-wrap justify-between items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                     <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
                         <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student Entry Point (All Games Master Table)
                     </h2>
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked table</span>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="openMemberEntry()" class="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-full shadow-sm cursor-pointer">
+                            <i class="fa-solid fa-user-plus mr-1"></i> Member Login
+                        </button>
+                        <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked table</span>
+                    </div>
                 </div>
                 <div id="studentEntryGridsContainer" class="space-y-3"></div>
             </section>
@@ -216,6 +223,7 @@
                             <option value="3">Standard 3</option>
                             <option value="4">Standard 4</option>
                             <option value="5">Standard 5</option>
+                            <option value="M">Members</option>
                         </select>
                     </div>
                     <button onclick="toggleClassExpand()" id="classToggleBtn" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-3 py-1 rounded border border-slate-600">Show All Entries</button>
@@ -276,12 +284,13 @@
     <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-5 shadow-2xl border border-slate-100 space-y-3">
             <h3 id="modalTitle" class="text-sm font-bold text-indigo-700 border-b pb-2">📋 Student Login &amp; Registration</h3>
+            <div id="modalLockAlert" class="hidden rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-700"></div>
             <form id="userRegForm" class="space-y-3 text-xs" onsubmit="handleRegistrationSubmit(event)">
                 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Student Code (Grid ID)</label>
-                        <input type="text" id="regStudentCode" readonly class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-slate-100 uppercase">
+                        <label class="block font-bold text-slate-700 mb-1">Student / Member Code</label>
+                        <input type="text" id="regStudentCode" required placeholder="e.g. 1B01 or M01" class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-slate-100 uppercase">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Student EMIS No (10 Digits) *</label>
@@ -322,9 +331,18 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Selected Game Code</label>
-                    <input type="text" id="regGameCode" readonly class="w-full border rounded-lg p-2 font-bold text-emerald-700 bg-emerald-50 uppercase">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Selected Game Code</label>
+                        <input type="text" id="regGameCode" readonly class="w-full border rounded-lg p-2 font-bold text-emerald-700 bg-emerald-50 uppercase">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Level (3 Trials / Level)</label>
+                        <select id="regLevelNum" class="w-full border rounded-lg p-2 font-bold text-slate-800 bg-slate-50">
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-2">
@@ -336,7 +354,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbLUtA8F5T9dRU9_DpromN3wx8Yp4DKQgaU_nl4BCA8hHNFOY3Jx8QK4MjzaAPfZPz/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5yBWfQ4h9LUHxvXVAr4jK2asylBXDdMekbj1KdtBy5txIAX5jdRy4n4GWcff6Zoal/exec";
         let gameRecordsData = [];
         let userRecordsData = [];
         let isOverallExpanded = false;
@@ -355,6 +373,68 @@
         const READY_GAMES = ["E02", "E03", "E04", "M03", "M05"];
         const SUB_IDS = ["1", "2", "3"];
         const DASHBOARD_STANDARDS = ["5", "4", "3", "2", "1"];
+
+        function getTodayIST() {
+            const now = new Date();
+            const istOffset = 5.5 * 60 * 60 * 1000;
+            const istDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + istOffset);
+            return istDate.toISOString().slice(0, 10);
+        }
+
+        function getDailyLevelLockKey(studentId, emisNumber, gameCode, levelNum) {
+            return `DAILY_LVL_DONE_${getTodayIST()}_${String(studentId || "").trim().toUpperCase()}_${String(emisNumber || "").trim()}_${String(gameCode || "").trim().toUpperCase()}_L${String(levelNum || "1")}`;
+        }
+
+        function showPortalNotice(type, message) {
+            const banner = document.getElementById("portalNoticeBanner");
+            if (!banner) return;
+            if (!message) {
+                banner.className = "hidden rounded-xl border px-4 py-3 text-xs font-bold shadow-sm";
+                banner.textContent = "";
+                return;
+            }
+            banner.className = type === "error"
+                ? "rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-xs font-bold text-red-800 shadow-sm"
+                : "rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800 shadow-sm";
+            banner.textContent = message;
+        }
+
+        function showModalLockAlert(message) {
+            const alertBox = document.getElementById("modalLockAlert");
+            if (!alertBox) return;
+            if (!message) {
+                alertBox.className = "hidden rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-700";
+                alertBox.textContent = "";
+                return;
+            }
+            alertBox.className = "rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-700";
+            alertBox.textContent = message;
+        }
+
+        async function checkDailyLevelLock(studentId, emisNumber, gameCode, levelNum) {
+            const key = getDailyLevelLockKey(studentId, emisNumber, gameCode, levelNum);
+            if (localStorage.getItem(key) === "DONE") {
+                return {
+                    blocked: true,
+                    message: `You have already finished Level ${levelNum} (3 trials) of ${gameCode} today! Try again tomorrow.`
+                };
+            }
+            try {
+                const url = `${GOOGLE_SCRIPT_URL}?action=checkDailyLevelStatus&studentId=${encodeURIComponent(studentId)}&emisNumber=${encodeURIComponent(emisNumber)}&gameCode=${encodeURIComponent(gameCode)}&levelNum=${encodeURIComponent(levelNum)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data && data.alreadyFinishedToday) {
+                    localStorage.setItem(key, "DONE");
+                    return {
+                        blocked: true,
+                        message: data.message || `You have already finished Level ${levelNum} (3 trials) of ${gameCode} today! Try again tomorrow.`
+                    };
+                }
+            } catch (err) {
+                console.warn("Daily lock check fallback:", err);
+            }
+            return { blocked: false, message: "" };
+        }
 
         function getDashboardStandardSet(gCode) {
             const key = String(gCode || 'M05').trim().toUpperCase();
@@ -936,7 +1016,9 @@
             const body = document.getElementById('classLeaderboardBody');
             const selectedGame = document.getElementById('classGameSelect').value;
             
-            let filtered = gameRecordsData.filter(r => r.studentId && r.studentId.startsWith(String(standard)));
+            let filtered = standard === 'M'
+                ? gameRecordsData.filter(r => r.studentId && !/^[1-5][BG]\d+/i.test(String(r.studentId).trim()))
+                : gameRecordsData.filter(r => r.studentId && r.studentId.startsWith(String(standard)));
             if (selectedGame !== 'ALL') {
                 filtered = filtered.filter(r => (r.gameCode || 'E02') === selectedGame);
             }
@@ -985,7 +1067,7 @@
             }
 
             if (!displayedClassData.length) {
-                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found for Standard ${standard}.</td></tr>`;
+                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found for ${standard === 'M' ? 'Members' : 'Standard ' + standard}.</td></tr>`;
                 return;
             }
 
@@ -1019,19 +1101,34 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
+        function openMemberEntry() {
+            openStudentRegistration("MEM01", currentGameCode);
+            document.getElementById('regStudentCode').readOnly = false;
+            document.getElementById('regStudentCode').classList.remove('bg-slate-100');
+            document.getElementById('regStudentCode').classList.add('bg-white');
+        }
+
         function openStudentRegistration(studentId, gameCode) {
             const targetGame = gameCode || currentGameCode;
-            document.getElementById('regStudentCode').value = studentId;
+            const codeInput = document.getElementById('regStudentCode');
+            codeInput.value = studentId;
+            const isMember = !/^[1-5][BG]\d+/i.test(String(studentId || '').trim());
+            codeInput.readOnly = !isMember;
+            codeInput.classList.toggle('bg-slate-100', !isMember);
+            codeInput.classList.toggle('bg-white', isMember);
             document.getElementById('regEmisNumber').value = "";
             document.getElementById('regGameCode').value = targetGame;
+            document.getElementById('regLevelNum').value = "1";
             document.getElementById('regFirstName').value = "";
             document.getElementById('regDob').value = "";
             document.getElementById('regCell').value = "";
             document.getElementById('regWhatsapp').value = "";
+            showModalLockAlert("");
             document.getElementById('studentModal').classList.remove('hidden');
         }
 
         function closeModal() {
+            showModalLockAlert("");
             document.getElementById('studentModal').classList.add('hidden');
         }
 
@@ -1640,74 +1737,37 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
-        function getTodayISTDateKey() {
-            const parts = new Intl.DateTimeFormat('en-CA', {
-                timeZone: 'Asia/Kolkata',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            }).formatToParts(new Date());
-            const y = parts.find(p => p.type === 'year')?.value || '';
-            const m = parts.find(p => p.type === 'month')?.value || '';
-            const d = parts.find(p => p.type === 'day')?.value || '';
-            return `${y}-${m}-${d}`;
-        }
-
-        function buildDailyBlockMessage(count, gameCode) {
-            const gCode = (gameCode || 'M05').trim().toUpperCase() || 'M05';
-            const n = Math.max(1, parseInt(count, 10) || 1);
-            return `You have already finished ${n} submissions including today's submission of ${gCode} game! Try again tomorrow`;
-        }
-
-        function getLocalDailyCount(emisNumber, studentId, gameCode) {
-            const todayKey = getTodayISTDateKey();
-            const gCode = (gameCode || 'M05').trim().toUpperCase();
-            const sid = (studentId || '').trim().toUpperCase();
-            const emis = (emisNumber || '').trim();
-            try {
-                const raw = localStorage.getItem(`dailySub_${todayKey}_${gCode}`);
-                const map = raw ? JSON.parse(raw) : {};
-                const byEmis = emis ? (map[`EMIS:${emis}`] || 0) : 0;
-                const bySid = sid ? (map[`SID:${sid}`] || 0) : 0;
-                return Math.max(byEmis, bySid);
-            } catch (e) {
-                return 0;
-            }
-        }
-
-        function launchSelectedGame(emisNumber, name, payload, autoTrialId) {
-            closeModal();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = false;
-            btn.innerText = "Submit & Launch Game";
-
-            let targetGameFile = 'Days.html';
-            if (currentGameCode === 'M03') {
-                targetGameFile = 'SkipCounter.html';
-            } else if (currentGameCode === 'M05') {
-                targetGameFile = 'M05.html';
-            } else if (currentGameCode === 'E04') {
-                targetGameFile = 'Months.html';
-            }
-
-            const queryParams = `gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&emisNumber=${encodeURIComponent(emisNumber)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(payload.whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
-            window.location.href = `${targetGameFile}?${queryParams}`;
-        }
-
-        function handleRegistrationSubmit(e) {
+        async function handleRegistrationSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "Checking...";
+            showModalLockAlert("");
 
             currentUserStudentId = document.getElementById('regStudentCode').value.trim().toUpperCase();
             const emisNumber = document.getElementById('regEmisNumber').value.trim();
-            currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase() || 'M05';
+            currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase();
+            const levelNum = document.getElementById('regLevelNum').value || "1";
             const name = document.getElementById('regFirstName').value.trim();
             const dob = document.getElementById('regDob').value.trim();
             const cell = document.getElementById('regCell').value.trim();
             const whatsapp = document.getElementById('regWhatsapp').value.trim();
             const autoTrialId = "1";
 
+            if (!/^\d{10}$/.test(emisNumber)) {
+                showModalLockAlert("EMIS Number must be exactly 10 digits.");
+                btn.disabled = false; btn.innerText = "Submit & Launch Game";
+                return;
+            }
+
+            const lockStatus = await checkDailyLevelLock(currentUserStudentId, emisNumber, currentGameCode, levelNum);
+            if (lockStatus.blocked) {
+                showModalLockAlert(lockStatus.message);
+                showPortalNotice("error", lockStatus.message);
+                btn.disabled = false; btn.innerText = "Submit & Launch Game";
+                return;
+            }
+
+            btn.innerText = "Saving...";
             const payload = {
                 action: "saveUserData",
                 studentId: currentUserStudentId,
@@ -1719,52 +1779,44 @@
                 school: document.getElementById('regSchool').value.trim(),
                 place: document.getElementById('regPlace').value.trim(),
                 country: "India",
+                gameCode: currentGameCode,
+                levelNum: levelNum,
                 trialId: autoTrialId
             };
 
-            const checkUrl = `${GOOGLE_SCRIPT_URL}?action=checkDailyLimit&gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&emisNumber=${encodeURIComponent(emisNumber)}`;
+            localStorage.setItem("amelur_active_session", JSON.stringify({
+                studentId: currentUserStudentId,
+                emisNumber,
+                studentName: name,
+                gameCode: currentGameCode,
+                levelNum,
+                dateIST: getTodayIST(),
+                gasUrl: GOOGLE_SCRIPT_URL
+            }));
 
-            fetch(checkUrl)
-                .then(res => res.json())
-                .then(limitData => {
-                    const localCount = getLocalDailyCount(emisNumber, currentUserStudentId, currentGameCode);
-                    const serverCount = limitData && typeof limitData.todayCount === 'number' ? limitData.todayCount : 0;
-                    const totalTodayCount = Math.max(localCount, serverCount);
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST", mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams(payload).toString()
+            }).then(() => {
+                closeModal();
+                btn.disabled = false; btn.innerText = "Submit & Launch Game";
 
-                    if ((limitData && limitData.blocked) || totalTodayCount >= 1) {
-                        btn.disabled = false;
-                        btn.innerText = "Submit & Launch Game";
-                        alert(buildDailyBlockMessage(Math.max(1, totalTodayCount), currentGameCode));
-                        return;
-                    }
+                let targetGameFile = 'Days_2.html';
+                if (currentGameCode === 'M03') {
+                    targetGameFile = 'SkipCounter.html';
+                } else if (currentGameCode === 'M05') {
+                    targetGameFile = 'M05_2.html';
+                } else if (currentGameCode === 'E03') {
+                    targetGameFile = 'Keyboard_2.html';
+                } else if (currentGameCode === 'E04') {
+                    targetGameFile = 'Months.html';
+                }
 
-                    btn.innerText = "Saving...";
-                    fetch(GOOGLE_SCRIPT_URL, {
-                        method: "POST", mode: "no-cors",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: new URLSearchParams(payload).toString()
-                    }).then(() => {
-                        launchSelectedGame(emisNumber, name, payload, autoTrialId);
-                    });
-                })
-                .catch(() => {
-                    const localCount = getLocalDailyCount(emisNumber, currentUserStudentId, currentGameCode);
-                    if (localCount >= 1) {
-                        btn.disabled = false;
-                        btn.innerText = "Submit & Launch Game";
-                        alert(buildDailyBlockMessage(localCount, currentGameCode));
-                        return;
-                    }
-
-                    btn.innerText = "Saving...";
-                    fetch(GOOGLE_SCRIPT_URL, {
-                        method: "POST", mode: "no-cors",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: new URLSearchParams(payload).toString()
-                    }).then(() => {
-                        launchSelectedGame(emisNumber, name, payload, autoTrialId);
-                    });
-                });
+                const queryParams = `gameCode=${encodeURIComponent(currentGameCode)}&studentId=${encodeURIComponent(currentUserStudentId)}&emisNumber=${encodeURIComponent(emisNumber)}&name=${encodeURIComponent(name)}&level=${encodeURIComponent(levelNum)}&school=${encodeURIComponent(payload.school + ", " + payload.place + ", India")}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(autoTrialId)}`;
+                
+                window.location.href = `${targetGameFile}?${queryParams}`;
+            });
         }
 
         window.onload = function() {

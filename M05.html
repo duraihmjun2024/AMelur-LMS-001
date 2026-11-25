@@ -3,382 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>AMelur-LMS-001 • PUPS Anjalam Melur</title>
+  <title>Game M05 • AMelur-LMS-001</title>
   <style>
-    :root {
-      --bg: #0b1120;
-      --panel: #111827;
-      --card: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #0ea5e9;
-      --green: #10b981;
-      --amber: #f59e0b;
-      --red: #ef4444;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      overflow-x: hidden;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-      padding: 6px;
-      gap: 6px;
-    }
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 6px 10px;
-      flex-shrink: 0;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-    .badge {
-      background: var(--accent);
-      color: #031525;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.8rem;
-    }
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .fs-btn {
-      background: #1e293b;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 9px;
-      font-weight: 800;
-      font-size: 0.85rem;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-    }
-    .fs-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-    .main-wrap {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-    }
-    .login-card {
-      width: 100%;
-      max-width: 520px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.45);
-    }
-    .school-title {
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-    }
-    .school-title h1 {
-      font-size: 1.1rem;
-      color: #38bdf8;
-      margin-bottom: 2px;
-    }
-    .school-title p {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .field.full { grid-column: 1 / -1; }
-    label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #cbd5e1;
-    }
-    input, select {
-      width: 100%;
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 0.92rem;
-      outline: none;
-    }
-    input:focus, select:focus { border-color: var(--accent); }
-
-    .game-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 2px;
-    }
-    .game-btn {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      color: #fff;
-      border: 1px solid #38bdf8;
-      border-radius: 10px;
-      padding: 10px 8px;
-      font-weight: 800;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      transition: transform 0.12s ease, opacity 0.12s ease;
-    }
-    .game-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
-    .game-btn.secondary {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border-color: var(--border);
-      color: #e2e8f0;
-    }
-    .game-btn small {
-      font-size: 0.72rem;
-      font-weight: 500;
-      opacity: 0.9;
-    }
-    .status-box {
-      display: none;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      text-align: center;
-    }
-    .status-box.error {
-      display: block;
-      background: rgba(239, 68, 68, 0.16);
-      border: 1px solid var(--red);
-      color: #fca5a5;
-    }
-    .status-box.info {
-      display: block;
-      background: rgba(14, 165, 233, 0.16);
-      border: 1px solid var(--accent);
-      color: #7dd3fc;
-    }
-    @media (max-width: 480px) {
-      .form-grid, .game-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="badge">AMelur-LMS-001</span>
-      <span>PUPS, Anjalam Melur</span>
-    </div>
-    <div class="top-actions">
-      <button type="button" id="fsToggleBtn" class="fs-btn" title="Toggle Fullscreen">[ ]</button>
-    </div>
-  </header>
-
-  <main class="main-wrap">
-    <section class="login-card">
-      <div class="school-title">
-        <h1>Welcome to PUPS, Anjalam Melur</h1>
-        <p>Tamil Nadu, India • Student Learning Portal</p>
-      </div>
-
-      <div class="form-grid">
-        <div class="field">
-          <label for="emisInput">Student EMIS ID</label>
-          <input type="text" id="emisInput" inputmode="numeric" maxlength="15" placeholder="Enter EMIS ID" autocomplete="off" />
-        </div>
-        <div class="field">
-          <label for="classSelect">Class</label>
-          <select id="classSelect">
-            <option value="5">Class 5</option>
-            <option value="4">Class 4</option>
-            <option value="3">Class 3</option>
-            <option value="2">Class 2</option>
-            <option value="1">Class 1</option>
-          </select>
-        </div>
-        <div class="field full">
-          <label for="studentNameInput">Student Name</label>
-          <input type="text" id="studentNameInput" placeholder="Enter Student Name" autocomplete="off" />
-        </div>
-      </div>
-
-      <div id="statusBox" class="status-box"></div>
-
-      <div class="game-grid">
-        <button type="button" class="game-btn" onclick="launchGame('M05', 'M05.html')">
-          <span>Game M05 • Measurements</span>
-          <small>Length &amp; Weight (4.1 – 4.6)</small>
-        </button>
-        <button type="button" class="game-btn secondary" onclick="launchGame('Days', 'Days.html')">
-          <span>Days of the Week</span>
-          <small>Calendar Practice</small>
-        </button>
-        <button type="button" class="game-btn secondary" onclick="launchGame('Keyboard', 'Keyboard.html')">
-          <span>Keyboard Skills</span>
-          <small>Typing &amp; Letters</small>
-        </button>
-      </div>
-    </section>
-  </main>
-
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_DEPLOYED_WEB_APP_URL/exec";
-
-    function enterFullscreen() {
-      const el = document.documentElement;
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (el.requestFullscreen) {
-          el.requestFullscreen().catch(() => {});
-        } else if (el.webkitRequestFullscreen) {
-          el.webkitRequestFullscreen();
-        }
-      }
-    }
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        enterFullscreen();
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
-      }
-    }
-
-    function updateFsIcon() {
-      const btn = document.getElementById("fsToggleBtn");
-      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-      btn.textContent = isFs ? "[×]" : "[ ]";
-    }
-
-    document.getElementById("fsToggleBtn").addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggleFullscreen();
-    });
-
-    document.addEventListener("fullscreenchange", updateFsIcon);
-    document.addEventListener("webkitfullscreenchange", updateFsIcon);
-
-    // Auto-request fullscreen on first user interaction
-    document.addEventListener("pointerdown", function autoFsOnce() {
-      enterFullscreen();
-      document.removeEventListener("pointerdown", autoFsOnce);
-    }, { once: true });
-
-    function getTodayIST() {
-      const now = new Date();
-      const istOffset = 5.5 * 60 * 60 * 1000;
-      const ist = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + istOffset);
-      return ist.toISOString().slice(0, 10);
-    }
-
-    function showStatus(msg, type) {
-      const box = document.getElementById("statusBox");
-      box.textContent = msg;
-      box.className = "status-box " + type;
-    }
-
-    async function launchGame(gameCode, targetPage) {
-      enterFullscreen();
-      const emis = document.getElementById("emisInput").value.trim();
-      const studentName = document.getElementById("studentNameInput").value.trim();
-      const studentClass = document.getElementById("classSelect").value;
-
-      if (!emis) {
-        showStatus("Please enter Student EMIS ID.", "error");
-        document.getElementById("emisInput").focus();
-        return;
-      }
-      if (!studentName) {
-        showStatus("Please enter Student Name.", "error");
-        document.getElementById("studentNameInput").focus();
-        return;
-      }
-
-      const today = getTodayIST();
-      const localKey = `emisLock_${emis}_${gameCode}_${today}`;
-      if (localStorage.getItem(localKey) === "DONE") {
-        showStatus(`You have already finished today's submission of ${gameCode} game! Try again tomorrow.`, "error");
-        return;
-      }
-
-      showStatus("Checking EMIS eligibility & starting game...", "info");
-
-      try {
-        if (SCRIPT_URL && !SCRIPT_URL.includes("YOUR_DEPLOYED_WEB_APP_URL")) {
-          const res = await fetch(`${SCRIPT_URL}?action=checkLock&emis=${encodeURIComponent(emis)}&game=${encodeURIComponent(gameCode)}&date=${encodeURIComponent(today)}`);
-          const data = await res.json();
-          if (data && data.locked) {
-            localStorage.setItem(localKey, "DONE");
-            showStatus(data.message || `You have already finished today's submission of ${gameCode} game! Try again tomorrow.`, "error");
-            return;
-          }
-        }
-      } catch (err) {
-        // Proceed if offline or script check unreachable
-      }
-
-      const params = new URLSearchParams({
-        emis: emis,
-        name: studentName,
-        cls: studentClass,
-        game: gameCode,
-        level: "1",
-        fs: "1"
-      });
-
-      window.location.href = `${targetPage}?${params.toString()}`;
-    }
-
-    // Restore last entered student info convenience
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedEmis = sessionStorage.getItem("amelur_emis");
-      const savedName = sessionStorage.getItem("amelur_name");
-      const savedCls = sessionStorage.getItem("amelur_cls");
-      if (savedEmis) document.getElementById("emisInput").value = savedEmis;
-      if (savedName) document.getElementById("studentNameInput").value = savedName;
-      if (savedCls) document.getElementById("classSelect").value = savedCls;
-    });
-  </script>
-</body>
-
-  
-  
-  
-  
-<style>
     :root {
       --bg: #080d16;
       --panel: #101724;
@@ -914,3 +540,463 @@
       <button type="button" id="trial3Btn" class="act-btn btn-trial3">Trial 3</button>
     </div>
   </main>
+
+
+
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_DEPLOYED_WEB_APP_URL/exec";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const studentEmis = (urlParams.get("emis") || sessionStorage.getItem("amelur_emis") || "GUEST").trim();
+    const studentName = (urlParams.get("name") || sessionStorage.getItem("amelur_name") || "Student").trim();
+    const studentCls = (urlParams.get("cls") || sessionStorage.getItem("amelur_cls") || "5").trim();
+
+    if (urlParams.get("emis")) sessionStorage.setItem("amelur_emis", studentEmis);
+    if (urlParams.get("name")) sessionStorage.setItem("amelur_name", studentName);
+    if (urlParams.get("cls")) sessionStorage.setItem("amelur_cls", studentCls);
+
+    document.getElementById("studentMeta").textContent = `Game M05 • ${studentName} (${studentCls}B${studentEmis.slice(-2) || "01"})`;
+
+    function getTodayIST() {
+      const now = new Date();
+      const istOffset = 5.5 * 60 * 60 * 1000;
+      const ist = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + istOffset);
+      return ist.toISOString().slice(0, 10);
+    }
+
+    // Fullscreen helpers
+    function requestFs() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (el.requestFullscreen) {
+          el.requestFullscreen().catch(() => {});
+        } else if (el.webkitRequestFullscreen) {
+          el.webkitRequestFullscreen();
+        }
+      }
+    }
+
+    function toggleFs() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        requestFs();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    function syncFsButton() {
+      const btn = document.getElementById("fsBtn");
+      const active = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      btn.textContent = active ? "[×]" : "[ ]";
+    }
+
+    document.getElementById("fsBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleFs();
+    });
+
+    document.addEventListener("fullscreenchange", syncFsButton);
+    document.addEventListener("webkitfullscreenchange", syncFsButton);
+
+    document.addEventListener("pointerdown", function autoFullscreenFirstTap() {
+      requestFs();
+      document.removeEventListener("pointerdown", autoFullscreenFirstTap);
+    }, { once: true });
+
+    // Timer
+    let elapsedSec = 0;
+    const timerEl = document.getElementById("timerText");
+    setInterval(() => {
+      elapsedSec += 1;
+      const h = String(Math.floor(elapsedSec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((elapsedSec % 3600) / 60)).padStart(2, "0");
+      const s = String(elapsedSec % 60).padStart(2, "0");
+      timerEl.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+
+    // Virtual Ruler
+    const rulerSlider = document.getElementById("rulerSlider");
+    const rulerNeedle = document.getElementById("rulerNeedle");
+    const rulerTrack = document.getElementById("rulerTrack");
+    const pointerReadout = document.getElementById("pointerReadout");
+    let rulerMode = "cm-m";
+
+    function updateRuler(cmVal) {
+      const clamped = Math.max(0, Math.min(500, Number(cmVal) || 0));
+      rulerSlider.value = clamped;
+      rulerNeedle.style.left = `${(clamped / 500) * 100}%`;
+
+      if (rulerMode === "mm-cm") {
+        const mm = clamped * 10;
+        pointerReadout.textContent = `Pointer: ${mm} m.m. = ${clamped} c.m.`;
+      } else if (rulerMode === "m-km") {
+        const km = (clamped / 100).toFixed(2);
+        pointerReadout.textContent = `Pointer: ${clamped} m. = ${km} k.m.`;
+      } else {
+        const m = Math.floor(clamped / 100);
+        const remCm = clamped % 100;
+        pointerReadout.textContent = `Pointer: ${clamped} c.m. = ${m} m. ${remCm} c.m.`;
+      }
+    }
+
+    rulerSlider.addEventListener("input", (e) => updateRuler(e.target.value));
+    rulerTrack.addEventListener("pointerdown", (e) => {
+      const rect = rulerTrack.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      updateRuler(Math.round(ratio * 500));
+    });
+
+    document.querySelectorAll(".mode-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        rulerMode = btn.dataset.mode;
+        updateRuler(rulerSlider.value);
+      });
+    });
+
+    // Level & Trial Question Sets (4.1 - 4.6)
+    const QUESTION_SETS = [
+      {
+        code: "4.1",
+        levelTag: "Level1-M05-4.1",
+        prompt: "Write the length of the ribbon in metres.",
+        fact: "100 c.m. = 1 m.",
+        defaultUnit: "m.",
+        units: ["unit", "m.", "c.m.", "k.m."],
+        items: [
+          { label: "250 c.m.", val: "2 1/2", unit: "m." },
+          { label: "125 c.m.", val: "1 1/4", unit: "m." },
+          { label: "200 c.m.", val: "2", unit: "m." },
+          { label: "300 c.m.", val: "3", unit: "m." },
+          { label: "25 c.m.", val: "1/4", unit: "m." },
+          { label: "100 c.m.", val: "1", unit: "m." }
+        ]
+      },
+      {
+        code: "4.2",
+        levelTag: "Level2-M05-4.2",
+        prompt: "Write the distance in kilometres using fractions.",
+        fact: "1000 m. = 1 k.m.",
+        defaultUnit: "k.m.",
+        units: ["unit", "k.m.", "m.", "c.m."],
+        items: [
+          { label: "Pon Nagar–Koodal Nagar: 500 m.", val: "1/2", unit: "k.m." },
+          { label: "Pasumai Nagar–Thendral Nagar: 250 m.", val: "1/4", unit: "k.m." },
+          { label: "Valar Nagar–Anbu Nagar: 750 m.", val: "3/4", unit: "k.m." },
+          { label: "Muthu Nagar–Pothigai Nagar: 1500 m.", val: "1 1/2", unit: "k.m." },
+          { label: "School Road–Market: 2000 m.", val: "2", unit: "k.m." },
+          { label: "Bus Stand–Park: 2500 m.", val: "2 1/2", unit: "k.m." }
+        ]
+      },
+      {
+        code: "4.3",
+        levelTag: "Level3-M05-4.3",
+        prompt: "Convert each measurement into metres or kilometres.",
+        fact: "1 m. = 100 c.m. • 1 k.m. = 1000 m.",
+        defaultUnit: "m.",
+        units: ["unit", "m.", "k.m.", "c.m."],
+        items: [
+          { label: "1 m. 50 c.m.", val: "1 1/2", unit: "m." },
+          { label: "5 k.m. 750 m.", val: "5 3/4", unit: "k.m." },
+          { label: "2 m. 25 c.m.", val: "2 1/4", unit: "m." },
+          { label: "7 k.m. 500 m.", val: "7 1/2", unit: "k.m." },
+          { label: "3 m. 75 c.m.", val: "3 3/4", unit: "m." },
+          { label: "9 k.m. 250 m.", val: "9 1/4", unit: "k.m." }
+        ]
+      },
+      {
+        code: "4.4",
+        levelTag: "Level4-M05-4.4",
+        prompt: "Ramu travels to nearby places. Write the distance in metres.",
+        fact: "1 k.m. = 1000 m.",
+        defaultUnit: "m.",
+        units: ["unit", "m.", "k.m.", "c.m."],
+        items: [
+          { label: "Bicycle: 1/4 k.m.", val: "250", unit: "m." },
+          { label: "Motorcycle: 2 1/2 k.m.", val: "2500", unit: "m." },
+          { label: "Car: 3 k.m.", val: "3000", unit: "m." },
+          { label: "Cycle to library: 1/2 k.m.", val: "500", unit: "m." },
+          { label: "Van to town: 3/4 k.m.", val: "750", unit: "m." },
+          { label: "Bus to pond: 1 1/4 k.m.", val: "1250", unit: "m." }
+        ]
+      },
+      {
+        code: "4.5",
+        levelTag: "Level5-M05-4.5",
+        prompt: "Match the weights in grams with kilogram fractions.",
+        fact: "1000 g. = 1 k.g.",
+        defaultUnit: "k.g.",
+        units: ["unit", "k.g.", "g."],
+        items: [
+          { label: "1000 g.", val: "1", unit: "k.g." },
+          { label: "500 g.", val: "1/2", unit: "k.g." },
+          { label: "250 g.", val: "1/4", unit: "k.g." },
+          { label: "750 g.", val: "3/4", unit: "k.g." },
+          { label: "1500 g.", val: "1 1/2", unit: "k.g." },
+          { label: "2500 g.", val: "2 1/2", unit: "k.g." }
+        ]
+      },
+      {
+        code: "4.6",
+        levelTag: "Level6-M05-4.6",
+        prompt: "Find the total weight in kilograms using balance weights.",
+        fact: "1 k.g. = 1000 g.",
+        defaultUnit: "k.g.",
+        units: ["unit", "k.g.", "g."],
+        items: [
+          { label: "3 k.g. + 750 g.", val: "3 3/4", unit: "k.g." },
+          { label: "2 k.g. + 500 g.", val: "2 1/2", unit: "k.g." },
+          { label: "1 k.g. + 250 g.", val: "1 1/4", unit: "k.g." },
+          { label: "500 g. + 200 g. + 50 g.", val: "3/4", unit: "k.g." },
+          { label: "1 k.g. + 500 g.", val: "1 1/2", unit: "k.g." },
+          { label: "200 g. + 200 g. + 100 g.", val: "1/2", unit: "k.g." }
+        ]
+      }
+    ];
+
+    let currentSetIdx = 0;
+    let currentTrial = 1;
+    let totalScore = 0;
+    let selectedSlotIdx = 0;
+    let slotValues = [];
+    let slotUnits = [];
+    let draggedCardValue = null;
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function renderBoard() {
+      const set = QUESTION_SETS[currentSetIdx];
+      selectedSlotIdx = 0;
+      slotValues = set.items.map(() => "");
+      slotUnits = set.items.map(() => "unit");
+
+      document.getElementById("levelBadge").textContent = set.levelTag;
+      document.getElementById("trialBadge").textContent = `Trial ${currentTrial}/3`;
+      document.getElementById("scoreBadge").textContent = `Score: ${totalScore}/96`;
+      document.getElementById("qCode").textContent = set.code;
+      document.getElementById("qPrompt").textContent = set.prompt;
+      document.getElementById("qFact").textContent = set.fact;
+      document.getElementById("subHint").textContent =
+        `${set.levelTag} (Trial ${currentTrial}/3): Drag or tap an answer card on the right to place it in the box, then select the unit (${set.defaultUnit}).`;
+
+      const banner = document.getElementById("feedbackBanner");
+      banner.className = "feedback-banner";
+      banner.textContent = "";
+
+      renderRows(set);
+      renderAnswerCards(set);
+      updateRuler(65);
+    }
+
+    function renderRows(set) {
+      const rowsContainer = document.getElementById("rowsContainer");
+      rowsContainer.innerHTML = "";
+
+      set.items.forEach((item, idx) => {
+        const row = document.createElement("div");
+        row.className = "work-row";
+
+        const stim = document.createElement("div");
+        stim.className = "stimulus-chip";
+        stim.textContent = item.label;
+
+        const slot = document.createElement("div");
+        slot.className = "drop-slot" + (idx === selectedSlotIdx ? " selected" : "");
+        slot.dataset.idx = idx;
+        slot.textContent = slotValues[idx] || "—";
+
+        slot.addEventListener("click", () => {
+          if (slotValues[idx]) {
+            slotValues[idx] = "";
+            slot.textContent = "—";
+            slot.classList.remove("filled", "correct", "wrong");
+            renderAnswerCards(set);
+          }
+          selectedSlotIdx = idx;
+          highlightSelectedSlot();
+        });
+
+        slot.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          selectedSlotIdx = idx;
+          highlightSelectedSlot();
+        });
+
+        slot.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const val = e.dataTransfer.getData("text/plain") || draggedCardValue;
+          if (val) {
+            placeValueInSlot(idx, val, set);
+          }
+        });
+
+        const unitSel = document.createElement("select");
+        unitSel.className = "unit-select";
+        set.units.forEach((u) => {
+          const opt = document.createElement("option");
+          opt.value = u;
+          opt.textContent = u;
+          unitSel.appendChild(opt);
+        });
+        unitSel.addEventListener("change", (e) => {
+          slotUnits[idx] = e.target.value;
+        });
+
+        row.appendChild(stim);
+        row.appendChild(slot);
+        row.appendChild(unitSel);
+        rowsContainer.appendChild(row);
+      });
+    }
+
+    function highlightSelectedSlot() {
+      document.querySelectorAll(".drop-slot").forEach((el, i) => {
+        el.classList.toggle("selected", i === selectedSlotIdx);
+      });
+    }
+
+    function placeValueInSlot(idx, val, set) {
+      slotValues[idx] = val;
+      const slots = document.querySelectorAll(".drop-slot");
+      if (slots[idx]) {
+        slots[idx].textContent = val;
+        slots[idx].classList.add("filled");
+        slots[idx].classList.remove("correct", "wrong");
+      }
+      // Advance selection to next empty slot
+      const nextEmpty = slotValues.findIndex((v, i) => i > idx && !v);
+      const firstEmpty = slotValues.findIndex((v) => !v);
+      selectedSlotIdx = nextEmpty !== -1 ? nextEmpty : (firstEmpty !== -1 ? firstEmpty : idx);
+      highlightSelectedSlot();
+      renderAnswerCards(set);
+    }
+
+    function renderAnswerCards(set) {
+      const panel = document.getElementById("answerCardsPanel");
+      panel.innerHTML = "";
+
+      const pool = shuffleArray(set.items.map((it) => it.val));
+      const usedCounts = {};
+      slotValues.forEach((v) => {
+        if (v) usedCounts[v] = (usedCounts[v] || 0) + 1;
+      });
+      const shownCounts = {};
+
+      pool.forEach((val) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "ans-card";
+        card.textContent = val;
+        card.draggable = true;
+
+        shownCounts[val] = (shownCounts[val] || 0) + 1;
+        if ((usedCounts[val] || 0) >= shownCounts[val]) {
+          card.classList.add("used");
+        }
+
+        card.addEventListener("dragstart", (e) => {
+          draggedCardValue = val;
+          e.dataTransfer.setData("text/plain", val);
+        });
+
+        card.addEventListener("click", () => {
+          if (card.classList.contains("used")) return;
+          let targetIdx = selectedSlotIdx;
+          if (slotValues[targetIdx]) {
+            const emptyIdx = slotValues.findIndex((v) => !v);
+            if (emptyIdx !== -1) targetIdx = emptyIdx;
+          }
+          placeValueInSlot(targetIdx, val, set);
+        });
+
+        panel.appendChild(card);
+      });
+    }
+
+    document.getElementById("checkBtn").addEventListener("click", () => {
+      const set = QUESTION_SETS[currentSetIdx];
+      const slots = document.querySelectorAll(".drop-slot");
+      let correctCount = 0;
+
+      set.items.forEach((item, idx) => {
+        const valOk = slotValues[idx] === item.val;
+        const unitOk = slotUnits[idx] === item.unit;
+        slots[idx].classList.remove("correct", "wrong");
+        if (valOk && unitOk) {
+          correctCount += 1;
+          slots[idx].classList.add("correct");
+        } else {
+          slots[idx].classList.add("wrong");
+        }
+      });
+
+      const earned = correctCount * 2;
+      totalScore = Math.min(96, totalScore + earned);
+      document.getElementById("scoreBadge").textContent = `Score: ${totalScore}/96`;
+
+      const banner = document.getElementById("feedbackBanner");
+      banner.textContent = `Checked ${set.levelTag} (Trial ${currentTrial}/3): ${correctCount}/${set.items.length} correct (+${earned} pts).`;
+      banner.className = "feedback-banner show " + (correctCount === set.items.length ? "ok" : "warn");
+
+      // Record daily submission lock on check/submit
+      const today = getTodayIST();
+      localStorage.setItem(`emisLock_${studentEmis}_M05_${today}`, "DONE");
+      if (SCRIPT_URL && !SCRIPT_URL.includes("YOUR_DEPLOYED_WEB_APP_URL")) {
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            emis: studentEmis,
+            name: studentName,
+            cls: studentCls,
+            game: "M05",
+            level: set.levelTag,
+            trial: currentTrial,
+            score: totalScore,
+            seconds: elapsedSec,
+            dateIST: today
+          })
+        }).catch(() => {});
+      }
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      renderBoard();
+    });
+
+    document.getElementById("trial2Btn").addEventListener("click", () => {
+      currentTrial = 2;
+      renderBoard();
+    });
+
+    document.getElementById("trial3Btn").addEventListener("click", () => {
+      currentTrial = 3;
+      renderBoard();
+    });
+
+    document.getElementById("skipArrowBtn").addEventListener("click", () => {
+      currentSetIdx = (currentSetIdx + 1) % QUESTION_SETS.length;
+      currentTrial = 1;
+      renderBoard();
+    });
+
+    renderBoard();
+  </script>
+</body>
+</html>
+
+  

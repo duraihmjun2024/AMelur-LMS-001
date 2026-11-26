@@ -288,9 +288,9 @@
 
             <form id="userRegForm" class="space-y-3 text-xs" onsubmit="handleRegistrationSubmit(event)">
                 
-                <!-- STEP 1: IDENTIFIERS TO BUILD STU_ID / MEM_ID -->
+                <!-- STEP 1: IDENTIFIERS TO BUILD DATABASE STU_ID / MEM_ID -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2.5">
-                    <div class="text-[11px] font-extrabold text-indigo-800 uppercase">Step 1: Generate / Enter Stu_ID / Mem_ID</div>
+                    <div class="text-[11px] font-extrabold text-indigo-800 uppercase">Step 1: Generate / Enter Database Stu_ID / Mem_ID</div>
 
                     <div id="stdGenderSlRow" class="grid grid-cols-3 gap-2">
                         <div>
@@ -339,12 +339,24 @@
                         </div>
                     </div>
 
+                    <!-- EMIS ID (for all Students old/new) OR WhatsApp No (for Members) -->
+                    <div class="grid grid-cols-1 gap-2">
+                        <div id="emisStep1Wrapper">
+                            <label class="block font-bold text-indigo-900 mb-1">Student EMIS No (10 Digits — Required for All Students) *</label>
+                            <input type="text" id="regEmisNumber" maxlength="10" oninput="updateGeneratedStudentId()" placeholder="10-Digit EMIS No (Last 5 digits added to DB Stu_ID)" class="w-full border border-indigo-200 rounded-lg p-2 font-bold text-indigo-700 bg-white">
+                        </div>
+                        <div id="memberWhatsappStep1Wrapper" class="hidden">
+                            <label class="block font-bold text-indigo-900 mb-1">Member WhatsApp No (10 Digits — Last 3 digits added to DB Mem_ID) *</label>
+                            <input type="tel" id="regMemberWhatsappStep1" maxlength="13" oninput="syncMemberWhatsapp(this.value)" placeholder="10-Digit WhatsApp No" class="w-full border border-indigo-200 rounded-lg p-2 font-bold text-indigo-700 bg-white">
+                        </div>
+                    </div>
+
                     <div class="pt-1">
                         <label id="lblCombinedId" class="block font-bold text-indigo-900 mb-1">
-                            Stu_ID/Mem_ID <span id="idFormatHint" class="font-normal text-slate-500">(Std + B/G + SlNo + Stu1st + Father1st + DD + MM)</span>
+                            Database Stu_ID/Mem_ID <span id="idFormatHint" class="font-normal text-slate-500">(Std + B/G + SlNo + Stu1st + Father1st + DD + MM + EMIS_Last5)</span>
                         </label>
                         <div class="flex gap-2">
-                            <input type="text" id="regStudentCode" maxlength="15" required placeholder="e.g. 5B01KD1508 or M1985DK1508" class="w-full border-2 border-indigo-300 rounded-lg p-2 font-extrabold text-indigo-800 bg-indigo-50 uppercase tracking-wider">
+                            <input type="text" id="regStudentCode" maxlength="18" required placeholder="e.g. 5B01KD150854321 or M1985DK1508876" class="w-full border-2 border-indigo-300 rounded-lg p-2 font-extrabold text-indigo-800 bg-indigo-50 uppercase tracking-wider">
                             <button type="button" onclick="checkStudentIdInDatabase()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold whitespace-nowrap shadow-sm">
                                 <i class="fa-solid fa-magnifying-glass mr-1"></i>Check ID
                             </button>
@@ -387,15 +399,9 @@
                 <div id="newStudentFieldsSection" class="hidden space-y-2.5 bg-amber-50/70 border border-amber-200 rounded-lg p-3">
                     <div id="newUserSectionTitle" class="text-[11px] font-extrabold text-amber-900 uppercase">New Student Details (Not yet in database)</div>
 
-                    <div id="emisAndGameRow" class="grid grid-cols-2 gap-2">
-                        <div id="emisFieldWrapper">
-                            <label class="block font-bold text-slate-700 mb-1">Student EMIS No (10 Digits) *</label>
-                            <input type="text" id="regEmisNumber" maxlength="10" placeholder="10-Digit EMIS No" class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-white">
-                        </div>
-                        <div id="newGameFieldWrapper">
-                            <label class="block font-bold text-slate-700 mb-1">Choose Game *</label>
-                            <select id="newStudentGameSelect" onchange="syncSelectedGame(this.value)" class="w-full border rounded-lg p-2 font-bold text-emerald-800 bg-white uppercase"></select>
-                        </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Choose Game *</label>
+                        <select id="newStudentGameSelect" onchange="syncSelectedGame(this.value)" class="w-full border rounded-lg p-2 font-bold text-emerald-800 bg-white uppercase"></select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
@@ -405,7 +411,7 @@
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">WhatsApp No *</label>
-                            <input type="tel" id="regWhatsapp" placeholder="+91..." class="w-full border rounded-lg p-2 bg-white">
+                            <input type="tel" id="regWhatsapp" oninput="syncMemberWhatsappFromStep2(this.value)" placeholder="+91..." class="w-full border rounded-lg p-2 bg-white">
                         </div>
                     </div>
 
@@ -431,7 +437,10 @@
         </div>
     </div>
 
-    <script>
+
+
+
+<script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
         let gameRecordsData = [];
         let userRecordsData = [];
@@ -458,9 +467,10 @@
         }
 
         /* =====================================================================
-           COMPACT ID DISPLAY IN REPORTS & TABLES:
-           - Students: 4-character Stu_ID (e.g., 5B01)
+           COMPACT ID DISPLAY IN REPORTS & TABLES ONLY:
+           - Students: 4-character Stu_ID (e.g., 5B01) — hides the 5 EMIS digits
            - Members: M + Last 3 digits of WhatsApp (e.g., M876)
+           (Database stores full 15-char Stu_ID or 14-char Mem_ID)
            ===================================================================== */
         function formatDisplayIdForReport(rawId, whatsappOverride = '') {
             const clean = String(rawId || '').trim().toUpperCase();
@@ -468,6 +478,9 @@
 
             if (clean.startsWith('M')) {
                 let waDigits = String(whatsappOverride || '').replace(/\D/g, '');
+                if (!waDigits && clean.length >= 14) {
+                    waDigits = clean.slice(-3);
+                }
                 if (!waDigits) {
                     const userRec = userRecordsData.find(u => {
                         const uId = String(u.studentId || u.studentCode || '').trim().toUpperCase();
@@ -1055,7 +1068,7 @@
                 html += `<tr class="${highlightClass}">
                     <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
                     <td class="border p-2 font-bold ${row.rank===1?'text-amber-600':''}">${row.rank}</td>
-                    <td class="border p-2 font-bold text-indigo-700" title="${row.studentId || ''}">${row.displayId}</td>
+                    <td class="border p-2 font-bold text-indigo-700">${row.displayId}</td>
                     <td class="border p-2 text-left font-semibold">${row.name || 'User'}</td>
                     <td class="border p-2">${row.std}</td>
                     <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
@@ -1151,7 +1164,7 @@
                     <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
                     <td class="border p-2 font-bold text-amber-700">#${row.oRank}</td>
                     <td class="border p-2 font-bold text-emerald-700">${row.cRank}</td>
-                    <td class="border p-2 font-bold text-indigo-700" title="${row.studentId || ''}">${row.displayId}</td>
+                    <td class="border p-2 font-bold text-indigo-700">${row.displayId}</td>
                     <td class="border p-2 text-left font-semibold">${row.name}</td>
                     <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
                     <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
@@ -1172,11 +1185,23 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
-        /* =====================================================================
-           STUDENT & MEMBER ID GENERATION, DATABASE CHECK & GAME FLOW
-           - Student: Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2)
-           - Member:  M(1) + BirthYear(4) + First1st(1) + Last1st(1) + DD(2) + MM(2)
+
+
+/* =====================================================================
+           DATABASE-ONLY UNIQUE ID GENERATION:
+           - Student (15 chars): Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2) + EMIS_Last5(5)
+           - Member  (14 chars): M(1) + BirthYear(4) + First1st(1) + Last1st(1) + DD(2) + MM(2) + WhatsApp_Last3(3)
            ===================================================================== */
+        function syncMemberWhatsapp(val) {
+            document.getElementById('regWhatsapp').value = val;
+            updateGeneratedStudentId();
+        }
+
+        function syncMemberWhatsappFromStep2(val) {
+            document.getElementById('regMemberWhatsappStep1').value = val;
+            updateGeneratedStudentId();
+        }
+
         function onStdSelectionChange() {
             const stdVal = document.getElementById('regStd').value;
             const isMember = stdVal === 'M';
@@ -1184,7 +1209,8 @@
             const genderWrap = document.getElementById('genderFieldWrapper');
             const slWrap = document.getElementById('genderSlFieldWrapper');
             const motherWrap = document.getElementById('motherNameFieldWrapper');
-            const emisWrap = document.getElementById('emisFieldWrapper');
+            const emisStep1Wrap = document.getElementById('emisStep1Wrapper');
+            const memWaStep1Wrap = document.getElementById('memberWhatsappStep1Wrapper');
             const lblFirst = document.getElementById('lblStudentOrFirstName');
             const inpFirst = document.getElementById('regFirstName');
             const lblLast = document.getElementById('lblFatherOrLastName');
@@ -1196,26 +1222,33 @@
                 genderWrap.classList.add('hidden');
                 slWrap.classList.add('hidden');
                 motherWrap.classList.add('hidden');
-                emisWrap.classList.add('hidden');
+                emisStep1Wrap.classList.add('hidden');
+                memWaStep1Wrap.classList.remove('hidden');
+
+                document.getElementById('regEmisNumber').required = false;
+                document.getElementById('regMemberWhatsappStep1').required = true;
 
                 lblFirst.textContent = "First Name *";
                 inpFirst.placeholder = "First Name";
                 lblLast.textContent = "Last Name *";
                 inpLast.placeholder = "Last Name";
-                idHint.textContent = "(M + YYYY + First1st + Last1st + DD + MM)";
+                idHint.textContent = "(M + YYYY + First1st + Last1st + DD + MM + WA_Last3)";
                 newTitle.textContent = "New Member Details (Not yet in database)";
-                document.getElementById('regEmisNumber').required = false;
             } else {
                 genderWrap.classList.remove('hidden');
                 slWrap.classList.remove('hidden');
                 motherWrap.classList.remove('hidden');
-                emisWrap.classList.remove('hidden');
+                emisStep1Wrap.classList.remove('hidden');
+                memWaStep1Wrap.classList.add('hidden');
+
+                document.getElementById('regEmisNumber').required = true;
+                document.getElementById('regMemberWhatsappStep1').required = false;
 
                 lblFirst.textContent = "Student Name *";
                 inpFirst.placeholder = "Student Name";
                 lblLast.textContent = "Father's Name *";
                 inpLast.placeholder = "Father's Name";
-                idHint.textContent = "(Std + B/G + SlNo + Stu1st + Father1st + DD + MM)";
+                idHint.textContent = "(Std + B/G + SlNo + Stu1st + Father1st + DD + MM + EMIS_Last5)";
                 newTitle.textContent = "New Student Details (Not yet in database)";
             }
 
@@ -1238,17 +1271,21 @@
             const yyyy = (dobMatch && dobMatch[3]) ? dobMatch[3] : '';
 
             if (std === 'M') {
-                // Mem_ID: M(1) + BirthYear(4) + 1st letter First Name + 1st letter Last Name + DD(2) + MM(2)
-                const combinedMem = `M${yyyy}${firstInitial}${lastInitial}${dd}${mm}`;
+                // Database Mem_ID (14 chars): M(1) + YYYY(4) + First1st(1) + Last1st(1) + DD(2) + MM(2) + WhatsApp_Last3(3)
+                const waDigits = (document.getElementById('regMemberWhatsappStep1').value || document.getElementById('regWhatsapp').value || '').replace(/\D/g, '');
+                const waLast3 = waDigits.length >= 3 ? waDigits.slice(-3) : waDigits;
+                const combinedMem = `M${yyyy}${firstInitial}${lastInitial}${dd}${mm}${waLast3}`;
                 if (combinedMem.length > 1) {
                     document.getElementById('regStudentCode').value = combinedMem;
                 }
             } else {
-                // Stu_ID: Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2)
+                // Database Stu_ID (15 chars): Std(1) + Gender(1) + SlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2) + EMIS_Last5(5)
                 const gender = (document.getElementById('regGender').value || '').trim().toUpperCase().slice(0, 1);
                 const rawSl = (document.getElementById('regGenderSlNo').value || '').replace(/\D/g, '').slice(0, 2);
                 const slNo = rawSl ? rawSl.padStart(2, '0') : '';
-                const combinedStu = `${std}${gender}${slNo}${firstInitial}${lastInitial}${dd}${mm}`;
+                const emisDigits = (document.getElementById('regEmisNumber').value || '').replace(/\D/g, '');
+                const emisLast5 = emisDigits.length >= 5 ? emisDigits.slice(-5) : emisDigits;
+                const combinedStu = `${std}${gender}${slNo}${firstInitial}${lastInitial}${dd}${mm}${emisLast5}`;
                 if (combinedStu.length >= 4) {
                     document.getElementById('regStudentCode').value = combinedStu;
                 }
@@ -1261,18 +1298,11 @@
             document.getElementById('regGameCode').value = cleaned;
         }
 
-        function setNewUserRequiredFields(isRequired, isMember) {
-            const fields = isMember ? ['regCell', 'regWhatsapp', 'regPlace'] : ['regEmisNumber', 'regCell', 'regWhatsapp', 'regPlace'];
-            ['regEmisNumber', 'regCell', 'regWhatsapp', 'regPlace'].forEach(id => {
+        function setNewUserRequiredFields(isRequired) {
+            ['regCell', 'regWhatsapp', 'regPlace'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.required = false;
+                if (el) el.required = isRequired;
             });
-            if (isRequired) {
-                fields.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.required = true;
-                });
-            }
         }
 
         function findUserInDatabase(idCode) {
@@ -1284,12 +1314,14 @@
             const userMatch = userRecordsData.find(u => {
                 const uId = String(u.studentId || u.studentCode || '').trim().toUpperCase();
                 if (isMem) return uId === target;
+                if (target.length >= 15) return uId === target;
                 return uId === target || (target.length >= 4 && uId.startsWith(target));
             });
 
             const gameMatches = gameRecordsData.filter(g => {
                 const gId = String(g.studentId || '').trim().toUpperCase();
                 if (isMem) return gId === target || gId.startsWith(target + "_");
+                if (target.length >= 15) return gId === target || gId.startsWith(target + "_");
                 return gId === target || gId.startsWith(target + "_") || (target.length >= 4 && gId.startsWith(target));
             });
 
@@ -1323,9 +1355,20 @@
                 return;
             }
 
-            if (isMember && stuId.length < 11) {
-                alert("Please complete First Name, Last Name, and full DOB (DD/MM/YYYY) to generate the 11-character Mem_ID (e.g., M1985DK1508).");
-                return;
+            if (!isMember) {
+                const emisDigits = (document.getElementById('regEmisNumber').value || '').replace(/\D/g, '');
+                if (emisDigits.length < 5 && stuId.length < 15) {
+                    alert("Please enter the Student EMIS No so the last 5 digits are included in the database Stu_ID.");
+                    document.getElementById('regEmisNumber').focus();
+                    return;
+                }
+            } else {
+                const waDigits = (document.getElementById('regMemberWhatsappStep1').value || document.getElementById('regWhatsapp').value || '').replace(/\D/g, '');
+                if (waDigits.length < 3 && stuId.length < 14) {
+                    alert("Please enter the Member's WhatsApp No so the last 3 digits are included in the database Mem_ID.");
+                    document.getElementById('regMemberWhatsappStep1').focus();
+                    return;
+                }
             }
 
             const existingSection = document.getElementById('existingStudentSection');
@@ -1337,21 +1380,18 @@
 
             if (found) {
                 isExistingVerifiedUser = true;
-                setNewUserRequiredFields(false, isMember);
+                setNewUserRequiredFields(false);
                 newSection.classList.add('hidden');
                 existingSection.classList.remove('hidden');
 
                 document.getElementById('foundStudentDisplayName').textContent = found.name;
-                const badgeText = isMember
-                    ? `${formatDisplayIdForReport(found.studentId, found.userRecord && found.userRecord.whatsapp)} (${found.studentId})`
-                    : found.studentId;
-                document.getElementById('foundStudentIdBadge').textContent = badgeText;
+                const reportId = formatDisplayIdForReport(found.studentId, (found.userRecord && found.userRecord.whatsapp) || document.getElementById('regMemberWhatsappStep1').value);
+                document.getElementById('foundStudentIdBadge').textContent = `${reportId} • DB: ${found.studentId}`;
 
                 if (!document.getElementById('regFirstName').value.trim()) {
                     document.getElementById('regFirstName').value = found.name;
                 }
 
-                // Build Previous Game Reports Abstract
                 const abstractEl = document.getElementById('previousReportsAbstract');
                 const playedGamesSet = new Set();
 
@@ -1382,7 +1422,6 @@
                     abstractEl.innerHTML = rowsHtml;
                 }
 
-                // Filter available pending games
                 const pendingGames = READY_GAMES.filter(g => !playedGamesSet.has(g));
                 const availWrapper = document.getElementById('availableGamesWrapper');
                 const noPendingBanner = document.getElementById('noPendingGamesBanner');
@@ -1393,7 +1432,7 @@
                     submitBtn.classList.add('hidden');
                     noPendingBanner.classList.remove('hidden');
                     document.getElementById('noPendingGamesText').textContent =
-                        `No pending games available for ${found.name} (${found.studentId})! Please exit to let the next user play.`;
+                        `No pending games available for ${found.name} (${reportId})! Please exit to let the next user play.`;
                 } else {
                     noPendingBanner.classList.add('hidden');
                     availWrapper.classList.remove('hidden');
@@ -1409,11 +1448,15 @@
                     syncSelectedGame(chosenGame);
                 }
             } else {
-                // New User Flow
                 isExistingVerifiedUser = false;
                 existingSection.classList.add('hidden');
                 newSection.classList.remove('hidden');
-                setNewUserRequiredFields(true, isMember);
+                setNewUserRequiredFields(true);
+
+                if (isMember) {
+                    const waStep1 = document.getElementById('regMemberWhatsappStep1').value.trim();
+                    if (waStep1) document.getElementById('regWhatsapp').value = waStep1;
+                }
 
                 const newGameSel = document.getElementById('newStudentGameSelect');
                 newGameSel.innerHTML = READY_GAMES.map(g =>
@@ -1435,6 +1478,7 @@
             document.getElementById('regGameCode').value = targetGame;
             document.getElementById('regStudentCode').value = studentId || "";
             document.getElementById('regEmisNumber').value = "";
+            document.getElementById('regMemberWhatsappStep1').value = "";
             document.getElementById('regFirstName').value = "";
             document.getElementById('regFatherName').value = "";
             document.getElementById('regMotherName').value = "";
@@ -1464,13 +1508,9 @@
             document.getElementById('existingStudentSection').classList.add('hidden');
             document.getElementById('newStudentFieldsSection').classList.add('hidden');
             document.getElementById('submitBtn').classList.add('hidden');
-            setNewUserRequiredFields(false, cleanId.startsWith('M'));
+            setNewUserRequiredFields(false);
 
             document.getElementById('studentModal').classList.remove('hidden');
-
-            if (studentId) {
-                checkStudentIdInDatabase();
-            }
         }
 
         function closeModal() {
@@ -1665,7 +1705,6 @@
 
             let html = '';
 
-            // ROW 1: Main Group Headers
             html += `<tr class="bg-slate-800 text-slate-100 font-extrabold">
                 <th class="px-2 py-1.5 text-center" colspan="2" rowspan="2">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
             groupStats.forEach(g => {
@@ -1679,7 +1718,6 @@
             html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="2">All Members &amp;<br>Top 15 Members</th>
             </tr>`;
 
-            // ROW 2: Boys / Girls Subheaders
             html += `<tr class="bg-slate-900 text-slate-200 font-bold">`;
             groupStats.forEach(g => {
                 const genderSpan = g.isExpanded ? 3 : 1;
@@ -1688,7 +1726,6 @@
             });
             html += `</tr>`;
 
-            // Sub_ID Header Label Row
             html += `<tr class="bg-slate-800/90 text-amber-200 font-extrabold text-[10px]">
                 <td class="px-2 py-1 text-left bg-slate-800 text-amber-300" colspan="2">Sub_ID:</td>`;
             groupStats.forEach(g => {
@@ -1712,7 +1749,6 @@
             });
             html += `</tr>`;
 
-            // Summary Metrics Rows
             const summaryRows = [
                 { label: 'Users:', key: 'users', cls: 'text-emerald-300 font-bold' },
                 { label: 'Absentees:', key: 'absentees', cls: 'text-amber-300 font-bold' },
@@ -1850,8 +1886,7 @@
                         const memberText = rankedMember
                             ? `Rank-${sIdx}: Mem_ID: ${rankedMember.displayId}`
                             : `Rank-${sIdx}: Mem_ID:`;
-                        const memberTitle = rankedMember ? `Full Mem_ID: ${rankedMember.id}` : '';
-                        html += `<td title="${memberTitle}" class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="5">${memberText}</td>`;
+                        html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="5">${memberText}</td>`;
                     }
 
                     SUB_IDS.forEach((_, subIdx) => {
@@ -2118,32 +2153,31 @@
             const fullName = isMember ? `${firstName} ${lastOrFatherName}`.trim() : firstName;
             const motherName = isMember ? "" : document.getElementById('regMotherName').value.trim();
             const dob = document.getElementById('regDob').value.trim();
+            const emisNumber = isMember ? "" : document.getElementById('regEmisNumber').value.trim();
             const autoTrialId = "1";
 
-            // Existing verified student or member: launch selected pending game immediately
             if (isExistingVerifiedUser) {
                 const found = findUserInDatabase(currentUserStudentId);
                 const uRec = (found && found.userRecord) || {};
                 const schoolStr = uRec.school ? `${uRec.school}${uRec.place ? ', ' + uRec.place : ''}, India` : "PUPS Anjalam Melur, India";
-                const whatsappStr = uRec.whatsapp || "";
+                const whatsappStr = uRec.whatsapp || document.getElementById('regMemberWhatsappStep1').value.trim() || "";
+                const launchId = (found && found.studentId) ? found.studentId : currentUserStudentId;
                 closeModal();
                 btn.disabled = false;
-                launchGamePage(currentUserStudentId, (found && found.name) || fullName, schoolStr, whatsappStr, autoTrialId, currentGameCode);
+                launchGamePage(launchId, (found && found.name) || fullName, schoolStr, whatsappStr, autoTrialId, currentGameCode);
                 return;
             }
 
-            // Enforce uniqueness for new Stu_ID / Mem_ID
             const duplicateCheck = findUserInDatabase(currentUserStudentId);
             if (duplicateCheck) {
-                alert(`This Stu_ID/Mem_ID (${currentUserStudentId}) already exists in the database! Click "Check ID" to load your existing profile.`);
+                alert(`This database ID (${currentUserStudentId}) already exists! Click "Check ID" to load the existing profile.`);
                 btn.disabled = false;
                 btn.innerText = "Save & Launch Game";
                 return;
             }
 
-            const emisNumber = isMember ? "" : document.getElementById('regEmisNumber').value.trim();
             const cell = document.getElementById('regCell').value.trim();
-            const whatsapp = document.getElementById('regWhatsapp').value.trim();
+            const whatsapp = (document.getElementById('regWhatsapp').value.trim() || document.getElementById('regMemberWhatsappStep1').value.trim());
             const school = document.getElementById('regSchool').value.trim();
             const place = document.getElementById('regPlace').value.trim();
 
@@ -2186,3 +2220,7 @@
     </script>
 </body>
 </html>
+
+
+
+    

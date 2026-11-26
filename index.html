@@ -100,11 +100,11 @@
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
                 <div class="flex flex-wrap justify-between items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                     <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student Entry Point (All Games Master Table)
+                        <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student &amp; Member Entry Point (All Games Master Table)
                     </h2>
                     <div class="flex items-center gap-2">
                         <button type="button" onclick="openStudentRegistration('', currentGameCode)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-right-to-bracket"></i> Student Login / Check Stu_ID
+                            <i class="fa-solid fa-right-to-bracket"></i> Login / Check Stu_ID/Mem_ID
                         </button>
                         <span class="hidden sm:inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked table</span>
                     </div>
@@ -165,7 +165,7 @@
                             <tr class="bg-slate-100 font-bold text-slate-800 text-xs">
                                 <th class="border p-2">Game ID</th>
                                 <th class="border p-2">Rank</th>
-                                <th class="border p-2">Student ID</th>
+                                <th class="border p-2">Stu_ID/Mem_ID</th>
                                 <th class="border p-2 text-left">Name</th>
                                 <th class="border p-2">Std</th>
                                 <th class="border p-2">L1 Score</th>
@@ -180,7 +180,7 @@
                             <tr class="bg-slate-50 text-[10px]">
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="rank" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="studentId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="displayId" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="std" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
@@ -221,6 +221,7 @@
                             <option value="3">Standard 3</option>
                             <option value="4">Standard 4</option>
                             <option value="5">Standard 5</option>
+                            <option value="M">Members (M)</option>
                         </select>
                     </div>
                     <button onclick="toggleClassExpand()" id="classToggleBtn" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-3 py-1 rounded border border-slate-600">Show All Entries</button>
@@ -232,7 +233,7 @@
                                 <th class="border p-2">Game ID</th>
                                 <th class="border p-2">O_Rank</th>
                                 <th class="border p-2">C_Rank</th>
-                                <th class="border p-2">Student ID</th>
+                                <th class="border p-2">Stu_ID/Mem_ID</th>
                                 <th class="border p-2 text-left">Name</th>
                                 <th class="border p-2">L1 Score</th>
                                 <th class="border p-2">L1 Time</th>
@@ -247,7 +248,7 @@
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="oRank" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="cRank" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="studentId" class="w-full border rounded px-1 text-center"></th>
+                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="displayId" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
                                 <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Time" class="w-full border rounded px-1 text-center"></th>
@@ -281,80 +282,81 @@
     <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 z-50 overflow-y-auto">
         <div class="bg-white rounded-xl max-w-lg w-full p-5 shadow-2xl border border-slate-100 space-y-3 my-auto max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b pb-2">
-                <h3 id="modalTitle" class="text-sm font-bold text-indigo-700">📋 Student Login &amp; ID Verification</h3>
+                <h3 id="modalTitle" class="text-sm font-bold text-indigo-700">📋 Student / Member Login &amp; ID Verification</h3>
                 <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 font-bold text-base px-1">&times;</button>
             </div>
 
             <form id="userRegForm" class="space-y-3 text-xs" onsubmit="handleRegistrationSubmit(event)">
                 
-                <!-- STEP 1: IDENTIFIERS TO BUILD STU_ID -->
+                <!-- STEP 1: IDENTIFIERS TO BUILD STU_ID / MEM_ID -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2.5">
-                    <div class="text-[11px] font-extrabold text-indigo-800 uppercase">Step 1: Generate / Enter Student ID (Stu_ID)</div>
+                    <div class="text-[11px] font-extrabold text-indigo-800 uppercase">Step 1: Generate / Enter Stu_ID / Mem_ID</div>
 
-                    <div class="grid grid-cols-3 gap-2">
+                    <div id="stdGenderSlRow" class="grid grid-cols-3 gap-2">
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Std (1 Digit) *</label>
-                            <select id="regStd" onchange="updateGeneratedStudentId()" required class="w-full border rounded-lg p-2 font-bold bg-white">
+                            <label class="block font-bold text-slate-700 mb-1">Std *</label>
+                            <select id="regStd" onchange="onStdSelectionChange()" required class="w-full border rounded-lg p-2 font-bold bg-white">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
                                 <option value="5">5</option>
+                                <option value="M">M (Member)</option>
                             </select>
                         </div>
-                        <div>
+                        <div id="genderFieldWrapper">
                             <label class="block font-bold text-slate-700 mb-1">Gender (B/G) *</label>
-                            <select id="regGender" onchange="updateGeneratedStudentId()" required class="w-full border rounded-lg p-2 font-bold bg-white">
+                            <select id="regGender" onchange="updateGeneratedStudentId()" class="w-full border rounded-lg p-2 font-bold bg-white">
                                 <option value="B">B (Boy)</option>
                                 <option value="G">G (Girl)</option>
                             </select>
                         </div>
-                        <div>
+                        <div id="genderSlFieldWrapper">
                             <label class="block font-bold text-slate-700 mb-1">Gender Sl.No (2D) *</label>
-                            <input type="text" id="regGenderSlNo" maxlength="2" oninput="updateGeneratedStudentId()" required placeholder="01" class="w-full border rounded-lg p-2 font-bold uppercase bg-white">
+                            <input type="text" id="regGenderSlNo" maxlength="2" oninput="updateGeneratedStudentId()" placeholder="01" class="w-full border rounded-lg p-2 font-bold uppercase bg-white">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Student Name *</label>
+                            <label id="lblStudentOrFirstName" class="block font-bold text-slate-700 mb-1">Student Name *</label>
                             <input type="text" id="regFirstName" oninput="updateGeneratedStudentId()" required placeholder="Student Name" class="w-full border rounded-lg p-2 bg-white">
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Father's Name *</label>
+                            <label id="lblFatherOrLastName" class="block font-bold text-slate-700 mb-1">Father's Name *</label>
                             <input type="text" id="regFatherName" oninput="updateGeneratedStudentId()" required placeholder="Father's Name" class="w-full border rounded-lg p-2 bg-white">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
+                    <div id="motherAndDobRow" class="grid grid-cols-2 gap-2">
+                        <div id="motherNameFieldWrapper">
                             <label class="block font-bold text-slate-700 mb-1">Mother's Name *</label>
-                            <input type="text" id="regMotherName" required placeholder="Mother's Name" class="w-full border rounded-lg p-2 bg-white">
+                            <input type="text" id="regMotherName" placeholder="Mother's Name" class="w-full border rounded-lg p-2 bg-white">
                         </div>
-                        <div>
+                        <div id="dobFieldWrapper">
                             <label class="block font-bold text-slate-700 mb-1">DOB (DD/MM/YYYY) *</label>
                             <input type="text" id="regDob" maxlength="10" oninput="updateGeneratedStudentId()" required placeholder="DD/MM/YYYY" class="w-full border rounded-lg p-2 bg-white">
                         </div>
                     </div>
 
                     <div class="pt-1">
-                        <label class="block font-bold text-indigo-900 mb-1">
-                            Combined Stu_ID <span class="font-normal text-slate-500">(Std + B/G + SlNo + Stu1st + Father1st + DD + MM)</span>
+                        <label id="lblCombinedId" class="block font-bold text-indigo-900 mb-1">
+                            Stu_ID/Mem_ID <span id="idFormatHint" class="font-normal text-slate-500">(Std + B/G + SlNo + Stu1st + Father1st + DD + MM)</span>
                         </label>
                         <div class="flex gap-2">
-                            <input type="text" id="regStudentCode" maxlength="10" required placeholder="e.g. 5B01KD1508" class="w-full border-2 border-indigo-300 rounded-lg p-2 font-extrabold text-indigo-800 bg-indigo-50 uppercase tracking-wider">
+                            <input type="text" id="regStudentCode" maxlength="15" required placeholder="e.g. 5B01KD1508 or M1985DK1508" class="w-full border-2 border-indigo-300 rounded-lg p-2 font-extrabold text-indigo-800 bg-indigo-50 uppercase tracking-wider">
                             <button type="button" onclick="checkStudentIdInDatabase()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold whitespace-nowrap shadow-sm">
-                                <i class="fa-solid fa-magnifying-glass mr-1"></i>Check Stu_ID
+                                <i class="fa-solid fa-magnifying-glass mr-1"></i>Check ID
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- STEP 2A: EXISTING STUDENT REPORT & PENDING GAME SELECTOR -->
+                <!-- STEP 2A: EXISTING USER REPORT & PENDING GAME SELECTOR -->
                 <div id="existingStudentSection" class="hidden space-y-2.5 bg-emerald-50 border border-emerald-300 rounded-lg p-3">
                     <div class="flex items-center justify-between border-b border-emerald-200 pb-1.5">
                         <div>
-                            <div class="text-[10px] font-bold uppercase text-emerald-700">Student Found in Database</div>
+                            <div class="text-[10px] font-bold uppercase text-emerald-700">Found in Database</div>
                             <div id="foundStudentDisplayName" class="text-sm font-extrabold text-slate-900">--</div>
                         </div>
                         <span id="foundStudentIdBadge" class="px-2.5 py-1 bg-emerald-700 text-white font-extrabold rounded text-xs">--</span>
@@ -373,7 +375,7 @@
                     <div id="noPendingGamesBanner" class="hidden bg-amber-100 border-2 border-amber-400 text-amber-950 rounded-lg p-3 text-center space-y-2">
                         <div class="font-extrabold text-xs">
                             <i class="fa-solid fa-circle-check text-emerald-700 mr-1"></i>
-                            <span id="noPendingGamesText">All available games are already completed for this student! Please exit to let the next user play.</span>
+                            <span id="noPendingGamesText">All available games are already completed for this user! Please exit to let the next user play.</span>
                         </div>
                         <button type="button" onclick="closeModal()" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs shadow">
                             Exit for Next User
@@ -381,16 +383,16 @@
                     </div>
                 </div>
 
-                <!-- STEP 2B: NEW STUDENT REGISTRATION DETAILS -->
+                <!-- STEP 2B: NEW USER REGISTRATION DETAILS -->
                 <div id="newStudentFieldsSection" class="hidden space-y-2.5 bg-amber-50/70 border border-amber-200 rounded-lg p-3">
-                    <div class="text-[11px] font-extrabold text-amber-900 uppercase">New Student Details (Not yet in database)</div>
+                    <div id="newUserSectionTitle" class="text-[11px] font-extrabold text-amber-900 uppercase">New Student Details (Not yet in database)</div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
+                    <div id="emisAndGameRow" class="grid grid-cols-2 gap-2">
+                        <div id="emisFieldWrapper">
                             <label class="block font-bold text-slate-700 mb-1">Student EMIS No (10 Digits) *</label>
                             <input type="text" id="regEmisNumber" maxlength="10" placeholder="10-Digit EMIS No" class="w-full border rounded-lg p-2 font-bold text-indigo-700 bg-white">
                         </div>
-                        <div>
+                        <div id="newGameFieldWrapper">
                             <label class="block font-bold text-slate-700 mb-1">Choose Game *</label>
                             <select id="newStudentGameSelect" onchange="syncSelectedGame(this.value)" class="w-full border rounded-lg p-2 font-bold text-emerald-800 bg-white uppercase"></select>
                         </div>
@@ -450,6 +452,54 @@
         const READY_GAMES = ["E02", "E03", "E04", "M03", "M05"];
         const SUB_IDS = ["1", "2", "3"];
         const DASHBOARD_STANDARDS = ["5", "4", "3", "2", "1"];
+
+        function isMemberId(id) {
+            return String(id || '').trim().toUpperCase().startsWith('M');
+        }
+
+        /* =====================================================================
+           COMPACT ID DISPLAY IN REPORTS & TABLES:
+           - Students: 4-character Stu_ID (e.g., 5B01)
+           - Members: M + Last 3 digits of WhatsApp (e.g., M876)
+           ===================================================================== */
+        function formatDisplayIdForReport(rawId, whatsappOverride = '') {
+            const clean = String(rawId || '').trim().toUpperCase();
+            if (!clean) return '---';
+
+            if (clean.startsWith('M')) {
+                let waDigits = String(whatsappOverride || '').replace(/\D/g, '');
+                if (!waDigits) {
+                    const userRec = userRecordsData.find(u => {
+                        const uId = String(u.studentId || u.studentCode || '').trim().toUpperCase();
+                        return uId === clean || uId.startsWith(clean);
+                    });
+                    if (userRec && (userRec.whatsapp || userRec.cell)) {
+                        waDigits = String(userRec.whatsapp || userRec.cell).replace(/\D/g, '');
+                    }
+                }
+                if (!waDigits) {
+                    const gameRec = gameRecordsData.find(g => {
+                        const gId = String(g.studentId || '').trim().toUpperCase();
+                        return (gId === clean || gId.startsWith(clean)) && (g.whatsapp || g.cell);
+                    });
+                    if (gameRec && (gameRec.whatsapp || gameRec.cell)) {
+                        waDigits = String(gameRec.whatsapp || gameRec.cell).replace(/\D/g, '');
+                    }
+                }
+                if (waDigits.length >= 3) {
+                    return 'M' + waDigits.slice(-3);
+                }
+                const trailingDigits = clean.replace(/\D/g, '');
+                if (trailingDigits.length >= 3) {
+                    return 'M' + trailingDigits.slice(-3);
+                }
+                return clean.slice(0, 4);
+            }
+
+            // Student ID: keep 4-character Stu_ID in reports & tables
+            const base = clean.split('_')[0];
+            return base.slice(0, 4);
+        }
 
         function getDashboardStandardSet(gCode) {
             const key = String(gCode || 'M05').trim().toUpperCase();
@@ -630,7 +680,8 @@
                         currentGameCode = data.latestGameCode || "M05";
                     }
 
-                    const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
+                    const firstChar = currentUserStudentId ? currentUserStudentId.charAt(0).toUpperCase() : "1";
+                    const studentStd = (firstChar === 'M' || !isNaN(firstChar)) ? firstChar : "1";
                     document.getElementById('classSelectLeaderboard').value = studentStd;
 
                     populateGameSelectors();
@@ -638,7 +689,8 @@
                 })
                 .catch((err) => {
                     console.error("Fetch error:", err);
-                    const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0))) ? currentUserStudentId.charAt(0) : "1";
+                    const firstChar = currentUserStudentId ? currentUserStudentId.charAt(0).toUpperCase() : "1";
+                    const studentStd = (firstChar === 'M' || !isNaN(firstChar)) ? firstChar : "1";
                     document.getElementById('classSelectLeaderboard').value = studentStd;
 
                     populateGameSelectors();
@@ -760,7 +812,7 @@
                 const gCode = String(r.gameCode || '').trim().toUpperCase();
                 if (!gameStudentCounts[gCode]) return;
                 const rawSid = String(r.studentId || '').trim().toUpperCase();
-                if (!rawSid) return;
+                if (!rawSid || rawSid.startsWith('M')) return;
                 const baseCode = rawSid.split('_')[0].slice(0, 4);
                 gameStudentCounts[gCode][baseCode] = (gameStudentCounts[gCode][baseCode] || 0) + 1;
             });
@@ -951,13 +1003,16 @@
             });
 
             let displayedData = filtered.map((row, idx) => {
-                const std = row.studentId && !row.studentId.startsWith('M') ? `Std ${row.studentId.charAt(0)}` : 'Member';
+                const rawSid = String(row.studentId || '').trim().toUpperCase();
+                const std = rawSid && !rawSid.startsWith('M') ? `Std ${rawSid.charAt(0)}` : 'Member';
+                const displayId = formatDisplayIdForReport(rawSid, row.whatsapp || row.cell);
                 const l1Secs = parseTimeToSeconds(row.level1Time);
                 const l2Secs = parseTimeToSeconds(row.level2Time);
                 const totSecs = l1Secs + l2Secs;
                 return {
                     ...row,
                     rank: idx + 1,
+                    displayId: displayId,
                     std: std,
                     l1Score: formatScoreDisplay(row.level1Score),
                     l1Time: formatTimeDisplay(row.level1Time),
@@ -1000,7 +1055,7 @@
                 html += `<tr class="${highlightClass}">
                     <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
                     <td class="border p-2 font-bold ${row.rank===1?'text-amber-600':''}">${row.rank}</td>
-                    <td class="border p-2 font-bold text-indigo-700">${row.studentId || '---'}</td>
+                    <td class="border p-2 font-bold text-indigo-700" title="${row.studentId || ''}">${row.displayId}</td>
                     <td class="border p-2 text-left font-semibold">${row.name || 'User'}</td>
                     <td class="border p-2">${row.std}</td>
                     <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
@@ -1031,7 +1086,7 @@
             const body = document.getElementById('classLeaderboardBody');
             const selectedGame = document.getElementById('classGameSelect').value;
             
-            let filtered = gameRecordsData.filter(r => r.studentId && r.studentId.startsWith(String(standard)));
+            let filtered = gameRecordsData.filter(r => r.studentId && r.studentId.trim().toUpperCase().startsWith(String(standard).toUpperCase()));
             if (selectedGame !== 'ALL') {
                 filtered = filtered.filter(r => (r.gameCode || 'E02') === selectedGame);
             }
@@ -1044,6 +1099,7 @@
 
             let displayedClassData = filtered.map((row, idx) => {
                 const overallRank = gameRecordsData.findIndex(r => matchStudentId(r.studentId, row.studentId) && (r.gameCode||'E02')===(row.gameCode||'E02')) + 1;
+                const displayId = formatDisplayIdForReport(row.studentId, row.whatsapp || row.cell);
                 const l1Secs = parseTimeToSeconds(row.level1Time);
                 const l2Secs = parseTimeToSeconds(row.level2Time);
                 const totSecs = l1Secs + l2Secs;
@@ -1051,6 +1107,7 @@
                     ...row,
                     oRank: overallRank,
                     cRank: idx + 1,
+                    displayId: displayId,
                     l1Score: formatScoreDisplay(row.level1Score),
                     l1Time: formatTimeDisplay(row.level1Time),
                     l2Score: formatScoreDisplay(row.level2Score),
@@ -1080,7 +1137,8 @@
             }
 
             if (!displayedClassData.length) {
-                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found for Standard ${standard}.</td></tr>`;
+                const label = standard === 'M' ? 'Members (M)' : `Standard ${standard}`;
+                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found for ${label}.</td></tr>`;
                 return;
             }
 
@@ -1093,7 +1151,7 @@
                     <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
                     <td class="border p-2 font-bold text-amber-700">#${row.oRank}</td>
                     <td class="border p-2 font-bold text-emerald-700">${row.cRank}</td>
-                    <td class="border p-2 font-bold">${row.studentId}</td>
+                    <td class="border p-2 font-bold text-indigo-700" title="${row.studentId || ''}">${row.displayId}</td>
                     <td class="border p-2 text-left font-semibold">${row.name}</td>
                     <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
                     <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
@@ -1115,29 +1173,85 @@
         }
 
         /* =====================================================================
-           STUDENT ID GENERATION, DATABASE CHECK & GAME AVAILABILITY FLOW
-           Format: Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2)
+           STUDENT & MEMBER ID GENERATION, DATABASE CHECK & GAME FLOW
+           - Student: Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2)
+           - Member:  M(1) + BirthYear(4) + First1st(1) + Last1st(1) + DD(2) + MM(2)
            ===================================================================== */
+        function onStdSelectionChange() {
+            const stdVal = document.getElementById('regStd').value;
+            const isMember = stdVal === 'M';
+
+            const genderWrap = document.getElementById('genderFieldWrapper');
+            const slWrap = document.getElementById('genderSlFieldWrapper');
+            const motherWrap = document.getElementById('motherNameFieldWrapper');
+            const emisWrap = document.getElementById('emisFieldWrapper');
+            const lblFirst = document.getElementById('lblStudentOrFirstName');
+            const inpFirst = document.getElementById('regFirstName');
+            const lblLast = document.getElementById('lblFatherOrLastName');
+            const inpLast = document.getElementById('regFatherName');
+            const idHint = document.getElementById('idFormatHint');
+            const newTitle = document.getElementById('newUserSectionTitle');
+
+            if (isMember) {
+                genderWrap.classList.add('hidden');
+                slWrap.classList.add('hidden');
+                motherWrap.classList.add('hidden');
+                emisWrap.classList.add('hidden');
+
+                lblFirst.textContent = "First Name *";
+                inpFirst.placeholder = "First Name";
+                lblLast.textContent = "Last Name *";
+                inpLast.placeholder = "Last Name";
+                idHint.textContent = "(M + YYYY + First1st + Last1st + DD + MM)";
+                newTitle.textContent = "New Member Details (Not yet in database)";
+                document.getElementById('regEmisNumber').required = false;
+            } else {
+                genderWrap.classList.remove('hidden');
+                slWrap.classList.remove('hidden');
+                motherWrap.classList.remove('hidden');
+                emisWrap.classList.remove('hidden');
+
+                lblFirst.textContent = "Student Name *";
+                inpFirst.placeholder = "Student Name";
+                lblLast.textContent = "Father's Name *";
+                inpLast.placeholder = "Father's Name";
+                idHint.textContent = "(Std + B/G + SlNo + Stu1st + Father1st + DD + MM)";
+                newTitle.textContent = "New Student Details (Not yet in database)";
+            }
+
+            document.getElementById('regStudentCode').value = "";
+            updateGeneratedStudentId();
+        }
+
         function updateGeneratedStudentId() {
             const std = (document.getElementById('regStd').value || '').trim().toUpperCase().slice(0, 1);
-            const gender = (document.getElementById('regGender').value || '').trim().toUpperCase().slice(0, 1);
-            const rawSl = (document.getElementById('regGenderSlNo').value || '').replace(/\D/g, '').slice(0, 2);
-            const slNo = rawSl ? rawSl.padStart(2, '0') : '';
+            const firstRaw = (document.getElementById('regFirstName').value || '').trim().replace(/[^a-zA-Z]/g, '');
+            const firstInitial = firstRaw ? firstRaw.charAt(0).toUpperCase() : '';
 
-            const stuName = (document.getElementById('regFirstName').value || '').trim().replace(/[^a-zA-Z]/g, '');
-            const stuInitial = stuName ? stuName.charAt(0).toUpperCase() : '';
-
-            const fatherName = (document.getElementById('regFatherName').value || '').trim().replace(/[^a-zA-Z]/g, '');
-            const fatherInitial = fatherName ? fatherName.charAt(0).toUpperCase() : '';
+            const lastRaw = (document.getElementById('regFatherName').value || '').trim().replace(/[^a-zA-Z]/g, '');
+            const lastInitial = lastRaw ? lastRaw.charAt(0).toUpperCase() : '';
 
             const dobStr = (document.getElementById('regDob').value || '').trim();
-            const dobMatch = dobStr.match(/^(\d{1,2})[\/\-\.](\d{1,2})/);
+            const dobMatch = dobStr.match(/^(\d{1,2})[\/\-\.](\d{1,2})(?:[\/\-\.](\d{4}))?/);
             const dd = dobMatch ? dobMatch[1].padStart(2, '0') : '';
             const mm = dobMatch ? dobMatch[2].padStart(2, '0') : '';
+            const yyyy = (dobMatch && dobMatch[3]) ? dobMatch[3] : '';
 
-            const combined = `${std}${gender}${slNo}${stuInitial}${fatherInitial}${dd}${mm}`;
-            if (combined.length >= 4) {
-                document.getElementById('regStudentCode').value = combined;
+            if (std === 'M') {
+                // Mem_ID: M(1) + BirthYear(4) + 1st letter First Name + 1st letter Last Name + DD(2) + MM(2)
+                const combinedMem = `M${yyyy}${firstInitial}${lastInitial}${dd}${mm}`;
+                if (combinedMem.length > 1) {
+                    document.getElementById('regStudentCode').value = combinedMem;
+                }
+            } else {
+                // Stu_ID: Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2)
+                const gender = (document.getElementById('regGender').value || '').trim().toUpperCase().slice(0, 1);
+                const rawSl = (document.getElementById('regGenderSlNo').value || '').replace(/\D/g, '').slice(0, 2);
+                const slNo = rawSl ? rawSl.padStart(2, '0') : '';
+                const combinedStu = `${std}${gender}${slNo}${firstInitial}${lastInitial}${dd}${mm}`;
+                if (combinedStu.length >= 4) {
+                    document.getElementById('regStudentCode').value = combinedStu;
+                }
             }
         }
 
@@ -1147,30 +1261,41 @@
             document.getElementById('regGameCode').value = cleaned;
         }
 
-        function setNewStudentRequiredFields(isRequired) {
+        function setNewUserRequiredFields(isRequired, isMember) {
+            const fields = isMember ? ['regCell', 'regWhatsapp', 'regPlace'] : ['regEmisNumber', 'regCell', 'regWhatsapp', 'regPlace'];
             ['regEmisNumber', 'regCell', 'regWhatsapp', 'regPlace'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.required = isRequired;
+                if (el) el.required = false;
             });
+            if (isRequired) {
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.required = true;
+                });
+            }
         }
 
-        function findStudentInDatabase(stuId) {
-            const target = String(stuId || '').trim().toUpperCase();
+        function findUserInDatabase(idCode) {
+            const target = String(idCode || '').trim().toUpperCase();
             if (!target) return null;
+
+            const isMem = target.startsWith('M');
 
             const userMatch = userRecordsData.find(u => {
                 const uId = String(u.studentId || u.studentCode || '').trim().toUpperCase();
+                if (isMem) return uId === target;
                 return uId === target || (target.length >= 4 && uId.startsWith(target));
             });
 
             const gameMatches = gameRecordsData.filter(g => {
                 const gId = String(g.studentId || '').trim().toUpperCase();
+                if (isMem) return gId === target || gId.startsWith(target + "_");
                 return gId === target || gId.startsWith(target + "_") || (target.length >= 4 && gId.startsWith(target));
             });
 
             if (!userMatch && gameMatches.length === 0) return null;
 
-            const resolvedName = (userMatch && (userMatch.name || userMatch.firstName))
+            const resolvedName = (userMatch && (userMatch.name || (userMatch.firstName ? `${userMatch.firstName} ${userMatch.lastName || ''}`.trim() : '')))
                 || (gameMatches[0] && gameMatches[0].name)
                 || document.getElementById('regFirstName').value.trim()
                 || target;
@@ -1190,9 +1315,16 @@
         function checkStudentIdInDatabase() {
             const stuIdInput = document.getElementById('regStudentCode');
             const stuId = stuIdInput.value.trim().toUpperCase();
+            const isMember = document.getElementById('regStd').value === 'M' || stuId.startsWith('M');
+
             if (!stuId) {
-                alert("Please enter or generate a Student ID (Stu_ID) first.");
+                alert("Please enter or generate a Stu_ID/Mem_ID first.");
                 stuIdInput.focus();
+                return;
+            }
+
+            if (isMember && stuId.length < 11) {
+                alert("Please complete First Name, Last Name, and full DOB (DD/MM/YYYY) to generate the 11-character Mem_ID (e.g., M1985DK1508).");
                 return;
             }
 
@@ -1201,16 +1333,20 @@
             const submitBtn = document.getElementById('submitBtn');
             const preferredGame = (document.getElementById('regGameCode').value || currentGameCode || 'M05').trim().toUpperCase();
 
-            const found = findStudentInDatabase(stuId);
+            const found = findUserInDatabase(stuId);
 
             if (found) {
                 isExistingVerifiedUser = true;
-                setNewStudentRequiredFields(false);
+                setNewUserRequiredFields(false, isMember);
                 newSection.classList.add('hidden');
                 existingSection.classList.remove('hidden');
 
                 document.getElementById('foundStudentDisplayName').textContent = found.name;
-                document.getElementById('foundStudentIdBadge').textContent = found.studentId;
+                const badgeText = isMember
+                    ? `${formatDisplayIdForReport(found.studentId, found.userRecord && found.userRecord.whatsapp)} (${found.studentId})`
+                    : found.studentId;
+                document.getElementById('foundStudentIdBadge').textContent = badgeText;
+
                 if (!document.getElementById('regFirstName').value.trim()) {
                     document.getElementById('regFirstName').value = found.name;
                 }
@@ -1220,7 +1356,7 @@
                 const playedGamesSet = new Set();
 
                 if (found.gameRecords.length === 0) {
-                    abstractEl.innerHTML = `<div class="text-slate-500 italic py-1">Student is registered, with 0 games played so far.</div>`;
+                    abstractEl.innerHTML = `<div class="text-slate-500 italic py-1">Registered in database, with 0 games played so far.</div>`;
                 } else {
                     const scores = found.gameRecords.map(r => parseScoreValue(r.score));
                     const bestPct = Math.round(Math.max(...scores));
@@ -1246,7 +1382,7 @@
                     abstractEl.innerHTML = rowsHtml;
                 }
 
-                // Filter available pending games for this student
+                // Filter available pending games
                 const pendingGames = READY_GAMES.filter(g => !playedGamesSet.has(g));
                 const availWrapper = document.getElementById('availableGamesWrapper');
                 const noPendingBanner = document.getElementById('noPendingGamesBanner');
@@ -1273,11 +1409,11 @@
                     syncSelectedGame(chosenGame);
                 }
             } else {
-                // New Student Flow
+                // New User Flow
                 isExistingVerifiedUser = false;
                 existingSection.classList.add('hidden');
                 newSection.classList.remove('hidden');
-                setNewStudentRequiredFields(true);
+                setNewUserRequiredFields(true, isMember);
 
                 const newGameSel = document.getElementById('newStudentGameSelect');
                 newGameSel.innerHTML = READY_GAMES.map(g =>
@@ -1306,9 +1442,11 @@
             document.getElementById('regCell').value = "";
             document.getElementById('regWhatsapp').value = "";
 
-            // Pre-fill Std, Gender, and Gender Sl.No if clicked from a grid cell like "5B01"
-            const codeMatch = String(studentId || '').trim().toUpperCase().match(/^([1-5])([BG])(\d{2})/);
-            if (codeMatch) {
+            const cleanId = String(studentId || '').trim().toUpperCase();
+            const codeMatch = cleanId.match(/^([1-5])([BG])(\d{2})/);
+            if (cleanId.startsWith('M')) {
+                document.getElementById('regStd').value = "M";
+            } else if (codeMatch) {
                 document.getElementById('regStd').value = codeMatch[1];
                 document.getElementById('regGender').value = codeMatch[2];
                 document.getElementById('regGenderSlNo').value = codeMatch[3];
@@ -1318,10 +1456,15 @@
                 document.getElementById('regGenderSlNo').value = "";
             }
 
+            onStdSelectionChange();
+            if (studentId) {
+                document.getElementById('regStudentCode').value = cleanId;
+            }
+
             document.getElementById('existingStudentSection').classList.add('hidden');
             document.getElementById('newStudentFieldsSection').classList.add('hidden');
             document.getElementById('submitBtn').classList.add('hidden');
-            setNewStudentRequiredFields(false);
+            setNewUserRequiredFields(false, cleanId.startsWith('M'));
 
             document.getElementById('studentModal').classList.remove('hidden');
 
@@ -1417,7 +1560,7 @@
             const expandedStds = getDashboardStandardSet(activeGame);
 
             const studentRecsAll = gameRecs.filter(r => /^[1-5][BG]\d+/i.test(String(r.studentId || '').trim()));
-            const memberRecsAll = gameRecs.filter(r => !/^[1-5][BG]\d+/i.test(String(r.studentId || '').trim()));
+            const memberRecsAll = gameRecs.filter(r => /^M/i.test(String(r.studentId || '').trim()));
 
             const groups = [
                 {
@@ -1491,8 +1634,10 @@
                 const subStats = SUB_IDS.map(subId => computeStudentStatsForSubId(memberRecsAll, mid, subId));
                 const scores = subStats.map(s => parseScoreValue(s.topScore)).filter(n => n > 0);
                 const times = subStats.map(s => parseTimeToSeconds(s.leastTime)).filter(n => n > 0);
+                const displayMemId = formatDisplayIdForReport(mid);
                 return {
                     id: mid,
+                    displayId: displayMemId,
                     subStats,
                     maxScore: scores.length ? Math.max(...scores) : 0,
                     minTime: times.length ? Math.min(...times) : Infinity
@@ -1702,14 +1847,17 @@
                     });
 
                     if (mIdx === 0) {
-                        const memberText = rankedMember ? `Rank-${sIdx}: Member ID: ${rankedMember.id}` : `Rank-${sIdx}: Member ID:`;
-                        html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="5">${memberText}</td>`;
+                        const memberText = rankedMember
+                            ? `Rank-${sIdx}: Mem_ID: ${rankedMember.displayId}`
+                            : `Rank-${sIdx}: Mem_ID:`;
+                        const memberTitle = rankedMember ? `Full Mem_ID: ${rankedMember.id}` : '';
+                        html += `<td title="${memberTitle}" class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="5">${memberText}</td>`;
                     }
 
                     SUB_IDS.forEach((_, subIdx) => {
                         let mVal = '';
                         if (rankedMember) {
-                            if (mRow.field === 'stuCode') mVal = rankedMember.id;
+                            if (mRow.field === 'stuCode') mVal = rankedMember.displayId;
                             else if (mRow.field === 'stuName') mVal = memberInitials;
                             else mVal = (rankedMember.subStats[subIdx] && rankedMember.subStats[subIdx][mRow.field]) || '';
                         }
@@ -1860,6 +2008,9 @@
             const cleanSheet = String(sheetId).trim().toUpperCase();
             const cleanHome = String(homeId).trim().toUpperCase();
             if (exactOnly) return cleanSheet === cleanHome;
+            if (cleanHome.startsWith('M')) {
+                return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_");
+            }
             return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_") || (cleanHome.length === 4 && cleanSheet.startsWith(cleanHome));
         }
 
@@ -1961,26 +2112,36 @@
 
             currentUserStudentId = document.getElementById('regStudentCode').value.trim().toUpperCase();
             currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase();
-            const name = document.getElementById('regFirstName').value.trim();
-            const fatherName = document.getElementById('regFatherName').value.trim();
-            const motherName = document.getElementById('regMotherName').value.trim();
+            const isMember = document.getElementById('regStd').value === 'M' || currentUserStudentId.startsWith('M');
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastOrFatherName = document.getElementById('regFatherName').value.trim();
+            const fullName = isMember ? `${firstName} ${lastOrFatherName}`.trim() : firstName;
+            const motherName = isMember ? "" : document.getElementById('regMotherName').value.trim();
             const dob = document.getElementById('regDob').value.trim();
             const autoTrialId = "1";
 
-            // Existing verified student: launch selected pending game immediately
+            // Existing verified student or member: launch selected pending game immediately
             if (isExistingVerifiedUser) {
-                const found = findStudentInDatabase(currentUserStudentId);
+                const found = findUserInDatabase(currentUserStudentId);
                 const uRec = (found && found.userRecord) || {};
                 const schoolStr = uRec.school ? `${uRec.school}${uRec.place ? ', ' + uRec.place : ''}, India` : "PUPS Anjalam Melur, India";
                 const whatsappStr = uRec.whatsapp || "";
                 closeModal();
                 btn.disabled = false;
-                launchGamePage(currentUserStudentId, (found && found.name) || name, schoolStr, whatsappStr, autoTrialId, currentGameCode);
+                launchGamePage(currentUserStudentId, (found && found.name) || fullName, schoolStr, whatsappStr, autoTrialId, currentGameCode);
                 return;
             }
 
-            // New student: save user registration details (including Father's Name & Mother's Name) then launch
-            const emisNumber = document.getElementById('regEmisNumber').value.trim();
+            // Enforce uniqueness for new Stu_ID / Mem_ID
+            const duplicateCheck = findUserInDatabase(currentUserStudentId);
+            if (duplicateCheck) {
+                alert(`This Stu_ID/Mem_ID (${currentUserStudentId}) already exists in the database! Click "Check ID" to load your existing profile.`);
+                btn.disabled = false;
+                btn.innerText = "Save & Launch Game";
+                return;
+            }
+
+            const emisNumber = isMember ? "" : document.getElementById('regEmisNumber').value.trim();
             const cell = document.getElementById('regCell').value.trim();
             const whatsapp = document.getElementById('regWhatsapp').value.trim();
             const school = document.getElementById('regSchool').value.trim();
@@ -1989,10 +2150,13 @@
             const payload = {
                 action: "saveUserData",
                 studentId: currentUserStudentId,
+                userType: isMember ? "Member" : "Student",
                 emisNumber: emisNumber,
                 dob: dob,
-                name: name,
-                fatherName: fatherName,
+                name: fullName,
+                firstName: firstName,
+                lastName: isMember ? lastOrFatherName : "",
+                fatherName: isMember ? "" : lastOrFatherName,
                 motherName: motherName,
                 cell: cell,
                 whatsapp: whatsapp,
@@ -2010,7 +2174,7 @@
                 closeModal();
                 btn.disabled = false;
                 btn.innerText = "Save & Launch Game";
-                launchGamePage(currentUserStudentId, name, `${school}, ${place}, India`, whatsapp, autoTrialId, currentGameCode);
+                launchGamePage(currentUserStudentId, fullName, `${school}, ${place}, India`, whatsapp, autoTrialId, currentGameCode);
             });
         }
 

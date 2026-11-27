@@ -1,687 +1,667 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Panchayat Union Primary School LMS</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AMelur-LMS-001 | Learning Management System - PUPS Anjalam Melur</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+Tamil:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
     <style>
-        .grid-border th, .grid-border td {
-            border: 1px solid #475569;
-            text-align: center;
-            vertical-align: middle;
-            font-size: 0.75rem;
-            padding: 3px 2px;
-            white-space: nowrap;
-            user-select: none;
+        body {
+            font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #0f172a;
         }
-        .bg-boy-blue { background-color: #bae6fd; color: #0369a1; }
-        .bg-girl-pink { background-color: #fbcfe8; color: #be185d; }
-        .cell-hover:hover {
-            filter: brightness(0.95);
-            cursor: pointer;
-            transform: scale(1.03);
-            transition: transform 0.1s ease-in-out;
-        }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .vertical-student-label {
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            white-space: nowrap;
-            letter-spacing: 0.03em;
-        }
-        .matrix-table th, .matrix-table td {
-            border: 1px solid #334155;
-            padding: 3px 4px;
-            text-align: center;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-        .matrix-table .group-divider-left {
-            border-left: 2px solid #94a3b8;
-        }
-        .matrix-table .block-divider-top {
-            border-top: 2px solid #94a3b8;
-        }
-        .sub-matrix-table th, .sub-matrix-table td {
+        .card-glass {
+            background: rgba(255, 255, 255, 0.98);
             border: 1px solid #cbd5e1;
-            padding: 4px 5px;
-            text-align: center;
-            vertical-align: middle;
-            white-space: nowrap;
-            font-size: 0.72rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
         }
-        .sub-matrix-table .sticky-game-col {
+        .table-container {
+            max-height: 440px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+        th {
             position: sticky;
-            left: 0;
+            top: 0;
             z-index: 10;
         }
-        .sub-matrix-table .class-boundary {
-            border-left: 2px solid #64748b;
+        @keyframes pulseSlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.72; }
         }
+        .live-dot {
+            animation: pulseSlow 2s infinite;
+        }
+        .score-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+        .score-high { background-color: #dcfce7; color: #166534; }
+        .score-mid  { background-color: #fef9c3; color: #854d0e; }
+        .score-low  { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between select-none">
+<body class="p-3 sm:p-6">
 
-    <div class="w-full max-w-[1440px] mx-auto p-3 flex-grow flex flex-col gap-4">
+    <div class="max-w-7xl mx-auto space-y-6">
 
-        <!-- 1. TITLE BAR -->
-        <header class="bg-slate-900 text-white flex items-center justify-between px-4 py-3 rounded-xl border border-slate-800 shadow-md">
-            <div class="flex items-center gap-3 w-full overflow-hidden">
-                <i class="fa-solid fa-graduation-cap text-indigo-400 text-xl"></i>
-                <div class="w-full overflow-hidden flex items-center bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
-                    <i class="fa-solid fa-bullhorn text-yellow-400 mr-3 animate-pulse text-sm"></i>
-                    <marquee id="welcomeMarquee" class="text-sm font-bold tracking-wide text-yellow-400">
-                        Panchayat Union Primary School, Anjalam Melur, Trichy District, TamilNadu, India Welcomes You!
-                    </marquee>
+        <!-- TOP LMS HEADER -->
+        <header class="card-glass rounded-2xl p-4 sm:p-6 border-t-4 border-t-indigo-600">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-indigo-600 text-white text-xs sm:text-sm font-extrabold px-3 py-1 rounded-lg tracking-wider shadow">
+                            AMelur-LMS-001
+                        </span>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full border border-emerald-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 live-dot"></span>
+                            LIVE GOOGLE SHEETS SYNC
+                        </span>
+                        <span id="activeStudentTopBadge" class="bg-amber-100 text-amber-900 text-xs font-extrabold px-2.5 py-1 rounded-full border border-amber-300">
+                            Active ID: Loading...
+                        </span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight pt-1">
+                        Panchayat Union Primary School, Anjalam Melur
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium">
+                        Learning Management System (LMS) • Tamil Nadu, India • Interactive Games, 24-Trial M05 Tracker &amp; Live Leaderboards
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <button
+                        type="button"
+                        onclick="fetchLiveSheetData()"
+                        class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-bold shadow transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                        <span>↻ Refresh Live Data</span>
+                    </button>
+                    <a
+                        href="#studentRegistrationCard"
+                        class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-extrabold shadow transition"
+                    >
+                        + Student / Member Login
+                    </a>
                 </div>
             </div>
         </header>
 
-        <!-- 2. MENU BAR -->
-        <nav class="flex items-center overflow-x-auto no-scrollbar bg-white p-2 rounded-xl border border-slate-200 shadow-sm gap-2">
-            <button onclick="navAction('NoticeBoard')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">NoticeBoard</button>
-            <button onclick="navAction('Home')" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-sm">Home</button>
-            <button onclick="navAction('Goal')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Goal</button>
-            <button onclick="navAction('Gallery')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Gallery</button>
-            <button onclick="navAction('Staff')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Staff</button>
-            <button onclick="navAction('Games List')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Games List</button>
-            <button onclick="navAction('Downloads')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Downloads</button>
-            <button onclick="navAction('Events')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">Events</button>
-            <button onclick="navAction('More')" class="px-4 py-2 bg-slate-100 hover:bg-indigo-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-700">More</button>
-        </nav>
-
-        <main class="space-y-4">
-
-            <!-- 3. STUDENT ENTRY POINT & LINKED GAME DASHBOARD -->
-            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
-                <div class="flex flex-wrap justify-between items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                    <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-users text-emerald-600 text-base"></i> Student &amp; Member Entry Point (All Games Master Table)
+        <!-- SECTION 1: STUDENT / MEMBER LOGIN & REGISTRATION -->
+        <section id="studentRegistrationCard" class="card-glass rounded-2xl p-4 sm:p-6 border-l-4 border-l-emerald-500">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-200">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">
+                        1. Student / Member ID Lookup &amp; Game Launcher
                     </h2>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="openStudentRegistration('', currentGameCode)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-right-to-bracket"></i> Login / Check Stu_ID/Mem_ID
-                        </button>
-                        <span class="hidden sm:inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Check a game code checkbox to expand/collapse linked table</span>
-                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600">
+                        Enter or generate a <span class="font-bold text-indigo-700">Stu_ID</span> (Students) or <span class="font-bold text-purple-700">Mem_ID</span> (Members). For <span class="font-bold text-emerald-700">M05</span>, finished trials today are locked and pending trials can be selected via checkboxes.
+                    </p>
                 </div>
-                <div id="studentEntryGridsContainer" class="space-y-3"></div>
-            </section>
-
-            <!-- 4. GAME X STUDENT SUBMISSION COUNTS (CLASSWISE EXPANDABLE) -->
-            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 bg-slate-900 text-white px-3 py-2.5 rounded-lg border border-slate-700">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
-                            <i class="fa-solid fa-table-cells text-emerald-400 text-sm"></i> Submissions by Game &amp; Student Code
-                        </h2>
-                        <span class="text-[11px] text-slate-300">(Click a Standard to expand/collapse student codes)</span>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-1.5" id="submissionMatrixClassButtons">
-                        <button type="button" onclick="toggleSubmissionClass('1')" id="subClassBtn1" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
-                        <button type="button" onclick="toggleSubmissionClass('2')" id="subClassBtn2" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
-                        <button type="button" onclick="toggleSubmissionClass('3')" id="subClassBtn3" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
-                        <button type="button" onclick="toggleSubmissionClass('4')" id="subClassBtn4" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
-                        <button type="button" onclick="toggleSubmissionClass('5')" id="subClassBtn5" class="px-2.5 py-1 rounded text-[11px] font-bold border transition"></button>
-                        <button type="button" onclick="toggleUnavailableGamesRow()" id="toggleUnavailableBtn" class="px-2.5 py-1 rounded text-[11px] font-bold bg-amber-600 hover:bg-amber-500 text-white border border-amber-400">▸ Unavailable Games</button>
-                        <button type="button" onclick="setAllSubmissionClasses(true)" class="px-2.5 py-1 rounded text-[11px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400">Expand All</button>
-                        <button type="button" onclick="setAllSubmissionClasses(false)" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-500">Collapse All</button>
-                    </div>
+                <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg">
+                    Format: <span class="font-bold text-slate-700">Std(1) + Gender(1) + SlNo(2) + Initials + DDMM</span>
                 </div>
-
-                <div class="overflow-x-auto rounded-lg border border-slate-300 bg-white">
-                    <table id="gameStudentSubmissionMatrixTable" aria-label="Submissions by Game and Student Code" class="w-full sub-matrix-table border-collapse">
-                        <thead id="gameStudentSubmissionMatrixHead"></thead>
-                        <tbody id="gameStudentSubmissionMatrixBody"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- 5. OVERALL LEADERBOARD -->
-            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
-                <div class="flex flex-col sm:flex-row justify-between items-center bg-indigo-900 text-white p-2.5 rounded-lg gap-2">
-                    <div class="flex items-center gap-3">
-                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
-                            <i class="fa-solid fa-trophy text-yellow-400 text-sm"></i> Overall Leaderboard
-                        </h2>
-                        <select id="overallGameSelect" onchange="filterLeaderboardsByGame()" class="bg-indigo-800 text-yellow-300 font-bold border border-indigo-600 rounded px-2 py-1 text-xs">
-                            <option value="E02">Game: E02</option>
-                            <option value="E03">Game: E03</option>
-                            <option value="E04">Game: E04</option>
-                            <option value="M03">Game: M03</option>
-                            <option value="M05">Game: M05</option>
-                            <option value="ALL">All Games</option>
-                        </select>
-                    </div>
-                    <button onclick="toggleOverallExpand()" id="overallToggleBtn" class="bg-indigo-700 hover:bg-indigo-600 text-xs font-bold px-3 py-1 rounded border border-indigo-500">Show All Entries</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse text-sm bg-white text-center" id="overallLeaderboardTable">
-                        <thead>
-                            <tr class="bg-slate-100 font-bold text-slate-800 text-xs">
-                                <th class="border p-2">Game ID</th>
-                                <th class="border p-2">Rank</th>
-                                <th class="border p-2">Stu_ID/Mem_ID</th>
-                                <th class="border p-2 text-left">Name</th>
-                                <th class="border p-2">Std</th>
-                                <th class="border p-2">L1 Score</th>
-                                <th class="border p-2">L1 Time</th>
-                                <th class="border p-2">L2 Score</th>
-                                <th class="border p-2">L2 Time</th>
-                                <th class="border p-2">Total Score</th>
-                                <th class="border p-2">Tot Time</th>
-                                <th class="border p-2">Trial</th>
-                                <th class="border p-2">Submitted At</th>
-                            </tr>
-                            <tr class="bg-slate-50 text-[10px]">
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="rank" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="displayId" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="std" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l1Time" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l2Score" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="l2Time" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="score" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="totTime" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="trialId" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyLeaderboardFilters()" data-col="submittedAt" class="w-full border rounded px-1 text-center"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="overallLeaderboardBody">
-                            <tr><td colspan="13" class="p-3 text-slate-400 italic">Loading live data...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- 6. CLASSWISE LEADERBOARD -->
-            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
-                <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-800 text-white p-2.5 rounded-lg gap-2">
-                    <div class="flex items-center gap-3">
-                        <h2 class="text-xs font-bold uppercase flex items-center gap-2">
-                            <i class="fa-solid fa-medal text-yellow-400 text-sm"></i> Classwise Leaderboard
-                        </h2>
-                        <select id="classGameSelect" onchange="filterLeaderboardsByGame()" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
-                            <option value="E02">Game: E02</option>
-                            <option value="E03">Game: E03</option>
-                            <option value="E04">Game: E04</option>
-                            <option value="M03">Game: M03</option>
-                            <option value="M05">Game: M05</option>
-                            <option value="ALL">All Games</option>
-                        </select>
-                        <select id="classSelectLeaderboard" onchange="loadClassLeaderboard(this.value)" class="bg-slate-700 text-yellow-300 font-bold border border-slate-600 rounded px-2 py-1 text-xs">
-                            <option value="1">Standard 1</option>
-                            <option value="2">Standard 2</option>
-                            <option value="3">Standard 3</option>
-                            <option value="4">Standard 4</option>
-                            <option value="5">Standard 5</option>
-                            <option value="M">Members (M)</option>
-                        </select>
-                    </div>
-                    <button onclick="toggleClassExpand()" id="classToggleBtn" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-3 py-1 rounded border border-slate-600">Show All Entries</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse text-sm bg-white text-center" id="classLeaderboardTable">
-                        <thead>
-                            <tr class="bg-slate-100 font-bold text-slate-800 text-xs">
-                                <th class="border p-2">Game ID</th>
-                                <th class="border p-2">O_Rank</th>
-                                <th class="border p-2">C_Rank</th>
-                                <th class="border p-2">Stu_ID/Mem_ID</th>
-                                <th class="border p-2 text-left">Name</th>
-                                <th class="border p-2">L1 Score</th>
-                                <th class="border p-2">L1 Time</th>
-                                <th class="border p-2">L2 Score</th>
-                                <th class="border p-2">L2 Time</th>
-                                <th class="border p-2">Total Score</th>
-                                <th class="border p-2">Tot Time</th>
-                                <th class="border p-2">Trial</th>
-                                <th class="border p-2">Submitted At</th>
-                            </tr>
-                            <tr class="bg-slate-50 text-[10px]">
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="gameCode" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="oRank" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="cRank" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="displayId" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="name" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Score" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l1Time" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l2Score" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="l2Time" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="score" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="totTime" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="trialId" class="w-full border rounded px-1 text-center"></th>
-                                <th class="border p-1"><input type="text" placeholder="Filter..." oninput="applyClassLeaderboardFilters()" data-col="submittedAt" class="w-full border rounded px-1 text-center"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="classLeaderboardBody">
-                            <tr><td colspan="13" class="p-3 text-slate-400 italic">Select a class to view rankings.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-        </main>
-
-        <!-- FOOTER -->
-        <footer class="bg-transparent text-center space-y-2 py-3">
-            <p class="text-xs font-bold text-slate-700">For more details, kindly send WhatsApp message to: +91 7010459876</p>
-            <a href="https://wa.me/917010459876" target="_blank" class="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500 text-white font-bold rounded-full text-xs shadow hover:bg-emerald-600">
-                <i class="fa-brands fa-whatsapp text-sm"></i> +91 7010459876
-            </a>
-        </footer>
-    </div>
-
-    <!-- REGISTRATION & LOGIN MODAL -->
-    <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 z-50 overflow-y-auto">
-        <div class="bg-white rounded-xl max-w-lg w-full p-5 shadow-2xl border border-slate-100 space-y-3 my-auto max-h-[92vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b pb-2">
-                <h3 id="modalTitle" class="text-sm font-bold text-indigo-700">📋 Student / Member Login &amp; ID Verification</h3>
-                <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 font-bold text-base px-1">&times;</button>
             </div>
 
-            <form id="userRegForm" class="space-y-3 text-xs" onsubmit="handleRegistrationSubmit(event)">
-                
-                <!-- STEP 1: IDENTIFIERS TO BUILD DATABASE STU_ID / MEM_ID -->
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2.5">
-                    <div class="text-[11px] font-extrabold text-indigo-800 uppercase">Step 1: Generate / Enter Database Stu_ID / Mem_ID</div>
-
-                    <div id="stdGenderSlRow" class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Std *</label>
-                            <select id="regStd" onchange="onStdSelectionChange()" required class="w-full border rounded-lg p-2 font-bold bg-white">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="M">M (Member)</option>
-                            </select>
-                        </div>
-                        <div id="genderFieldWrapper">
-                            <label class="block font-bold text-slate-700 mb-1">Gender (B/G) *</label>
-                            <select id="regGender" onchange="updateGeneratedStudentId()" class="w-full border rounded-lg p-2 font-bold bg-white">
-                                <option value="B">B (Boy)</option>
-                                <option value="G">G (Girl)</option>
-                            </select>
-                        </div>
-                        <div id="genderSlFieldWrapper">
-                            <label class="block font-bold text-slate-700 mb-1">Gender Sl.No (2D) *</label>
-                            <input type="text" id="regGenderSlNo" maxlength="2" oninput="updateGeneratedStudentId()" placeholder="01" class="w-full border rounded-lg p-2 font-bold uppercase bg-white">
-                        </div>
+            <form id="studentRegForm" onsubmit="handleStudentFormSubmit(event)" class="mt-5 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label for="regGameCode" class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                            Select Game
+                        </label>
+                        <select
+                            id="regGameCode"
+                            onchange="syncSelectedGame(this.value)"
+                            class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-300 focus:border-indigo-500 font-bold text-sm text-slate-800 bg-white outline-none"
+                        >
+                            <option value="M05" selected>M05 - Measurements (24 Trials)</option>
+                            <option value="M03">M03 - Skip Counter</option>
+                            <option value="E04">E04 - Months</option>
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label id="lblStudentOrFirstName" class="block font-bold text-slate-700 mb-1">Student Name *</label>
-                            <input type="text" id="regFirstName" oninput="updateGeneratedStudentId()" required placeholder="Student Name" class="w-full border rounded-lg p-2 bg-white">
-                        </div>
-                        <div>
-                            <label id="lblFatherOrLastName" class="block font-bold text-slate-700 mb-1">Father's Name *</label>
-                            <input type="text" id="regFatherName" oninput="updateGeneratedStudentId()" required placeholder="Father's Name" class="w-full border rounded-lg p-2 bg-white">
-                        </div>
-                    </div>
-
-                    <div id="motherAndDobRow" class="grid grid-cols-2 gap-2">
-                        <div id="motherNameFieldWrapper">
-                            <label class="block font-bold text-slate-700 mb-1">Mother's Name *</label>
-                            <input type="text" id="regMotherName" placeholder="Mother's Name" class="w-full border rounded-lg p-2 bg-white">
-                        </div>
-                        <div id="dobFieldWrapper">
-                            <label class="block font-bold text-slate-700 mb-1">DOB (DD/MM/YYYY) *</label>
-                            <input type="text" id="regDob" maxlength="10" oninput="updateGeneratedStudentId()" required placeholder="DD/MM/YYYY" class="w-full border rounded-lg p-2 bg-white">
-                        </div>
-                    </div>
-
-                    <!-- EMIS ID (for all Students old/new) OR WhatsApp No (for Members) -->
-                    <div class="grid grid-cols-1 gap-2">
-                        <div id="emisStep1Wrapper">
-                            <label class="block font-bold text-indigo-900 mb-1">Student EMIS No (10 Digits — Required for All Students) *</label>
-                            <input type="text" id="regEmisNumber" maxlength="10" oninput="updateGeneratedStudentId()" placeholder="10-Digit EMIS No (Last 5 digits added to DB Stu_ID)" class="w-full border border-indigo-200 rounded-lg p-2 font-bold text-indigo-700 bg-white">
-                        </div>
-                        <div id="memberWhatsappStep1Wrapper" class="hidden">
-                            <label class="block font-bold text-indigo-900 mb-1">Member WhatsApp No (10 Digits — Last 3 digits added to DB Mem_ID) *</label>
-                            <input type="tel" id="regMemberWhatsappStep1" maxlength="13" oninput="syncMemberWhatsapp(this.value)" placeholder="10-Digit WhatsApp No" class="w-full border border-indigo-200 rounded-lg p-2 font-bold text-indigo-700 bg-white">
-                        </div>
-                    </div>
-
-                    <div class="pt-1">
-                        <label id="lblCombinedId" class="block font-bold text-indigo-900 mb-1">
-                            Database Stu_ID/Mem_ID <span id="idFormatHint" class="font-normal text-slate-500">(Std + B/G + SlNo + Stu1st + Father1st + DD + MM + EMIS_Last5)</span>
+                    <div class="md:col-span-2">
+                        <label for="regStudentCode" class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                            Student ID (Stu_ID) / Member ID (Mem_ID)
                         </label>
                         <div class="flex gap-2">
-                            <input type="text" id="regStudentCode" maxlength="18" required placeholder="e.g. 5B01KD150854321 or M1985DK1508876" class="w-full border-2 border-indigo-300 rounded-lg p-2 font-extrabold text-indigo-800 bg-indigo-50 uppercase tracking-wider">
-                            <button type="button" onclick="checkStudentIdInDatabase()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold whitespace-nowrap shadow-sm">
-                                <i class="fa-solid fa-magnifying-glass mr-1"></i>Check ID
+                            <input
+                                type="text"
+                                id="regStudentCode"
+                                required
+                                placeholder="e.g. 1B01DK1508 or M2026DK1508"
+                                class="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-slate-300 focus:border-indigo-500 font-extrabold text-sm uppercase text-indigo-900 bg-slate-50 outline-none"
+                            />
+                            <button
+                                type="button"
+                                onclick="checkStudentIdInDatabase()"
+                                class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer shrink-0"
+                            >
+                                Check ID
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- STEP 2A: EXISTING USER REPORT & PENDING GAME SELECTOR -->
-                <div id="existingStudentSection" class="hidden space-y-2.5 bg-emerald-50 border border-emerald-300 rounded-lg p-3">
-                    <div class="flex items-center justify-between border-b border-emerald-200 pb-1.5">
-                        <div>
-                            <div class="text-[10px] font-bold uppercase text-emerald-700">Found in Database</div>
-                            <div id="foundStudentDisplayName" class="text-sm font-extrabold text-slate-900">--</div>
-                        </div>
-                        <span id="foundStudentIdBadge" class="px-2.5 py-1 bg-emerald-700 text-white font-extrabold rounded text-xs">--</span>
-                    </div>
 
                     <div>
-                        <div class="text-[11px] font-bold text-slate-800 mb-1">📊 Previous Game Reports Abstract:</div>
-                        <div id="previousReportsAbstract" class="bg-white border border-emerald-200 rounded-lg p-2 max-h-36 overflow-y-auto text-[11px] space-y-1"></div>
+                        <label for="regTrialId" class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                            Starting Trial No.
+                        </label>
+                        <select
+                            id="regTrialId"
+                            class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-300 focus:border-indigo-500 font-bold text-sm text-slate-800 bg-white outline-none"
+                        >
+                            <option value="1" selected>Trial 1</option>
+                            <option value="2">Trial 2</option>
+                            <option value="3">Trial 3</option>
+                        </select>
                     </div>
+                </div>
 
-                    <div id="availableGamesWrapper" class="space-y-1.5">
-                        <label class="block font-bold text-slate-800">🎮 Choose an Available Pending Game:</label>
-                        <select id="pendingGameSelect" onchange="syncSelectedGame(this.value)" class="w-full border-2 border-emerald-500 rounded-lg p-2 font-extrabold text-emerald-900 bg-white uppercase"></select>
-                    </div>
-
-                    <div id="noPendingGamesBanner" class="hidden bg-amber-100 border-2 border-amber-400 text-amber-950 rounded-lg p-3 text-center space-y-2">
-                        <div class="font-extrabold text-xs">
-                            <i class="fa-solid fa-circle-check text-emerald-700 mr-1"></i>
-                            <span id="noPendingGamesText">All available games are already completed for this user! Please exit to let the next user play.</span>
+                <!-- EXISTING USER SECTION (24-TRIAL STATUS + CHECKBOXES FOR M05) -->
+                <div id="existingStudentSection" class="hidden bg-indigo-50/70 border-2 border-indigo-200 rounded-2xl p-4 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <span class="text-xs font-extrabold uppercase text-indigo-700">Verified Record Found:</span>
+                            <span id="foundStudentDisplayName" class="ml-2 text-base font-extrabold text-slate-900">--</span>
+                            <span id="foundStudentIdBadge" class="ml-2 bg-indigo-600 text-white text-xs font-extrabold px-2.5 py-0.5 rounded-md">--</span>
                         </div>
-                        <button type="button" onclick="closeModal()" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs shadow">
-                            Exit for Next User
+                        <button
+                            type="button"
+                            onclick="resetLoginFormForNextUser()"
+                            class="text-xs font-bold text-rose-700 hover:underline cursor-pointer"
+                        >
+                            Switch / Next User
                         </button>
                     </div>
-                </div>
 
-                <!-- STEP 2B: NEW USER REGISTRATION DETAILS -->
-                <div id="newStudentFieldsSection" class="hidden space-y-2.5 bg-amber-50/70 border border-amber-200 rounded-lg p-3">
-                    <div id="newUserSectionTitle" class="text-[11px] font-extrabold text-amber-900 uppercase">New Student Details (Not yet in database)</div>
+                    <div id="previousReportsAbstract" class="bg-white rounded-xl p-3 border border-indigo-200 text-xs text-slate-700"></div>
 
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Choose Game *</label>
-                        <select id="newStudentGameSelect" onchange="syncSelectedGame(this.value)" class="w-full border rounded-lg p-2 font-bold text-emerald-800 bg-white uppercase"></select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
+                    <div id="availableGamesWrapper" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Cell No (10 digits) *</label>
-                            <input type="tel" id="regCell" maxlength="10" placeholder="10-Digit Cell No" class="w-full border rounded-lg p-2 bg-white">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">WhatsApp No *</label>
-                            <input type="tel" id="regWhatsapp" oninput="syncMemberWhatsappFromStep2(this.value)" placeholder="+91..." class="w-full border rounded-lg p-2 bg-white">
+                            <label for="pendingGameSelect" class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+                                Available Game to Launch
+                            </label>
+                            <select
+                                id="pendingGameSelect"
+                                onchange="syncSelectedGame(this.value)"
+                                class="w-full px-3 py-2 rounded-xl border-2 border-indigo-300 font-bold text-sm text-slate-900 bg-white outline-none"
+                            ></select>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Institution</label>
-                            <input type="text" id="regSchool" value="PUPS Anjalam Melur" class="w-full border rounded-lg p-2 bg-white">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Place *</label>
-                            <input type="text" id="regPlace" placeholder="Place" class="w-full border rounded-lg p-2 bg-white">
-                        </div>
+                    <div id="noPendingGamesBanner" class="hidden bg-amber-100 border border-amber-300 text-amber-900 rounded-xl p-3 text-xs sm:text-sm font-bold">
+                        <span id="noPendingGamesText">All trials and games are already finished today.</span>
                     </div>
                 </div>
 
-                <input type="hidden" id="regGameCode" value="M05">
+                <!-- NEW STUDENT / MEMBER REGISTRATION FIELDS -->
+                <div id="newStudentFieldsSection" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-extrabold uppercase text-emerald-700">
+                            New Student / Member Details
+                        </span>
+                        <button
+                            type="button"
+                            onclick="autoGenerateIdFromFields()"
+                            class="text-xs font-extrabold bg-emerald-100 hover:bg-emerald-200 text-emerald-900 px-3 py-1 rounded-lg border border-emerald-300 cursor-pointer"
+                        >
+                            ⚡ Auto-Generate ID
+                        </button>
+                    </div>
 
-                <div class="flex justify-end space-x-2 pt-2 border-t">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg bg-slate-200 font-bold">Cancel / Exit</button>
-                    <button type="submit" id="submitBtn" class="hidden px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Launch Selected Game</button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div>
+                            <label for="regStd" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Std (1-5 or M)</label>
+                            <select id="regStd" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold bg-white">
+                                <option value="1" selected>Std 1</option>
+                                <option value="2">Std 2</option>
+                                <option value="3">Std 3</option>
+                                <option value="4">Std 4</option>
+                                <option value="5">Std 5</option>
+                                <option value="M">Member (M)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="regGender" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Gender (B / G)</label>
+                            <select id="regGender" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold bg-white">
+                                <option value="B" selected>Boy (B)</option>
+                                <option value="G">Girl (G)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="regSerialNo" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Gender Serial No. (01-99)</label>
+                            <input type="text" id="regSerialNo" value="01" maxlength="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold bg-white" />
+                        </div>
+
+                        <div>
+                            <label for="regDob" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Date of Birth</label>
+                            <input type="date" id="regDob" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold bg-white" />
+                        </div>
+
+                        <div>
+                            <label for="regFirstName" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Student / First Name *</label>
+                            <input type="text" id="regFirstName" required placeholder="First Name" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold bg-white" />
+                        </div>
+
+                        <div>
+                            <label for="regFatherName" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Father / Last Name *</label>
+                            <input type="text" id="regFatherName" required placeholder="Father / Last Name" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold bg-white" />
+                        </div>
+
+                        <div>
+                            <label for="regMotherName" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Mother's Name</label>
+                            <input type="text" id="regMotherName" placeholder="Mother's Name" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold bg-white" />
+                        </div>
+
+                        <div>
+                            <label for="regEmis" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">EMIS ID (10 Digits)</label>
+                            <input type="text" id="regEmis" maxlength="10" placeholder="10-digit EMIS" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold bg-white" />
+                        </div>
+
+                        <div>
+                            <label for="regWhatsapp" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">WhatsApp / Cell</label>
+                            <input type="text" id="regWhatsapp" placeholder="e.g. 919876543210" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold bg-white" />
+                        </div>
+
+                        <div>
+                            <label for="regSchool" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">School / Institution</label>
+                            <input type="text" id="regSchool" value="PUPS Anjalam Melur" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold bg-white" />
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="newStudentGameSelect" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Game to Start</label>
+                            <select id="newStudentGameSelect" onchange="syncSelectedGame(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold bg-white">
+                                <option value="M05" selected>M05 - Measurements (24 Trials)</option>
+                                <option value="M03">M03 - Skip Counter</option>
+                                <option value="E04">E04 - Months</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-end gap-3 pt-1">
+                    <button
+                        type="submit"
+                        id="submitBtn"
+                        class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm sm:text-base shadow-lg transition cursor-pointer"
+                    >
+                        Save &amp; Launch Game
+                    </button>
                 </div>
             </form>
-        </div>
-    </div>
+        </section>
 
 
 
 
-<script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+
+<!-- SECTION 2: GAMEWISE & USERWISE REPORTS + LEADERBOARDS -->
+        <section class="card-glass rounded-2xl p-4 sm:p-6 space-y-6 border-l-4 border-l-indigo-600">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-200 pb-4">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">
+                        2. Live Reports &amp; Leaderboards
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600">
+                        Real-time performance across games, students, classes, and members.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="filterGameSelect" onchange="updateAllHomepageTables()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold bg-white">
+                        <option value="ALL">All Games</option>
+                    </select>
+                    <select id="classSelectLeaderboard" onchange="updateAllHomepageTables()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold bg-white">
+                        <option value="ALL">All Classes</option>
+                        <option value="1">Std 1</option>
+                        <option value="2">Std 2</option>
+                        <option value="3">Std 3</option>
+                        <option value="4">Std 4</option>
+                        <option value="5">Std 5</option>
+                        <option value="M">Members (M)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Overall & Classwise Leaderboards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Overall Leaderboard</h3>
+                    <div class="table-container rounded-xl border border-slate-200 bg-white">
+                        <table class="w-full text-xs sm:text-sm text-left">
+                            <thead class="bg-slate-800 text-white text-xs uppercase">
+                                <tr>
+                                    <th class="py-2.5 px-3">Rank</th>
+                                    <th class="py-2.5 px-3">Stu_ID / Mem_ID</th>
+                                    <th class="py-2.5 px-3">Name</th>
+                                    <th class="py-2.5 px-3">Game</th>
+                                    <th class="py-2.5 px-3">Score</th>
+                                    <th class="py-2.5 px-3">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overallLeaderboardBody" class="divide-y divide-slate-100">
+                                <tr><td colspan="6" class="py-4 px-3 text-center text-slate-400">Loading leaderboard...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Classwise Leaderboard</h3>
+                    <div class="table-container rounded-xl border border-slate-200 bg-white">
+                        <table class="w-full text-xs sm:text-sm text-left">
+                            <thead class="bg-indigo-900 text-white text-xs uppercase">
+                                <tr>
+                                    <th class="py-2.5 px-3">Rank</th>
+                                    <th class="py-2.5 px-3">ID</th>
+                                    <th class="py-2.5 px-3">Name</th>
+                                    <th class="py-2.5 px-3">Game</th>
+                                    <th class="py-2.5 px-3">Score</th>
+                                    <th class="py-2.5 px-3">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classwiseLeaderboardBody" class="divide-y divide-slate-100">
+                                <tr><td colspan="6" class="py-4 px-3 text-center text-slate-400">Loading classwise data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gamewise Abstract & Gamewise-Userwise Report -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Gamewise Abstract</h3>
+                    <div class="table-container rounded-xl border border-slate-200 bg-white">
+                        <table class="w-full text-xs sm:text-sm text-left">
+                            <thead class="bg-emerald-900 text-white text-xs uppercase">
+                                <tr>
+                                    <th class="py-2.5 px-3">Game Code</th>
+                                    <th class="py-2.5 px-3">Attempts</th>
+                                    <th class="py-2.5 px-3">Unique Users</th>
+                                    <th class="py-2.5 px-3">Avg Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gamewiseAbstractBody" class="divide-y divide-slate-100">
+                                <tr><td colspan="4" class="py-4 px-3 text-center text-slate-400">Loading gamewise abstract...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Gamewise-Userwise Report</h3>
+                    <div class="table-container rounded-xl border border-slate-200 bg-white">
+                        <table class="w-full text-xs sm:text-sm text-left">
+                            <thead class="bg-sky-900 text-white text-xs uppercase">
+                                <tr>
+                                    <th class="py-2.5 px-3">Game</th>
+                                    <th class="py-2.5 px-3">ID</th>
+                                    <th class="py-2.5 px-3">Name</th>
+                                    <th class="py-2.5 px-3">Level / Trial</th>
+                                    <th class="py-2.5 px-3">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gamewiseUserwiseBody" class="divide-y divide-slate-100">
+                                <tr><td colspan="5" class="py-4 px-3 text-center text-slate-400">Loading report...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Userwise Abstract, Userwise-Gamewise Report & Members Class -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Userwise Abstract</h3>
+                    <div class="table-container rounded-xl border border-slate-200 bg-white">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-700 text-white uppercase">
+                                <tr>
+                                    <th class="py-2 px-2.5">ID</th>
+                                    <th class="py-2 px-2.5">Name</th>
+                                    <th class="py-2 px-2.5">Submissions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userwiseAbstractBody" class="divide-y divide-slate-100">
+                                <tr><td colspan="3" class="py-4 px-2 text-center text-slate-400">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Userwise-Gamewise Report</h3>
+                    <div class="table-container rounded-xl border border-slate-200 bg-white">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-700 text-white uppercase">
+                                <tr>
+                                    <th class="py-2 px-2.5">ID</th>
+                                    <th class="py-2 px-2.5">Game</th>
+                                    <th class="py-2 px-2.5">Score</th>
+                                    <th class="py-2 px-2.5">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userwiseGamewiseBody" class="divide-y divide-slate-100">
+                                <tr><td colspan="4" class="py-4 px-2 text-center text-slate-400">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Members Class (M)</h3>
+                    <div class="table-container rounded-xl border border-slate-200 bg-white">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-purple-900 text-white uppercase">
+                                <tr>
+                                    <th class="py-2 px-2.5">Mem_ID</th>
+                                    <th class="py-2 px-2.5">Name</th>
+                                    <th class="py-2 px-2.5">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="membersClassBody" class="divide-y divide-slate-100">
+                                <tr><td colspan="3" class="py-4 px-2 text-center text-slate-400">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full GameTable -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mb-3">Full Game Submissions Table (GameTable)</h3>
+                <div class="table-container rounded-xl border border-slate-200 bg-white">
+                    <table class="w-full text-xs sm:text-sm text-left">
+                        <thead class="bg-slate-900 text-white text-xs uppercase">
+                            <tr>
+                                <th class="py-2.5 px-3">Submitted At</th>
+                                <th class="py-2.5 px-3">Game</th>
+                                <th class="py-2.5 px-3">ID</th>
+                                <th class="py-2.5 px-3">Name</th>
+                                <th class="py-2.5 px-3">Level</th>
+                                <th class="py-2.5 px-3">Trial</th>
+                                <th class="py-2.5 px-3">Score</th>
+                                <th class="py-2.5 px-3">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullGameTableBody" class="divide-y divide-slate-100">
+                            <tr><td colspan="8" class="py-4 px-3 text-center text-slate-400">Loading submissions...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+
+        
+</div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCZSXHcgn-3BOtCzPkHT1edTtDaS8p7c8Zj3kVlw-W3wJFkWLoHcutz6HFrTx0O5B0/exec";
+        const READY_GAMES = ["M05", "M03", "E04"];
+
+        let serverTodayIST = "";
         let gameRecordsData = [];
         let userRecordsData = [];
-        let isOverallExpanded = false;
-        let isClassExpanded = false;
-        let currentUserStudentId = "1B01";
+        let currentUserStudentId = "";
         let currentGameCode = "M05";
         let isExistingVerifiedUser = false;
-        let expandedGameCodes = new Set(["M05", "E04"]);
-        let expandedSubmissionClasses = new Set(["1"]);
-        let isUnavailableGamesExpanded = false;
-        let dashboardExpandedStandardsByGame = {
-            M05: new Set(["5", "4", "3", "2", "1"]),
-            E04: new Set(["5", "4", "3", "2", "1"]),
-            E03: new Set(["5", "4", "3", "2", "1"])
-        };
 
-        const READY_GAMES = ["E02", "E03", "E04", "M03", "M05"];
-        const SUB_IDS = ["1", "2", "3"];
-        const DASHBOARD_STANDARDS = ["5", "4", "3", "2", "1"];
-
-        function isMemberId(id) {
-            return String(id || '').trim().toUpperCase().startsWith('M');
+        function getTodayISTPrefixClient() {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const now = new Date();
+            const ist = new Date(now.getTime() + (5.5 * 3600000) + (now.getTimezoneOffset() * 60000));
+            return `${String(ist.getDate()).padStart(2, '0')}${months[ist.getMonth()]}${String(ist.getFullYear()).slice(-2)}`;
         }
 
-        /* =====================================================================
-           COMPACT ID DISPLAY IN REPORTS & TABLES ONLY:
-           - Students: 4-character Stu_ID (e.g., 5B01) — hides the 5 EMIS digits
-           - Members: M + Last 3 digits of WhatsApp (e.g., M876)
-           (Database stores full 15-char Stu_ID or 14-char Mem_ID)
-           ===================================================================== */
-        function formatDisplayIdForReport(rawId, whatsappOverride = '') {
-            const clean = String(rawId || '').trim().toUpperCase();
-            if (!clean) return '---';
-
-            if (clean.startsWith('M')) {
-                let waDigits = String(whatsappOverride || '').replace(/\D/g, '');
-                if (!waDigits && clean.length >= 14) {
-                    waDigits = clean.slice(-3);
-                }
-                if (!waDigits) {
-                    const userRec = userRecordsData.find(u => {
-                        const uId = String(u.studentId || u.studentCode || '').trim().toUpperCase();
-                        return uId === clean || uId.startsWith(clean);
-                    });
-                    if (userRec && (userRec.whatsapp || userRec.cell)) {
-                        waDigits = String(userRec.whatsapp || userRec.cell).replace(/\D/g, '');
-                    }
-                }
-                if (!waDigits) {
-                    const gameRec = gameRecordsData.find(g => {
-                        const gId = String(g.studentId || '').trim().toUpperCase();
-                        return (gId === clean || gId.startsWith(clean)) && (g.whatsapp || g.cell);
-                    });
-                    if (gameRec && (gameRec.whatsapp || gameRec.cell)) {
-                        waDigits = String(gameRec.whatsapp || gameRec.cell).replace(/\D/g, '');
-                    }
-                }
-                if (waDigits.length >= 3) {
-                    return 'M' + waDigits.slice(-3);
-                }
-                const trailingDigits = clean.replace(/\D/g, '');
-                if (trailingDigits.length >= 3) {
-                    return 'M' + trailingDigits.slice(-3);
-                }
-                return clean.slice(0, 4);
-            }
-
-            // Student ID: keep 4-character Stu_ID in reports & tables
-            const base = clean.split('_')[0];
-            return base.slice(0, 4);
+        function setNewStudentRequiredFields(isRequired) {
+            const ids = ["regFirstName", "regFatherName"];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.required = isRequired;
+            });
         }
 
-        function getDashboardStandardSet(gCode) {
-            const key = String(gCode || 'M05').trim().toUpperCase();
-            if (!dashboardExpandedStandardsByGame[key]) {
-                dashboardExpandedStandardsByGame[key] = new Set(["5", "4", "3", "2", "1"]);
-            }
-            return dashboardExpandedStandardsByGame[key];
+        function resetLoginFormForNextUser() {
+            isExistingVerifiedUser = false;
+            document.getElementById("regStudentCode").value = "";
+            document.getElementById("regFirstName").value = "";
+            document.getElementById("regFatherName").value = "";
+            document.getElementById("regMotherName").value = "";
+            document.getElementById("regEmis").value = "";
+            document.getElementById("regWhatsapp").value = "";
+            document.getElementById("existingStudentSection").classList.add("hidden");
+            document.getElementById("newStudentFieldsSection").classList.remove("hidden");
+            setNewStudentRequiredFields(true);
+            const btn = document.getElementById("submitBtn");
+            btn.classList.remove("hidden");
+            btn.innerText = "Save & Launch Game";
         }
 
-        function toggleDashboardStandard(gCode, std) {
-            const key = String(gCode || 'M05').trim().toUpperCase();
-            const stdKey = String(std);
-            const set = getDashboardStandardSet(key);
-            if (set.has(stdKey)) {
-                set.delete(stdKey);
+        function syncSelectedGame(gameCode) {
+            const normalized = (gameCode || "M05").trim().toUpperCase();
+            currentGameCode = normalized;
+            ["regGameCode", "pendingGameSelect", "newStudentGameSelect"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && Array.from(el.options).some(opt => opt.value === normalized)) {
+                    el.value = normalized;
+                }
+            });
+        }
+
+        function autoGenerateIdFromFields() {
+            const stdVal = (document.getElementById("regStd").value || "1").trim().toUpperCase();
+            const gender = (document.getElementById("regGender").value || "B").trim().toUpperCase();
+            const slNo = String(document.getElementById("regSerialNo").value || "01").replace(/\D/g, "").padStart(2, "0").slice(-2);
+            const firstName = (document.getElementById("regFirstName").value || "X").trim().toUpperCase();
+            const fatherName = (document.getElementById("regFatherName").value || "Y").trim().toUpperCase();
+            const dobStr = document.getElementById("regDob").value || "2015-08-15";
+
+            const parts = dobStr.split("-");
+            const yyyy = parts[0] || "2015";
+            const mm = parts[1] || "08";
+            const dd = parts[2] || "15";
+
+            const fInit = firstName.charAt(0) || "X";
+            const lInit = fatherName.charAt(0) || "Y";
+
+            let generatedId = "";
+            if (stdVal === "M") {
+                generatedId = `M${yyyy}${fInit}${lInit}${dd}${mm}`;
             } else {
-                set.add(stdKey);
+                generatedId = `${stdVal}${gender}${slNo}${fInit}${lInit}${dd}${mm}`;
             }
-            renderStudentEntryGrid();
+
+            document.getElementById("regStudentCode").value = generatedId;
         }
 
-        function setAllDashboardStandards(gCode, expand) {
-            const key = String(gCode || 'M05').trim().toUpperCase();
-            dashboardExpandedStandardsByGame[key] = expand ? new Set(["5", "4", "3", "2", "1"]) : new Set();
-            renderStudentEntryGrid();
-        }
-
-        function navAction(section) {
-            if (section === 'Home') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (section === 'Games List') {
-                document.getElementById('studentEntryGridsContainer').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert(`${section} section selected.`);
-            }
-        }
-
-        function parseScoreValue(scoreStr) {
+        function extractScorePercent(scoreStr) {
             if (!scoreStr) return 0;
-            const frac = String(scoreStr).match(/(\d+)\s*\/\s*(\d+)/);
-            if (frac) return (parseFloat(frac[1]) / parseFloat(frac[2])) * 100;
-            const pct = String(scoreStr).match(/(\d+(?:\.\d+)?)%/);
-            if (pct) return parseFloat(pct[1]);
-            const num = String(scoreStr).match(/(\d+(?:\.\d+)?)/);
-            return num ? parseFloat(num[1]) : 0;
+            const pctMatch = String(scoreStr).match(/(\d+(?:\.\d+)?)\s*%/);
+            if (pctMatch) return parseFloat(pctMatch[1]);
+            const fracMatch = String(scoreStr).match(/(\d+)\s*\/\s*(\d+)/);
+            if (fracMatch && parseInt(fracMatch[2], 10) > 0) {
+                return (parseInt(fracMatch[1], 10) / parseInt(fracMatch[2], 10)) * 100;
+            }
+            return 0;
         }
 
         function parseTimeToSeconds(timeStr) {
-            if (!timeStr || timeStr === '--' || timeStr === '---' || timeStr === '00:00:00') return 0;
-            const cleanStr = formatTimeDisplay(timeStr);
-            const parts = cleanStr.split(':');
-            
+            if (!timeStr || timeStr === "--") return 999999;
+            const parts = String(timeStr).trim().split(":");
             if (parts.length === 3) {
-                return (parseInt(parts[0], 10) * 3600) + (parseInt(parts[1], 10) * 60) + parseInt(parts[2], 10);
-            } else if (parts.length === 2) {
-                return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+                return (parseInt(parts[0], 10) || 0) * 3600 + (parseInt(parts[1], 10) || 0) * 60 + (parseInt(parts[2], 10) || 0);
             }
-
-            const numMatch = cleanStr.match(/(\d+)/);
-            return numMatch ? parseInt(numMatch[1], 10) : 0;
+            return 999999;
         }
 
-        function formatSecondsToHHMMSS(totalSecs) {
-            if (isNaN(totalSecs) || totalSecs <= 0) return "00:00:00";
-            const hrs = String(Math.floor(totalSecs / 3600)).padStart(2, "0");
-            const mins = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, "0");
-            const secs = String(Math.floor(totalSecs % 60)).padStart(2, "0");
-            return `${hrs}:${mins}:${secs}`;
-        }
-
-        function formatCompactTime(totalSecs) {
-            if (!totalSecs || isNaN(totalSecs) || totalSecs <= 0) return "";
-            const mins = Math.floor(totalSecs / 60);
-            const secs = totalSecs % 60;
-            return mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
-        }
-
-        function formatTimeDisplay(timeStr) {
-            if (!timeStr || timeStr === '--' || timeStr === '---') return "00:00:00";
-            const str = String(timeStr).trim();
-            if (str.includes('T')) {
-                const timePart = str.split('T')[1];
-                if (timePart) {
-                    return timePart.split('.')[0];
-                }
-            }
-            return str;
-        }
-
-        function formatScoreDisplay(scoreStr) {
-            if (!scoreStr) return "0/10-0%";
-            return String(scoreStr);
-        }
-
-        function getStudentInitials(fullName) {
-            if (!fullName) return '';
-            const cleaned = String(fullName).trim();
-            if (!cleaned) return '';
-            const parts = cleaned.split(/[\s.]+/).filter(Boolean);
-            if (parts.length >= 2) {
-                return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-            }
-            return cleaned.charAt(0).toUpperCase();
-        }
-
-        function lookupStudentInitialsByCode(studentCode, gameRecs) {
-            const target = String(studentCode || '').trim().toUpperCase();
-            if (!target) return '';
-
-            const gameRec = (gameRecs || []).find(r => matchStudentId(r.studentId, target, false) && r.name);
-            if (gameRec && gameRec.name) return getStudentInitials(gameRec.name);
-
-            const anyGameRec = gameRecordsData.find(r => matchStudentId(r.studentId, target, false) && r.name);
-            if (anyGameRec && anyGameRec.name) return getStudentInitials(anyGameRec.name);
-
-            const userRec = userRecordsData.find(u => matchStudentId(u.studentId || u.studentCode, target, false) && (u.name || u.firstName));
-            if (userRec) {
-                const combined = userRec.lastName ? `${userRec.firstName || userRec.name || ''} ${userRec.lastName}` : (userRec.name || userRec.firstName || '');
-                return getStudentInitials(combined);
-            }
-
-            return '';
-        }
-
-        function getSubmissionIdForRecord(record, indexWithinStudent) {
-            const explicitTrial = String(record.trialId || record.subId || record.submissionId || '').trim();
-            const match = explicitTrial.match(/(\d+)/);
-            if (match) {
-                return String(parseInt(match[1], 10));
-            }
-            return String(indexWithinStudent + 1);
-        }
-
-        function filterRecordsBySubId(recs, subId) {
-            const targetSub = String(subId);
-            const perStudentCounter = {};
-            const matched = [];
-
-            recs.forEach(r => {
-                const sidKey = String(r.studentId || '').trim().toUpperCase().split('_')[0] || '__ANON__';
-                const idx = perStudentCounter[sidKey] || 0;
-                perStudentCounter[sidKey] = idx + 1;
-                const recSubId = getSubmissionIdForRecord(r, idx);
-                if (recSubId === targetSub) {
-                    matched.push(r);
-                }
+        function sortLeaderboardData(data) {
+            return [...data].sort((a, b) => {
+                const pDiff = extractScorePercent(b.score) - extractScorePercent(a.score);
+                if (pDiff !== 0) return pDiff;
+                return parseTimeToSeconds(a.levelTime || a.level1Time) - parseTimeToSeconds(b.levelTime || b.level1Time);
             });
-
-            return matched;
         }
 
-        function sortLeaderboardData(records) {
-            return records.sort((a, b) => {
-                const scoreA = parseScoreValue(a.score);
-                const scoreB = parseScoreValue(b.score);
-                if (scoreB !== scoreA) return scoreB - scoreA;
-                const timeA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
-                const timeB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
-                return timeA - timeB;
-            });
+        function getScoreBadgeClass(pct) {
+            if (pct >= 75) return "score-badge score-high";
+            if (pct >= 40) return "score-badge score-mid";
+            return "score-badge score-low";
+        }
+
+        function getClassCategory(idStr) {
+            const s = String(idStr || "").trim().toUpperCase();
+            if (s.startsWith("M")) return "M";
+            const first = s.charAt(0);
+            if (["1", "2", "3", "4", "5"].includes(first)) return first;
+            return "OTHER";
+        }
+
+        function findStudentInDatabase(stuId) {
+            const target = String(stuId || "").trim().toUpperCase();
+            if (!target) return null;
+
+            const matchingGames = gameRecordsData.filter(g => String(g.studentId || "").trim().toUpperCase() === target);
+            const matchingUser = userRecordsData.find(u => String(u.studentId || "").trim().toUpperCase() === target);
+
+            if (!matchingUser && matchingGames.length === 0) return null;
+
+            const name = (matchingUser && matchingUser.name) ||
+                         (matchingGames[0] && matchingGames[0].name) ||
+                         target;
+
+            return {
+                studentId: target,
+                name: name,
+                school: (matchingUser && matchingUser.school) || "PUPS Anjalam Melur",
+                whatsapp: (matchingUser && matchingUser.whatsapp) || "",
+                gameRecords: matchingGames
+            };
         }
 
         function fetchLiveSheetData() {
             fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData`)
                 .then(res => res.json())
                 .then(data => {
+                    serverTodayIST = data.todayIST || getTodayISTPrefixClient();
                     userRecordsData = data.userData || [];
                     const rawGameData = data.gameData || [];
-                    
+
                     const validGameData = rawGameData.filter(item => item.studentId && item.studentId !== "--" && item.score);
                     gameRecordsData = sortLeaderboardData(validGameData);
 
@@ -693,755 +673,160 @@
                         currentGameCode = data.latestGameCode || "M05";
                     }
 
-                    const firstChar = currentUserStudentId ? currentUserStudentId.charAt(0).toUpperCase() : "1";
-                    const studentStd = (firstChar === 'M' || !isNaN(firstChar)) ? firstChar : "1";
-                    document.getElementById('classSelectLeaderboard').value = studentStd;
+                    document.getElementById("activeStudentTopBadge").textContent =
+                        currentUserStudentId ? `Active ID: ${currentUserStudentId}` : "Active ID: Ready";
+
+                    const studentStd = (currentUserStudentId && currentUserStudentId.length > 0 && !isNaN(currentUserStudentId.charAt(0)))
+                        ? currentUserStudentId.charAt(0)
+                        : "ALL";
+                    document.getElementById("classSelectLeaderboard").value = studentStd;
 
                     populateGameSelectors();
                     updateAllHomepageTables();
                 })
-                .catch((err) => {
-                    console.error("Fetch error:", err);
-                    const firstChar = currentUserStudentId ? currentUserStudentId.charAt(0).toUpperCase() : "1";
-                    const studentStd = (firstChar === 'M' || !isNaN(firstChar)) ? firstChar : "1";
-                    document.getElementById('classSelectLeaderboard').value = studentStd;
-
+                .catch(() => {
+                    serverTodayIST = getTodayISTPrefixClient();
+                    document.getElementById("activeStudentTopBadge").textContent = "Active ID: Offline Mode";
                     populateGameSelectors();
                     updateAllHomepageTables();
                 });
         }
 
         function populateGameSelectors() {
-            const activeGames = [...new Set(gameRecordsData.map(r => r.gameCode).filter(Boolean))];
-            READY_GAMES.slice().reverse().forEach(g => {
-                if (!activeGames.includes(g)) activeGames.unshift(g);
-            });
-
-            const overallSel = document.getElementById('overallGameSelect');
-            const classSel = document.getElementById('classGameSelect');
-            
-            let opts = `<option value="ALL">All Games</option>`;
-            activeGames.forEach(g => {
-                opts += `<option value="${g}" ${g === currentGameCode ? 'selected' : ''}>Game: ${g}</option>`;
-            });
-            overallSel.innerHTML = opts;
-            classSel.innerHTML = opts;
-            if (activeGames.includes(currentGameCode)) {
-                overallSel.value = currentGameCode;
-                classSel.value = currentGameCode;
-            }
-        }
-
-        function setGameMatrixCode(code) {
-            const cleaned = (code || 'M05').trim().toUpperCase();
-            currentGameCode = cleaned;
-            renderStudentEntryGrid();
-            renderGameStudentSubmissionMatrix();
-        }
-
-        function filterLeaderboardsByGame() {
-            currentGameCode = document.getElementById('overallGameSelect').value;
-            document.getElementById('classGameSelect').value = currentGameCode;
-            renderOverallLeaderboard();
-            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
-            renderGameStudentSubmissionMatrix();
-        }
-
-        function toggleSubmissionClass(std) {
-            const key = String(std);
-            if (expandedSubmissionClasses.has(key)) {
-                expandedSubmissionClasses.delete(key);
-            } else {
-                expandedSubmissionClasses.add(key);
-            }
-            renderGameStudentSubmissionMatrix();
-        }
-
-        function toggleUnavailableGamesRow() {
-            isUnavailableGamesExpanded = !isUnavailableGamesExpanded;
-            renderGameStudentSubmissionMatrix();
-        }
-
-        function setAllSubmissionClasses(expand) {
-            if (expand) {
-                expandedSubmissionClasses = new Set(['1', '2', '3', '4', '5']);
-            } else {
-                expandedSubmissionClasses.clear();
-            }
-            renderGameStudentSubmissionMatrix();
-        }
-
-        function getClassStudentCodes(std) {
-            const codes = [];
-            for (let c = 1; c <= 15; c++) {
-                codes.push(`${std}B${c < 10 ? '0' + c : c}`);
-            }
-            for (let c = 1; c <= 15; c++) {
-                codes.push(`${std}G${c < 10 ? '0' + c : c}`);
-            }
-            return codes;
-        }
-
-        function renderGameStudentSubmissionMatrix() {
-            const thead = document.getElementById('gameStudentSubmissionMatrixHead');
-            const tbody = document.getElementById('gameStudentSubmissionMatrixBody');
-            if (!thead || !tbody) return;
-
-            const standards = ['1', '2', '3', '4', '5'];
-            standards.forEach(std => {
-                const btn = document.getElementById(`subClassBtn${std}`);
-                if (btn) {
-                    const isOpen = expandedSubmissionClasses.has(std);
-                    btn.innerHTML = `${isOpen ? '▾' : '▸'} Std ${std}`;
-                    btn.className = isOpen
-                        ? 'px-2.5 py-1 rounded text-[11px] font-bold border transition bg-emerald-600 text-white border-emerald-400'
-                        : 'px-2.5 py-1 rounded text-[11px] font-bold border transition bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-600';
-                }
-            });
-
-            const availableGames = getAllAvailableGames();
-            const readyGamesList = availableGames.filter(g => READY_GAMES.includes(g));
-            const unavailableGamesList = availableGames.filter(g => !READY_GAMES.includes(g));
-
-            const unavailBtn = document.getElementById('toggleUnavailableBtn');
-            if (unavailBtn) {
-                unavailBtn.innerHTML = `${isUnavailableGamesExpanded ? '▾' : '▸'} Unavailable (${unavailableGamesList.length})`;
-                unavailBtn.className = isUnavailableGamesExpanded
-                    ? 'px-2.5 py-1 rounded text-[11px] font-bold bg-amber-500 text-slate-950 border border-amber-300'
-                    : 'px-2.5 py-1 rounded text-[11px] font-bold bg-amber-700 hover:bg-amber-600 text-amber-100 border border-amber-500';
-            }
-
-            const classStudentCodesMap = {};
-            standards.forEach(std => {
-                classStudentCodesMap[std] = getClassStudentCodes(std);
-            });
-
-            const gameStudentCounts = {};
-            availableGames.forEach(g => {
-                gameStudentCounts[g] = {};
-            });
-
+            const gameSet = new Set(["M05", "M03", "E04"]);
             gameRecordsData.forEach(r => {
-                const gCode = String(r.gameCode || '').trim().toUpperCase();
-                if (!gameStudentCounts[gCode]) return;
-                const rawSid = String(r.studentId || '').trim().toUpperCase();
-                if (!rawSid || rawSid.startsWith('M')) return;
-                const baseCode = rawSid.split('_')[0].slice(0, 4);
-                gameStudentCounts[gCode][baseCode] = (gameStudentCounts[gCode][baseCode] || 0) + 1;
+                if (r.gameCode) gameSet.add(String(r.gameCode).trim().toUpperCase());
             });
 
-            let topHeaderHtml = `<tr class="bg-slate-800 text-white font-bold">
-                <th class="sticky-game-col bg-slate-900 text-amber-300 px-2 py-2" rowspan="2">Game Code</th>`;
-            let subHeaderHtml = `<tr class="bg-slate-100 text-slate-800 font-bold text-[10px]">`;
+            const filterSel = document.getElementById("filterGameSelect");
+            const currentFilter = filterSel.value || "ALL";
+            filterSel.innerHTML = `<option value="ALL">All Games</option>` +
+                Array.from(gameSet).map(g => `<option value="${g}" ${g === currentFilter ? "selected" : ""}>${g}</option>`).join("");
 
-            standards.forEach(std => {
-                const isOpen = expandedSubmissionClasses.has(std);
-                const codes = classStudentCodesMap[std];
-                const colSpan = isOpen ? codes.length + 1 : 2;
-                topHeaderHtml += `<th colspan="${colSpan}" onclick="toggleSubmissionClass('${std}')" class="class-boundary px-2 py-1.5 cursor-pointer hover:bg-slate-700 select-none" title="Click to ${isOpen ? 'collapse' : 'expand'} Standard ${std} student codes">
-                    <span class="text-yellow-300 mr-1">${isOpen ? '▾' : '▸'}</span>Std ${std} <span class="text-[10px] font-normal text-slate-300">(${isOpen ? '30 codes + Tot' : 'Click to expand'})</span>
-                </th>`;
-
-                if (isOpen) {
-                    codes.forEach((code, idx) => {
-                        const isBoy = code.includes('B');
-                        const genderCls = isBoy ? 'bg-sky-100 text-sky-900' : 'bg-pink-100 text-pink-900';
-                        subHeaderHtml += `<th class="${idx === 0 ? 'class-boundary' : ''} ${genderCls} px-1 py-1">${code}</th>`;
-                    });
-                    subHeaderHtml += `<th class="bg-indigo-100 text-indigo-900 font-extrabold px-1.5 py-1">Std ${std} Tot</th>`;
-                } else {
-                    subHeaderHtml += `<th class="class-boundary bg-slate-200 text-slate-700 px-2 py-1" onclick="toggleSubmissionClass('${std}')" title="Click to expand Std ${std}">Std ${std} (▸)</th>`;
-                    subHeaderHtml += `<th class="bg-indigo-100 text-indigo-900 font-extrabold px-1.5 py-1">Std ${std} Tot</th>`;
-                }
+            ["regGameCode", "newStudentGameSelect"].forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                const prevVal = sel.value || currentGameCode || "M05";
+                sel.innerHTML = Array.from(gameSet).map(g => `<option value="${g}" ${g === prevVal ? "selected" : ""}>${g}</option>`).join("");
+                if (Array.from(sel.options).some(o => o.value === prevVal)) sel.value = prevVal;
             });
-
-            topHeaderHtml += `<th class="class-boundary bg-emerald-900 text-emerald-200 px-2.5 py-2" rowspan="2">All Stds<br>Total</th></tr>`;
-            subHeaderHtml += `</tr>`;
-
-            thead.innerHTML = topHeaderHtml + subHeaderHtml;
-
-            const classColumnTotals = {};
-            standards.forEach(std => {
-                classColumnTotals[std] = {};
-                classStudentCodesMap[std].forEach(code => {
-                    classColumnTotals[std][code] = 0;
-                });
-                classColumnTotals[std]._classTotal = 0;
-            });
-            let grandTotalSubmissions = 0;
-
-            function buildGameRowHtml(gCode) {
-                const isReady = READY_GAMES.includes(gCode);
-                const isSelectedGame = currentGameCode && currentGameCode.toUpperCase() === gCode;
-                const rowCounts = gameStudentCounts[gCode] || {};
-
-                let rowGrandTotal = 0;
-                let cellsHtml = '';
-
-                standards.forEach(std => {
-                    const isOpen = expandedSubmissionClasses.has(std);
-                    const codes = classStudentCodesMap[std];
-                    let stdSum = 0;
-
-                    codes.forEach(code => {
-                        const cnt = rowCounts[code] || 0;
-                        stdSum += cnt;
-                        classColumnTotals[std][code] += cnt;
-                    });
-
-                    classColumnTotals[std]._classTotal += stdSum;
-                    rowGrandTotal += stdSum;
-
-                    if (isOpen) {
-                        codes.forEach((code, idx) => {
-                            const cnt = rowCounts[code] || 0;
-                            const activeCellCls = cnt > 0
-                                ? 'bg-emerald-100 text-emerald-900 font-extrabold hover:bg-emerald-200 cursor-pointer'
-                                : 'text-slate-300 hover:bg-slate-50 cursor-pointer';
-                            cellsHtml += `<td onclick="openStudentRegistration('${code}', '${gCode}')" class="${idx === 0 ? 'class-boundary' : ''} ${activeCellCls}" title="${gCode} • ${code}: ${cnt} submission(s) — Click to open">${cnt > 0 ? cnt : '·'}</td>`;
-                        });
-                        cellsHtml += `<td class="bg-indigo-50/80 text-indigo-900 font-extrabold">${stdSum > 0 ? stdSum : '0'}</td>`;
-                    } else {
-                        const collapsedCls = stdSum > 0
-                            ? 'bg-emerald-50 text-emerald-800 font-bold cursor-pointer hover:bg-emerald-100'
-                            : 'text-slate-400 cursor-pointer hover:bg-slate-50';
-                        cellsHtml += `<td onclick="toggleSubmissionClass('${std}')" class="class-boundary ${collapsedCls}" title="Click to expand Standard ${std}">${stdSum > 0 ? stdSum + ' subs' : '0'}</td>`;
-                        cellsHtml += `<td class="bg-indigo-50/80 text-indigo-900 font-extrabold">${stdSum > 0 ? stdSum : '0'}</td>`;
-                    }
-                });
-
-                grandTotalSubmissions += rowGrandTotal;
-
-                const gameBadgeCls = isSelectedGame
-                    ? 'bg-amber-200 text-slate-950 font-extrabold'
-                    : (isReady ? 'bg-emerald-50 text-emerald-900 font-extrabold' : 'bg-slate-100 text-slate-600 font-semibold');
-
-                return `<tr class="${isReady ? 'bg-white' : 'bg-slate-50/80'} hover:bg-amber-50/40">
-                    <td onclick="setGameMatrixCode('${gCode}')" class="sticky-game-col ${gameBadgeCls} px-2 py-1 cursor-pointer" title="Click to select ${gCode}">${gCode}${isReady ? ' ★' : ''}</td>
-                    ${cellsHtml}
-                    <td class="class-boundary ${rowGrandTotal > 0 ? 'bg-emerald-100 text-emerald-950' : 'bg-slate-100 text-slate-500'} font-extrabold">${rowGrandTotal}</td>
-                </tr>`;
-            }
-
-            let bodyHtml = readyGamesList.map(gCode => buildGameRowHtml(gCode)).join('');
-
-            if (unavailableGamesList.length > 0) {
-                let unavailStdTotals = {};
-                let unavailGrandTotal = 0;
-                standards.forEach(std => {
-                    let sTot = 0;
-                    unavailableGamesList.forEach(gCode => {
-                        const rowCounts = gameStudentCounts[gCode] || {};
-                        classStudentCodesMap[std].forEach(code => {
-                            sTot += (rowCounts[code] || 0);
-                        });
-                    });
-                    unavailStdTotals[std] = sTot;
-                    unavailGrandTotal += sTot;
-                });
-
-                let bannerCells = '';
-                standards.forEach(std => {
-                    const isOpen = expandedSubmissionClasses.has(std);
-                    const codes = classStudentCodesMap[std];
-                    const sTot = unavailStdTotals[std];
-                    if (isOpen) {
-                        codes.forEach((code, idx) => {
-                            let cSum = 0;
-                            unavailableGamesList.forEach(gCode => {
-                                cSum += ((gameStudentCounts[gCode] || {})[code] || 0);
-                            });
-                            bannerCells += `<td class="${idx === 0 ? 'class-boundary' : ''} bg-amber-50/70 text-amber-900 font-semibold">${cSum > 0 ? cSum : '·'}</td>`;
-                        });
-                        bannerCells += `<td class="bg-amber-100 text-amber-950 font-bold">${sTot}</td>`;
-                    } else {
-                        bannerCells += `<td class="class-boundary bg-amber-50/70 text-amber-900 font-semibold">${sTot > 0 ? sTot + ' subs' : '0'}</td>`;
-                        bannerCells += `<td class="bg-amber-100 text-amber-950 font-bold">${sTot}</td>`;
-                    }
-                });
-
-                bodyHtml += `<tr onclick="toggleUnavailableGamesRow()" class="bg-amber-50 hover:bg-amber-100 cursor-pointer border-t border-amber-200" title="Click to ${isUnavailableGamesExpanded ? 'collapse' : 'expand'} unavailable game rows">
-                    <td class="sticky-game-col bg-amber-100 text-amber-950 font-extrabold px-2 py-1.5 text-left">
-                        <span>${isUnavailableGamesExpanded ? '▾' : '▸'} Unavailable (${unavailableGamesList.length})</span>
-                    </td>
-                    ${bannerCells}
-                    <td class="class-boundary bg-amber-200 text-amber-950 font-extrabold">${unavailGrandTotal}</td>
-                </tr>`;
-
-                if (isUnavailableGamesExpanded) {
-                    bodyHtml += unavailableGamesList.map(gCode => buildGameRowHtml(gCode)).join('');
-                }
-            }
-
-            let totalRowCells = `<td class="sticky-game-col bg-slate-800 text-yellow-300 font-extrabold px-2 py-1.5">Total</td>`;
-            standards.forEach(std => {
-                const isOpen = expandedSubmissionClasses.has(std);
-                const codes = classStudentCodesMap[std];
-                const stdTot = classColumnTotals[std]._classTotal;
-
-                if (isOpen) {
-                    codes.forEach((code, idx) => {
-                        const cTot = classColumnTotals[std][code] || 0;
-                        totalRowCells += `<td class="${idx === 0 ? 'class-boundary' : ''} bg-slate-800 text-sky-200 font-bold">${cTot > 0 ? cTot : '0'}</td>`;
-                    });
-                    totalRowCells += `<td class="bg-indigo-900 text-yellow-300 font-extrabold">${stdTot}</td>`;
-                } else {
-                    totalRowCells += `<td class="class-boundary bg-slate-800 text-slate-200 font-bold">${stdTot}</td>`;
-                    totalRowCells += `<td class="bg-indigo-900 text-yellow-300 font-extrabold">${stdTot}</td>`;
-                }
-            });
-            totalRowCells += `<td class="class-boundary bg-emerald-800 text-white font-extrabold">${grandTotalSubmissions}</td>`;
-
-            bodyHtml += `<tr class="border-t-2 border-slate-400">${totalRowCells}</tr>`;
-            tbody.innerHTML = bodyHtml;
-        }
-
-        function renderOverallLeaderboard() {
-            applyLeaderboardFilters();
-        }
-
-        function applyLeaderboardFilters() {
-            const body = document.getElementById('overallLeaderboardBody');
-            const selectedGame = document.getElementById('overallGameSelect').value;
-            
-            let filtered = gameRecordsData;
-            if (selectedGame !== 'ALL') {
-                filtered = gameRecordsData.filter(r => (r.gameCode || 'E02') === selectedGame);
-            }
-
-            const inputs = document.querySelectorAll('#overallLeaderboardTable thead input');
-            const filters = {};
-            inputs.forEach(input => {
-                filters[input.dataset.col] = input.value.trim().toLowerCase();
-            });
-
-            let displayedData = filtered.map((row, idx) => {
-                const rawSid = String(row.studentId || '').trim().toUpperCase();
-                const std = rawSid && !rawSid.startsWith('M') ? `Std ${rawSid.charAt(0)}` : 'Member';
-                const displayId = formatDisplayIdForReport(rawSid, row.whatsapp || row.cell);
-                const l1Secs = parseTimeToSeconds(row.level1Time);
-                const l2Secs = parseTimeToSeconds(row.level2Time);
-                const totSecs = l1Secs + l2Secs;
-                return {
-                    ...row,
-                    rank: idx + 1,
-                    displayId: displayId,
-                    std: std,
-                    l1Score: formatScoreDisplay(row.level1Score),
-                    l1Time: formatTimeDisplay(row.level1Time),
-                    l2Score: formatScoreDisplay(row.level2Score),
-                    l2Time: formatTimeDisplay(row.level2Time),
-                    score: formatScoreDisplay(row.score),
-                    totTime: formatSecondsToHHMMSS(totSecs),
-                    trialId: row.trialId || '1'
-                };
-            }).filter(row => {
-                for (let key in filters) {
-                    if (filters[key]) {
-                        const val = String(row[key] || '').toLowerCase();
-                        if (!val.includes(filters[key])) return false;
-                    }
-                }
-                return true;
-            });
-
-            if (!isOverallExpanded && !Object.values(filters).some(v => v)) {
-                const top10 = displayedData.slice(0, 10);
-                const currentUserRow = displayedData.find(r => matchStudentId(r.studentId, currentUserStudentId));
-                if (currentUserRow && !top10.some(r => matchStudentId(r.studentId, currentUserStudentId))) {
-                    displayedData = [...top10, currentUserRow];
-                } else {
-                    displayedData = top10;
-                }
-            }
-
-            if (!displayedData.length) {
-                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found.</td></tr>`;
-                return;
-            }
-
-            let html = '';
-            displayedData.forEach((row) => {
-                const isCurrentUser = matchStudentId(row.studentId, currentUserStudentId);
-                const highlightClass = isCurrentUser ? 'bg-amber-100 font-bold border-2 border-amber-400' : (row.rank === 1 ? 'bg-amber-50' : '');
-
-                html += `<tr class="${highlightClass}">
-                    <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
-                    <td class="border p-2 font-bold ${row.rank===1?'text-amber-600':''}">${row.rank}</td>
-                    <td class="border p-2 font-bold text-indigo-700">${row.displayId}</td>
-                    <td class="border p-2 text-left font-semibold">${row.name || 'User'}</td>
-                    <td class="border p-2">${row.std}</td>
-                    <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
-                    <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
-                    <td class="border p-2 font-semibold text-purple-600">${row.l2Score}</td>
-                    <td class="border p-2 text-slate-600 font-mono">${row.l2Time}</td>
-                    <td class="border p-2 font-bold text-emerald-600">${row.score}</td>
-                    <td class="border p-2 text-slate-700 font-mono">${row.totTime}</td>
-                    <td class="border p-2 font-bold text-amber-700">${row.trialId}</td>
-                    <td class="border p-2 text-xs text-slate-500">${row.submittedAt || '---'}</td>
-                </tr>`;
-            });
-            body.innerHTML = html;
-            document.getElementById('overallToggleBtn').innerText = isOverallExpanded ? "Show Top 10 Only" : "Show All Entries";
-        }
-
-        function toggleOverallExpand() {
-            isOverallExpanded = !isOverallExpanded;
-            renderOverallLeaderboard();
-        }
-
-        function loadClassLeaderboard(standard) {
-            applyClassLeaderboardFilters();
-        }
-
-        function applyClassLeaderboardFilters() {
-            const standard = document.getElementById('classSelectLeaderboard').value;
-            const body = document.getElementById('classLeaderboardBody');
-            const selectedGame = document.getElementById('classGameSelect').value;
-            
-            let filtered = gameRecordsData.filter(r => r.studentId && r.studentId.trim().toUpperCase().startsWith(String(standard).toUpperCase()));
-            if (selectedGame !== 'ALL') {
-                filtered = filtered.filter(r => (r.gameCode || 'E02') === selectedGame);
-            }
-
-            const inputs = document.querySelectorAll('#classLeaderboardTable thead input');
-            const filters = {};
-            inputs.forEach(input => {
-                filters[input.dataset.col] = input.value.trim().toLowerCase();
-            });
-
-            let displayedClassData = filtered.map((row, idx) => {
-                const overallRank = gameRecordsData.findIndex(r => matchStudentId(r.studentId, row.studentId) && (r.gameCode||'E02')===(row.gameCode||'E02')) + 1;
-                const displayId = formatDisplayIdForReport(row.studentId, row.whatsapp || row.cell);
-                const l1Secs = parseTimeToSeconds(row.level1Time);
-                const l2Secs = parseTimeToSeconds(row.level2Time);
-                const totSecs = l1Secs + l2Secs;
-                return {
-                    ...row,
-                    oRank: overallRank,
-                    cRank: idx + 1,
-                    displayId: displayId,
-                    l1Score: formatScoreDisplay(row.level1Score),
-                    l1Time: formatTimeDisplay(row.level1Time),
-                    l2Score: formatScoreDisplay(row.level2Score),
-                    l2Time: formatTimeDisplay(row.level2Time),
-                    score: formatScoreDisplay(row.score),
-                    totTime: formatSecondsToHHMMSS(totSecs),
-                    trialId: row.trialId || '1'
-                };
-            }).filter(row => {
-                for (let key in filters) {
-                    if (filters[key]) {
-                        const val = String(row[key] || '').toLowerCase();
-                        if (!val.includes(filters[key])) return false;
-                    }
-                }
-                return true;
-            });
-
-            if (!isClassExpanded && !Object.values(filters).some(v => v)) {
-                const top10 = displayedClassData.slice(0, 10);
-                const currentUserRow = displayedClassData.find(r => matchStudentId(r.studentId, currentUserStudentId));
-                if (currentUserRow && !top10.some(r => matchStudentId(r.studentId, currentUserStudentId))) {
-                    displayedClassData = [...top10, currentUserRow];
-                } else {
-                    displayedClassData = top10;
-                }
-            }
-
-            if (!displayedClassData.length) {
-                const label = standard === 'M' ? 'Members (M)' : `Standard ${standard}`;
-                body.innerHTML = `<tr><td colspan="13" class="p-3 text-slate-400 italic">No matching records found for ${label}.</td></tr>`;
-                return;
-            }
-
-            let html = '';
-            displayedClassData.forEach((row) => {
-                const isCurrentUser = matchStudentId(row.studentId, currentUserStudentId);
-                const highlightClass = isCurrentUser ? 'bg-amber-100 font-bold border-2 border-amber-400' : '';
-
-                html += `<tr class="${highlightClass}">
-                    <td class="border p-2 font-bold text-indigo-600">${row.gameCode || 'E02'}</td>
-                    <td class="border p-2 font-bold text-amber-700">#${row.oRank}</td>
-                    <td class="border p-2 font-bold text-emerald-700">${row.cRank}</td>
-                    <td class="border p-2 font-bold text-indigo-700">${row.displayId}</td>
-                    <td class="border p-2 text-left font-semibold">${row.name}</td>
-                    <td class="border p-2 font-semibold text-blue-600">${row.l1Score}</td>
-                    <td class="border p-2 text-slate-600 font-mono">${row.l1Time}</td>
-                    <td class="border p-2 font-semibold text-purple-600">${row.l2Score}</td>
-                    <td class="border p-2 text-slate-600 font-mono">${row.l2Time}</td>
-                    <td class="border p-2 font-bold text-indigo-700">${row.score}</td>
-                    <td class="border p-2 text-slate-700 font-mono">${row.totTime}</td>
-                    <td class="border p-2 font-bold text-amber-700">${row.trialId}</td>
-                    <td class="border p-2 text-xs text-slate-500">${row.submittedAt || '---'}</td>
-                </tr>`;
-            });
-            body.innerHTML = html;
-            document.getElementById('classToggleBtn').innerText = isClassExpanded ? "Show Top 10 Only" : "Show All Entries";
-        }
-
-        function toggleClassExpand() {
-            isClassExpanded = !isClassExpanded;
-            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
-        }
-
-
-
-/* =====================================================================
-           DATABASE-ONLY UNIQUE ID GENERATION:
-           - Student (15 chars): Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2) + EMIS_Last5(5)
-           - Member  (14 chars): M(1) + BirthYear(4) + First1st(1) + Last1st(1) + DD(2) + MM(2) + WhatsApp_Last3(3)
-           ===================================================================== */
-        function syncMemberWhatsapp(val) {
-            document.getElementById('regWhatsapp').value = val;
-            updateGeneratedStudentId();
-        }
-
-        function syncMemberWhatsappFromStep2(val) {
-            document.getElementById('regMemberWhatsappStep1').value = val;
-            updateGeneratedStudentId();
-        }
-
-        function onStdSelectionChange() {
-            const stdVal = document.getElementById('regStd').value;
-            const isMember = stdVal === 'M';
-
-            const genderWrap = document.getElementById('genderFieldWrapper');
-            const slWrap = document.getElementById('genderSlFieldWrapper');
-            const motherWrap = document.getElementById('motherNameFieldWrapper');
-            const emisStep1Wrap = document.getElementById('emisStep1Wrapper');
-            const memWaStep1Wrap = document.getElementById('memberWhatsappStep1Wrapper');
-            const lblFirst = document.getElementById('lblStudentOrFirstName');
-            const inpFirst = document.getElementById('regFirstName');
-            const lblLast = document.getElementById('lblFatherOrLastName');
-            const inpLast = document.getElementById('regFatherName');
-            const idHint = document.getElementById('idFormatHint');
-            const newTitle = document.getElementById('newUserSectionTitle');
-
-            if (isMember) {
-                genderWrap.classList.add('hidden');
-                slWrap.classList.add('hidden');
-                motherWrap.classList.add('hidden');
-                emisStep1Wrap.classList.add('hidden');
-                memWaStep1Wrap.classList.remove('hidden');
-
-                document.getElementById('regEmisNumber').required = false;
-                document.getElementById('regMemberWhatsappStep1').required = true;
-
-                lblFirst.textContent = "First Name *";
-                inpFirst.placeholder = "First Name";
-                lblLast.textContent = "Last Name *";
-                inpLast.placeholder = "Last Name";
-                idHint.textContent = "(M + YYYY + First1st + Last1st + DD + MM + WA_Last3)";
-                newTitle.textContent = "New Member Details (Not yet in database)";
-            } else {
-                genderWrap.classList.remove('hidden');
-                slWrap.classList.remove('hidden');
-                motherWrap.classList.remove('hidden');
-                emisStep1Wrap.classList.remove('hidden');
-                memWaStep1Wrap.classList.add('hidden');
-
-                document.getElementById('regEmisNumber').required = true;
-                document.getElementById('regMemberWhatsappStep1').required = false;
-
-                lblFirst.textContent = "Student Name *";
-                inpFirst.placeholder = "Student Name";
-                lblLast.textContent = "Father's Name *";
-                inpLast.placeholder = "Father's Name";
-                idHint.textContent = "(Std + B/G + SlNo + Stu1st + Father1st + DD + MM + EMIS_Last5)";
-                newTitle.textContent = "New Student Details (Not yet in database)";
-            }
-
-            document.getElementById('regStudentCode').value = "";
-            updateGeneratedStudentId();
-        }
-
-        function updateGeneratedStudentId() {
-            const std = (document.getElementById('regStd').value || '').trim().toUpperCase().slice(0, 1);
-            const firstRaw = (document.getElementById('regFirstName').value || '').trim().replace(/[^a-zA-Z]/g, '');
-            const firstInitial = firstRaw ? firstRaw.charAt(0).toUpperCase() : '';
-
-            const lastRaw = (document.getElementById('regFatherName').value || '').trim().replace(/[^a-zA-Z]/g, '');
-            const lastInitial = lastRaw ? lastRaw.charAt(0).toUpperCase() : '';
-
-            const dobStr = (document.getElementById('regDob').value || '').trim();
-            const dobMatch = dobStr.match(/^(\d{1,2})[\/\-\.](\d{1,2})(?:[\/\-\.](\d{4}))?/);
-            const dd = dobMatch ? dobMatch[1].padStart(2, '0') : '';
-            const mm = dobMatch ? dobMatch[2].padStart(2, '0') : '';
-            const yyyy = (dobMatch && dobMatch[3]) ? dobMatch[3] : '';
-
-            if (std === 'M') {
-                // Database Mem_ID (14 chars): M(1) + YYYY(4) + First1st(1) + Last1st(1) + DD(2) + MM(2) + WhatsApp_Last3(3)
-                const waDigits = (document.getElementById('regMemberWhatsappStep1').value || document.getElementById('regWhatsapp').value || '').replace(/\D/g, '');
-                const waLast3 = waDigits.length >= 3 ? waDigits.slice(-3) : waDigits;
-                const combinedMem = `M${yyyy}${firstInitial}${lastInitial}${dd}${mm}${waLast3}`;
-                if (combinedMem.length > 1) {
-                    document.getElementById('regStudentCode').value = combinedMem;
-                }
-            } else {
-                // Database Stu_ID (15 chars): Std(1) + Gender(1) + SlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2) + EMIS_Last5(5)
-                const gender = (document.getElementById('regGender').value || '').trim().toUpperCase().slice(0, 1);
-                const rawSl = (document.getElementById('regGenderSlNo').value || '').replace(/\D/g, '').slice(0, 2);
-                const slNo = rawSl ? rawSl.padStart(2, '0') : '';
-                const emisDigits = (document.getElementById('regEmisNumber').value || '').replace(/\D/g, '');
-                const emisLast5 = emisDigits.length >= 5 ? emisDigits.slice(-5) : emisDigits;
-                const combinedStu = `${std}${gender}${slNo}${firstInitial}${lastInitial}${dd}${mm}${emisLast5}`;
-                if (combinedStu.length >= 4) {
-                    document.getElementById('regStudentCode').value = combinedStu;
-                }
-            }
-        }
-
-        function syncSelectedGame(gCode) {
-            const cleaned = String(gCode || '').trim().toUpperCase();
-            currentGameCode = cleaned;
-            document.getElementById('regGameCode').value = cleaned;
-        }
-
-        function setNewUserRequiredFields(isRequired) {
-            ['regCell', 'regWhatsapp', 'regPlace'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.required = isRequired;
-            });
-        }
-
-        function findUserInDatabase(idCode) {
-            const target = String(idCode || '').trim().toUpperCase();
-            if (!target) return null;
-
-            const isMem = target.startsWith('M');
-
-            const userMatch = userRecordsData.find(u => {
-                const uId = String(u.studentId || u.studentCode || '').trim().toUpperCase();
-                if (isMem) return uId === target;
-                if (target.length >= 15) return uId === target;
-                return uId === target || (target.length >= 4 && uId.startsWith(target));
-            });
-
-            const gameMatches = gameRecordsData.filter(g => {
-                const gId = String(g.studentId || '').trim().toUpperCase();
-                if (isMem) return gId === target || gId.startsWith(target + "_");
-                if (target.length >= 15) return gId === target || gId.startsWith(target + "_");
-                return gId === target || gId.startsWith(target + "_") || (target.length >= 4 && gId.startsWith(target));
-            });
-
-            if (!userMatch && gameMatches.length === 0) return null;
-
-            const resolvedName = (userMatch && (userMatch.name || (userMatch.firstName ? `${userMatch.firstName} ${userMatch.lastName || ''}`.trim() : '')))
-                || (gameMatches[0] && gameMatches[0].name)
-                || document.getElementById('regFirstName').value.trim()
-                || target;
-
-            const resolvedId = (userMatch && (userMatch.studentId || userMatch.studentCode))
-                || (gameMatches[0] && gameMatches[0].studentId)
-                || target;
-
-            return {
-                studentId: String(resolvedId).trim().toUpperCase(),
-                name: resolvedName,
-                userRecord: userMatch || null,
-                gameRecords: gameMatches
-            };
         }
 
         function checkStudentIdInDatabase() {
-            const stuIdInput = document.getElementById('regStudentCode');
+            const stuIdInput = document.getElementById("regStudentCode");
             const stuId = stuIdInput.value.trim().toUpperCase();
-            const isMember = document.getElementById('regStd').value === 'M' || stuId.startsWith('M');
-
             if (!stuId) {
-                alert("Please enter or generate a Stu_ID/Mem_ID first.");
+                alert("Please enter or generate a Student ID (Stu_ID) or Member ID (Mem_ID) first.");
                 stuIdInput.focus();
                 return;
             }
 
-            if (!isMember) {
-                const emisDigits = (document.getElementById('regEmisNumber').value || '').replace(/\D/g, '');
-                if (emisDigits.length < 5 && stuId.length < 15) {
-                    alert("Please enter the Student EMIS No so the last 5 digits are included in the database Stu_ID.");
-                    document.getElementById('regEmisNumber').focus();
-                    return;
-                }
-            } else {
-                const waDigits = (document.getElementById('regMemberWhatsappStep1').value || document.getElementById('regWhatsapp').value || '').replace(/\D/g, '');
-                if (waDigits.length < 3 && stuId.length < 14) {
-                    alert("Please enter the Member's WhatsApp No so the last 3 digits are included in the database Mem_ID.");
-                    document.getElementById('regMemberWhatsappStep1').focus();
-                    return;
-                }
-            }
+            const existingSection = document.getElementById("existingStudentSection");
+            const newSection = document.getElementById("newStudentFieldsSection");
+            const submitBtn = document.getElementById("submitBtn");
+            const preferredGame = (document.getElementById("regGameCode").value || currentGameCode || "M05").trim().toUpperCase();
+            const todayPrefix = serverTodayIST || getTodayISTPrefixClient();
 
-            const existingSection = document.getElementById('existingStudentSection');
-            const newSection = document.getElementById('newStudentFieldsSection');
-            const submitBtn = document.getElementById('submitBtn');
-            const preferredGame = (document.getElementById('regGameCode').value || currentGameCode || 'M05').trim().toUpperCase();
-
-            const found = findUserInDatabase(stuId);
+            const found = findStudentInDatabase(stuId);
 
             if (found) {
                 isExistingVerifiedUser = true;
-                setNewUserRequiredFields(false);
-                newSection.classList.add('hidden');
-                existingSection.classList.remove('hidden');
+                setNewStudentRequiredFields(false);
+                newSection.classList.add("hidden");
+                existingSection.classList.remove("hidden");
 
-                document.getElementById('foundStudentDisplayName').textContent = found.name;
-                const reportId = formatDisplayIdForReport(found.studentId, (found.userRecord && found.userRecord.whatsapp) || document.getElementById('regMemberWhatsappStep1').value);
-                document.getElementById('foundStudentIdBadge').textContent = `${reportId} • DB: ${found.studentId}`;
-
-                if (!document.getElementById('regFirstName').value.trim()) {
-                    document.getElementById('regFirstName').value = found.name;
+                document.getElementById("foundStudentDisplayName").textContent = found.name;
+                document.getElementById("foundStudentIdBadge").textContent = found.studentId;
+                if (!document.getElementById("regFirstName").value.trim()) {
+                    document.getElementById("regFirstName").value = found.name;
                 }
 
-                const abstractEl = document.getElementById('previousReportsAbstract');
-                const playedGamesSet = new Set();
+                // Map today's finished M05 trials (8 Levels x 3 Trials = 24 Trials)
+                const finishedTodayMap = {};
+                const playedOtherGamesSet = new Set();
 
-                if (found.gameRecords.length === 0) {
-                    abstractEl.innerHTML = `<div class="text-slate-500 italic py-1">Registered in database, with 0 games played so far.</div>`;
-                } else {
-                    const scores = found.gameRecords.map(r => parseScoreValue(r.score));
-                    const bestPct = Math.round(Math.max(...scores));
-                    const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                found.gameRecords.forEach(r => {
+                    const gCode = String(r.gameCode || "").trim().toUpperCase();
+                    const datePart = String(r.submittedAt || "").split("-")[0];
+                    if (gCode === "M05" && datePart === todayPrefix) {
+                        const lvlMatch = String(r.level || "").match(/Level\s*(\d+)/i);
+                        const lvlNum = lvlMatch ? parseInt(lvlMatch[1], 10) : 0;
+                        const trNum = parseInt(String(r.trialId || "0").trim(), 10);
+                        if (lvlNum >= 1 && lvlNum <= 8 && trNum >= 1 && trNum <= 3) {
+                            finishedTodayMap[`${lvlNum}-${trNum}`] = {
+                                score: r.levelScore || r.score || "0/0-0%",
+                                time: r.levelTime || "00:00:00"
+                            };
+                        }
+                    } else if (gCode && gCode !== "M05") {
+                        playedOtherGamesSet.add(gCode);
+                    }
+                });
 
-                    let rowsHtml = `<div class="flex flex-wrap justify-between bg-indigo-50 text-indigo-900 font-bold px-2 py-1 rounded mb-1">
-                        <span>Games Played: ${found.gameRecords.length}</span>
-                        <span>Best: ${bestPct}%</span>
-                        <span>Avg: ${avgPct}%</span>
-                    </div>`;
+                const finishedM05Count = Object.keys(finishedTodayMap).length;
+                const pendingM05Count = 24 - finishedM05Count;
 
-                    found.gameRecords.forEach(r => {
-                        const gCode = String(r.gameCode || '').trim().toUpperCase();
-                        if (gCode) playedGamesSet.add(gCode);
-                        const totSecs = parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time);
-                        rowsHtml += `<div class="flex items-center justify-between border-b border-slate-100 py-1 px-1">
-                            <span class="font-extrabold text-indigo-700">${gCode || 'GAME'}</span>
-                            <span class="font-bold text-emerald-700">${formatScoreDisplay(r.score)}</span>
-                            <span class="font-mono text-slate-600">${formatSecondsToHHMMSS(totSecs)}</span>
-                            <span class="text-[10px] text-slate-400">${r.submittedAt || ''}</span>
-                        </div>`;
-                    });
-                    abstractEl.innerHTML = rowsHtml;
+                // Render 24-Trial Status & Pending Checkbox Selector inside Previous Reports Abstract
+                const abstractEl = document.getElementById("previousReportsAbstract");
+                let rowsHtml = `<div class="flex flex-wrap justify-between bg-indigo-50 text-indigo-900 font-bold px-2 py-1 rounded mb-1.5">
+                    <span>M05 Today: ${finishedM05Count}/24 Finished</span>
+                    <span>Pending: ${pendingM05Count}/24</span>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full border-collapse text-[10px] text-center bg-white">
+                    <thead>
+                      <tr class="bg-slate-800 text-white">
+                        <th class="border p-1">Lvl</th>
+                        <th class="border p-1">T1</th>
+                        <th class="border p-1">T2</th>
+                        <th class="border p-1">T3</th>
+                      </tr>
+                    </thead>
+                    <tbody>`;
+
+                for (let l = 1; l <= 8; l++) {
+                    rowsHtml += `<tr><td class="border p-1 font-extrabold bg-slate-100">L${l}</td>`;
+                    for (let t = 1; t <= 3; t++) {
+                        const key = `${l}-${t}`;
+                        const doneObj = finishedTodayMap[key];
+                        if (doneObj) {
+                            rowsHtml += `<td class="border p-1 bg-emerald-50 text-emerald-800 font-bold" title="Finished today (${doneObj.score}, ${doneObj.time}) — Blocked for today">
+                                <input type="checkbox" disabled checked class="align-middle opacity-60 cursor-not-allowed"> Done (${doneObj.score.split("-")[0]})
+                            </td>`;
+                        } else {
+                            rowsHtml += `<td class="border p-1 bg-sky-50/40">
+                                <label class="inline-flex items-center gap-1 cursor-pointer font-semibold text-slate-700">
+                                  <input type="checkbox" name="m05TrialCheck" value="${key}" checked class="accent-indigo-600 cursor-pointer"> Play
+                                </label>
+                            </td>`;
+                        }
+                    }
+                    rowsHtml += `</tr>`;
                 }
+                rowsHtml += `</tbody></table></div>`;
+                abstractEl.innerHTML = rowsHtml;
 
-                const pendingGames = READY_GAMES.filter(g => !playedGamesSet.has(g));
-                const availWrapper = document.getElementById('availableGamesWrapper');
-                const noPendingBanner = document.getElementById('noPendingGamesBanner');
-                const pendingSelect = document.getElementById('pendingGameSelect');
+                const allGamesList = Array.from(new Set([...READY_GAMES, ...gameRecordsData.map(g => String(g.gameCode || "").trim().toUpperCase()).filter(Boolean)]));
+                const pendingGames = allGamesList.filter(g => g === "M05" ? pendingM05Count > 0 : !playedOtherGamesSet.has(g));
+                const availWrapper = document.getElementById("availableGamesWrapper");
+                const noPendingBanner = document.getElementById("noPendingGamesBanner");
+                const pendingSelect = document.getElementById("pendingGameSelect");
 
                 if (pendingGames.length === 0) {
-                    availWrapper.classList.add('hidden');
-                    submitBtn.classList.add('hidden');
-                    noPendingBanner.classList.remove('hidden');
-                    document.getElementById('noPendingGamesText').textContent =
-                        `No pending games available for ${found.name} (${reportId})! Please exit to let the next user play.`;
+                    availWrapper.classList.add("hidden");
+                    submitBtn.classList.add("hidden");
+                    noPendingBanner.classList.remove("hidden");
+                    document.getElementById("noPendingGamesText").textContent =
+                        `All 24 M05 trials and available games are already finished today for ${found.name} (${found.studentId})! Please exit to let the next user play.`;
                 } else {
-                    noPendingBanner.classList.add('hidden');
-                    availWrapper.classList.remove('hidden');
-                    submitBtn.classList.remove('hidden');
-                    submitBtn.innerText = "Launch Selected Game";
+                    noPendingBanner.classList.add("hidden");
+                    availWrapper.classList.remove("hidden");
+                    submitBtn.classList.remove("hidden");
+                    submitBtn.innerText = "Continue Selected Pending Trials";
 
                     pendingSelect.innerHTML = pendingGames.map(g =>
-                        `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g} (Available)</option>`
-                    ).join('');
+                        `<option value="${g}" ${g === preferredGame ? "selected" : ""}>${g}${g === "M05" ? ` (${pendingM05Count} Pending Trials Today)` : " (Available)"}</option>`
+                    ).join("");
 
                     const chosenGame = pendingGames.includes(preferredGame) ? preferredGame : pendingGames[0];
                     pendingSelect.value = chosenGame;
@@ -1449,778 +834,239 @@
                 }
             } else {
                 isExistingVerifiedUser = false;
-                existingSection.classList.add('hidden');
-                newSection.classList.remove('hidden');
-                setNewUserRequiredFields(true);
+                existingSection.classList.add("hidden");
+                newSection.classList.remove("hidden");
+                setNewStudentRequiredFields(true);
 
-                if (isMember) {
-                    const waStep1 = document.getElementById('regMemberWhatsappStep1').value.trim();
-                    if (waStep1) document.getElementById('regWhatsapp').value = waStep1;
+                const newGameSel = document.getElementById("newStudentGameSelect");
+                if (Array.from(newGameSel.options).some(o => o.value === preferredGame)) {
+                    newGameSel.value = preferredGame;
                 }
+                syncSelectedGame(newGameSel.value);
 
-                const newGameSel = document.getElementById('newStudentGameSelect');
-                newGameSel.innerHTML = READY_GAMES.map(g =>
-                    `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g}</option>`
-                ).join('');
-                const chosenGame = READY_GAMES.includes(preferredGame) ? preferredGame : READY_GAMES[0];
-                newGameSel.value = chosenGame;
-                syncSelectedGame(chosenGame);
-
-                submitBtn.classList.remove('hidden');
+                submitBtn.classList.remove("hidden");
                 submitBtn.innerText = "Save & Launch Game";
             }
         }
 
-        function openStudentRegistration(studentId, gameCode) {
-            const targetGame = (gameCode || currentGameCode || 'M05').trim().toUpperCase();
-            isExistingVerifiedUser = false;
+        function handleStudentFormSubmit(event) {
+            event.preventDefault();
 
-            document.getElementById('regGameCode').value = targetGame;
-            document.getElementById('regStudentCode').value = studentId || "";
-            document.getElementById('regEmisNumber').value = "";
-            document.getElementById('regMemberWhatsappStep1').value = "";
-            document.getElementById('regFirstName').value = "";
-            document.getElementById('regFatherName').value = "";
-            document.getElementById('regMotherName').value = "";
-            document.getElementById('regDob').value = "";
-            document.getElementById('regCell').value = "";
-            document.getElementById('regWhatsapp').value = "";
-
-            const cleanId = String(studentId || '').trim().toUpperCase();
-            const codeMatch = cleanId.match(/^([1-5])([BG])(\d{2})/);
-            if (cleanId.startsWith('M')) {
-                document.getElementById('regStd').value = "M";
-            } else if (codeMatch) {
-                document.getElementById('regStd').value = codeMatch[1];
-                document.getElementById('regGender').value = codeMatch[2];
-                document.getElementById('regGenderSlNo').value = codeMatch[3];
-            } else {
-                document.getElementById('regStd').value = "1";
-                document.getElementById('regGender').value = "B";
-                document.getElementById('regGenderSlNo').value = "";
+            let stuId = document.getElementById("regStudentCode").value.trim().toUpperCase();
+            if (!stuId) {
+                autoGenerateIdFromFields();
+                stuId = document.getElementById("regStudentCode").value.trim().toUpperCase();
             }
 
-            onStdSelectionChange();
-            if (studentId) {
-                document.getElementById('regStudentCode').value = cleanId;
-            }
-
-            document.getElementById('existingStudentSection').classList.add('hidden');
-            document.getElementById('newStudentFieldsSection').classList.add('hidden');
-            document.getElementById('submitBtn').classList.add('hidden');
-            setNewUserRequiredFields(false);
-
-            document.getElementById('studentModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('studentModal').classList.add('hidden');
-        }
-
-        function getAllAvailableGames() {
-            const masterGames = [
-                "T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09",
-                "E01", "E03", "E04", "E05", "E07", "E09", "E11", "E13", "E15", "E17",
-                "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09",
-                "S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09",
-                "E02", "E06", "E08", "E10", "E12", "E14", "E16", "E18",
-                "G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"
-            ];
-            const sheetGames = [...new Set(gameRecordsData.map(r => (r.gameCode || '').trim().toUpperCase()).filter(Boolean))];
-            const extraGames = sheetGames.filter(g => !masterGames.includes(g));
-            return [...masterGames, ...extraGames];
-        }
-
-        function toggleGameGridExpansion(gCode, forceState = null) {
-            if (!READY_GAMES.includes(gCode)) {
-                alert("Game not yet ready!");
-                renderStudentEntryGrid();
-                return;
-            }
-            const shouldExpand = forceState !== null ? Boolean(forceState) : !expandedGameCodes.has(gCode);
-            if (shouldExpand) {
-                expandedGameCodes.add(gCode);
-                currentGameCode = gCode;
-            } else {
-                expandedGameCodes.delete(gCode);
-            }
-            renderStudentEntryGrid();
-            renderGameStudentSubmissionMatrix();
-        }
-
-        function computeSubIdMetrics(recs, rollCount, subId) {
-            const subRecs = filterRecordsBySubId(recs, subId);
-            if (!subRecs.length) {
-                return {
-                    users: '',
-                    absentees: '',
-                    topScore: '',
-                    leastTime: '',
-                    avgScore: ''
-                };
-            }
-
-            const uniqueIds = new Set(subRecs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean));
-            const users = uniqueIds.size;
-            const absentees = Math.max(0, rollCount - users);
-            const scores = subRecs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = subRecs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-
-            return {
-                users: String(users),
-                absentees: String(absentees),
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`
-            };
-        }
-
-        function computeStudentStatsForSubId(gameRecs, studentCode, subId) {
-            const stuRecs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
-            const recs = filterRecordsBySubId(stuRecs, subId);
-            if (!recs.length) return { topScore: '', leastTime: '', avgScore: '' };
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-            return {
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`
-            };
-        }
-
-        function buildGameDashboardMatrixHtml(activeGameCode) {
-            const activeGame = String(activeGameCode || 'M05').trim().toUpperCase();
-            const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === activeGame);
-            const expandedStds = getDashboardStandardSet(activeGame);
-
-            const studentRecsAll = gameRecs.filter(r => /^[1-5][BG]\d+/i.test(String(r.studentId || '').trim()));
-            const memberRecsAll = gameRecs.filter(r => /^M/i.test(String(r.studentId || '').trim()));
-
-            const groups = [
-                {
-                    title: 'Students',
-                    boysRecs: studentRecsAll.filter(r => /^[1-5]B/i.test(String(r.studentId || '').trim())),
-                    girlsRecs: studentRecsAll.filter(r => /^[1-5]G/i.test(String(r.studentId || '').trim())),
-                    roll: 75,
-                    stdPrefix: null,
-                    isExpanded: true,
-                    toggleTargetStd: null
-                },
-                {
-                    title: 'Std5',
-                    boysRecs: studentRecsAll.filter(r => /^5B/i.test(String(r.studentId || '').trim())),
-                    girlsRecs: studentRecsAll.filter(r => /^5G/i.test(String(r.studentId || '').trim())),
-                    roll: 15,
-                    stdPrefix: '5',
-                    isExpanded: expandedStds.has('5'),
-                    toggleTargetStd: '5'
-                },
-                {
-                    title: 'Std4',
-                    boysRecs: studentRecsAll.filter(r => /^4B/i.test(String(r.studentId || '').trim())),
-                    girlsRecs: studentRecsAll.filter(r => /^4G/i.test(String(r.studentId || '').trim())),
-                    roll: 15,
-                    stdPrefix: '4',
-                    isExpanded: expandedStds.has('4'),
-                    toggleTargetStd: '4'
-                },
-                {
-                    title: 'Std3',
-                    boysRecs: studentRecsAll.filter(r => /^3B/i.test(String(r.studentId || '').trim())),
-                    girlsRecs: studentRecsAll.filter(r => /^3G/i.test(String(r.studentId || '').trim())),
-                    roll: 15,
-                    stdPrefix: '3',
-                    isExpanded: expandedStds.has('3'),
-                    toggleTargetStd: '3'
-                },
-                {
-                    title: 'Std2',
-                    boysRecs: studentRecsAll.filter(r => /^2B/i.test(String(r.studentId || '').trim())),
-                    girlsRecs: studentRecsAll.filter(r => /^2G/i.test(String(r.studentId || '').trim())),
-                    roll: 15,
-                    stdPrefix: '2',
-                    isExpanded: expandedStds.has('2'),
-                    toggleTargetStd: '2'
-                },
-                {
-                    title: 'Std1',
-                    boysRecs: studentRecsAll.filter(r => /^1B/i.test(String(r.studentId || '').trim())),
-                    girlsRecs: studentRecsAll.filter(r => /^1G/i.test(String(r.studentId || '').trim())),
-                    roll: 15,
-                    stdPrefix: '1',
-                    isExpanded: expandedStds.has('1'),
-                    toggleTargetStd: '1'
-                }
-            ];
-
-            const groupStats = groups.map(g => ({
-                ...g,
-                boysBySub: SUB_IDS.map(subId => computeSubIdMetrics(g.boysRecs, g.roll, subId)),
-                girlsBySub: SUB_IDS.map(subId => computeSubIdMetrics(g.girlsRecs, g.roll, subId)),
-                boysAll: computeCohortMetrics(g.boysRecs, g.roll),
-                girlsAll: computeCohortMetrics(g.girlsRecs, g.roll)
-            }));
-
-            const memberBySub = SUB_IDS.map(subId => computeSubIdMetrics(memberRecsAll, Math.max(15, memberRecsAll.length), subId));
-
-            const memberIds = [...new Set(memberRecsAll.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean))];
-            const rankedMembers = memberIds.map(mid => {
-                const subStats = SUB_IDS.map(subId => computeStudentStatsForSubId(memberRecsAll, mid, subId));
-                const scores = subStats.map(s => parseScoreValue(s.topScore)).filter(n => n > 0);
-                const times = subStats.map(s => parseTimeToSeconds(s.leastTime)).filter(n => n > 0);
-                const displayMemId = formatDisplayIdForReport(mid);
-                return {
-                    id: mid,
-                    displayId: displayMemId,
-                    subStats,
-                    maxScore: scores.length ? Math.max(...scores) : 0,
-                    minTime: times.length ? Math.min(...times) : Infinity
-                };
-            }).sort((a, b) => {
-                if (b.maxScore !== a.maxScore) return b.maxScore - a.maxScore;
-                return a.minTime - b.minTime;
-            });
-
-            function getGenderCellsForSummary(group, genderKey, metricKey) {
-                const bySubList = genderKey === 'boys' ? group.boysBySub : group.girlsBySub;
-                const allCohort = genderKey === 'boys' ? group.boysAll : group.girlsAll;
-                const dividerCls = genderKey === 'boys' ? 'group-divider-left' : '';
-
-                if (group.isExpanded) {
-                    return SUB_IDS.map((_, idx) => {
-                        const val = (bySubList[idx] && bySubList[idx][metricKey]) ? bySubList[idx][metricKey] : '';
-                        return { val, extraCls: idx === 0 ? dividerCls : '' };
-                    });
-                }
-
-                const collapsedVal = allCohort[metricKey] || '';
-                return [{ val: collapsedVal, extraCls: dividerCls }];
-            }
-
-            let html = '';
-
-            html += `<tr class="bg-slate-800 text-slate-100 font-extrabold">
-                <th class="px-2 py-1.5 text-center" colspan="2" rowspan="2">Game Dashboard<br><span class="text-sky-400">(${activeGame})</span></th>`;
-            groupStats.forEach(g => {
-                const span = g.isExpanded ? 6 : 2;
-                if (g.toggleTargetStd) {
-                    html += `<th onclick="toggleDashboardStandard('${activeGame}', '${g.toggleTargetStd}')" class="group-divider-left px-2 py-1.5 cursor-pointer hover:bg-slate-700 select-none" colspan="${span}" title="Click to ${g.isExpanded ? 'collapse' : 'expand'} ${g.title}"><span class="text-yellow-300 mr-1">${g.isExpanded ? '▾' : '▸'}</span>${g.title}</th>`;
-                } else {
-                    html += `<th class="group-divider-left px-2 py-1.5" colspan="${span}">${g.title}</th>`;
-                }
-            });
-            html += `<th class="group-divider-left px-2 py-1.5" colspan="6" rowspan="2">All Members &amp;<br>Top 15 Members</th>
-            </tr>`;
-
-            html += `<tr class="bg-slate-900 text-slate-200 font-bold">`;
-            groupStats.forEach(g => {
-                const genderSpan = g.isExpanded ? 3 : 1;
-                html += `<th class="group-divider-left text-sky-300 px-1 py-1" colspan="${genderSpan}">Boys</th>
-                         <th class="text-pink-300 px-1 py-1" colspan="${genderSpan}">Girls</th>`;
-            });
-            html += `</tr>`;
-
-            html += `<tr class="bg-slate-800/90 text-amber-200 font-extrabold text-[10px]">
-                <td class="px-2 py-1 text-left bg-slate-800 text-amber-300" colspan="2">Sub_ID:</td>`;
-            groupStats.forEach(g => {
-                if (g.isExpanded) {
-                    SUB_IDS.forEach((subId, i) => {
-                        html += `<td class="${i === 0 ? 'group-divider-left' : ''} text-amber-200 min-w-[26px]">${subId}</td>`;
-                    });
-                    SUB_IDS.forEach((subId) => {
-                        html += `<td class="text-amber-200 min-w-[26px]">${subId}</td>`;
-                    });
-                } else {
-                    html += `<td onclick="toggleDashboardStandard('${activeGame}', '${g.toggleTargetStd}')" class="group-divider-left text-slate-300 cursor-pointer hover:bg-slate-700 min-w-[34px]" title="Click to expand ${g.title}">All</td>`;
-                    html += `<td onclick="toggleDashboardStandard('${activeGame}', '${g.toggleTargetStd}')" class="text-slate-300 cursor-pointer hover:bg-slate-700 min-w-[34px]" title="Click to expand ${g.title}">All</td>`;
-                }
-            });
-            SUB_IDS.forEach((subId, i) => {
-                html += `<td class="${i === 0 ? 'group-divider-left' : ''} text-amber-200 min-w-[28px]">${subId}</td>`;
-            });
-            SUB_IDS.forEach((subId) => {
-                html += `<td class="text-amber-200 min-w-[28px]">${subId}</td>`;
-            });
-            html += `</tr>`;
-
-            const summaryRows = [
-                { label: 'Users:', key: 'users', cls: 'text-emerald-300 font-bold' },
-                { label: 'Absentees:', key: 'absentees', cls: 'text-amber-300 font-bold' },
-                { label: 'Top Score:', key: 'topScore', cls: 'text-emerald-300 font-bold' },
-                { label: 'Least Time:', key: 'leastTime', cls: 'text-slate-200 font-mono' },
-                { label: 'Avg. Score:', key: 'avgScore', cls: 'text-purple-300 font-bold' }
-            ];
-
-            summaryRows.forEach(sRow => {
-                html += `<tr class="bg-slate-900/95">
-                    <td class="px-2 py-1 text-left font-bold bg-slate-800 text-slate-100" colspan="2">${sRow.label}</td>`;
-
-                groupStats.forEach(g => {
-                    const bCells = getGenderCellsForSummary(g, 'boys', sRow.key);
-                    const gCells = getGenderCellsForSummary(g, 'girls', sRow.key);
-                    bCells.forEach(cell => {
-                        html += `<td class="${cell.extraCls} ${sRow.cls} min-w-[26px]">${cell.val}</td>`;
-                    });
-                    gCells.forEach(cell => {
-                        html += `<td class="${cell.extraCls} ${sRow.cls} min-w-[26px]">${cell.val}</td>`;
-                    });
-                });
-
-                const mVals = SUB_IDS.map((_, idx) => (memberBySub[idx] && memberBySub[idx][sRow.key]) ? memberBySub[idx][sRow.key] : '');
-                mVals.forEach((v, i) => {
-                    html += `<td class="${i === 0 ? 'group-divider-left' : ''} bg-slate-700/70 min-w-[28px]">${v}</td>`;
-                });
-                mVals.forEach((v) => {
-                    html += `<td class="${sRow.cls} min-w-[28px]">${v}</td>`;
-                });
-                html += `</tr>`;
-            });
-
-            function getStudentSlotCells(group, gender, slotNum, metricField) {
-                const pad = slotNum < 10 ? `0${slotNum}` : `${slotNum}`;
-                const dividerCls = gender === 'B' ? 'group-divider-left' : '';
-
-                if (group.stdPrefix) {
-                    const code = `${group.stdPrefix}${gender}${pad}`;
-                    if (!group.isExpanded) {
-                        if (metricField === 'stuCode') {
-                            return [{ val: code, extraCls: dividerCls, clickableCode: code, subLabel: 'All' }];
-                        }
-                        if (metricField === 'stuName') {
-                            return [{ val: lookupStudentInitialsByCode(code, gameRecs), extraCls: dividerCls, clickableCode: '', subLabel: '' }];
-                        }
-                        const stAll = computeStudentStatsForCode(gameRecs, code);
-                        return [{ val: stAll[metricField] || '', extraCls: dividerCls, clickableCode: '', subLabel: '' }];
-                    }
-
-                    if (metricField === 'stuCode') {
-                        return SUB_IDS.map((subId, i) => ({
-                            val: code,
-                            extraCls: i === 0 ? dividerCls : '',
-                            clickableCode: code,
-                            subLabel: `Sub_ID ${subId}`
-                        }));
-                    }
-                    if (metricField === 'stuName') {
-                        const initials = lookupStudentInitialsByCode(code, gameRecs);
-                        return SUB_IDS.map((_, i) => ({
-                            val: initials,
-                            extraCls: i === 0 ? dividerCls : '',
-                            clickableCode: '',
-                            subLabel: ''
-                        }));
-                    }
-                    return SUB_IDS.map((subId, i) => {
-                        const st = computeStudentStatsForSubId(gameRecs, code, subId);
-                        return { val: st[metricField] || '', extraCls: i === 0 ? dividerCls : '', clickableCode: '', subLabel: '' };
-                    });
-                } else {
-                    if (metricField === 'stuCode' || metricField === 'stuName') {
-                        return SUB_IDS.map((_, i) => ({ val: '', extraCls: i === 0 ? dividerCls : '', clickableCode: '', subLabel: '' }));
-                    }
-                    return SUB_IDS.map((subId, i) => {
-                        const slotRecs = [];
-                        for (let s = 1; s <= 5; s++) {
-                            const code = `${s}${gender}${pad}`;
-                            gameRecs.forEach(r => {
-                                if (matchStudentId(r.studentId, code, false)) slotRecs.push(r);
-                            });
-                        }
-                        const coh = computeSubIdMetrics(slotRecs, 5, subId);
-                        return { val: coh[metricField] || '', extraCls: i === 0 ? dividerCls : '', clickableCode: '', subLabel: '' };
-                    });
-                }
-            }
-
-            const studentMetricRows = [
-                { label: 'Stu_Code:', field: 'stuCode', cls: 'text-amber-300 font-bold' },
-                { label: 'Stu_Name:', field: 'stuName', cls: 'text-yellow-200 font-extrabold text-sm' },
-                { label: 'Top Score:', field: 'topScore', cls: 'text-emerald-300 font-bold' },
-                { label: 'Least Time:', field: 'leastTime', cls: 'text-slate-200 font-mono' },
-                { label: 'Avg Score:', field: 'avgScore', cls: 'text-purple-300 font-bold' }
-            ];
-
-            for (let sIdx = 1; sIdx <= 15; sIdx++) {
-                const sNum = sIdx < 10 ? `0${sIdx}` : `${sIdx}`;
-                const rankedMember = rankedMembers[sIdx - 1] || null;
-                const memberInitials = rankedMember ? lookupStudentInitialsByCode(rankedMember.id, gameRecs) : '';
-
-                studentMetricRows.forEach((mRow, mIdx) => {
-                    const topBorder = mIdx === 0 ? 'block-divider-top' : '';
-                    html += `<tr class="bg-slate-950 hover:bg-slate-900">`;
-
-                    if (mIdx === 0) {
-                        html += `<td class="${topBorder} bg-slate-800 text-slate-100 font-extrabold px-1 py-1 w-7" rowspan="5">
-                            <span class="vertical-student-label inline-block">Student-${sNum}</span>
-                        </td>`;
-                    }
-                    html += `<td class="${topBorder} bg-slate-900 text-slate-300 font-bold text-left px-2 py-0.5">${mRow.label}</td>`;
-
-                    groupStats.forEach(g => {
-                        const bCells = getStudentSlotCells(g, 'B', sIdx, mRow.field);
-                        const gCells = getStudentSlotCells(g, 'G', sIdx, mRow.field);
-
-                        bCells.forEach((cell) => {
-                            const clickableAttr = cell.clickableCode
-                                ? `onclick="openStudentRegistration('${cell.clickableCode}', '${activeGame}')" title="Click to login & play ${activeGame} as ${cell.clickableCode} (${cell.subLabel})"`
-                                : '';
-                            const cursorCls = cell.clickableCode ? 'cursor-pointer hover:underline' : '';
-                            html += `<td ${clickableAttr} class="${topBorder} ${cell.extraCls} ${mRow.cls} ${cursorCls}">${cell.val}</td>`;
-                        });
-                        gCells.forEach((cell) => {
-                            const clickableAttr = cell.clickableCode
-                                ? `onclick="openStudentRegistration('${cell.clickableCode}', '${activeGame}')" title="Click to login & play ${activeGame} as ${cell.clickableCode} (${cell.subLabel})"`
-                                : '';
-                            const cursorCls = cell.clickableCode ? 'cursor-pointer hover:underline' : '';
-                            html += `<td ${clickableAttr} class="${topBorder} ${cell.extraCls} ${mRow.cls} ${cursorCls}">${cell.val}</td>`;
-                        });
-                    });
-
-                    if (mIdx === 0) {
-                        const memberText = rankedMember
-                            ? `Rank-${sIdx}: Mem_ID: ${rankedMember.displayId}`
-                            : `Rank-${sIdx}: Mem_ID:`;
-                        html += `<td class="${topBorder} group-divider-left bg-slate-800 text-slate-100 font-bold text-left px-2 py-1" colspan="3" rowspan="5">${memberText}</td>`;
-                    }
-
-                    SUB_IDS.forEach((_, subIdx) => {
-                        let mVal = '';
-                        if (rankedMember) {
-                            if (mRow.field === 'stuCode') mVal = rankedMember.displayId;
-                            else if (mRow.field === 'stuName') mVal = memberInitials;
-                            else mVal = (rankedMember.subStats[subIdx] && rankedMember.subStats[subIdx][mRow.field]) || '';
-                        }
-                        html += `<td class="${topBorder} ${mRow.cls}">${mVal}</td>`;
-                    });
-
-                    html += `</tr>`;
-                });
-            }
-
-            const overallMetricRows = [
-                { label: 'Top Score:', field: 'topScore' },
-                { label: 'Least Time:', field: 'leastTime' },
-                { label: 'Avg Score:', field: 'avgScore' }
-            ];
-            const overallBySub = SUB_IDS.map(subId => computeSubIdMetrics(gameRecs, 150, subId));
-            const overallAll = computeCohortMetrics(gameRecs, 150);
-
-            overallMetricRows.forEach((mRow, mIdx) => {
-                const topBorder = mIdx === 0 ? 'block-divider-top' : '';
-                html += `<tr class="bg-indigo-950/90 text-amber-100 font-extrabold">`;
-
-                if (mIdx === 0) {
-                    html += `<td class="${topBorder} bg-indigo-900 text-yellow-300 font-extrabold px-1 py-1 w-7" rowspan="3">
-                        <span class="vertical-student-label inline-block">Overall</span>
-                    </td>`;
-                }
-                html += `<td class="${topBorder} bg-indigo-900/90 text-amber-200 font-bold text-left px-2 py-0.5">${mRow.label}</td>`;
-
-                groupStats.forEach(g => {
-                    const bCells = getGenderCellsForSummary(g, 'boys', mRow.field);
-                    const gCells = getGenderCellsForSummary(g, 'girls', mRow.field);
-
-                    bCells.forEach(cell => {
-                        html += `<td class="${topBorder} ${cell.extraCls} text-amber-200">${cell.val}</td>`;
-                    });
-                    gCells.forEach(cell => {
-                        html += `<td class="${topBorder} ${cell.extraCls} text-amber-200">${cell.val}</td>`;
-                    });
-                });
-
-                if (mIdx === 0) {
-                    html += `<td class="${topBorder} group-divider-left bg-indigo-900 text-yellow-300 font-extrabold text-left px-2 py-1" colspan="3" rowspan="3">Overall Consolidated Data</td>`;
-                }
-
-                const oTriplet = SUB_IDS.map((_, idx) => (overallBySub[idx] && overallBySub[idx][mRow.field]) ? overallBySub[idx][mRow.field] : (overallAll[mRow.field] || ''));
-                oTriplet.forEach((v) => {
-                    html += `<td class="${topBorder} text-yellow-300">${v}</td>`;
-                });
-
-                html += `</tr>`;
-            });
-
-            return html;
-        }
-
-        function renderStudentEntryGrid() {
-            const container = document.getElementById('studentEntryGridsContainer');
-            if (!container) return;
-
-            const availableGames = getAllAvailableGames();
-            const gameCounts = {};
-            availableGames.forEach(g => {
-                gameCounts[g] = gameRecordsData.filter(r => (r.gameCode || '').trim().toUpperCase() === g).length;
-            });
-
-            let html = `<div class="border border-indigo-200 rounded-lg overflow-hidden bg-slate-50 p-3 space-y-3">
-                <div class="text-[11px] font-bold text-slate-700">
-                    <span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded mr-1.5">Table-1</span>
-                    All Game Codes (Use the checkbox on the right of available Game Codes to expand or collapse the linked table):
-                </div>
-                <div class="overflow-x-auto">
-                    <table id="table-1" aria-label="Table-1" class="w-full grid-border border-collapse bg-white">
-                        <tbody>`;
-
-            const chunkSize = 9;
-            for (let i = 0; i < availableGames.length; i += chunkSize) {
-                const rowCodes = availableGames.slice(i, i + chunkSize);
-                html += `<tr>`;
-                rowCodes.forEach(gCode => {
-                    const isReady = READY_GAMES.includes(gCode);
-                    const isExpanded = expandedGameCodes.has(gCode);
-
-                    const cellBgClass = isReady
-                        ? 'bg-white text-slate-900 font-extrabold'
-                        : 'bg-white text-slate-500 font-semibold';
-                    const sizeClass = isReady ? 'text-sm py-2.5 px-2' : 'text-xs py-2 px-1.5';
-
-                    const checkboxHtml = isReady
-                        ? `<input type="checkbox" ${isExpanded ? 'checked' : ''} onchange="toggleGameGridExpansion('${gCode}', this.checked)" aria-label="Expand or collapse ${gCode}" title="Check to expand/collapse ${gCode} linked table" class="w-3.5 h-3.5 accent-indigo-600 cursor-pointer ml-1.5 align-middle">`
-                        : '';
-
-                    html += `<td class="${cellBgClass} ${sizeClass} transition-all" title="${isReady ? 'Available Game: ' + gCode : 'Not yet available: ' + gCode}">
-                        <div class="inline-flex items-center justify-center gap-1">
-                            <span onclick="${isReady ? `toggleGameGridExpansion('${gCode}')` : `alert('Game not yet ready!')`}" class="${isReady ? 'cursor-pointer hover:text-indigo-700' : 'cursor-not-allowed'}">
-                                ${gCode}
-                            </span>
-                            ${checkboxHtml}
-                        </div>
-                    </td>`;
-                });
-                for (let empty = rowCodes.length; empty < chunkSize; empty++) {
-                    html += `<td class="bg-white"></td>`;
-                }
-                html += `</tr>`;
-            }
-
-            html += `       </tbody>
-                    </table>
-                </div>`;
-
-            expandedGameCodes.forEach(gCode => {
-                const count = gameCounts[gCode] || 0;
-                const expandedStds = getDashboardStandardSet(gCode);
-
-                const stdButtonsHtml = DASHBOARD_STANDARDS.map(std => {
-                    const isOpen = expandedStds.has(std);
-                    const btnCls = isOpen
-                        ? 'bg-emerald-600 text-white border-emerald-400'
-                        : 'bg-white text-slate-700 border-indigo-300 hover:bg-indigo-100';
-                    return `<button type="button" onclick="toggleDashboardStandard('${gCode}', '${std}')" class="text-[10px] font-bold px-2 py-0.5 rounded border ${btnCls}">${isOpen ? '▾' : '▸'} Std ${std}</button>`;
-                }).join('');
-
-                html += `<div class="border border-indigo-300 rounded-lg p-3 bg-white space-y-2 shadow-sm mt-3">
-                    <div class="flex flex-wrap items-center justify-between gap-2 px-2.5 py-1.5 rounded border bg-indigo-50 text-indigo-900 border-indigo-200">
-                        <span class="text-xs font-extrabold uppercase"><i class="fa-solid fa-gamepad mr-1"></i>Game Dashboard: ${gCode} (${count} Submissions)</span>
-                        <div class="flex flex-wrap items-center gap-1">
-                            ${stdButtonsHtml}
-                            <button type="button" onclick="setAllDashboardStandards('${gCode}', true)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-600 text-white border border-indigo-500 hover:bg-indigo-500">Expand All</button>
-                            <button type="button" onclick="setAllDashboardStandards('${gCode}', false)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700 text-white border border-slate-600 hover:bg-slate-600">Collapse All</button>
-                            <button type="button" onclick="toggleGameGridExpansion('${gCode}', false)" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white border border-indigo-300 hover:bg-indigo-100">Close</button>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto rounded-lg border-2 border-slate-600 bg-slate-950">
-                        <table aria-label="Game Dashboard ${gCode}" class="w-full matrix-table border-collapse text-[11px] text-slate-100">
-                            <tbody>${buildGameDashboardMatrixHtml(gCode)}</tbody>
-                        </table>
-                    </div>
-                </div>`;
-            });
-
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        function matchStudentId(sheetId, homeId, exactOnly = false) {
-            if (!sheetId || !homeId) return false;
-            const cleanSheet = String(sheetId).trim().toUpperCase();
-            const cleanHome = String(homeId).trim().toUpperCase();
-            if (exactOnly) return cleanSheet === cleanHome;
-            if (cleanHome.startsWith('M')) {
-                return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_");
-            }
-            return cleanSheet === cleanHome || cleanSheet.startsWith(cleanHome + "_") || (cleanHome.length === 4 && cleanSheet.startsWith(cleanHome));
-        }
-
-        function computeCohortMetrics(recs, rollCount) {
-            if (!recs.length) {
-                return {
-                    subs: '',
-                    users: '',
-                    absentees: '',
-                    topScore: '',
-                    leastTime: '',
-                    avgScore: '',
-                    top3: [null, null, null]
-                };
-            }
-
-            const uniqueIds = new Set(recs.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean));
-            const users = uniqueIds.size;
-            const absentees = Math.max(0, rollCount - users);
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-
-            const sortedRecs = [...recs].sort((a, b) => {
-                const sDiff = parseScoreValue(b.score) - parseScoreValue(a.score);
-                if (sDiff !== 0) return sDiff;
-                const tA = parseTimeToSeconds(a.level1Time) + parseTimeToSeconds(a.level2Time);
-                const tB = parseTimeToSeconds(b.level1Time) + parseTimeToSeconds(b.level2Time);
-                return tA - tB;
-            });
-
-            const top3 = [0, 1, 2].map(i => {
-                const r = sortedRecs[i];
-                if (!r) return null;
-                const t = parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time);
-                return {
-                    subs: '1',
-                    topScore: `${Math.round(parseScoreValue(r.score))}%`,
-                    leastTime: formatCompactTime(t),
-                    avgScore: `${Math.round(parseScoreValue(r.score))}%`
-                };
-            });
-
-            return {
-                subs: String(recs.length),
-                users: String(users),
-                absentees: String(absentees),
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`,
-                top3
-            };
-        }
-
-        function computeStudentStatsForCode(gameRecs, studentCode) {
-            const recs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
-            if (!recs.length) return { subs: '', topScore: '', leastTime: '', avgScore: '' };
-            const scores = recs.map(r => parseScoreValue(r.score));
-            const maxPct = Math.round(Math.max(...scores));
-            const avgPct = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-            const times = recs.map(r => parseTimeToSeconds(r.level1Time) + parseTimeToSeconds(r.level2Time)).filter(t => t > 0);
-            const minTime = times.length ? Math.min(...times) : 0;
-            return {
-                subs: String(recs.length),
-                topScore: `${maxPct}%`,
-                leastTime: formatCompactTime(minTime),
-                avgScore: `${avgPct}%`
-            };
-        }
-
-        function updateAllHomepageTables() {
-            renderStudentEntryGrid();
-            renderGameStudentSubmissionMatrix();
-            renderOverallLeaderboard();
-            loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
-        }
-
-        function launchGamePage(studentId, name, schoolPlace, whatsapp, trialId, gameCode) {
-            let targetGameFile = 'Days.html';
-            if (gameCode === 'M03') {
-                targetGameFile = 'SkipCounter.html';
-            } else if (gameCode === 'M05') {
-                targetGameFile = 'M05.html';
-            } else if (gameCode === 'E04') {
-                targetGameFile = 'Months.html';
-            }
-
-            const queryParams = `gameCode=${encodeURIComponent(gameCode)}&studentId=${encodeURIComponent(studentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(schoolPlace)}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(trialId)}`;
-            window.location.href = `${targetGameFile}?${queryParams}`;
-        }
-
-        function handleRegistrationSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerText = "Launching...";
-
-            currentUserStudentId = document.getElementById('regStudentCode').value.trim().toUpperCase();
-            currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase();
-            const isMember = document.getElementById('regStd').value === 'M' || currentUserStudentId.startsWith('M');
-            const firstName = document.getElementById('regFirstName').value.trim();
-            const lastOrFatherName = document.getElementById('regFatherName').value.trim();
-            const fullName = isMember ? `${firstName} ${lastOrFatherName}`.trim() : firstName;
-            const motherName = isMember ? "" : document.getElementById('regMotherName').value.trim();
-            const dob = document.getElementById('regDob').value.trim();
-            const emisNumber = isMember ? "" : document.getElementById('regEmisNumber').value.trim();
-            const autoTrialId = "1";
+            const trialId = document.getElementById("regTrialId").value || "1";
+            let gameCode = (document.getElementById("regGameCode").value || currentGameCode || "M05").trim().toUpperCase();
 
             if (isExistingVerifiedUser) {
-                const found = findUserInDatabase(currentUserStudentId);
-                const uRec = (found && found.userRecord) || {};
-                const schoolStr = uRec.school ? `${uRec.school}${uRec.place ? ', ' + uRec.place : ''}, India` : "PUPS Anjalam Melur, India";
-                const whatsappStr = uRec.whatsapp || document.getElementById('regMemberWhatsappStep1').value.trim() || "";
-                const launchId = (found && found.studentId) ? found.studentId : currentUserStudentId;
-                closeModal();
-                btn.disabled = false;
-                launchGamePage(launchId, (found && found.name) || fullName, schoolStr, whatsappStr, autoTrialId, currentGameCode);
+                const pendingSel = document.getElementById("pendingGameSelect");
+                if (pendingSel && pendingSel.value) gameCode = pendingSel.value.trim().toUpperCase();
+
+                const found = findStudentInDatabase(stuId);
+                const name = (found && found.name) || document.getElementById("regFirstName").value.trim() || stuId;
+                const school = (found && found.school) || "PUPS Anjalam Melur";
+                const whatsapp = (found && found.whatsapp) || "";
+
+                launchGamePage(stuId, name, school, whatsapp, trialId, gameCode);
                 return;
             }
 
-            const duplicateCheck = findUserInDatabase(currentUserStudentId);
-            if (duplicateCheck) {
-                alert(`This database ID (${currentUserStudentId}) already exists! Click "Check ID" to load the existing profile.`);
-                btn.disabled = false;
-                btn.innerText = "Save & Launch Game";
-                return;
-            }
-
-            const cell = document.getElementById('regCell').value.trim();
-            const whatsapp = (document.getElementById('regWhatsapp').value.trim() || document.getElementById('regMemberWhatsappStep1').value.trim());
-            const school = document.getElementById('regSchool').value.trim();
-            const place = document.getElementById('regPlace').value.trim();
+            const firstName = document.getElementById("regFirstName").value.trim();
+            const fatherName = document.getElementById("regFatherName").value.trim();
+            const motherName = document.getElementById("regMotherName").value.trim();
+            const emisNumber = document.getElementById("regEmis").value.trim();
+            const dob = document.getElementById("regDob").value.trim();
+            const whatsapp = document.getElementById("regWhatsapp").value.trim();
+            const school = document.getElementById("regSchool").value.trim() || "PUPS Anjalam Melur";
+            const newGameSel = document.getElementById("newStudentGameSelect");
+            if (newGameSel && newGameSel.value) gameCode = newGameSel.value.trim().toUpperCase();
 
             const payload = {
                 action: "saveUserData",
-                studentId: currentUserStudentId,
-                userType: isMember ? "Member" : "Student",
+                studentId: stuId,
                 emisNumber: emisNumber,
                 dob: dob,
-                name: fullName,
-                firstName: firstName,
-                lastName: isMember ? lastOrFatherName : "",
-                fatherName: isMember ? "" : lastOrFatherName,
+                name: firstName,
+                fatherName: fatherName,
                 motherName: motherName,
-                cell: cell,
+                cell: whatsapp,
                 whatsapp: whatsapp,
                 school: school,
-                place: place,
-                country: "India",
-                trialId: autoTrialId
+                place: "Anjalam Melur",
+                country: "India"
             };
 
             fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST", mode: "no-cors",
+                method: "POST",
+                mode: "no-cors",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams(payload).toString()
-            }).then(() => {
-                closeModal();
-                btn.disabled = false;
-                btn.innerText = "Save & Launch Game";
-                launchGamePage(currentUserStudentId, fullName, `${school}, ${place}, India`, whatsapp, autoTrialId, currentGameCode);
-            });
+            }).catch(() => {});
+
+            launchGamePage(stuId, firstName || stuId, school, whatsapp, trialId, gameCode);
         }
 
-        window.onload = function() {
-            populateGameSelectors();
-            updateAllHomepageTables();
+        function launchGamePage(studentId, name, schoolPlace, whatsapp, trialId, gameCode) {
+            let targetGameFile = "Days.html";
+            if (gameCode === "M03") {
+                targetGameFile = "SkipCounter.html";
+            } else if (gameCode === "M05") {
+                targetGameFile = "M05.html";
+            } else if (gameCode === "E04") {
+                targetGameFile = "Months.html";
+            }
+
+            const checkedTrials = Array.from(document.querySelectorAll('input[name="m05TrialCheck"]:checked'))
+                .map(cb => cb.value);
+            const trialsParam = (gameCode === "M05" && checkedTrials.length > 0)
+                ? `&trials=${encodeURIComponent(checkedTrials.join(","))}`
+                : "";
+
+            const queryParams = `gameCode=${encodeURIComponent(gameCode)}&studentId=${encodeURIComponent(studentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(schoolPlace)}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(trialId)}${trialsParam}`;
+            window.location.href = `${targetGameFile}?${queryParams}`;
+        }
+
+        function updateAllHomepageTables() {
+            const gameFilter = (document.getElementById("filterGameSelect").value || "ALL").toUpperCase();
+            const classFilter = (document.getElementById("classSelectLeaderboard").value || "ALL").toUpperCase();
+
+            const filteredByGame = gameFilter === "ALL"
+                ? gameRecordsData
+                : gameRecordsData.filter(r => String(r.gameCode || "").trim().toUpperCase() === gameFilter);
+
+            const filteredByClassAndGame = classFilter === "ALL"
+                ? filteredByGame
+                : filteredByGame.filter(r => getClassCategory(r.studentId) === classFilter);
+
+            // 1. Overall Leaderboard
+            const overallBody = document.getElementById("overallLeaderboardBody");
+            if (filteredByGame.length === 0) {
+                overallBody.innerHTML = `<tr><td colspan="6" class="py-4 px-3 text-center text-slate-400">No records found.</td></tr>`;
+            } else {
+                overallBody.innerHTML = filteredByGame.slice(0, 50).map((r, idx) => {
+                    const pct = extractScorePercent(r.score);
+                    const tStr = r.levelTime || r.level1Time || "00:00:00";
+                    return `<tr>
+                        <td class="py-2 px-3 font-extrabold">${idx + 1}</td>
+                        <td class="py-2 px-3 font-bold text-indigo-700">${r.studentId}</td>
+                        <td class="py-2 px-3 font-semibold">${r.name}</td>
+                        <td class="py-2 px-3 font-bold">${r.gameCode}</td>
+                        <td class="py-2 px-3"><span class="${getScoreBadgeClass(pct)}">${r.score}</span></td>
+                        <td class="py-2 px-3 font-mono text-xs">${tStr}</td>
+                    </tr>`;
+                }).join("");
+            }
+
+            // 2. Classwise Leaderboard
+            const classBody = document.getElementById("classwiseLeaderboardBody");
+            if (filteredByClassAndGame.length === 0) {
+                classBody.innerHTML = `<tr><td colspan="6" class="py-4 px-3 text-center text-slate-400">No records for selected class.</td></tr>`;
+            } else {
+                classBody.innerHTML = filteredByClassAndGame.slice(0, 50).map((r, idx) => {
+                    const pct = extractScorePercent(r.score);
+                    const tStr = r.levelTime || r.level1Time || "00:00:00";
+                    return `<tr>
+                        <td class="py-2 px-3 font-extrabold">${idx + 1}</td>
+                        <td class="py-2 px-3 font-bold text-indigo-700">${r.studentId}</td>
+                        <td class="py-2 px-3 font-semibold">${r.name}</td>
+                        <td class="py-2 px-3 font-bold">${r.gameCode}</td>
+                        <td class="py-2 px-3"><span class="${getScoreBadgeClass(pct)}">${r.score}</span></td>
+                        <td class="py-2 px-3 font-mono text-xs">${tStr}</td>
+                    </tr>`;
+                }).join("");
+            }
+
+            // 3. Gamewise Abstract
+            const gameMap = {};
+            gameRecordsData.forEach(r => {
+                const g = String(r.gameCode || "M05").trim().toUpperCase();
+                if (!gameMap[g]) gameMap[g] = { game: g, attempts: 0, users: new Set(), sumPct: 0 };
+                gameMap[g].attempts++;
+                gameMap[g].users.add(String(r.studentId || "").trim().toUpperCase());
+                gameMap[g].sumPct += extractScorePercent(r.score);
+            });
+            const gwBody = document.getElementById("gamewiseAbstractBody");
+            const gwList = Object.values(gameMap);
+            gwBody.innerHTML = gwList.length === 0
+                ? `<tr><td colspan="4" class="py-4 px-3 text-center text-slate-400">No data.</td></tr>`
+                : gwList.map(item => `<tr>
+                    <td class="py-2 px-3 font-extrabold text-emerald-800">${item.game}</td>
+                    <td class="py-2 px-3 font-bold">${item.attempts}</td>
+                    <td class="py-2 px-3 font-bold">${item.users.size}</td>
+                    <td class="py-2 px-3 font-extrabold">${Math.round(item.sumPct / Math.max(1, item.attempts))}%</td>
+                </tr>`).join("");
+
+            // 4. Gamewise-Userwise Report
+            const gwuBody = document.getElementById("gamewiseUserwiseBody");
+            gwuBody.innerHTML = filteredByClassAndGame.length === 0
+                ? `<tr><td colspan="5" class="py-4 px-3 text-center text-slate-400">No data.</td></tr>`
+                : filteredByClassAndGame.slice(0, 50).map(r => `<tr>
+                    <td class="py-2 px-3 font-bold">${r.gameCode}</td>
+                    <td class="py-2 px-3 font-bold text-indigo-700">${r.studentId}</td>
+                    <td class="py-2 px-3">${r.name}</td>
+                    <td class="py-2 px-3 text-xs font-semibold">${r.level || "--"} • T${r.trialId || "1"}</td>
+                    <td class="py-2 px-3 font-bold">${r.levelScore || r.score}</td>
+                </tr>`).join("");
+
+            // 5. Userwise Abstract & Userwise-Gamewise
+            const userMap = {};
+            gameRecordsData.forEach(r => {
+                const u = String(r.studentId || "").trim().toUpperCase();
+                if (!u) return;
+                if (!userMap[u]) userMap[u] = { id: u, name: r.name || u, count: 0 };
+                userMap[u].count++;
+            });
+            const uwList = Object.values(userMap);
+            document.getElementById("userwiseAbstractBody").innerHTML = uwList.length === 0
+                ? `<tr><td colspan="3" class="py-4 px-2 text-center text-slate-400">No users.</td></tr>`
+                : uwList.map(u => `<tr>
+                    <td class="py-2 px-2.5 font-bold text-indigo-700">${u.id}</td>
+                    <td class="py-2 px-2.5">${u.name}</td>
+                    <td class="py-2 px-2.5 font-extrabold">${u.count}</td>
+                </tr>`).join("");
+
+            document.getElementById("userwiseGamewiseBody").innerHTML = filteredByClassAndGame.length === 0
+                ? `<tr><td colspan="4" class="py-4 px-2 text-center text-slate-400">No data.</td></tr>`
+                : filteredByClassAndGame.slice(0, 50).map(r => `<tr>
+                    <td class="py-2 px-2.5 font-bold text-indigo-700">${r.studentId}</td>
+                    <td class="py-2 px-2.5 font-bold">${r.gameCode}</td>
+                    <td class="py-2 px-2.5 font-semibold">${r.levelScore || r.score}</td>
+                    <td class="py-2 px-2.5 font-mono">${r.levelTime || r.level1Time || "00:00:00"}</td>
+                </tr>`).join("");
+
+            // 6. Members Class (M)
+            const memberRows = gameRecordsData.filter(r => getClassCategory(r.studentId) === "M");
+            document.getElementById("membersClassBody").innerHTML = memberRows.length === 0
+                ? `<tr><td colspan="3" class="py-4 px-2 text-center text-slate-400">No member records yet.</td></tr>`
+                : memberRows.slice(0, 40).map(r => `<tr>
+                    <td class="py-2 px-2.5 font-bold text-purple-800">${r.studentId}</td>
+                    <td class="py-2 px-2.5">${r.name}</td>
+                    <td class="py-2 px-2.5 font-bold">${r.levelScore || r.score}</td>
+                </tr>`).join("");
+
+            // 7. Full GameTable
+            document.getElementById("fullGameTableBody").innerHTML = filteredByClassAndGame.length === 0
+                ? `<tr><td colspan="8" class="py-4 px-3 text-center text-slate-400">No submissions found.</td></tr>`
+                : filteredByClassAndGame.slice(0, 100).map(r => `<tr>
+                    <td class="py-2 px-3 text-xs font-mono">${r.submittedAt || "--"}</td>
+                    <td class="py-2 px-3 font-bold">${r.gameCode}</td>
+                    <td class="py-2 px-3 font-bold text-indigo-700">${r.studentId}</td>
+                    <td class="py-2 px-3">${r.name}</td>
+                    <td class="py-2 px-3 text-xs font-semibold">${r.level || "--"}</td>
+                    <td class="py-2 px-3 text-xs font-bold">${r.trialId || "1"}</td>
+                    <td class="py-2 px-3 font-extrabold text-emerald-700">${r.levelScore || r.score}</td>
+                    <td class="py-2 px-3 font-mono text-xs">${r.levelTime || r.level1Time || "00:00:00"}</td>
+                </tr>`).join("");
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
             fetchLiveSheetData();
-        };
+        });
     </script>
 </body>
 </html>
 
-
-
-    
+        

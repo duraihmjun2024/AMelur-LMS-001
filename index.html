@@ -488,16 +488,11 @@
 
 
 
-    function isMemberId(id) {
+
+function isMemberId(id) {
             return String(id || '').trim().toUpperCase().startsWith('M');
         }
 
-        /* =====================================================================
-           COMPACT ID DISPLAY IN REPORTS & TABLES ONLY:
-           - Students: 4-character Stu_ID (e.g., 5B01) — hides the 5 EMIS digits
-           - Members: M + Last 3 digits of WhatsApp (e.g., M876)
-           (Database stores full 15-char Stu_ID or 14-char Mem_ID)
-           ===================================================================== */
         function formatDisplayIdForReport(rawId, whatsappOverride = '') {
             const clean = String(rawId || '').trim().toUpperCase();
             if (!clean) return '---';
@@ -535,7 +530,6 @@
                 return clean.slice(0, 4);
             }
 
-            // Student ID: keep 4-character Stu_ID in reports & tables
             const base = clean.split('_')[0];
             return base.slice(0, 4);
         }
@@ -567,7 +561,17 @@
         }
 
         function toggleStudentCodeDetailRows(gCode, studentCode) {
-            const key = `${String(gCode || '').trim().toUpperCase()}::${String(studentCode || '').trim().toUpperCase()}`;
+            const cleanCode = String(studentCode || '').trim().toUpperCase();
+            const cleanGame = String(gCode || 'M05').trim().toUpperCase();
+            const gameRecs = gameRecordsData.filter(r => (r.gameCode || 'E02').toUpperCase() === cleanGame);
+            const hasAnyPlayed = gameRecs.some(r => matchStudentId(r.studentId, cleanCode, false));
+
+            if (!hasAnyPlayed) {
+                openStudentRegistration(cleanCode, cleanGame, 1, 1);
+                return;
+            }
+
+            const key = `${cleanGame}::${cleanCode}`;
             if (expandedStudentCodeKey === key) {
                 expandedStudentCodeKey = null;
             } else {
@@ -620,13 +624,28 @@
         }
 
         function launchDirectTrial(gameCode, studentCode, levelNum, trialNum) {
-            const info = resolveFullStudentInfo(studentCode);
-            let targetGameFile = 'Days.html';
-            if (gameCode === 'M03') targetGameFile = 'SkipCounter.html';
-            else if (gameCode === 'M05') targetGameFile = 'M05.html';
-            else if (gameCode === 'E04') targetGameFile = 'Months.html';
+            const cleanGame = String(gameCode || 'M05').trim().toUpperCase();
+            const cleanCode = String(studentCode || '').trim().toUpperCase();
+            const info = resolveFullStudentInfo(cleanCode);
+            const hasAnyUserRecord = Boolean(
+                userRecordsData.some(u => {
+                    const uid = String(u.studentId || u.studentCode || '').trim().toUpperCase();
+                    return uid === cleanCode || uid.startsWith(cleanCode);
+                }) ||
+                gameRecordsData.some(g => matchStudentId(g.studentId, cleanCode, false))
+            );
 
-            const queryParams = `gameCode=${encodeURIComponent(gameCode)}&studentId=${encodeURIComponent(info.fullId)}&name=${encodeURIComponent(info.name)}&school=${encodeURIComponent(info.school)}&whatsapp=${encodeURIComponent(info.whatsapp)}&trialId=${encodeURIComponent(trialNum)}&level=${encodeURIComponent(levelNum)}`;
+            if (!hasAnyUserRecord) {
+                openStudentRegistration(cleanCode, cleanGame, 1, 1);
+                return;
+            }
+
+            let targetGameFile = 'Days.html';
+            if (cleanGame === 'M03') targetGameFile = 'SkipCounter.html';
+            else if (cleanGame === 'M05') targetGameFile = 'M05.html';
+            else if (cleanGame === 'E04') targetGameFile = 'Months.html';
+
+            const queryParams = `gameCode=${encodeURIComponent(cleanGame)}&studentId=${encodeURIComponent(info.fullId)}&name=${encodeURIComponent(info.name)}&school=${encodeURIComponent(info.school)}&whatsapp=${encodeURIComponent(info.whatsapp)}&trialId=${encodeURIComponent(trialNum)}&level=${encodeURIComponent(levelNum)}`;
             window.location.href = `${targetGameFile}?${queryParams}`;
         }
 
@@ -634,7 +653,7 @@
             const stuRecs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
             const map = {};
             ALL_24_TRIALS.forEach(t => {
-                map[t.key] = { score: '', time: '', finishedToday: false };
+                map[t.key] = { score: '', time: '', finishedToday: false, hasAnyData: false };
             });
 
             stuRecs.forEach(r => {
@@ -649,8 +668,14 @@
                     if (map[k]) {
                         const sc = r.levelScore || r.score || '';
                         const tm = formatTimeDisplay(r.levelTime || r.totTime || r.level1Time || '');
-                        if (sc) map[k].score = formatScoreDisplay(sc);
-                        if (tm && tm !== '00:00:00') map[k].time = tm;
+                        if (sc) {
+                            map[k].score = formatScoreDisplay(sc);
+                            map[k].hasAnyData = true;
+                        }
+                        if (tm && tm !== '00:00:00') {
+                            map[k].time = tm;
+                            map[k].hasAnyData = true;
+                        }
                         if (isToday && sc && parseScoreValue(sc) > 0) {
                             map[k].finishedToday = true;
                         }
@@ -663,6 +688,7 @@
                         const k = `L${lv}-T${tr}`;
                         if (sc && map[k]) {
                             map[k].score = formatScoreDisplay(sc);
+                            map[k].hasAnyData = true;
                             if (tm) map[k].time = formatTimeDisplay(tm);
                             if (isToday && parseScoreValue(sc) > 0) {
                                 map[k].finishedToday = true;
@@ -678,6 +704,7 @@
         function buildStudent3ExpandableRowsHtml(activeGame, studentCode, totalCols, gameRecs) {
             const info = resolveFullStudentInfo(studentCode);
             const trialMap = getStudent24TrialStatusMap(gameRecs, studentCode);
+            const hasAnyDataForGame = Object.values(trialMap).some(item => item.hasAnyData);
             const is15CharStuId = !info.fullId.startsWith('M') && info.fullId.length >= 15;
             const remainingCols = Math.max(1, totalCols - 26);
 
@@ -690,12 +717,15 @@
 
             ALL_24_TRIALS.forEach(item => {
                 const st = trialMap[item.key];
-                const canPlayLink = is15CharStuId && !st.finishedToday;
-
-                if (canPlayLink) {
-                    row1 += `<td class="bg-amber-100"><span onclick="launchDirectTrial('${activeGame}', '${studentCode}', ${item.level}, ${item.trial})" class="stu-expand-link" title="Click to play ${item.key} directly under ${info.fullId}">${item.key}</span></td>`;
+                if (!hasAnyDataForGame) {
+                    row1 += `<td class="bg-amber-100"><span onclick="openStudentRegistration('${studentCode}', '${activeGame}', 1, 1)" class="stu-expand-link" title="No data found — Register & play Level 1 - Trial 1">${item.key}</span></td>`;
                 } else {
-                    row1 += `<td class="font-bold bg-slate-100 text-slate-700">${item.key}</td>`;
+                    const canPlayLink = is15CharStuId && !st.finishedToday;
+                    if (canPlayLink) {
+                        row1 += `<td class="bg-amber-100"><span onclick="launchDirectTrial('${activeGame}', '${studentCode}', ${item.level}, ${item.trial})" class="stu-expand-link" title="Click to play ${item.key} directly under ${info.fullId}">${item.key}</span></td>`;
+                    } else {
+                        row1 += `<td class="font-bold bg-slate-100 text-slate-700">${item.key}</td>`;
+                    }
                 }
 
                 row2 += `<td class="font-bold ${st.score ? 'text-emerald-700' : 'text-slate-400'}">${st.score || ''}</td>`;
@@ -703,7 +733,10 @@
             });
 
             if (remainingCols > 0) {
-                row1 += `<td colspan="${remainingCols}" rowspan="3" class="bg-slate-100 text-left px-2 text-slate-600 font-semibold">${is15CharStuId ? 'Click any unfinished trial link (L1-T1 to L8-T3) to play directly today.' : '15-char Stu_ID required for direct trial play links.'}</td>`;
+                const noteText = !hasAnyDataForGame
+                    ? 'No game trial data found — click any trial link to register and start Level 1 - Trial 1.'
+                    : (is15CharStuId ? 'Click any unfinished trial link (L1-T1 to L8-T3) to play directly today.' : '15-char Stu_ID required for direct trial play links.');
+                row1 += `<td colspan="${remainingCols}" rowspan="3" class="bg-slate-100 text-left px-2 text-slate-600 font-semibold">${noteText}</td>`;
             }
 
             row1 += `</tr>`;
@@ -736,13 +769,11 @@
             if (!timeStr || timeStr === '--' || timeStr === '---' || timeStr === '00:00:00') return 0;
             const cleanStr = formatTimeDisplay(timeStr);
             const parts = cleanStr.split(':');
-            
             if (parts.length === 3) {
                 return (parseInt(parts[0], 10) * 3600) + (parseInt(parts[1], 10) * 60) + parseInt(parts[2], 10);
             } else if (parts.length === 2) {
                 return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
             }
-
             const numMatch = cleanStr.match(/(\d+)/);
             return numMatch ? parseInt(numMatch[1], 10) : 0;
         }
@@ -1067,10 +1098,12 @@
                     if (isOpen) {
                         codes.forEach((code, idx) => {
                             const cnt = rowCounts[code] || 0;
+                            const targetLevel = cnt === 0 ? 1 : '';
+                            const targetTrial = cnt === 0 ? 1 : '';
                             const activeCellCls = cnt > 0
                                 ? 'bg-emerald-100 text-emerald-900 font-extrabold hover:bg-emerald-200 cursor-pointer'
                                 : 'text-slate-300 hover:bg-slate-50 cursor-pointer';
-                            cellsHtml += `<td onclick="openStudentRegistration('${code}', '${gCode}')" class="${idx === 0 ? 'class-boundary' : ''} ${activeCellCls}" title="${gCode} • ${code}: ${cnt} submission(s) — Click to open">${cnt > 0 ? cnt : '·'}</td>`;
+                            cellsHtml += `<td onclick="openStudentRegistration('${code}', '${gCode}', ${targetLevel}, ${targetTrial})" class="${idx === 0 ? 'class-boundary' : ''} ${activeCellCls}" title="${gCode} • ${code}: ${cnt} submission(s) — Click to open">${cnt > 0 ? cnt : '·'}</td>`;
                         });
                         cellsHtml += `<td class="bg-indigo-50/80 text-indigo-900 font-extrabold">${stdSum > 0 ? stdSum : '0'}</td>`;
                     } else {
@@ -1357,11 +1390,6 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
-/* =====================================================================
-           DATABASE-ONLY UNIQUE ID GENERATION:
-           - Student (15 chars): Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2) + EMIS_Last5(5)
-           - Member  (14 chars): M(1) + BirthYear(4) + First1st(1) + Last1st(1) + DD(2) + MM(2) + WhatsApp_Last3(3)
-           ===================================================================== */
         function syncMemberWhatsapp(val) {
             document.getElementById('regWhatsapp').value = val;
             updateGeneratedStudentId();
@@ -1564,7 +1592,7 @@
                 const playedGamesSet = new Set();
 
                 if (found.gameRecords.length === 0) {
-                    abstractEl.innerHTML = `<div class="text-slate-500 italic py-1">Registered in database, with 0 games played so far.</div>`;
+                    abstractEl.innerHTML = `<div class="text-slate-500 italic py-1">Registered in database, with 0 games played so far. Will launch Level 1 - Trial 1.</div>`;
                 } else {
                     const scores = found.gameRecords.map(r => parseScoreValue(r.score));
                     const bestPct = Math.round(Math.max(...scores));
@@ -1605,10 +1633,10 @@
                     noPendingBanner.classList.add('hidden');
                     availWrapper.classList.remove('hidden');
                     submitBtn.classList.remove('hidden');
-                    submitBtn.innerText = "Launch Selected Game";
+                    submitBtn.innerText = "Launch Selected Game (L1-T1)";
 
                     pendingSelect.innerHTML = pendingGames.map(g =>
-                        `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g} (Available)</option>`
+                        `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g} (Available — L1-T1)</option>`
                     ).join('');
 
                     const chosenGame = pendingGames.includes(preferredGame) ? preferredGame : pendingGames[0];
@@ -1628,18 +1656,18 @@
 
                 const newGameSel = document.getElementById('newStudentGameSelect');
                 newGameSel.innerHTML = READY_GAMES.map(g =>
-                    `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g}</option>`
+                    `<option value="${g}" ${g === preferredGame ? 'selected' : ''}>${g} (Starts at Level 1 - Trial 1)</option>`
                 ).join('');
                 const chosenGame = READY_GAMES.includes(preferredGame) ? preferredGame : READY_GAMES[0];
                 newGameSel.value = chosenGame;
                 syncSelectedGame(chosenGame);
 
                 submitBtn.classList.remove('hidden');
-                submitBtn.innerText = "Save & Launch Game";
+                submitBtn.innerText = "Register & Play Level 1 - Trial 1";
             }
         }
 
-        function openStudentRegistration(studentId, gameCode) {
+        function openStudentRegistration(studentId, gameCode, levelNum = 1, trialNum = 1) {
             const targetGame = (gameCode || currentGameCode || 'M05').trim().toUpperCase();
             isExistingVerifiedUser = false;
 
@@ -1673,10 +1701,32 @@
                 document.getElementById('regStudentCode').value = cleanId;
             }
 
-            document.getElementById('existingStudentSection').classList.add('hidden');
-            document.getElementById('newStudentFieldsSection').classList.add('hidden');
-            document.getElementById('submitBtn').classList.add('hidden');
-            setNewUserRequiredFields(false);
+            const existingSection = document.getElementById('existingStudentSection');
+            const newSection = document.getElementById('newStudentFieldsSection');
+            const submitBtn = document.getElementById('submitBtn');
+
+            const hasAnyRec = cleanId ? Boolean(findUserInDatabase(cleanId)) : false;
+            if (!hasAnyRec) {
+                existingSection.classList.add('hidden');
+                newSection.classList.remove('hidden');
+                setNewUserRequiredFields(true);
+
+                const newGameSel = document.getElementById('newStudentGameSelect');
+                newGameSel.innerHTML = READY_GAMES.map(g =>
+                    `<option value="${g}" ${g === targetGame ? 'selected' : ''}>${g} (Level ${levelNum} - Trial ${trialNum})</option>`
+                ).join('');
+                const chosenGame = READY_GAMES.includes(targetGame) ? targetGame : READY_GAMES[0];
+                newGameSel.value = chosenGame;
+                syncSelectedGame(chosenGame);
+
+                submitBtn.classList.remove('hidden');
+                submitBtn.innerText = `Register & Play Level ${levelNum} - Trial ${trialNum}`;
+            } else {
+                existingSection.classList.add('hidden');
+                newSection.classList.add('hidden');
+                submitBtn.classList.add('hidden');
+                setNewUserRequiredFields(false);
+            }
 
             document.getElementById('studentModal').classList.remove('hidden');
         }
@@ -2303,7 +2353,7 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
-        function launchGamePage(studentId, name, schoolPlace, whatsapp, trialId, gameCode) {
+        function launchGamePage(studentId, name, schoolPlace, whatsapp, trialId, gameCode, levelNum = 1) {
             let targetGameFile = 'Days.html';
             if (gameCode === 'M03') {
                 targetGameFile = 'SkipCounter.html';
@@ -2313,7 +2363,7 @@
                 targetGameFile = 'Months.html';
             }
 
-            const queryParams = `gameCode=${encodeURIComponent(gameCode)}&studentId=${encodeURIComponent(studentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(schoolPlace)}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(trialId)}`;
+            const queryParams = `gameCode=${encodeURIComponent(gameCode)}&studentId=${encodeURIComponent(studentId)}&name=${encodeURIComponent(name)}&school=${encodeURIComponent(schoolPlace)}&whatsapp=${encodeURIComponent(whatsapp)}&trialId=${encodeURIComponent(trialId)}&level=${encodeURIComponent(levelNum)}`;
             window.location.href = `${targetGameFile}?${queryParams}`;
         }
 
@@ -2321,7 +2371,7 @@
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "Launching...";
+            btn.innerText = "Launching Level 1 - Trial 1...";
 
             currentUserStudentId = document.getElementById('regStudentCode').value.trim().toUpperCase();
             currentGameCode = document.getElementById('regGameCode').value.trim().toUpperCase();
@@ -2333,6 +2383,7 @@
             const dob = document.getElementById('regDob').value.trim();
             const emisNumber = isMember ? "" : document.getElementById('regEmisNumber').value.trim();
             const autoTrialId = "1";
+            const autoLevelNum = 1;
 
             if (isExistingVerifiedUser) {
                 const found = findUserInDatabase(currentUserStudentId);
@@ -2342,7 +2393,7 @@
                 const launchId = (found && found.studentId) ? found.studentId : currentUserStudentId;
                 closeModal();
                 btn.disabled = false;
-                launchGamePage(launchId, (found && found.name) || fullName, schoolStr, whatsappStr, autoTrialId, currentGameCode);
+                launchGamePage(launchId, (found && found.name) || fullName, schoolStr, whatsappStr, autoTrialId, currentGameCode, autoLevelNum);
                 return;
             }
 
@@ -2350,7 +2401,7 @@
             if (duplicateCheck) {
                 alert(`This database ID (${currentUserStudentId}) already exists! Click "Check ID" to load the existing profile.`);
                 btn.disabled = false;
-                btn.innerText = "Save & Launch Game";
+                btn.innerText = "Register & Play Level 1 - Trial 1";
                 return;
             }
 
@@ -2385,8 +2436,8 @@
             }).then(() => {
                 closeModal();
                 btn.disabled = false;
-                btn.innerText = "Save & Launch Game";
-                launchGamePage(currentUserStudentId, fullName, `${school}, ${place}, India`, whatsapp, autoTrialId, currentGameCode);
+                btn.innerText = "Register & Play Level 1 - Trial 1";
+                launchGamePage(currentUserStudentId, fullName, `${school}, ${place}, India`, whatsapp, autoTrialId, currentGameCode, autoLevelNum);
             });
         }
 
@@ -2398,6 +2449,3 @@
     </script>
 </body>
 </html>
-
-
-

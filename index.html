@@ -62,6 +62,22 @@
         .sub-matrix-table .class-boundary {
             border-left: 2px solid #64748b;
         }
+        .stu-expand-row td {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-size: 0.68rem;
+            padding: 3px 4px;
+            border: 1px solid #64748b;
+        }
+        .stu-expand-link {
+            color: #1d4ed8;
+            font-weight: 800;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .stu-expand-link:hover {
+            color: #dc2626;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between select-none">
@@ -437,11 +453,8 @@
         </div>
     </div>
 
-
-
-
 <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhPn9DO3OYGKJqyTzKNH--Gs_K5L2fQ-atShJLssH-sy7NyniAmRPelRT59fbeg8Sg/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyPwsTaQKZnrmNyNwCdqm8HQhWnHtcT1DlE8Su-gptXId0A9LptrfMgvrCeVudgQhUs/exec";
         let gameRecordsData = [];
         let userRecordsData = [];
         let isOverallExpanded = false;
@@ -452,6 +465,7 @@
         let expandedGameCodes = new Set(["M05", "E04"]);
         let expandedSubmissionClasses = new Set(["1"]);
         let isUnavailableGamesExpanded = false;
+        let expandedStudentCodeKey = null;
         let dashboardExpandedStandardsByGame = {
             M05: new Set(["5", "4", "3", "2", "1"]),
             E04: new Set(["5", "4", "3", "2", "1"]),
@@ -461,8 +475,20 @@
         const READY_GAMES = ["E02", "E03", "E04", "M03", "M05"];
         const SUB_IDS = ["1", "2", "3"];
         const DASHBOARD_STANDARDS = ["5", "4", "3", "2", "1"];
+        const ALL_24_TRIALS = [];
+        for (let lv = 1; lv <= 8; lv++) {
+            for (let tr = 1; tr <= 3; tr++) {
+                ALL_24_TRIALS.push({ level: lv, trial: tr, key: `L${lv}-T${tr}` });
+            }
+        }
 
-        function isMemberId(id) {
+
+
+
+
+
+
+    function isMemberId(id) {
             return String(id || '').trim().toUpperCase().startsWith('M');
         }
 
@@ -538,6 +564,152 @@
             const key = String(gCode || 'M05').trim().toUpperCase();
             dashboardExpandedStandardsByGame[key] = expand ? new Set(["5", "4", "3", "2", "1"]) : new Set();
             renderStudentEntryGrid();
+        }
+
+        function toggleStudentCodeDetailRows(gCode, studentCode) {
+            const key = `${String(gCode || '').trim().toUpperCase()}::${String(studentCode || '').trim().toUpperCase()}`;
+            if (expandedStudentCodeKey === key) {
+                expandedStudentCodeKey = null;
+            } else {
+                expandedStudentCodeKey = key;
+            }
+            renderStudentEntryGrid();
+        }
+
+        function getTodayDateString() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function isRecordFromToday(submittedAt) {
+            if (!submittedAt) return false;
+            const raw = String(submittedAt).trim();
+            const todayIso = getTodayDateString();
+            if (raw.startsWith(todayIso)) return true;
+            const parsed = new Date(raw);
+            if (!isNaN(parsed.getTime())) {
+                const pIso = `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, '0')}-${String(parsed.getDate()).padStart(2, '0')}`;
+                return pIso === todayIso;
+            }
+            const dmy = raw.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+            if (dmy) {
+                const pIso = `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+                return pIso === todayIso;
+            }
+            return false;
+        }
+
+        function resolveFullStudentInfo(studentCode) {
+            const target = String(studentCode || '').trim().toUpperCase();
+            const uRec = userRecordsData.find(u => {
+                const uid = String(u.studentId || u.studentCode || '').trim().toUpperCase();
+                return uid === target || uid.startsWith(target);
+            });
+            const gRec = gameRecordsData.find(g => {
+                const gid = String(g.studentId || '').trim().toUpperCase();
+                return gid === target || gid.startsWith(target);
+            });
+            const fullId = String((uRec && (uRec.studentId || uRec.studentCode)) || (gRec && gRec.studentId) || target).trim().toUpperCase();
+            const name = (uRec && (uRec.name || uRec.firstName)) || (gRec && gRec.name) || 'Student';
+            const school = uRec && uRec.school ? `${uRec.school}${uRec.place ? ', ' + uRec.place : ''}, India` : 'PUPS Anjalam Melur, India';
+            const whatsapp = (uRec && uRec.whatsapp) || (gRec && gRec.whatsapp) || '';
+            return { fullId, name, school, whatsapp };
+        }
+
+        function launchDirectTrial(gameCode, studentCode, levelNum, trialNum) {
+            const info = resolveFullStudentInfo(studentCode);
+            let targetGameFile = 'Days.html';
+            if (gameCode === 'M03') targetGameFile = 'SkipCounter.html';
+            else if (gameCode === 'M05') targetGameFile = 'M05.html';
+            else if (gameCode === 'E04') targetGameFile = 'Months.html';
+
+            const queryParams = `gameCode=${encodeURIComponent(gameCode)}&studentId=${encodeURIComponent(info.fullId)}&name=${encodeURIComponent(info.name)}&school=${encodeURIComponent(info.school)}&whatsapp=${encodeURIComponent(info.whatsapp)}&trialId=${encodeURIComponent(trialNum)}&level=${encodeURIComponent(levelNum)}`;
+            window.location.href = `${targetGameFile}?${queryParams}`;
+        }
+
+        function getStudent24TrialStatusMap(gameRecs, studentCode) {
+            const stuRecs = gameRecs.filter(r => matchStudentId(r.studentId, studentCode, false));
+            const map = {};
+            ALL_24_TRIALS.forEach(t => {
+                map[t.key] = { score: '', time: '', finishedToday: false };
+            });
+
+            stuRecs.forEach(r => {
+                const isToday = isRecordFromToday(r.submittedAt);
+                const lvlMatch = String(r.level || '').match(/(\d+)/);
+                const trMatch = String(r.trialId || r.subId || '').match(/(\d+)/);
+
+                if (lvlMatch && trMatch) {
+                    const lv = parseInt(lvlMatch[1], 10);
+                    const tr = parseInt(trMatch[1], 10);
+                    const k = `L${lv}-T${tr}`;
+                    if (map[k]) {
+                        const sc = r.levelScore || r.score || '';
+                        const tm = formatTimeDisplay(r.levelTime || r.totTime || r.level1Time || '');
+                        if (sc) map[k].score = formatScoreDisplay(sc);
+                        if (tm && tm !== '00:00:00') map[k].time = tm;
+                        if (isToday && sc && parseScoreValue(sc) > 0) {
+                            map[k].finishedToday = true;
+                        }
+                    }
+                } else if (trMatch) {
+                    const tr = parseInt(trMatch[1], 10);
+                    for (let lv = 1; lv <= 8; lv++) {
+                        const sc = r[`level${lv}Score`];
+                        const tm = r[`level${lv}Time`];
+                        const k = `L${lv}-T${tr}`;
+                        if (sc && map[k]) {
+                            map[k].score = formatScoreDisplay(sc);
+                            if (tm) map[k].time = formatTimeDisplay(tm);
+                            if (isToday && parseScoreValue(sc) > 0) {
+                                map[k].finishedToday = true;
+                            }
+                        }
+                    }
+                }
+            });
+
+            return map;
+        }
+
+        function buildStudent3ExpandableRowsHtml(activeGame, studentCode, totalCols, gameRecs) {
+            const info = resolveFullStudentInfo(studentCode);
+            const trialMap = getStudent24TrialStatusMap(gameRecs, studentCode);
+            const is15CharStuId = !info.fullId.startsWith('M') && info.fullId.length >= 15;
+            const remainingCols = Math.max(1, totalCols - 26);
+
+            let row1 = `<tr class="stu-expand-row">
+                <td colspan="2" class="font-extrabold bg-indigo-950 text-amber-300 text-left px-2">${activeGame} / ${info.fullId}</td>`;
+            let row2 = `<tr class="stu-expand-row">
+                <td colspan="2" class="font-bold bg-slate-200 text-slate-800 text-left px-2">Score</td>`;
+            let row3 = `<tr class="stu-expand-row">
+                <td colspan="2" class="font-bold bg-slate-200 text-slate-800 text-left px-2">Time</td>`;
+
+            ALL_24_TRIALS.forEach(item => {
+                const st = trialMap[item.key];
+                const canPlayLink = is15CharStuId && !st.finishedToday;
+
+                if (canPlayLink) {
+                    row1 += `<td class="bg-amber-100"><span onclick="launchDirectTrial('${activeGame}', '${studentCode}', ${item.level}, ${item.trial})" class="stu-expand-link" title="Click to play ${item.key} directly under ${info.fullId}">${item.key}</span></td>`;
+                } else {
+                    row1 += `<td class="font-bold bg-slate-100 text-slate-700">${item.key}</td>`;
+                }
+
+                row2 += `<td class="font-bold ${st.score ? 'text-emerald-700' : 'text-slate-400'}">${st.score || ''}</td>`;
+                row3 += `<td class="font-mono ${st.time ? 'text-slate-700' : 'text-slate-400'}">${st.time || ''}</td>`;
+            });
+
+            if (remainingCols > 0) {
+                row1 += `<td colspan="${remainingCols}" rowspan="3" class="bg-slate-100 text-left px-2 text-slate-600 font-semibold">${is15CharStuId ? 'Click any unfinished trial link (L1-T1 to L8-T3) to play directly today.' : '15-char Stu_ID required for direct trial play links.'}</td>`;
+            }
+
+            row1 += `</tr>`;
+            row2 += `</tr>`;
+            row3 += `</tr>`;
+            return row1 + row2 + row3;
         }
 
         function navAction(section) {
@@ -1185,8 +1357,6 @@
             loadClassLeaderboard(document.getElementById('classSelectLeaderboard').value);
         }
 
-
-
 /* =====================================================================
            DATABASE-ONLY UNIQUE ID GENERATION:
            - Student (15 chars): Std(1) + Gender(1) + GenderSlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2) + EMIS_Last5(5)
@@ -1271,7 +1441,6 @@
             const yyyy = (dobMatch && dobMatch[3]) ? dobMatch[3] : '';
 
             if (std === 'M') {
-                // Database Mem_ID (14 chars): M(1) + YYYY(4) + First1st(1) + Last1st(1) + DD(2) + MM(2) + WhatsApp_Last3(3)
                 const waDigits = (document.getElementById('regMemberWhatsappStep1').value || document.getElementById('regWhatsapp').value || '').replace(/\D/g, '');
                 const waLast3 = waDigits.length >= 3 ? waDigits.slice(-3) : waDigits;
                 const combinedMem = `M${yyyy}${firstInitial}${lastInitial}${dd}${mm}${waLast3}`;
@@ -1279,7 +1448,6 @@
                     document.getElementById('regStudentCode').value = combinedMem;
                 }
             } else {
-                // Database Stu_ID (15 chars): Std(1) + Gender(1) + SlNo(2) + Stu1st(1) + Father1st(1) + DD(2) + MM(2) + EMIS_Last5(5)
                 const gender = (document.getElementById('regGender').value || '').trim().toUpperCase().slice(0, 1);
                 const rawSl = (document.getElementById('regGenderSlNo').value || '').replace(/\D/g, '').slice(0, 2);
                 const slNo = rawSl ? rawSl.padStart(2, '0') : '';
@@ -1667,6 +1835,8 @@
                 girlsAll: computeCohortMetrics(g.girlsRecs, g.roll)
             }));
 
+            const totalDashboardCols = 2 + groupStats.reduce((acc, g) => acc + (g.isExpanded ? 6 : 2), 0) + 6;
+
             const memberBySub = SUB_IDS.map(subId => computeSubIdMetrics(memberRecsAll, Math.max(15, memberRecsAll.length), subId));
 
             const memberIds = [...new Set(memberRecsAll.map(r => String(r.studentId || '').trim().toUpperCase()).filter(Boolean))];
@@ -1868,14 +2038,14 @@
 
                         bCells.forEach((cell) => {
                             const clickableAttr = cell.clickableCode
-                                ? `onclick="openStudentRegistration('${cell.clickableCode}', '${activeGame}')" title="Click to login & play ${activeGame} as ${cell.clickableCode} (${cell.subLabel})"`
+                                ? `onclick="toggleStudentCodeDetailRows('${activeGame}', '${cell.clickableCode}')" title="Click to expand/collapse ${cell.clickableCode} L1-T1 to L8-T3 Score & Time"`
                                 : '';
                             const cursorCls = cell.clickableCode ? 'cursor-pointer hover:underline' : '';
                             html += `<td ${clickableAttr} class="${topBorder} ${cell.extraCls} ${mRow.cls} ${cursorCls}">${cell.val}</td>`;
                         });
                         gCells.forEach((cell) => {
                             const clickableAttr = cell.clickableCode
-                                ? `onclick="openStudentRegistration('${cell.clickableCode}', '${activeGame}')" title="Click to login & play ${activeGame} as ${cell.clickableCode} (${cell.subLabel})"`
+                                ? `onclick="toggleStudentCodeDetailRows('${activeGame}', '${cell.clickableCode}')" title="Click to expand/collapse ${cell.clickableCode} L1-T1 to L8-T3 Score & Time"`
                                 : '';
                             const cursorCls = cell.clickableCode ? 'cursor-pointer hover:underline' : '';
                             html += `<td ${clickableAttr} class="${topBorder} ${cell.extraCls} ${mRow.cls} ${cursorCls}">${cell.val}</td>`;
@@ -1901,6 +2071,14 @@
 
                     html += `</tr>`;
                 });
+
+                if (expandedStudentCodeKey && expandedStudentCodeKey.startsWith(`${activeGame}::`)) {
+                    const targetStuCode = expandedStudentCodeKey.split('::')[1];
+                    const slotSuffix = targetStuCode.slice(2, 4);
+                    if (slotSuffix === sNum) {
+                        html += buildStudent3ExpandableRowsHtml(activeGame, targetStuCode, totalDashboardCols, gameRecs);
+                    }
+                }
             }
 
             const overallMetricRows = [
@@ -2223,4 +2401,3 @@
 
 
 
-    
